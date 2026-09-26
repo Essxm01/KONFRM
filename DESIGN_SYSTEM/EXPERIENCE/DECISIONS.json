@@ -2,194 +2,21 @@
   "version": "2.1.3",
   "authority": "KONFRM Product Experience System",
   "decisions": [
-    {
-      "id": "UX-FOUND-01",
-      "title": "Different experiences for different roles",
-      "category": "governance",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "Customer, Owner and Admin share foundations but use role-specific hierarchy, navigation and density.",
-      "reason": "Consistency does not mean identical experience.",
-      "affectedApps": [
-        "customer-app",
-        "owner-app",
-        "admin-app"
-      ]
-    },
-    {
-      "id": "UX-FOUND-02",
-      "title": "Customer financial privacy",
-      "category": "visibility",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "Customer sees booking-relevant total, deposit and remaining amount only.",
-      "reason": "Commission, owner net, wallet and payout internals do not support the Customer decision.",
-      "affectedApps": [
-        "customer-app"
-      ]
-    },
-    {
-      "id": "UX-STATE-01",
-      "title": "Error is not empty",
-      "category": "states",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "Canonical request failure always receives an error/retry state rather than a credible zero/empty presentation.",
-      "reason": "Prevents false product success.",
-      "affectedApps": [
-        "customer-app",
-        "owner-app",
-        "admin-app"
-      ]
-    },
-    {
-      "id": "UX-ENTRY-01",
-      "title": "First-run Customer and Owner entry",
-      "category": "entry",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "KONFRM branded Splash appears once only for the first-ever Customer or Owner product experience, for approximately 1–2 seconds and with no manual gate. It is separate from bootstrap/session loading. Customer then sees one-time, swipeable Arabic-first onboarding and enters public Explore; Owner then sees one-time Owner onboarding and proceeds to Login/Create Account and existing verification where required. Returning users never see Splash/onboarding again.",
-      "reason": "Founder approved a short first-run product introduction while preserving public Customer browsing, Owner identity rules and immediate returning-user entry.",
-      "affectedApps": [
-        "customer-app",
-        "owner-app"
-      ]
-    },
-    {
-      "id": "UX-ENTRY-02",
-      "title": "Admin entry policy",
-      "category": "entry",
-      "status": "RECOMMENDED",
-      "recommendation": "Admin uses Login or validated shell plus scoped skeleton/loading—not a full-screen decorative Splash.",
-      "reason": "Admin work is operational and time-sensitive.",
-      "affectedApps": [
-        "admin-app"
-      ]
-    },
-    {
-      "id": "UX-CUSTOMER-01",
-      "title": "Customer journey hierarchy",
-      "category": "customer",
-      "status": "RECOMMENDED",
-      "recommendation": "Lead with real imagery, price/location/dates and booking progress; show payment/chat only when their canonical booking state permits it.",
-      "reason": "Supports travel choice and reassurance without operational complexity.",
-      "affectedApps": [
-        "customer-app"
-      ]
-    },
-    {
-      "id": "UX-OWNER-01",
-      "title": "Owner Home begins with action",
-      "category": "owner",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "Owner Home is operational and action-first: (1) what needs action now, (2) current/upcoming bookings, (3) property health/issues, (4) meaningful financial position, (5) important messages/alerts, with analytics as supporting information.",
-      "reason": "Founder approved the Owner’s operational priority over a metric-dashboard-first experience.",
-      "affectedApps": [
-        "owner-app"
-      ]
-    },
-    {
-      "id": "UX-OWNER-02",
-      "title": "Plain-language Owner finance",
-      "category": "owner",
-      "status": "RECOMMENDED",
-      "recommendation": "Show owner-relevant balances and entitlements in business language; keep technical ledger/provider terminology behind detail.",
-      "reason": "Financial clarity should not require implementation knowledge.",
-      "affectedApps": [
-        "owner-app"
-      ]
-    },
-    {
-      "id": "UX-ADMIN-01",
-      "title": "Admin queues over decorative overview",
-      "category": "admin",
-      "status": "RECOMMENDED",
-      "recommendation": "Use Overview as an actionable routing summary and prioritize queue/review context, filters and auditability.",
-      "reason": "Admin’s job is operational decisions, not passive dashboard viewing.",
-      "affectedApps": [
-        "admin-app"
-      ]
-    },
-    {
-      "id": "UX-NAV-01",
-      "title": "Role-specific navigation",
-      "category": "navigation",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "Customer, Owner and Admin do not require identical navigation, tab counts, headers or information density. Navigation follows each role’s frequent jobs while the central KONFRM Design System keeps one product family.",
-      "reason": "Founder approved role-relevant navigation rather than visual symmetry.",
-      "affectedApps": [
-        "customer-app",
-        "owner-app",
-        "admin-app"
-      ]
-    },
-    {
-      "id": "UX-ACTION-01",
-      "title": "State-aware action hierarchy",
-      "category": "actions",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "Only valid canonical-state actions are shown; decision-critical actions dominate, destructive actions are separated.",
-      "reason": "Protects business lifecycle correctness.",
-      "affectedApps": [
-        "customer-app",
-        "owner-app",
-        "admin-app"
-      ]
-    },
-    {
-      "id": "UX-NAV-02",
-      "title": "Customer Favorites destination",
-      "category": "navigation",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "Favorites is an important Customer capability and must eventually be persistent and canonical through the shared backend/database architecture; this decision does not implement persistence.",
-      "reason": "Founder confirmed Favorites is real product capability, not merely temporary browser state.",
-      "affectedApps": [
-        "customer-app"
-      ]
-    },
-    {
-      "id": "UX-ADMIN-CHAT-01",
-      "title": "Admin chat visibility",
-      "category": "visibility",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "Admin may view booking conversation content only in legitimate operational contexts such as dispute investigation, support cases or necessary operational investigation, with minimum necessary context and auditability; authorization is not implemented by this decision sync.",
-      "reason": "Founder approved contextual, accountable access rather than unrestricted browsing.",
-      "affectedApps": [
-        "admin-app"
-      ]
-    },
-    {
-      "id": "UX-ADMIN-LOGIN-01",
-      "title": "Prototype Admin credential presentation",
-      "category": "entry",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "Prototype Founder-operated Admin may keep accurately prefilled credentials for convenience; this is prototype UX only, not the final production authentication/security model, and must not broaden credential exposure.",
-      "reason": "Founder approved the current convenience behavior for the prototype without approving a production security model.",
-      "affectedApps": [
-        "admin-app"
-      ]
-    },
-    {
-      "id": "UX-COLOR-01",
-      "title": "No yellow/amber/orange boxed UI",
-      "category": "visual",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "Summer Yellow #FFD700 remains a micro brand-signature accent only. New cards, banners, alerts, pills, status containers, stale/retry/recovery panels and large fills must not use yellow/amber/orange container styling unless the Founder explicitly approves a named exception. Genuine caution is copy-first on a neutral/light surface with restrained warning icon/text when useful.",
-      "reason": "Founder rejected the first Screen 16 amber boxed stale treatment as visually inconsistent and explicitly required the rule to apply across KONFRM rather than screen-by-screen.",
-      "affectedApps": [
-        "customer-app",
-        "owner-app",
-        "admin-app"
-      ]
-    },
-    {
-      "id": "UX-NAV-03",
-      "title": "Header and navigation consistency by screen family",
-      "category": "navigation",
-      "status": "APPROVED_EXISTING",
-      "recommendation": "Apply navigation/header grammar consistently within screen-role families: Auth with Auth, top-level with top-level, nested entity/utility with equivalent nested surfaces, transactional with transactional, and terminal-result with terminal-result. Do not fix one screen in isolation by inventing a one-off logo, Back, title or header rule.",
-      "reason": "Founder explicitly requires design rules to be system-wide within equivalent screen families rather than applied to one screen while leaving comparable screens inconsistent.",
-      "affectedApps": [
-        "customer-app",
-        "owner-app",
-        "admin-app"
-      ]
-    }
+    { "id": "UX-FOUND-01", "title": "Different experiences for different roles", "category": "governance", "status": "APPROVED_EXISTING", "recommendation": "Customer, Owner and Admin share foundations but use role-specific hierarchy, navigation and density.", "reason": "Consistency does not mean identical experience.", "affectedApps": ["customer-app", "owner-app", "admin-app"] },
+    { "id": "UX-FOUND-02", "title": "Customer financial privacy", "category": "visibility", "status": "APPROVED_EXISTING", "recommendation": "Customer sees booking-relevant total, deposit and remaining amount only.", "reason": "Commission, owner net, wallet and payout internals do not support the Customer decision.", "affectedApps": ["customer-app"] },
+    { "id": "UX-STATE-01", "title": "Error is not empty", "category": "states", "status": "APPROVED_EXISTING", "recommendation": "Canonical request failure always receives an error/retry state rather than a credible zero/empty presentation.", "reason": "Prevents false product success.", "affectedApps": ["customer-app", "owner-app", "admin-app"] },
+    { "id": "UX-ENTRY-01", "title": "First-run Customer and Owner entry", "category": "entry", "status": "APPROVED_EXISTING", "recommendation": "KONFRM branded Splash appears once only for the first-ever Customer or Owner product experience, for approximately 1–2 seconds and with no manual gate. It is separate from bootstrap/session loading. Customer then sees one-time, swipeable Arabic-first onboarding and enters public Explore; Owner then sees one-time Owner onboarding and proceeds to Login/Create Account and existing verification where required. Returning users never see Splash/onboarding again.", "reason": "Founder approved a short first-run product introduction while preserving public Customer browsing, Owner identity rules and immediate returning-user entry.", "affectedApps": ["customer-app", "owner-app"] },
+    { "id": "UX-ENTRY-02", "title": "Admin entry policy", "category": "entry", "status": "RECOMMENDED", "recommendation": "Admin uses Login or validated shell plus scoped skeleton/loading—not a full-screen decorative Splash.", "reason": "Admin work is operational and time-sensitive.", "affectedApps": ["admin-app"] },
+    { "id": "UX-CUSTOMER-01", "title": "Customer journey hierarchy", "category": "customer", "status": "RECOMMENDED", "recommendation": "Lead with real imagery, price/location/dates and booking progress; show payment/chat only when their canonical booking state permits it.", "reason": "Supports travel choice and reassurance without operational complexity.", "affectedApps": ["customer-app"] },
+    { "id": "UX-OWNER-01", "title": "Owner Home begins with action", "category": "owner", "status": "APPROVED_EXISTING", "recommendation": "Owner Home is operational and action-first: (1) what needs action now, (2) current/upcoming bookings, (3) property health/issues, (4) meaningful financial position, (5) important messages/alerts, with analytics as supporting information.", "reason": "Founder approved the Owner’s operational priority over a metric-dashboard-first experience.", "affectedApps": ["owner-app"] },
+    { "id": "UX-OWNER-02", "title": "Plain-language Owner finance", "category": "owner", "status": "RECOMMENDED", "recommendation": "Show owner-relevant balances and entitlements in business language; keep technical ledger/provider terminology behind detail.", "reason": "Financial clarity should not require implementation knowledge.", "affectedApps": ["owner-app"] },
+    { "id": "UX-ADMIN-01", "title": "Admin queues over decorative overview", "category": "admin", "status": "RECOMMENDED", "recommendation": "Use Overview as an actionable routing summary and prioritize queue/review context, filters and auditability.", "reason": "Admin’s job is operational decisions, not passive dashboard viewing.", "affectedApps": ["admin-app"] },
+    { "id": "UX-NAV-01", "title": "Role-specific navigation", "category": "navigation", "status": "APPROVED_EXISTING", "recommendation": "Customer, Owner and Admin do not require identical navigation, tab counts, headers or information density. Navigation follows each role’s frequent jobs while the central KONFRM Design System keeps one product family.", "reason": "Founder approved role-relevant navigation rather than visual symmetry.", "affectedApps": ["customer-app", "owner-app", "admin-app"] },
+    { "id": "UX-ACTION-01", "title": "State-aware action hierarchy", "category": "actions", "status": "APPROVED_EXISTING", "recommendation": "Only valid canonical-state actions are shown; decision-critical actions dominate, destructive actions are separated.", "reason": "Protects business lifecycle correctness.", "affectedApps": ["customer-app", "owner-app", "admin-app"] },
+    { "id": "UX-NAV-02", "title": "Customer Favorites destination", "category": "navigation", "status": "APPROVED_EXISTING", "recommendation": "Favorites is an important Customer capability and must eventually be persistent and canonical through the shared backend/database architecture; this decision does not implement persistence.", "reason": "Founder confirmed Favorites is real product capability, not merely temporary browser state.", "affectedApps": ["customer-app"] },
+    { "id": "UX-COLOR-01", "title": "No yellow/amber/orange boxed UI", "category": "visual", "status": "APPROVED_EXISTING", "recommendation": "Summer Yellow #FFD700 remains a micro brand-signature accent only. New cards, banners, alerts, pills, status containers, stale/retry/recovery panels and large fills must not use yellow/amber/orange container styling unless the Founder explicitly approves a named exception. Genuine caution is copy-first on a neutral/light surface with restrained warning icon/text when useful.", "reason": "Founder rejected the first Screen 16 amber boxed stale treatment as visually inconsistent and explicitly required the rule to apply across KONFRM rather than screen-by-screen.", "affectedApps": ["customer-app", "owner-app", "admin-app"] },
+    { "id": "UX-NAV-03", "title": "Header and navigation consistency by screen family", "category": "navigation", "status": "APPROVED_EXISTING", "recommendation": "Apply navigation/header grammar consistently within screen-role families: Auth with Auth, top-level with top-level, nested entity/utility with equivalent nested surfaces, transactional with transactional, and terminal-result with terminal-result. Do not fix one screen in isolation by inventing a one-off logo, Back, title or header rule.", "reason": "Founder explicitly requires design rules to be system-wide within equivalent screen families rather than applied to one screen while leaving comparable screens inconsistent.", "affectedApps": ["customer-app", "owner-app", "admin-app"] },
+    { "id": "UX-ADMIN-CHAT-01", "title": "Admin chat visibility", "category": "visibility", "status": "APPROVED_EXISTING", "recommendation": "Admin may view booking conversation content only in legitimate operational contexts such as dispute investigation, support cases or necessary operational investigation, with minimum necessary context and auditability; authorization is not implemented by this decision sync.", "reason": "Founder approved contextual, accountable access rather than unrestricted browsing.", "affectedApps": ["admin-app"] },
+    { "id": "UX-ADMIN-LOGIN-01", "title": "Prototype Admin credential presentation", "category": "entry", "status": "APPROVED_EXISTING", "recommendation": "Prototype Founder-operated Admin may keep accurately prefilled credentials for convenience; this is prototype UX only, not the final production authentication/security model, and must not broaden credential exposure.", "reason": "Founder approved the current convenience behavior for the prototype without approving a production security model.", "affectedApps": ["admin-app"] }
   ]
 }

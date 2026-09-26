@@ -19,6 +19,10 @@ import {
   markNotificationReadLocally,
   decrementUnreadCountLocally,
   shouldKeepNotificationsAfterRefreshFailure,
+  shouldApplyNotificationResponse,
+  notificationInitialStateForSession,
+  notificationListStateAfterLoadMore,
+  applySuccessfulNotificationRead,
 } from './customerScreen16Notifications';
 
 declare const process: { exitCode?: number };
@@ -186,6 +190,16 @@ async function run(): Promise<void> {
   assert(threw, 'invalid createdAt throws');
 
   threw = false;
+  try { validateNotificationItem({ ...mockItem(), createdAt: 'September 26, 2026 18:00 UTC' }); } catch { threw = true; }
+  assert(threw, 'human-readable date is rejected');
+
+  threw = false;
+  try { validateNotificationItem({ ...mockItem(), createdAt: '2026-09-26 18:00:00+00:00' }); } catch { threw = true; }
+  assert(threw, 'non-RFC3339 timestamp is rejected');
+
+  assert(validateNotificationItem(mockItem({ createdAt: '2026-09-26T18:00:00+03:00' })).createdAt.includes('T'), 'RFC3339 timestamp is accepted');
+
+  threw = false;
   try { validateNotificationItem({ ...mockItem(), isRead: 'true' as any }); } catch { threw = true; }
   assert(threw, 'non-boolean isRead throws');
 
@@ -234,6 +248,14 @@ async function run(): Promise<void> {
   });
   const unreadCount = await fetchCustomerUnreadNotificationCount('test-token', mockFetchCount, testGetUrl);
   assert(unreadCount === 3, 'Unread count is 3');
+
+  for (const malformed of [1.5, Number.NaN, Number.POSITIVE_INFINITY, -1]) {
+    threw = false;
+    try {
+      await fetchCustomerUnreadNotificationCount('test-token', async () => jsonResponse(200, { success: true, data: { unreadCount: malformed } }), testGetUrl);
+    } catch { threw = true; }
+    assert(threw, `malformed unread count ${String(malformed)} is rejected`);
+  }
 
   // fetchCustomerUnreadNotificationCount 403
   unauthorizedCaught = false;
@@ -322,6 +344,25 @@ async function run(): Promise<void> {
   assert(shouldKeepNotificationsAfterRefreshFailure([itemA], true) === false, 'Do not keep items on unauthorized');
   assert(shouldKeepNotificationsAfterRefreshFailure([], false) === false, 'Do not keep if list was empty');
 
+  // P9.2 executable authority guards: old sessions, old requests, and older
+  // mutations cannot overwrite a newer canonical response.
+  assert(shouldApplyNotificationResponse(2, 2, 4, 4, 'token-b', 'token-b'), 'current response is applicable');
+  assert(!shouldApplyNotificationResponse(1, 2, 4, 4, 'token-a', 'token-b'), 'stale session response is ignored');
+  assert(!shouldApplyNotificationResponse(1, 2, 4, 4, 'token-b', 'token-b'), 'older request response is ignored');
+  assert(!shouldApplyNotificationResponse(2, 2, 3, 4, 'token-b', 'token-b'), 'response before newer mutation is ignored');
+  assert(notificationInitialStateForSession('token-a', 'token-b', [itemA]) === 'INITIAL_LOADING', 'new session clears old list before loading');
+  assert(notificationInitialStateForSession('token-b', 'token-b', [itemA]) === 'REFRESHING', 'same-session refresh preserves safe list');
+  assert(notificationListStateAfterLoadMore([]) === 'EMPTY', 'load-more empty canonical list resolves EMPTY');
+  assert(notificationListStateAfterLoadMore([itemA]) === 'LOADED', 'load-more non-empty canonical list resolves LOADED');
+
+  // Read truthfulness: a read item does not decrement the count; an unread
+  // item decrements once only after the server mutation succeeds.
+  const alreadyRead = applySuccessfulNotificationRead([itemAUpdated], 2, itemAUpdated.notificationId, false);
+  assert(alreadyRead.items[0].isRead === true && alreadyRead.unreadCount === 2, 'already-read notification does not decrement count');
+  const newlyRead = applySuccessfulNotificationRead([itemA], 2, itemA.notificationId, true);
+  assert(newlyRead.items[0].isRead === true && newlyRead.unreadCount === 1, 'successful unread mutation decrements exactly once');
+  assert(decrementUnreadCountLocally(0) === 0, 'unread count never becomes negative');
+
   // ==========================================
   // 6. ACCESSIBILITY & TOUCH TARGETS
   // ==========================================
@@ -335,6 +376,16 @@ async function run(): Promise<void> {
   assert(componentSource.includes('min-h-[44px] min-w-[44px]'), 'Back button must have min 44x44px touch target');
   assert(componentSource.includes('min-h-[48px]'), 'Feed cards must have min 48px height');
   assert(componentSource.includes('min-h-[52px]'), 'Primary CTAs must have min 52px height');
+
+  // Source-level guard complements the pure state tests: navigation is
+  // scheduled before the async mutation and optimistic local read updates do
+  // not occur in the click handler.
+  assert(appSource.indexOf("setBookingDetailId(item.bookingId)") < appSource.indexOf('markCustomerNotificationRead(token'), 'Screen 13 navigation is immediate');
+  assert(appSource.includes('notificationReadInFlightRef'), 'read mutations are de-duplicated');
+  assert(appSource.includes('setIsLoadingMoreNotifications(false)'), 'load-more terminal state is reset');
+  assert(appSource.includes("clearNotificationPrivateState('SESSION_EXPIRED')"), 'unauthorized notification work enters SESSION_EXPIRED');
+  assert(!appSource.includes('setUnreadNotificationCount((prev) => decrementUnreadCountLocally(prev))'), 'unread count is not optimistically decremented');
+  assert(!clientSource.includes('Math.floor(json.data.unreadCount)'), 'fractional unread counts are not silently floored');
 
   console.log('ALL CUSTOMER SCREEN 16 NOTIFICATIONS TESTS PASSED (100%)!');
 }

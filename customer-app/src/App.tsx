@@ -73,7 +73,9 @@ import {
   formatUnreadCountBadge,
   mergeNotificationPages,
   markNotificationReadLocally,
-  decrementUnreadCountLocally,
+  applySuccessfulNotificationRead,
+  notificationListStateAfterLoadMore,
+  shouldApplyNotificationResponse,
   notificationListStateAfterLoad,
   shouldKeepNotificationsAfterRefreshFailure,
 } from './utils/customerScreen16Notifications';
@@ -232,38 +234,99 @@ export function App() {
   const [unreadNotificationCount, setUnreadNotificationCount] = useState<number | null>(null);
   const [bookingDetailOrigin, setBookingDetailOrigin] = useState<'BOOKINGS' | 'NOTIFICATION_CENTER' | null>(null);
 
-  const handleNotificationSessionExpired = useCallback(() => {
-    setNotifications([]);
-    setNotificationsLoadState('SESSION_EXPIRED');
-    setNotificationsError('انتهت جلسة تسجيل الدخول. سجّل الدخول مرة أخرى.');
-    setNotificationsNextCursor(null);
-    setUnreadNotificationCount(null);
+  const notificationsRef = useRef<CustomerNotificationItem[]>([]);
+  const notificationSessionTokenRef = useRef<string | null>(null);
+  const notificationsRequestIdRef = useRef(0);
+  const unreadRequestIdRef = useRef(0);
+  const notificationMutationVersionRef = useRef(0);
+  const notificationReadInFlightRef = useRef<Set<string>>(new Set());
+
+  const applyNotificationItems = useCallback((items: CustomerNotificationItem[]) => {
+    notificationsRef.current = items;
+    setNotifications(items);
   }, []);
 
+  const invalidateNotificationWork = useCallback(() => {
+    notificationsRequestIdRef.current += 1;
+    unreadRequestIdRef.current += 1;
+    notificationMutationVersionRef.current += 1;
+    notificationReadInFlightRef.current.clear();
+  }, []);
+
+  const clearNotificationPrivateState = useCallback((loadState: CustomerNotificationLoadState = 'INITIAL_LOADING') => {
+    notificationsRef.current = [];
+    setNotifications([]);
+    setNotificationsNextCursor(null);
+    setUnreadNotificationCount(null);
+    setIsLoadingMoreNotifications(false);
+    setNotificationsError(null);
+    setNotificationsLoadState(loadState);
+  }, []);
+
+  const activateNotificationSession = useCallback((token: string) => {
+    if (notificationSessionTokenRef.current === token) return;
+    invalidateNotificationWork();
+    notificationSessionTokenRef.current = token;
+    clearNotificationPrivateState('INITIAL_LOADING');
+  }, [clearNotificationPrivateState, invalidateNotificationWork]);
+
+  const handleNotificationSessionExpired = useCallback(() => {
+    invalidateNotificationWork();
+    notificationSessionTokenRef.current = null;
+    clearNotificationPrivateState('SESSION_EXPIRED');
+    setNotificationsError('انتهت جلسة تسجيل الدخول. سجّل الدخول مرة أخرى.');
+  }, [clearNotificationPrivateState, invalidateNotificationWork]);
+
   const fetchUnreadCount = useCallback(async (token: string) => {
+    activateNotificationSession(token);
+    const requestId = ++unreadRequestIdRef.current;
+    const mutationVersion = notificationMutationVersionRef.current;
     try {
       const count = await fetchCustomerUnreadNotificationCount(token);
+      if (notificationSessionTokenRef.current !== token || requestId !== unreadRequestIdRef.current || mutationVersion !== notificationMutationVersionRef.current) return;
       setUnreadNotificationCount(count);
     } catch (err) {
+      if (notificationSessionTokenRef.current !== token || requestId !== unreadRequestIdRef.current || mutationVersion !== notificationMutationVersionRef.current) return;
       if (err instanceof CustomerNotificationsUnauthorizedError) {
         handleNotificationSessionExpired();
         return;
       }
       setUnreadNotificationCount(null);
     }
-  }, [handleNotificationSessionExpired]);
+  }, [activateNotificationSession, handleNotificationSessionExpired]);
 
   const loadNotifications = useCallback(async (
     token: string,
     mode: 'INITIAL' | 'REFRESH' | 'LOAD_MORE' = 'INITIAL',
   ) => {
+    const sessionChanged = notificationSessionTokenRef.current !== token;
+    activateNotificationSession(token);
+    const requestSessionToken = token;
+    const requestId = ++notificationsRequestIdRef.current;
+    const mutationVersion = notificationMutationVersionRef.current;
+    const currentItems = notificationsRef.current;
+
     if (mode === 'LOAD_MORE') {
+      if (sessionChanged) return;
       if (!notificationsNextCursor || isLoadingMoreNotifications) return;
       setIsLoadingMoreNotifications(true);
     } else if (mode === 'REFRESH') {
-      setNotificationsLoadState('REFRESHING');
+      if (currentItems.length > 0) {
+        setNotificationsLoadState('REFRESHING');
+      } else {
+        applyNotificationItems([]);
+        setNotificationsNextCursor(null);
+        setNotificationsLoadState('INITIAL_LOADING');
+      }
     } else {
-      setNotificationsLoadState('INITIAL_LOADING');
+      const sameSessionWithSafeData = notificationSessionTokenRef.current === token && currentItems.length > 0;
+      if (sameSessionWithSafeData) {
+        setNotificationsLoadState('REFRESHING');
+      } else {
+        applyNotificationItems([]);
+        setNotificationsNextCursor(null);
+        setNotificationsLoadState('INITIAL_LOADING');
+      }
       setNotificationsError(null);
     }
 
@@ -271,17 +334,36 @@ export function App() {
       const cursor = mode === 'LOAD_MORE' ? notificationsNextCursor : null;
       const page = await fetchCustomerNotifications(token, { limit: 20, cursor });
 
+      if (!shouldApplyNotificationResponse(
+        requestId,
+        notificationsRequestIdRef.current,
+        mutationVersion,
+        notificationMutationVersionRef.current,
+        requestSessionToken,
+        notificationSessionTokenRef.current,
+      )) return;
+
       if (mode === 'LOAD_MORE') {
-        setNotifications((prev) => mergeNotificationPages(prev, page.items));
+        const merged = mergeNotificationPages(notificationsRef.current, page.items);
+        applyNotificationItems(merged);
         setNotificationsNextCursor(page.nextCursor);
         setIsLoadingMoreNotifications(false);
+        setNotificationsLoadState(notificationListStateAfterLoadMore(merged));
       } else {
-        setNotifications(page.items);
+        applyNotificationItems(page.items);
         setNotificationsNextCursor(page.nextCursor);
         setNotificationsLoadState(notificationListStateAfterLoad(page.items));
         setNotificationsError(null);
       }
     } catch (err: any) {
+      if (!shouldApplyNotificationResponse(
+        requestId,
+        notificationsRequestIdRef.current,
+        mutationVersion,
+        notificationMutationVersionRef.current,
+        requestSessionToken,
+        notificationSessionTokenRef.current,
+      )) return;
       if (err instanceof CustomerNotificationsUnauthorizedError) {
         handleNotificationSessionExpired();
         return;
@@ -292,25 +374,45 @@ export function App() {
         setIsLoadingMoreNotifications(false);
       } else if (mode === 'REFRESH') {
         setNotificationsLoadState(
-          shouldKeepNotificationsAfterRefreshFailure(notifications, false) ? 'STALE_ERROR' : 'ERROR'
+          shouldKeepNotificationsAfterRefreshFailure(notificationsRef.current, false) ? 'STALE_ERROR' : 'ERROR'
         );
       } else {
         setNotificationsLoadState('ERROR');
         setNotificationsError(errMsg);
       }
     }
-  }, [notificationsNextCursor, isLoadingMoreNotifications, notifications, handleNotificationSessionExpired]);
+  }, [activateNotificationSession, applyNotificationItems, notificationsNextCursor, isLoadingMoreNotifications, handleNotificationSessionExpired]);
 
   const handleSelectNotification = useCallback((item: CustomerNotificationItem) => {
-    if (authToken) {
-      void markCustomerNotificationRead(authToken, item.notificationId).catch(() => undefined);
-    }
-    setNotifications((prev) => markNotificationReadLocally(prev, item.notificationId));
-    setUnreadNotificationCount((prev) => decrementUnreadCountLocally(prev));
-
     setBookingDetailOrigin('NOTIFICATION_CENTER');
     setBookingDetailId(item.bookingId);
-  }, [authToken]);
+
+    const token = authToken;
+    const current = notificationsRef.current.find((notification) => notification.notificationId === item.notificationId);
+    const wasUnread = Boolean(current && !current.isRead);
+    if (!token || !wasUnread || notificationReadInFlightRef.current.has(item.notificationId)) return;
+
+    notificationReadInFlightRef.current.add(item.notificationId);
+    const mutationVersion = ++notificationMutationVersionRef.current;
+    void markCustomerNotificationRead(token, item.notificationId)
+      .then(() => {
+        if (notificationSessionTokenRef.current !== token || mutationVersion !== notificationMutationVersionRef.current) return;
+        applyNotificationItems(markNotificationReadLocally(notificationsRef.current, item.notificationId));
+        setUnreadNotificationCount((previous) => applySuccessfulNotificationRead(
+          notificationsRef.current,
+          previous,
+          item.notificationId,
+          wasUnread,
+        ).unreadCount);
+      })
+      .catch((err) => {
+        if (notificationSessionTokenRef.current !== token || mutationVersion !== notificationMutationVersionRef.current) return;
+        if (err instanceof CustomerNotificationsUnauthorizedError) handleNotificationSessionExpired();
+      })
+      .finally(() => {
+        notificationReadInFlightRef.current.delete(item.notificationId);
+      });
+  }, [applyNotificationItems, authToken, handleNotificationSessionExpired]);
 
   const handleBookingDomainSessionExpired = useCallback(() => {
     setCustomerBookings([]);
@@ -632,6 +734,7 @@ export function App() {
               setCustomerPhone(canonicalPhone);
               localStorage.setItem('sola_customer_phone', canonicalPhone);
             }
+            activateNotificationSession(storedToken);
             setAuthToken(storedToken);
             setCustomerAuthError(null);
             fetchAccountSummary(storedToken);
@@ -660,6 +763,7 @@ export function App() {
           const json = await res.json();
           if (res.ok && json.success && json.data?.accessToken) {
             localStorage.setItem('sola_customer_access_token', json.data.accessToken);
+            activateNotificationSession(json.data.accessToken);
             setAuthToken(json.data.accessToken);
             fetchCustomerProfile(json.data.accessToken);
             fetchAccountSummary(json.data.accessToken);
@@ -692,6 +796,14 @@ export function App() {
       }
     }
   }, [activeTab, authToken, fetchUnreadCount]);
+
+  // Any token replacement is a notification-session boundary. This clears
+  // private state before work from the previous Customer can be rendered.
+  useEffect(() => {
+    if (authToken) {
+      activateNotificationSession(authToken);
+    }
+  }, [authToken, activateNotificationSession]);
 
   useEffect(() => {
     if (activeTab === 'FAVORITES' && authToken) {
@@ -827,6 +939,7 @@ export function App() {
     refreshToken?: string,
     user?: CustomerUserProfile
   ) => {
+    activateNotificationSession(token);
     localStorage.setItem('sola_customer_access_token', token);
     if (refreshToken) {
       localStorage.setItem('sola_customer_refresh_token', refreshToken);
@@ -922,6 +1035,7 @@ export function App() {
     canonicalSession?: CanonicalCustomerSession,
   ): void => {
     const { accessToken, refreshToken } = tokens;
+    activateNotificationSession(accessToken);
     localStorage.setItem('sola_customer_access_token', accessToken);
     localStorage.setItem('sola_customer_refresh_token', refreshToken);
     if (method === 'EMAIL') {
@@ -1162,12 +1276,9 @@ export function App() {
     setAuthV2Challenge(null);
     setAuthV2Flow(null);
     setIsNotificationCenterOpen(false);
-    setNotifications([]);
-    setNotificationsLoadState('INITIAL_LOADING');
-    setNotificationsError(null);
-    setNotificationsNextCursor(null);
-    setIsLoadingMoreNotifications(false);
-    setUnreadNotificationCount(null);
+    invalidateNotificationWork();
+    notificationSessionTokenRef.current = null;
+    clearNotificationPrivateState('INITIAL_LOADING');
     setBookingDetailOrigin(null);
     setActiveTab('EXPLORE');
   };
@@ -1338,6 +1449,7 @@ export function App() {
               setUserProfile(updated);
               localStorage.setItem('sola_customer_profile', JSON.stringify(updated));
               if (newAccessToken) {
+                activateNotificationSession(newAccessToken);
                 setAuthToken(newAccessToken);
                 localStorage.setItem('sola_customer_access_token', newAccessToken);
               }

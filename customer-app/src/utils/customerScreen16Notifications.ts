@@ -147,6 +147,18 @@ export function decrementUnreadCountLocally(current: number | null): number | nu
   return Math.max(0, current - 1);
 }
 
+export function applySuccessfulNotificationRead(
+  items: CustomerNotificationItem[],
+  unreadCount: number | null,
+  notificationId: string,
+  wasUnread: boolean,
+): { items: CustomerNotificationItem[]; unreadCount: number | null } {
+  return {
+    items: markNotificationReadLocally(items, notificationId),
+    unreadCount: wasUnread ? decrementUnreadCountLocally(unreadCount) : unreadCount,
+  };
+}
+
 /**
  * Determines whether to keep existing notification items on refresh failure.
  */
@@ -155,4 +167,39 @@ export function shouldKeepNotificationsAfterRefreshFailure(
   unauthorized: boolean,
 ): boolean {
   return items.length > 0 && !unauthorized;
+}
+
+/**
+ * A notification response is allowed to mutate state only when it belongs to
+ * the active session, is the latest request, and was started before no newer
+ * local mutation. This mirrors the Favorites request/mutation guard.
+ */
+export function shouldApplyNotificationResponse(
+  requestId: number,
+  currentRequestId: number,
+  mutationVersion: number,
+  currentMutationVersion: number,
+  requestSessionToken: string,
+  currentSessionToken: string | null,
+): boolean {
+  return requestId === currentRequestId
+    && mutationVersion === currentMutationVersion
+    && requestSessionToken.length > 0
+    && requestSessionToken === currentSessionToken;
+}
+
+export function notificationInitialStateForSession(
+  sessionToken: string | null,
+  activeSessionToken: string | null,
+  items: CustomerNotificationItem[],
+): 'INITIAL_LOADING' | 'REFRESHING' {
+  return sessionToken && sessionToken === activeSessionToken && items.length > 0
+    ? 'REFRESHING'
+    : 'INITIAL_LOADING';
+}
+
+export function notificationListStateAfterLoadMore(
+  items: CustomerNotificationItem[],
+): 'LOADED' | 'EMPTY' {
+  return notificationListStateAfterLoad(items);
 }

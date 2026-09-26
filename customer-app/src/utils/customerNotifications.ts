@@ -50,8 +50,12 @@ function throwIfUnauthorized(status: number): void {
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function isIsoDate(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0 && !Number.isNaN(Date.parse(value));
+// P9.2: accept the RFC3339 shape emitted by PostgreSQL/PostgREST, not any
+// human-readable string that Date.parse happens to understand.
+const RFC3339_TIMESTAMP_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/;
+
+export function isCustomerNotificationTimestamp(value: unknown): value is string {
+  return typeof value === 'string' && RFC3339_TIMESTAMP_REGEX.test(value) && !Number.isNaN(Date.parse(value));
 }
 
 export function validateNotificationItem(item: any): CustomerNotificationItem {
@@ -68,7 +72,7 @@ export function validateNotificationItem(item: any): CustomerNotificationItem {
   if (item.propertyTitle !== null && typeof item.propertyTitle !== 'string') {
     throw new Error('INVALID_PROPERTY_TITLE');
   }
-  if (!isIsoDate(item.createdAt)) {
+  if (!isCustomerNotificationTimestamp(item.createdAt)) {
     throw new Error('INVALID_CREATED_AT');
   }
   if (typeof item.isRead !== 'boolean') {
@@ -165,11 +169,11 @@ export async function fetchCustomerUnreadNotificationCount(
   }
 
   const json = await res.json().catch(() => null);
-  if (!json || !json.success || !json.data || typeof json.data.unreadCount !== 'number' || json.data.unreadCount < 0) {
+  if (!json || !json.success || !json.data || typeof json.data.unreadCount !== 'number' || !Number.isFinite(json.data.unreadCount) || !Number.isInteger(json.data.unreadCount) || json.data.unreadCount < 0) {
     throw new Error('FETCH_UNREAD_COUNT_MALFORMED');
   }
 
-  return Math.floor(json.data.unreadCount);
+  return json.data.unreadCount;
 }
 
 export async function markCustomerNotificationRead(

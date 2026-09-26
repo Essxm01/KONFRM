@@ -34,8 +34,8 @@ async function expectUnauthorized(action: () => Promise<unknown>, label: string)
 }
 
 async function run(): Promise<void> {
-  const appSource = readFileSync(new URL('../App.tsx', import.meta.url), 'utf8');
-  const componentSource = readFileSync(new URL('../components/CustomerFavoritesScreen.tsx', import.meta.url), 'utf8');
+  const appSource = readFileSync(new URL('../App.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const componentSource = readFileSync(new URL('../components/CustomerFavoritesScreen.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   const helperSource = readFileSync(new URL('./customerScreen15Favorites.ts', import.meta.url), 'utf8');
   const propertyCardSource = readFileSync(new URL('../components/PropertyCard.tsx', import.meta.url), 'utf8');
   const bottomNavSource = readFileSync(new URL('../components/CustomerBottomNav.tsx', import.meta.url), 'utf8');

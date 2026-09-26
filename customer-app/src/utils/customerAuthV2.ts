@@ -8,6 +8,7 @@ export type AuthOrigin =
   | { type: 'ACCOUNT_TAB' }
   | { type: 'FAVORITES_TAB' }
   | { type: 'BOOKINGS_TAB' }
+  | { type: 'NOTIFICATION_CENTER' }
   | { type: 'PROTECTED_FAVORITE'; propertyId: string }
   | { type: 'PROTECTED_BOOKING'; context: { propertyId: string; checkIn: string; checkOut: string; guests: number; quoteSnapshot?: import('../components/PropertyDetailModal').ServerPriceQuote | null; quoteFingerprint?: string | null; requestId?: string | null } }
   | { type: 'PROTECTED_PAYMENT'; bookingId: string };

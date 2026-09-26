@@ -19,6 +19,7 @@ import {
   getNotificationTitle,
   getNotificationBody,
   formatNotificationTime,
+  shouldRenderNotificationFeed,
 } from '../utils/customerScreen16Notifications';
 
 export interface CustomerNotificationCenterProps {
@@ -58,7 +59,6 @@ export const CustomerNotificationCenter: React.FC<CustomerNotificationCenterProp
   notifications,
   hasMore,
   isLoadingMore,
-  error,
   onBack,
   onSelectNotification,
   onLoadMore,
@@ -77,7 +77,7 @@ export const CustomerNotificationCenter: React.FC<CustomerNotificationCenterProp
   const isEmpty = loadState === 'EMPTY';
   const isError = loadState === 'ERROR';
   const isSessionExpired = loadState === 'SESSION_EXPIRED';
-  const hasNotifications = notifications.length > 0;
+  const hasNotifications = shouldRenderNotificationFeed(loadState, notifications.length);
 
   return (
     <section
@@ -175,7 +175,7 @@ export const CustomerNotificationCenter: React.FC<CustomerNotificationCenterProp
               {CUSTOMER_NOTIFICATIONS_COPY.errorTitle}
             </h2>
             <p className="text-xs text-slate-500 font-bold max-w-xs mx-auto leading-relaxed">
-              {error || CUSTOMER_NOTIFICATIONS_COPY.errorDescription}
+              {CUSTOMER_NOTIFICATIONS_COPY.errorDescription}
             </p>
           </div>
           <button

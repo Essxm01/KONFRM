@@ -19,6 +19,8 @@ import {
   markNotificationReadLocally,
   decrementUnreadCountLocally,
   shouldKeepNotificationsAfterRefreshFailure,
+  notificationFailureState,
+  shouldRenderNotificationFeed,
   shouldApplyNotificationResponse,
   notificationInitialStateForSession,
   notificationListStateAfterLoadMore,
@@ -343,6 +345,15 @@ async function run(): Promise<void> {
   assert(shouldKeepNotificationsAfterRefreshFailure([itemA], false) === true, 'Keep items on network error');
   assert(shouldKeepNotificationsAfterRefreshFailure([itemA], true) === false, 'Do not keep items on unauthorized');
   assert(shouldKeepNotificationsAfterRefreshFailure([], false) === false, 'Do not keep if list was empty');
+  assert(notificationFailureState(true, false).loadState === 'STALE_ERROR', 'same-session safe list failure becomes STALE_ERROR');
+  assert(notificationFailureState(true, false).preserveItems === true, 'STALE_ERROR preserves the safe list');
+  assert(notificationFailureState(false, false).loadState === 'ERROR', 'failure without a safe list becomes ERROR');
+  assert(notificationFailureState(false, false).preserveItems === false, 'ERROR does not preserve unavailable data');
+  assert(notificationFailureState(true, true).loadState === 'SESSION_EXPIRED', 'unauthorized failure becomes SESSION_EXPIRED');
+  assert(notificationFailureState(true, true).preserveItems === false, 'SESSION_EXPIRED clears private data');
+  assert(shouldRenderNotificationFeed('ERROR', 1) === false, 'ERROR never renders notification cards');
+  assert(shouldRenderNotificationFeed('STALE_ERROR', 1) === true, 'STALE_ERROR preserves notification cards');
+  assert(shouldRenderNotificationFeed('EMPTY', 0) === false, 'EMPTY has no notification cards');
 
   // P9.2 executable authority guards: old sessions, old requests, and older
   // mutations cannot overwrite a newer canonical response.
@@ -384,6 +395,11 @@ async function run(): Promise<void> {
   assert(appSource.includes('notificationReadInFlightRef'), 'read mutations are de-duplicated');
   assert(appSource.includes('setIsLoadingMoreNotifications(false)'), 'load-more terminal state is reset');
   assert(appSource.includes("clearNotificationPrivateState('SESSION_EXPIRED')"), 'unauthorized notification work enters SESSION_EXPIRED');
+  assert(appSource.includes('preserveSafeListOnFailure'), 'load failure remembers whether a safe list existed at request start');
+  assert(componentSource.includes('shouldRenderNotificationFeed'), 'notification feed rendering is guarded by truthful load state');
+  assert(!componentSource.includes('error || CUSTOMER_NOTIFICATIONS_COPY.errorDescription'), 'technical error details never render as customer copy');
+  assert(componentSource.includes('CUSTOMER_NOTIFICATIONS_COPY.errorDescription'), 'hard errors use customer-safe Arabic copy');
+  assert(!componentSource.includes('FETCH_CUSTOMER_NOTIFICATIONS_FAILED: HTTP 500'), 'internal fetch exception text never reaches customer UI');
   assert(!appSource.includes('setUnreadNotificationCount((prev) => decrementUnreadCountLocally(prev))'), 'unread count is not optimistically decremented');
   assert(!clientSource.includes('Math.floor(json.data.unreadCount)'), 'fractional unread counts are not silently floored');
 

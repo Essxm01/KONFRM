@@ -77,7 +77,7 @@ import {
   notificationListStateAfterLoadMore,
   shouldApplyNotificationResponse,
   notificationListStateAfterLoad,
-  shouldKeepNotificationsAfterRefreshFailure,
+  notificationFailureState,
 } from './utils/customerScreen16Notifications';
 import {
   Heart,
@@ -305,6 +305,8 @@ export function App() {
     const requestId = ++notificationsRequestIdRef.current;
     const mutationVersion = notificationMutationVersionRef.current;
     const currentItems = notificationsRef.current;
+    const preserveSafeListOnFailure = currentItems.length > 0
+      && notificationSessionTokenRef.current === token;
 
     if (mode === 'LOAD_MORE') {
       if (sessionChanged) return;
@@ -369,16 +371,17 @@ export function App() {
         return;
       }
 
-      const errMsg = err?.message || 'تعذر تحميل الإشعارات. حاول مرة أخرى.';
       if (mode === 'LOAD_MORE') {
         setIsLoadingMoreNotifications(false);
-      } else if (mode === 'REFRESH') {
-        setNotificationsLoadState(
-          shouldKeepNotificationsAfterRefreshFailure(notificationsRef.current, false) ? 'STALE_ERROR' : 'ERROR'
-        );
+      }
+      if (preserveSafeListOnFailure) {
+        const failure = notificationFailureState(true, false);
+        setNotificationsLoadState(failure.loadState);
+        setNotificationsError(null);
       } else {
-        setNotificationsLoadState('ERROR');
-        setNotificationsError(errMsg);
+        const failure = notificationFailureState(false, false);
+        setNotificationsLoadState(failure.loadState);
+        setNotificationsError('تعذر تحميل الإشعارات. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.');
       }
     }
   }, [activateNotificationSession, applyNotificationItems, notificationsNextCursor, isLoadingMoreNotifications, handleNotificationSessionExpired]);

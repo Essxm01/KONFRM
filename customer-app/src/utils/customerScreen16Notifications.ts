@@ -1,6 +1,7 @@
 import type {
   CustomerNotificationEventType,
   CustomerNotificationItem,
+  CustomerNotificationLoadState,
 } from './customerNotifications';
 
 export const CUSTOMER_NOTIFICATIONS_COPY = {
@@ -167,6 +168,24 @@ export function shouldKeepNotificationsAfterRefreshFailure(
   unauthorized: boolean,
 ): boolean {
   return items.length > 0 && !unauthorized;
+}
+
+/** Resolves the truthful UI state after a notification read fails. */
+export function notificationFailureState(
+  hadSafeListAtRequestStart: boolean,
+  unauthorized: boolean,
+): { loadState: 'STALE_ERROR' | 'ERROR' | 'SESSION_EXPIRED'; preserveItems: boolean } {
+  if (unauthorized) return { loadState: 'SESSION_EXPIRED', preserveItems: false };
+  if (hadSafeListAtRequestStart) return { loadState: 'STALE_ERROR', preserveItems: true };
+  return { loadState: 'ERROR', preserveItems: false };
+}
+
+/** Feed cards are renderable only when the list is canonical or explicitly stale. */
+export function shouldRenderNotificationFeed(
+  loadState: CustomerNotificationLoadState,
+  itemCount: number,
+): boolean {
+  return itemCount > 0 && (loadState === 'LOADED' || loadState === 'REFRESHING' || loadState === 'STALE_ERROR');
 }
 
 /**

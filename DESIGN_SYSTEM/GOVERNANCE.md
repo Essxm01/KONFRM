@@ -1,6 +1,6 @@
 # KONFRM Design System Governance
 
-**Current version:** `2.1.2`
+**Current version:** `2.1.3`
 **Status:** active governance contract; approved foundations and explicitly labelled implementation defaults are distinct.
 
 ## Authority model
@@ -22,13 +22,18 @@ The v2 approved foundations are listed in [`README.md`](./README.md). Exact comp
 
 Existing apps commonly use Lucide React. This is implementation evidence, not a new Founder-approved icon-family mandate; retain consistency in a touched surface and do not start a project-wide icon migration without explicit approval.
 
+### Founder visual consistency decision — 2026-09-27
+
+- **No yellow/amber/orange boxed UI:** Summer Yellow `#FFD700` remains a micro brand-signature accent only. New cards, banners, alerts, pills, stale/retry panels, recovery containers and large fills must not use yellow/amber/orange container styling unless the Founder explicitly approves a named exception.
+- **Consistency by screen family:** do not fix a header/navigation issue on one screen by inventing a new local grammar. Equivalent Auth, top-level, nested, transactional and terminal-result surfaces must be reconciled as families.
+
 ## Versioning
 
 - **PATCH** — clarification, documentation correction, or nonvisual generation/check fix.
 - **MINOR** — approved new token/component variant or formal cross-role experience governance layer.
 - **MAJOR** — brand or foundational visual architecture change.
 
-Version `2.0.0` is a major change because authority moved from an Owner-derived SOLA extraction to independent KONFRM governance. Version `2.1.0` adds formal role-specific experience governance without changing the visual foundations. Versions `2.1.1` and `2.1.2` are Founder decision-state patches only; they change no runtime behavior or visual foundation. Releases are recorded in [`CHANGELOG.md`](./CHANGELOG.md).
+Version `2.0.0` is a major change because authority moved from an Owner-derived SOLA extraction to independent KONFRM governance. Version `2.1.0` adds formal role-specific experience governance without changing the visual foundations. Versions `2.1.1` and `2.1.2` are Founder decision-state patches only. Version `2.1.3` records the Founder-approved no-yellow/amber/orange-container rule and screen-family consistency rule; it changes design authority, not runtime code by itself. Releases are recorded in [`CHANGELOG.md`](./CHANGELOG.md).
 
 ## Enforcement
 
@@ -41,6 +46,8 @@ Run `npm run design:generate` after modifying canonical tokens, then `npm run de
 - Are RTL, loading, empty, error, disabled, selected and focus states specified?
 - Is Customer financial privacy preserved?
 - Does it stay light-first and avoid navy slabs, decorative gradients and glow?
+- Does it avoid yellow/amber/orange boxed surfaces unless a Founder-approved exception is documented?
+- If navigation/header grammar changes, was the entire equivalent screen family checked rather than patching one screen in isolation?
 - Is the version bump and changelog entry appropriate?
 
 

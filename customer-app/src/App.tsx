@@ -60,6 +60,25 @@ import {
   shouldApplyFavoriteRead,
   type CustomerFavoritesLoadState,
 } from './utils/customerScreen15Favorites';
+import { CustomerNotificationCenter } from './components/CustomerNotificationCenter';
+import {
+  type CustomerNotificationItem,
+  type CustomerNotificationLoadState,
+  fetchCustomerNotifications,
+  fetchCustomerUnreadNotificationCount,
+  markCustomerNotificationRead,
+  CustomerNotificationsUnauthorizedError,
+} from './utils/customerNotifications';
+import {
+  formatUnreadCountBadge,
+  mergeNotificationPages,
+  markNotificationReadLocally,
+  applySuccessfulNotificationRead,
+  notificationListStateAfterLoadMore,
+  shouldApplyNotificationResponse,
+  notificationListStateAfterLoad,
+  notificationFailureState,
+} from './utils/customerScreen16Notifications';
 import {
   Heart,
   CalendarCheck,
@@ -70,6 +89,7 @@ import {
   Wallet,
   Edit3,
   LogOut,
+  Bell as NotificationBellIcon,
 } from 'lucide-react';
 
 export function App() {
@@ -203,6 +223,199 @@ export function App() {
   >('INITIAL_LOADING');
   const [bookingsSessionExpired, setBookingsSessionExpired] = useState<boolean>(false);
   const [recentBookingSubmission, setRecentBookingSubmission] = useState<{ id: string; bookingNumber?: string } | null>(null);
+
+  // Screen 16 — Notification Center State
+  const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<CustomerNotificationItem[]>([]);
+  const [notificationsLoadState, setNotificationsLoadState] = useState<CustomerNotificationLoadState>('INITIAL_LOADING');
+  const [notificationsError, setNotificationsError] = useState<string | null>(null);
+  const [notificationsNextCursor, setNotificationsNextCursor] = useState<string | null>(null);
+  const [isLoadingMoreNotifications, setIsLoadingMoreNotifications] = useState<boolean>(false);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState<number | null>(null);
+  const [bookingDetailOrigin, setBookingDetailOrigin] = useState<'BOOKINGS' | 'NOTIFICATION_CENTER' | null>(null);
+
+  const notificationsRef = useRef<CustomerNotificationItem[]>([]);
+  const notificationSessionTokenRef = useRef<string | null>(null);
+  const notificationsRequestIdRef = useRef(0);
+  const unreadRequestIdRef = useRef(0);
+  const notificationMutationVersionRef = useRef(0);
+  const notificationReadInFlightRef = useRef<Set<string>>(new Set());
+
+  const applyNotificationItems = useCallback((items: CustomerNotificationItem[]) => {
+    notificationsRef.current = items;
+    setNotifications(items);
+  }, []);
+
+  const invalidateNotificationWork = useCallback(() => {
+    notificationsRequestIdRef.current += 1;
+    unreadRequestIdRef.current += 1;
+    notificationMutationVersionRef.current += 1;
+    notificationReadInFlightRef.current.clear();
+  }, []);
+
+  const clearNotificationPrivateState = useCallback((loadState: CustomerNotificationLoadState = 'INITIAL_LOADING') => {
+    notificationsRef.current = [];
+    setNotifications([]);
+    setNotificationsNextCursor(null);
+    setUnreadNotificationCount(null);
+    setIsLoadingMoreNotifications(false);
+    setNotificationsError(null);
+    setNotificationsLoadState(loadState);
+  }, []);
+
+  const activateNotificationSession = useCallback((token: string) => {
+    if (notificationSessionTokenRef.current === token) return;
+    invalidateNotificationWork();
+    notificationSessionTokenRef.current = token;
+    clearNotificationPrivateState('INITIAL_LOADING');
+  }, [clearNotificationPrivateState, invalidateNotificationWork]);
+
+  const handleNotificationSessionExpired = useCallback(() => {
+    invalidateNotificationWork();
+    notificationSessionTokenRef.current = null;
+    clearNotificationPrivateState('SESSION_EXPIRED');
+    setNotificationsError('انتهت جلسة تسجيل الدخول. سجّل الدخول مرة أخرى.');
+  }, [clearNotificationPrivateState, invalidateNotificationWork]);
+
+  const fetchUnreadCount = useCallback(async (token: string) => {
+    activateNotificationSession(token);
+    const requestId = ++unreadRequestIdRef.current;
+    const mutationVersion = notificationMutationVersionRef.current;
+    try {
+      const count = await fetchCustomerUnreadNotificationCount(token);
+      if (notificationSessionTokenRef.current !== token || requestId !== unreadRequestIdRef.current || mutationVersion !== notificationMutationVersionRef.current) return;
+      setUnreadNotificationCount(count);
+    } catch (err) {
+      if (notificationSessionTokenRef.current !== token || requestId !== unreadRequestIdRef.current || mutationVersion !== notificationMutationVersionRef.current) return;
+      if (err instanceof CustomerNotificationsUnauthorizedError) {
+        handleNotificationSessionExpired();
+        return;
+      }
+      setUnreadNotificationCount(null);
+    }
+  }, [activateNotificationSession, handleNotificationSessionExpired]);
+
+  const loadNotifications = useCallback(async (
+    token: string,
+    mode: 'INITIAL' | 'REFRESH' | 'LOAD_MORE' = 'INITIAL',
+  ) => {
+    const sessionChanged = notificationSessionTokenRef.current !== token;
+    activateNotificationSession(token);
+    const requestSessionToken = token;
+    const requestId = ++notificationsRequestIdRef.current;
+    const mutationVersion = notificationMutationVersionRef.current;
+    const currentItems = notificationsRef.current;
+    const preserveSafeListOnFailure = currentItems.length > 0
+      && notificationSessionTokenRef.current === token;
+
+    if (mode === 'LOAD_MORE') {
+      if (sessionChanged) return;
+      if (!notificationsNextCursor || isLoadingMoreNotifications) return;
+      setIsLoadingMoreNotifications(true);
+    } else if (mode === 'REFRESH') {
+      if (currentItems.length > 0) {
+        setNotificationsLoadState('REFRESHING');
+      } else {
+        applyNotificationItems([]);
+        setNotificationsNextCursor(null);
+        setNotificationsLoadState('INITIAL_LOADING');
+      }
+    } else {
+      const sameSessionWithSafeData = notificationSessionTokenRef.current === token && currentItems.length > 0;
+      if (sameSessionWithSafeData) {
+        setNotificationsLoadState('REFRESHING');
+      } else {
+        applyNotificationItems([]);
+        setNotificationsNextCursor(null);
+        setNotificationsLoadState('INITIAL_LOADING');
+      }
+      setNotificationsError(null);
+    }
+
+    try {
+      const cursor = mode === 'LOAD_MORE' ? notificationsNextCursor : null;
+      const page = await fetchCustomerNotifications(token, { limit: 20, cursor });
+
+      if (!shouldApplyNotificationResponse(
+        requestId,
+        notificationsRequestIdRef.current,
+        mutationVersion,
+        notificationMutationVersionRef.current,
+        requestSessionToken,
+        notificationSessionTokenRef.current,
+      )) return;
+
+      if (mode === 'LOAD_MORE') {
+        const merged = mergeNotificationPages(notificationsRef.current, page.items);
+        applyNotificationItems(merged);
+        setNotificationsNextCursor(page.nextCursor);
+        setIsLoadingMoreNotifications(false);
+        setNotificationsLoadState(notificationListStateAfterLoadMore(merged));
+      } else {
+        applyNotificationItems(page.items);
+        setNotificationsNextCursor(page.nextCursor);
+        setNotificationsLoadState(notificationListStateAfterLoad(page.items));
+        setNotificationsError(null);
+      }
+    } catch (err: any) {
+      if (!shouldApplyNotificationResponse(
+        requestId,
+        notificationsRequestIdRef.current,
+        mutationVersion,
+        notificationMutationVersionRef.current,
+        requestSessionToken,
+        notificationSessionTokenRef.current,
+      )) return;
+      if (err instanceof CustomerNotificationsUnauthorizedError) {
+        handleNotificationSessionExpired();
+        return;
+      }
+
+      if (mode === 'LOAD_MORE') {
+        setIsLoadingMoreNotifications(false);
+      }
+      if (preserveSafeListOnFailure) {
+        const failure = notificationFailureState(true, false);
+        setNotificationsLoadState(failure.loadState);
+        setNotificationsError(null);
+      } else {
+        const failure = notificationFailureState(false, false);
+        setNotificationsLoadState(failure.loadState);
+        setNotificationsError('تعذر تحميل الإشعارات. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.');
+      }
+    }
+  }, [activateNotificationSession, applyNotificationItems, notificationsNextCursor, isLoadingMoreNotifications, handleNotificationSessionExpired]);
+
+  const handleSelectNotification = useCallback((item: CustomerNotificationItem) => {
+    setBookingDetailOrigin('NOTIFICATION_CENTER');
+    setBookingDetailId(item.bookingId);
+
+    const token = authToken;
+    const current = notificationsRef.current.find((notification) => notification.notificationId === item.notificationId);
+    const wasUnread = Boolean(current && !current.isRead);
+    if (!token || !wasUnread || notificationReadInFlightRef.current.has(item.notificationId)) return;
+
+    notificationReadInFlightRef.current.add(item.notificationId);
+    const mutationVersion = ++notificationMutationVersionRef.current;
+    void markCustomerNotificationRead(token, item.notificationId)
+      .then(() => {
+        if (notificationSessionTokenRef.current !== token || mutationVersion !== notificationMutationVersionRef.current) return;
+        applyNotificationItems(markNotificationReadLocally(notificationsRef.current, item.notificationId));
+        setUnreadNotificationCount((previous) => applySuccessfulNotificationRead(
+          notificationsRef.current,
+          previous,
+          item.notificationId,
+          wasUnread,
+        ).unreadCount);
+      })
+      .catch((err) => {
+        if (notificationSessionTokenRef.current !== token || mutationVersion !== notificationMutationVersionRef.current) return;
+        if (err instanceof CustomerNotificationsUnauthorizedError) handleNotificationSessionExpired();
+      })
+      .finally(() => {
+        notificationReadInFlightRef.current.delete(item.notificationId);
+      });
+  }, [applyNotificationItems, authToken, handleNotificationSessionExpired]);
 
   const handleBookingDomainSessionExpired = useCallback(() => {
     setCustomerBookings([]);
@@ -524,10 +737,12 @@ export function App() {
               setCustomerPhone(canonicalPhone);
               localStorage.setItem('sola_customer_phone', canonicalPhone);
             }
+            activateNotificationSession(storedToken);
             setAuthToken(storedToken);
             setCustomerAuthError(null);
             fetchAccountSummary(storedToken);
             loadFavorites(storedToken);
+            void fetchUnreadCount(storedToken);
             void fetchBookings(storedToken).catch(() => undefined);
             return;
           }
@@ -551,10 +766,12 @@ export function App() {
           const json = await res.json();
           if (res.ok && json.success && json.data?.accessToken) {
             localStorage.setItem('sola_customer_access_token', json.data.accessToken);
+            activateNotificationSession(json.data.accessToken);
             setAuthToken(json.data.accessToken);
             fetchCustomerProfile(json.data.accessToken);
             fetchAccountSummary(json.data.accessToken);
             loadFavorites(json.data.accessToken);
+            void fetchUnreadCount(json.data.accessToken);
             void fetchBookings(json.data.accessToken).catch(() => undefined);
           } else {
             handleLogout();
@@ -578,9 +795,18 @@ export function App() {
       if (tok) {
         fetchCustomerProfile(tok);
         fetchAccountSummary(tok);
+        void fetchUnreadCount(tok);
       }
     }
-  }, [activeTab, authToken]);
+  }, [activeTab, authToken, fetchUnreadCount]);
+
+  // Any token replacement is a notification-session boundary. This clears
+  // private state before work from the previous Customer can be rendered.
+  useEffect(() => {
+    if (authToken) {
+      activateNotificationSession(authToken);
+    }
+  }, [authToken, activateNotificationSession]);
 
   useEffect(() => {
     if (activeTab === 'FAVORITES' && authToken) {
@@ -716,6 +942,7 @@ export function App() {
     refreshToken?: string,
     user?: CustomerUserProfile
   ) => {
+    activateNotificationSession(token);
     localStorage.setItem('sola_customer_access_token', token);
     if (refreshToken) {
       localStorage.setItem('sola_customer_refresh_token', refreshToken);
@@ -811,6 +1038,7 @@ export function App() {
     canonicalSession?: CanonicalCustomerSession,
   ): void => {
     const { accessToken, refreshToken } = tokens;
+    activateNotificationSession(accessToken);
     localStorage.setItem('sola_customer_access_token', accessToken);
     localStorage.setItem('sola_customer_refresh_token', refreshToken);
     if (method === 'EMAIL') {
@@ -834,9 +1062,11 @@ export function App() {
       setBookingsLoadState(canonicalSession.bookings.length > 0 ? 'LOADED' : 'EMPTY');
       setBookingsSessionExpired(false);
       setBookingsError(null);
+      void fetchUnreadCount(accessToken);
     } else {
       void fetchCustomerProfile(accessToken);
       void fetchAccountSummary(accessToken);
+      void fetchUnreadCount(accessToken);
       void fetchBookings(accessToken).catch(() => undefined);
     }
   };
@@ -890,6 +1120,15 @@ export function App() {
       setActiveTab('FAVORITES');
       setDiscoveryView('EXPLORE');
       setIsEditingAccount(false);
+    }
+
+    if (origin.type === 'NOTIFICATION_CENTER') {
+      setActiveTab('ACCOUNT');
+      setDiscoveryView('EXPLORE');
+      setIsEditingAccount(false);
+      setIsNotificationCenterOpen(true);
+      void loadNotifications(accessToken, 'INITIAL');
+      void fetchUnreadCount(accessToken);
     }
 
     if (origin.type === 'PROTECTED_PAYMENT') {
@@ -1039,6 +1278,11 @@ export function App() {
     setScreen10Handoff(null);
     setAuthV2Challenge(null);
     setAuthV2Flow(null);
+    setIsNotificationCenterOpen(false);
+    invalidateNotificationWork();
+    notificationSessionTokenRef.current = null;
+    clearNotificationPrivateState('INITIAL_LOADING');
+    setBookingDetailOrigin(null);
     setActiveTab('EXPLORE');
   };
 
@@ -1208,6 +1452,7 @@ export function App() {
               setUserProfile(updated);
               localStorage.setItem('sola_customer_profile', JSON.stringify(updated));
               if (newAccessToken) {
+                activateNotificationSession(newAccessToken);
                 setAuthToken(newAccessToken);
                 localStorage.setItem('sola_customer_access_token', newAccessToken);
               }
@@ -1229,6 +1474,7 @@ export function App() {
               onOpenAuthModal={() => openAuthEntry({ type: activeTab === 'ACCOUNT' ? 'ACCOUNT_TAB' : 'EXPLORE_ACCOUNT' })}
               onGoToAccount={() => {
                 setIsEditingAccount(false);
+                setIsNotificationCenterOpen(false);
                 setActiveTab('ACCOUNT');
               }}
               onLogout={handleLogout}
@@ -1369,6 +1615,24 @@ export function App() {
 
         {/* Tab 4: ACCOUNT */}
         {activeTab === 'ACCOUNT' && (
+          isNotificationCenterOpen ? (
+            <CustomerNotificationCenter
+              loadState={notificationsLoadState}
+              notifications={notifications}
+              hasMore={Boolean(notificationsNextCursor)}
+              isLoadingMore={isLoadingMoreNotifications}
+              error={notificationsError}
+              onBack={() => setIsNotificationCenterOpen(false)}
+              onSelectNotification={handleSelectNotification}
+              onLoadMore={() => {
+                if (authToken) void loadNotifications(authToken, 'LOAD_MORE');
+              }}
+              onRetry={() => {
+                if (authToken) void loadNotifications(authToken, 'REFRESH');
+              }}
+              onReauthenticate={() => openAuthEntry({ type: 'NOTIFICATION_CENTER' }, 'LOGIN')}
+            />
+          ) : (
           <div className="my-4 space-y-4 pb-20">
             {/* A. Top App Bar */}
             <div className="flex items-center justify-between pb-1">
@@ -1461,6 +1725,40 @@ export function App() {
                     <p className="text-lg font-black text-slate-900 mt-0.5">
                       {favoritesLoadState === 'LOADED' || favoritesLoadState === 'EMPTY' ? favoriteProperties.length : '-'}
                     </p>
+                  </div>
+                </div>
+
+                {/* Section: النشاط */}
+                <div className="space-y-1.5">
+                  <h4 className="text-xs font-black text-slate-400 px-1">النشاط</h4>
+                  <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                    <button
+                      onClick={() => {
+                        setIsNotificationCenterOpen(true);
+                        if (authToken) {
+                          void loadNotifications(authToken, 'INITIAL');
+                        }
+                      }}
+                      className="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-right"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-blue-50 text-[#0059FF] rounded-xl flex items-center justify-center shrink-0">
+                          <NotificationBellIcon className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <h5 className="font-black text-slate-900 text-xs">الإشعارات</h5>
+                          <p className="text-[11px] text-slate-400 font-bold">تحديثات مهمة على طلباتك وحجوزاتك</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {formatUnreadCountBadge(unreadNotificationCount) && (
+                          <span className="min-w-[20px] h-5 px-1.5 bg-[#0059FF] text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs">
+                            {formatUnreadCountBadge(unreadNotificationCount)}
+                          </span>
+                        )}
+                        <ChevronLeft className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </button>
                   </div>
                 </div>
 
@@ -1616,6 +1914,7 @@ export function App() {
               </div>
             )}
           </div>
+          )
         )}
       </main>
       </>
@@ -1656,8 +1955,17 @@ export function App() {
           bookingId={bookingDetailId}
           authToken={authToken || ''}
           onBack={() => {
+            const wasFromNotifications = bookingDetailOrigin === 'NOTIFICATION_CENTER';
             setBookingDetailId(null);
-            if (authToken) void fetchBookings(authToken).catch(() => undefined);
+            setBookingDetailOrigin(null);
+            if (wasFromNotifications) {
+              if (authToken) {
+                void loadNotifications(authToken, 'REFRESH');
+                void fetchUnreadCount(authToken);
+              }
+            } else {
+              if (authToken) void fetchBookings(authToken).catch(() => undefined);
+            }
           }}
           onNavigateToPayment={(id) => setPaymentScreenBookingId(id)}
           onReconcileBooking={(updated) => {
@@ -1774,6 +2082,9 @@ export function App() {
           activeTab={activeTab}
           onSelectTab={(tab) => {
             setIsEditingAccount(false);
+            if (tab !== 'ACCOUNT') {
+              setIsNotificationCenterOpen(false);
+            }
             setActiveTab(tab);
           }}
           hasBookingActionRequired={hasBookingActionRequired(customerBookings)}

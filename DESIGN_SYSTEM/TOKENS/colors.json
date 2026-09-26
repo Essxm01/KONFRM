@@ -6,159 +6,46 @@
     "status": "approved foundations with documented implementation defaults"
   },
   "brand": {
-    "primary": {
-      "value": "#0059FF",
-      "purpose": "Primary action, active selection and focus identity.",
-      "allowedUse": "Primary CTAs, active navigation and focus indicators.",
-      "prohibitedMisuse": "Do not use as a decorative page fill or an inactive-state color."
-    },
-    "primaryHover": {
-      "value": "#0047CC",
-      "purpose": "Pressed or hover response for a primary control.",
-      "allowedUse": "Interactive primary controls only."
-    },
-    "primarySoft": {
-      "value": "#EAF1FF",
-      "purpose": "Low-emphasis primary selection surface.",
-      "allowedUse": "Selected rows, informative callouts and icon wells."
-    },
-    "accent": {
-      "value": "#FFD700",
-      "purpose": "Summer Yellow micro brand-signature accent.",
-      "allowedUse": "Tiny, intentional decorative signature details only, when the accent is not carrying status, urgency or action meaning.",
-      "prohibitedMisuse": "Do not use for cards, banners, alerts, pills, status containers, buttons, stale/recovery surfaces, large fills or body text."
-    },
-    "accentSoft": {
-      "value": "#FFF8CC",
-      "purpose": "Soft form of the Summer Yellow signature token.",
-      "allowedUse": "No default application-container use. Only a Founder-approved micro accent may use it.",
-      "prohibitedMisuse": "Do not use as a card/banner/alert/pill/stale/recovery background or as routine semantic warning styling."
-    }
+    "primary": { "value": "#0059FF", "purpose": "Primary action, active selection and focus identity.", "allowedUse": "Primary CTAs, active navigation and focus indicators.", "prohibitedMisuse": "Do not use as a decorative page fill or an inactive-state color." },
+    "primaryHover": { "value": "#0047CC", "purpose": "Pressed or hover response for a primary control.", "allowedUse": "Interactive primary controls only." },
+    "primarySoft": { "value": "#EAF1FF", "purpose": "Low-emphasis primary selection surface.", "allowedUse": "Selected rows, informative callouts and icon wells." },
+    "accent": { "value": "#FFD700", "purpose": "Summer Yellow micro brand-signature accent.", "allowedUse": "Tiny, intentional decorative signature details only, when the accent is not carrying status, urgency or action meaning.", "prohibitedMisuse": "Do not use for cards, banners, alerts, pills, status containers, buttons, stale/recovery surfaces, large fills or body text." },
+    "accentSoft": { "value": "#FFF8CC", "purpose": "Soft form of the Summer Yellow signature token.", "allowedUse": "No default application-container use; only a Founder-approved micro accent may use it.", "prohibitedMisuse": "Do not use as a card/banner/alert/pill/stale/recovery background or as routine semantic warning styling." }
   },
   "surface": {
-    "canvas": {
-      "value": "#F8FAFC",
-      "purpose": "Default light page canvas."
-    },
-    "primary": {
-      "value": "#FFFFFF",
-      "purpose": "Cards, controls, sheets and primary content surfaces."
-    },
-    "secondary": {
-      "value": "#F1F5F9",
-      "purpose": "Inset and grouped supporting surfaces."
-    },
-    "elevated": {
-      "value": "#FFFFFF",
-      "purpose": "Modal, bottom-sheet and elevated card surface."
-    }
+    "canvas": { "value": "#F8FAFC", "purpose": "Default light page canvas." },
+    "primary": { "value": "#FFFFFF", "purpose": "Cards, controls, sheets and primary content surfaces." },
+    "secondary": { "value": "#F1F5F9", "purpose": "Inset and grouped supporting surfaces." },
+    "elevated": { "value": "#FFFFFF", "purpose": "Modal, bottom-sheet and elevated card surface." }
   },
   "text": {
-    "primary": {
-      "value": "#0F172A",
-      "purpose": "High-contrast text only; not a standard page or card surface."
-    },
-    "secondary": {
-      "value": "#475569",
-      "purpose": "Body copy and supporting labels."
-    },
-    "muted": {
-      "value": "#64748B",
-      "purpose": "Metadata, placeholders and low-priority supporting text."
-    },
-    "inverse": {
-      "value": "#FFFFFF",
-      "purpose": "Text on an approved high-contrast control."
-    }
+    "primary": { "value": "#0F172A", "purpose": "High-contrast text only; not a standard page or card surface." },
+    "secondary": { "value": "#475569", "purpose": "Body copy and supporting labels." },
+    "muted": { "value": "#64748B", "purpose": "Metadata, placeholders and low-priority supporting text." },
+    "inverse": { "value": "#FFFFFF", "purpose": "Text on an approved high-contrast control." }
   },
   "border": {
-    "default": {
-      "value": "#E2E8F0",
-      "purpose": "Standard card, input and divider border."
-    },
-    "subtle": {
-      "value": "#F1F5F9",
-      "purpose": "Low-emphasis internal separation."
-    },
-    "strong": {
-      "value": "#CBD5E1",
-      "purpose": "Selected or stronger structural border."
-    },
-    "focus": {
-      "value": "#0059FF",
-      "purpose": "Keyboard and input focus outline."
-    }
+    "default": { "value": "#E2E8F0", "purpose": "Standard card, input and divider border." },
+    "subtle": { "value": "#F1F5F9", "purpose": "Low-emphasis internal separation." },
+    "strong": { "value": "#CBD5E1", "purpose": "Selected or stronger structural border." },
+    "focus": { "value": "#0059FF", "purpose": "Keyboard and input focus outline." }
   },
   "semantic": {
-    "success": {
-      "solid": "#15803D",
-      "text": "#166534",
-      "background": "#F0FDF4",
-      "border": "#BBF7D0",
-      "purpose": "Confirmed, completed and verified states; not a brand color."
-    },
-    "warning": {
-      "solid": "#B45309",
-      "text": "#92400E",
-      "background": "#FFFBEB",
-      "border": "#FDE68A",
-      "purpose": "Genuine caution only. In new UI, use warning solid/text sparingly on a neutral/light surface; amber background/border values are legacy compatibility and do not authorize yellow/orange boxed containers."
-    },
-    "danger": {
-      "solid": "#BE123C",
-      "text": "#9F1239",
-      "background": "#FFF1F2",
-      "border": "#FECDD3",
-      "purpose": "Errors, rejected and destructive states; not a brand color."
-    },
-    "info": {
-      "solid": "#0059FF",
-      "text": "#1D4ED8",
-      "background": "#EFF6FF",
-      "border": "#BFDBFE",
-      "purpose": "Informative and in-progress states; not a second brand color."
-    }
+    "success": { "solid": "#15803D", "text": "#166534", "background": "#F0FDF4", "border": "#BBF7D0", "purpose": "Confirmed, completed and verified states; not a brand color." },
+    "warning": { "solid": "#B45309", "text": "#92400E", "background": "#FFFBEB", "border": "#FDE68A", "purpose": "Genuine caution only. In new UI, use warning solid/text sparingly on a neutral/light surface; amber background/border values are legacy compatibility and do not authorize yellow/orange boxed containers." },
+    "danger": { "solid": "#BE123C", "text": "#9F1239", "background": "#FFF1F2", "border": "#FECDD3", "purpose": "Errors, rejected and destructive states; not a brand color." },
+    "info": { "solid": "#0059FF", "text": "#1D4ED8", "background": "#EFF6FF", "border": "#BFDBFE", "purpose": "Informative and in-progress states; not a second brand color." }
   },
   "interaction": {
-    "hover": {
-      "value": "#F1F5F9",
-      "purpose": "Neutral interactive hover surface."
-    },
-    "pressed": {
-      "value": "#E2E8F0",
-      "purpose": "Neutral pressed surface."
-    },
-    "selected": {
-      "value": "#EAF1FF",
-      "purpose": "Selected control or row surface."
-    },
-    "disabled": {
-      "value": "#E2E8F0",
-      "purpose": "Disabled control surface; pair with disabled text and semantics."
-    },
-    "focusRing": {
-      "value": "rgba(0, 89, 255, 0.32)",
-      "purpose": "Visible focus halo; never remove focus indication."
-    }
+    "hover": { "value": "#F1F5F9", "purpose": "Neutral interactive hover surface." },
+    "pressed": { "value": "#E2E8F0", "purpose": "Neutral pressed surface." },
+    "selected": { "value": "#EAF1FF", "purpose": "Selected control or row surface." },
+    "disabled": { "value": "#E2E8F0", "purpose": "Disabled control surface; pair with disabled text and semantics." },
+    "focusRing": { "value": "rgba(0, 89, 255, 0.32)", "purpose": "Visible focus halo; never remove focus indication." }
   },
   "policy": {
-    "forbiddenNormalSurfaces": [
-      "#0F172A",
-      "navy dashboard slabs",
-      "dark finance panels",
-      "dark hero cards",
-      "dark app headers",
-      "decorative dark gradients",
-      "blue-950/slate-900 blocks"
-    ],
-    "note": "A dark neutral may be used only as a text token where contrast requires it. It is not a standard KONFRM surface. Summer Yellow remains a micro brand signature, not a container or generic warning palette.",
-    "forbiddenAccentContainers": [
-      "yellow/amber/orange cards",
-      "yellow/amber/orange banners",
-      "yellow/amber/orange alert boxes",
-      "yellow/amber/orange pills used as container language",
-      "yellow/amber/orange stale or retry panels",
-      "large Summer Yellow fills"
-    ]
+    "forbiddenNormalSurfaces": ["#0F172A", "navy dashboard slabs", "dark finance panels", "dark hero cards", "dark app headers", "decorative dark gradients", "blue-950/slate-900 blocks"],
+    "forbiddenAccentContainers": ["yellow/amber/orange cards", "yellow/amber/orange banners", "yellow/amber/orange alert boxes", "yellow/amber/orange pills used as container language", "yellow/amber/orange stale or retry panels", "large Summer Yellow fills"],
+    "note": "A dark neutral may be used only as a text token where contrast requires it. It is not a standard KONFRM surface. Summer Yellow remains a micro brand signature, not a container or generic warning palette."
   }
 }

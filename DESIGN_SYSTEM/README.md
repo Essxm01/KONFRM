@@ -1,6 +1,6 @@
 # KONFRM Design System
 
-**Version:** `2.1.2`
+**Version:** `2.1.3`
 **Authority:** `DESIGN_SYSTEM/` is the independent visual and product-experience source of truth for KONFRM / كونفرم.
 
 ```
@@ -17,7 +17,7 @@ Applications consume this system. They do not define it, and no production appli
 
 - Product identity: **KONFRM / كونفرم**; the official mark is [`LOGO.svg`](./LOGO.svg).
 - Light-first product: white and light neutral surfaces are dominant.
-- Primary Blue: `#0059FF`; Summer Yellow: `#FFD700`, used sparingly as an accent.
+- Primary Blue: `#0059FF`; Summer Yellow `#FFD700` remains a **micro brand-signature accent only**. New yellow/amber/orange boxed surfaces—cards, banners, alerts, pills, stale/recovery panels or large fills—are prohibited unless the Founder explicitly approves a named exception.
 - UI font: Cairo; Arabic-first, RTL-native.
 - Customer and Owner are mobile-first. Admin is desktop operational.
 - 8pt-derived spacing, restrained elevation, and 44px minimum mobile touch targets. Existing implementation uses Lucide React; preserve local consistency, but do not treat it as Founder approval for a project-wide icon migration.

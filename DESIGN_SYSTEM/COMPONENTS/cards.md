@@ -2,6 +2,8 @@
 
 Cards are light: `surface.primary`, `border.default`, `radius.card`, `cardPadding`, and at most `shadow.subtle`. Borders and spacing take precedence over shadow.
 
+Founder visual rule: yellow/amber/orange boxed surfaces are not an approved KONFRM card family. Do not use Summer Yellow or warning amber to create cards, summary boxes, notices or status panels. Genuine caution uses a neutral/light container with restrained semantic icon/text if needed.
+
 | Contract | Required content | Notes |
 |---|---|---|
 | Standard | coherent grouped content | not a decorative container stack |
@@ -9,7 +11,7 @@ Cards are light: `surface.primary`, `border.default`, `radius.card`, `cardPaddin
 | MetricCard | label, one primary number, supporting context | does not invent dark KPI slabs |
 | Summary | concise status/value/action | suitable for a decision moment |
 | Selected | standard card plus selected border/surface | selection is not colour-only |
-| Warning | semantic warning context | not a new yellow brand-card type |
+| Warning | genuine caution context only | neutral/light container by default; never a yellow/amber/orange brand-card type |
 | ListRow | title, supporting metadata, optional trailing action | predictable height and divider logic |
 | PropertyCard shell | real image (1.4:1), independent favorite button, title before location, compact facts, prominent price per night | shared across Explore, Search Results, Favorites; never fake property imagery or synthetic badges |
 | BookingCard shell | booking identity, property, dates/status and contextual action | no raw enum label to users |

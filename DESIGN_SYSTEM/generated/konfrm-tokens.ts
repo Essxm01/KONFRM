@@ -40,7 +40,7 @@ export const konfrmTokens = {
         "text": "#92400E",
         "background": "#FFFBEB",
         "border": "#FDE68A",
-        "purpose": "Pending, draft or attention-needed states; not a brand color."
+        "purpose": "Genuine caution only. In new UI, use warning solid/text sparingly on a neutral/light surface; amber background/border values are legacy compatibility and do not authorize yellow/orange boxed containers."
       },
       "danger": {
         "solid": "#BE123C",

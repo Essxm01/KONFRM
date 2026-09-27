@@ -1657,7 +1657,7 @@ export function App() {
                       ) : (
                         <div className="flex items-center gap-1.5">
                           <h3 className="font-black text-sm text-slate-800">مستخدم جديد</h3>
-                          <span className="text-[10px] font-bold bg-blue-50 text-[#0059FF] px-2 py-0.5 rounded-md border border-blue-200">
+                          <span className="text-[10px] font-bold bg-blue-50 text-[var(--konfrm-color-primary)] px-2 py-0.5 rounded-md border border-blue-200">
                             أكمل بيانات حسابك
                           </span>
                         </div>
@@ -1688,12 +1688,12 @@ export function App() {
                   {(!userProfile?.fullName || userProfile.fullName.trim().length === 0) && (
                     <div className="mt-4 p-3 bg-blue-50/80 border border-blue-200 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold text-slate-800">
                       <div className="flex items-center gap-2 min-w-0">
-                        <AlertCircle className="w-4 h-4 text-[#0059FF] shrink-0" />
+                        <AlertCircle className="w-4 h-4 text-[var(--konfrm-color-primary)] shrink-0" />
                         <span>يرجى إضافة اسمك بالكامل لإتمام الملف الشخصي.</span>
                       </div>
                       <button
                         onClick={() => setIsEditingAccount(true)}
-                        className="px-3 py-1.5 bg-[#0059FF] hover:bg-blue-600 text-white font-black text-[11px] rounded-lg shrink-0 transition-colors"
+                        className="px-3 py-1.5 bg-[var(--konfrm-color-primary)] hover:bg-blue-600 text-white font-black text-[11px] rounded-lg shrink-0 transition-colors"
                       >
                         أكمل بيانات حسابك
                       </button>

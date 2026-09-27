@@ -147,10 +147,10 @@ export const CustomerMyBookingsScreen: React.FC<CustomerMyBookingsScreenProps> =
         <aside
           role="status"
           aria-live="polite"
-          className="mb-4 p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-between gap-2 shadow-xs"
+          className="mb-4 p-3.5 rounded-2xl bg-blue-50/80 border border-blue-200 text-slate-800 flex items-center justify-between gap-2 shadow-xs"
         >
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 shrink-0 text-amber-700" aria-hidden="true" />
+          <div className="flex items-center gap-2 min-w-0">
+            <AlertCircle className="w-5 h-5 shrink-0 text-[var(--konfrm-color-primary)]" aria-hidden="true" />
             <p className="text-sm font-bold leading-snug">
               تعذر تحديث الحجوزات. آخر بيانات متاحة ما زالت ظاهرة.
             </p>
@@ -232,9 +232,9 @@ export const CustomerMyBookingsScreen: React.FC<CustomerMyBookingsScreenProps> =
       {authState === 'SESSION_EXPIRED' && (
         <section
           aria-labelledby="session-expired-heading"
-          className="bg-white rounded-3xl border border-amber-200 p-6 text-center shadow-xs my-6 space-y-4"
+          className="bg-white rounded-3xl border border-slate-200 p-6 text-center shadow-xs my-6 space-y-4"
         >
-          <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto text-amber-700 border border-amber-200">
+          <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto text-[var(--konfrm-color-primary)] border border-blue-100">
             <AlertCircle className="w-7 h-7" aria-hidden="true" />
           </div>
           <div className="space-y-1.5">

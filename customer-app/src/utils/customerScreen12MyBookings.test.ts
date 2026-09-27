@@ -388,6 +388,16 @@ async function run(): Promise<void> {
   );
   console.log('  ✅ 44–45. App.tsx source file contract verified: fail-closed unauthorized cleanup & stale error preservation');
 
+  // ---------------------------------------------------------------------------
+  // 46. Visual Governance & Semantic Remediation: Zero Amber Classes
+  // ---------------------------------------------------------------------------
+  const screen12Source: string = readFileSync(
+    new URL('../components/CustomerMyBookingsScreen.tsx', import.meta.url),
+    'utf8'
+  );
+  assert(!screen12Source.includes('amber'), 'CustomerMyBookingsScreen must NOT contain any amber classes');
+  console.log('  ✅ 46. Visual governance contract verified: zero amber classes in CustomerMyBookingsScreen');
+
   console.log('\nALL SCREEN 12 SPECIFICATION & LIFECYCLE CHECKS PASSED DETERMINISTICALLY!\n');
 }
 

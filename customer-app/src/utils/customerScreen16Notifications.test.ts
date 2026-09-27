@@ -402,6 +402,16 @@ async function run(): Promise<void> {
   assert(!componentSource.includes('FETCH_CUSTOMER_NOTIFICATIONS_FAILED: HTTP 500'), 'internal fetch exception text never reaches customer UI');
   assert(!appSource.includes('setUnreadNotificationCount((prev) => decrementUnreadCountLocally(prev))'), 'unread count is not optimistically decremented');
   assert(!clientSource.includes('Math.floor(json.data.unreadCount)'), 'fractional unread counts are not silently floored');
+  assert(!componentSource.includes('amber'), 'CustomerNotificationCenter must NOT contain any amber classes');
+  assert(componentSource.includes('CUSTOMER_NOTIFICATIONS_COPY.actionRequiredBadge'), 'actionRequired badge must be present');
+  assert(
+    componentSource.includes('bg-white text-[var(--konfrm-color-primary)] border border-[var(--konfrm-color-primary)]'),
+    'actionRequired badge must have distinct outlined action styling using primary token'
+  );
+  assert(componentSource.includes('aria-label={CUSTOMER_NOTIFICATIONS_COPY.backToAccount}'), 'Compact header must expose accessible back label');
+  assert(componentSource.includes('ChevronRight'), 'Compact nested header must use ChevronRight');
+  assert(componentSource.includes('text-lg font-black'), 'Compact header uses restrained text-lg font-black title');
+  assert(!appSource.includes('text-amber-800') && !appSource.includes('bg-amber-50') && !appSource.includes('text-amber-600') && !appSource.includes('bg-amber-600'), 'App.tsx must not contain legacy amber Account Home patterns');
 
   console.log('ALL CUSTOMER SCREEN 16 NOTIFICATIONS TESTS PASSED (100%)!');
 }

@@ -111,7 +111,7 @@ export const CustomerFavoritesScreen: React.FC<CustomerFavoritesScreenProps> = (
 
       {authState === 'SESSION_EXPIRED' && (
         <section aria-labelledby="favorites-session-heading" className="py-12 sm:py-16 text-center space-y-5">
-          <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto text-amber-700 border border-amber-200">
+          <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto text-[var(--konfrm-color-primary)] border border-blue-100">
             <AlertCircle className="w-7 h-7" aria-hidden="true" />
           </div>
           <div className="space-y-1.5">
@@ -163,8 +163,11 @@ export const CustomerFavoritesScreen: React.FC<CustomerFavoritesScreenProps> = (
       )}
 
       {authState === 'AUTHENTICATED' && staleError && hasCards && (
-        <aside role="status" aria-live="polite" className="mb-4 p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-between gap-2 shadow-xs">
-          <p className="text-sm font-bold leading-snug">{CUSTOMER_FAVORITES_COPY.stale}</p>
+        <aside role="status" aria-live="polite" className="mb-4 p-3.5 rounded-2xl bg-blue-50/80 border border-blue-200 text-slate-800 flex items-center justify-between gap-2 shadow-xs">
+          <div className="flex items-center gap-2 min-w-0">
+            <AlertCircle className="w-5 h-5 shrink-0 text-[var(--konfrm-color-primary)]" aria-hidden="true" />
+            <p className="text-sm font-bold leading-snug">{CUSTOMER_FAVORITES_COPY.stale}</p>
+          </div>
           <button type="button" onClick={onRetry} className="min-h-[40px] px-2 text-sm font-black text-[var(--konfrm-color-primary)] underline shrink-0 cursor-pointer">{CUSTOMER_FAVORITES_COPY.errorAction}</button>
         </aside>
       )}

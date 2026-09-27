@@ -18,12 +18,18 @@ jobs:
       owner: ${{ steps.filter.outputs.owner }}
       customer: ${{ steps.filter.outputs.customer }}
       backend: ${{ steps.filter.outputs.backend }}
+      customer_production: ${{ steps.filter.outputs.customer_production }}
+      backend_production: ${{ steps.filter.outputs.backend_production }}
+      production_config: ${{ steps.filter.outputs.production_config }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
+            # Validation filters intentionally include workflow/package changes.
+            # Production filters below answer a different question: can the
+            # deployed artifact or production configuration change?
             admin:
               - 'admin-app/**'
               - '.github/**'
@@ -40,6 +46,16 @@ jobs:
               - 'backend/**'
               - '.github/**'
               - 'package.json'
+            # Customer imports this generated CSS directly from DESIGN_SYSTEM.
+            # Documentation/source guidance changes do not deploy by themselves.
+            customer_production:
+              - 'customer-app/**'
+              - 'DESIGN_SYSTEM/generated/konfrm-tokens.css'
+            backend_production:
+              - 'backend/**'
+            production_config:
+              - 'backend/**'
+              - 'scripts/configurePagesEnv.cjs'
 
   # ----------------------------------------------------------------------------
   # JOB 2: Validate Admin App
@@ -118,7 +134,7 @@ jobs:
           npm run test:screen16
           npm run build
       - name: Deploy Customer App to Cloudflare Pages
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.customer_production == 'true' }}
         working-directory: 'customer-app'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -195,7 +211,7 @@ jobs:
           npm run test:r1-admin-security
           npm run test:p9-1-customer-notifications
       - name: Configure Production Worker Auth V2 Secrets & Pages Env
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.production_config == 'true' }}
         working-directory: 'backend'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -212,7 +228,7 @@ jobs:
           # Configure Cloudflare Pages production environment variable
           node ../scripts/configurePagesEnv.cjs || true
       - name: Deploy to Cloudflare Workers
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.backend_production == 'true' }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

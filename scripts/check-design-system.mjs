@@ -10,6 +10,16 @@ const sourceExtensions = new Set(['.tsx', '.ts', '.css']);
 
 const tokenNames = ['colors.json', 'typography.json', 'spacing.json', 'radius.json', 'shadows.json', 'borders.json', 'breakpoints.json', 'icons.json'];
 const requiredColorGroups = ['brand', 'surface', 'text', 'border', 'semantic', 'interaction'];
+const expectedTokenVersions = {
+  'colors.json': '2.0.1',
+  'typography.json': '2.0.0',
+  'spacing.json': '2.0.0',
+  'radius.json': '2.0.0',
+  'shadows.json': '2.0.0',
+  'borders.json': '2.0.0',
+  'breakpoints.json': '2.0.0',
+  'icons.json': '2.0.0',
+};
 
 const validateTokens = async () => {
   const parsed = {};
@@ -19,7 +29,10 @@ const validateTokens = async () => {
     } catch (error) {
       throw new Error(`Invalid JSON token file ${name}: ${error.message}`);
     }
-    if (parsed[name].meta?.version !== '2.0.0') throw new Error(`${name} must declare meta.version 2.0.0`);
+    const expectedVersion = expectedTokenVersions[name] ?? '2.0.0';
+    if (parsed[name].meta?.version !== expectedVersion) {
+      throw new Error(`${name} must declare meta.version ${expectedVersion}`);
+    }
   }
   for (const group of requiredColorGroups) {
     if (!parsed['colors.json'][group]) throw new Error(`colors.json is missing ${group}`);

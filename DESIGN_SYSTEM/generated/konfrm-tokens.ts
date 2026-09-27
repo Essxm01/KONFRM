@@ -1,6 +1,6 @@
 // Generated from DESIGN_SYSTEM/TOKENS. Do not edit manually.
 export const konfrmTokens = {
-  "version": "2.0.0",
+  "version": "2.0.1",
   "colors": {
     "brand": {
       "primary": "#0059FF",

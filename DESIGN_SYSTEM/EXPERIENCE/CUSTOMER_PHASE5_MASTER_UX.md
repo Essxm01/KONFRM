@@ -82,7 +82,7 @@ Bottom navigation is hidden where a full entity/temporary flow requires focus.
 Screen 03 (Explore / Home) header combines the standalone KONFRM mark (`/favicon.svg` with `alt="KONFRM"`) and exactly one account/identity affordance across open space:
 - Guest: `UserRoundPlus` icon button opening existing auth modal (`aria-label="تسجيل الدخول أو إنشاء حساب"`); closing auth leaves Explore intact.
 - Authenticated: Truthful identity affordance routing to Account (`setActiveTab('ACCOUNT')`) with fallback hierarchy: canonical `avatarUrl` → initials (real canonical `fullName` only) → `UserRound`.
-- Notifications: DEFERRED / no Bell icon.
+- Notifications: no Bell icon in Explore. Screen 16 Notification Center is an Account-origin destination and does not change the Explore header grammar.
 *(Supersedes the interim brand-only Explore header model while preserving browse-first ethos).*
 
 ## Core booking journey
@@ -141,13 +141,15 @@ Future status updates should be recorded by the execution/closure evidence syste
 - Arabic-first RTL, Cairo.
 - White/light-first.
 - KONFRM Blue #0059FF.
-- Yellow #FFD700 sparingly.
+- Summer Yellow `#FFD700` is a micro signature accent only; never introduce yellow/amber/orange cards, banners, alerts, pills, stale/retry panels or large container fills without explicit Founder approval.
 - Real hospitality imagery.
 - Strong hierarchy and open surfaces.
 - No card soup.
 - No fake trust/ratings/scarcity.
 - No customer exposure of commission, Owner net or wallet internals.
 - Error must not masquerade as empty.
+- Safe stale-refresh states preserve last-known canonical content and use neutral/soft-blue informational treatment, not a yellow/amber/orange warning box.
+- Header/navigation rules are consistent by screen family: Auth with Auth, top-level with top-level, nested with nested, transactional with transactional, and terminal-result with terminal-result. Do not make Screen 16 or any other screen a one-off exception.
 - Authentication preserves interrupted action.
 - Required mobile touch target >=44px; frequent controls prefer 48px.
 - Primary CTA approximately 52–56px.

@@ -22,6 +22,6 @@ In addition to the baseline states above, important transactional surfaces shoul
 - **Conflict:** explain the concrete changed truth and provide the next valid action.
 - **Unauthorized:** distinguish missing/expired authorization from empty/error business data.
 - **Partial:** make clear what loaded and what did not when partial display is safe.
-- **Stale:** do not present stale transactional truth as newly verified state.
+- **Stale:** do not present stale transactional truth as newly verified state. When safe last-known content is preserved, keep it visible and use a neutral/soft-blue informational notice with retry; stale refresh failure is not an amber/yellow warning box.
 
 Required actions and durable errors must not rely only on a transient toast.

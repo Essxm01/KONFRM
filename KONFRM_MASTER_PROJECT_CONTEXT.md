@@ -539,13 +539,18 @@ KONFRM يرتبط ضمنيًا بفكرة:
 - Verification accents.
 - أهم الأرقام/التفاعل.
 
-Summer Yellow يستخدم بصورة محدودة في:
+Summer Yellow يستخدم بصورة محدودة جدًا (MICRO BRAND-SIGNATURE ACCENT ONLY وفق قرار `FOUNDER_VISUAL_RULE_2026_09_27` وDesign System 2.1.3):
 
 - Rating.
 - Highlight.
-- Info/accent.
+- Info/accent دقيق.
 
-لا يجب تحويل Summer Yellow إلى هوية Gold/Amber/Mustard مختلفة.
+لا يجب تحويل Summer Yellow إلى هوية Gold/Amber/Mustard مختلفة، وممنوع استخدامه كخلفيات صناديق أو كروت أو Alert boxes أو Stale panels أو Recovery panels أو Large pills.
+
+حالة البيانات المحفوظة السابقة (Stale state + safely preserved canonical data) هي حالة إعلامية (INFORMATIONAL):
+- خلفية محايدة (Neutral) أو زرقاء هادئة (Soft-blue).
+- أيقونات ونصوص Slate / Blue وزر إعادة محاولة (Retry) أزرق.
+- ممنوع استخدام لغة الصناديق التحذيرية الصفراء/الكهرمانية (Amber/Yellow warning boxes) لبيانات صالحة ومحفوظة بأمان.
 
 ## 7.2 Visual personality
 
@@ -572,6 +577,10 @@ Summer Yellow يستخدم بصورة محدودة في:
 ❌ Excessive pills/chips.  
 ❌ Tiny technical typography.  
 ❌ Pill/capsule Admin navigation.
+❌ Yellow / Amber / Orange boxed UI كخلفية افتراضية (كروت، بنرات، تنبيهات، ألواح Stale/Recovery، أوعية الحالات).
+❌ استخدام لغة الصناديق التحذيرية Amber لحالات البيانات المحفوظة بأمان (Stale preserved canonical data).
+❌ كسر اتساق عائلة الشاشات (Screen Family) أو فرض Transactional Fullscreen على شاشات Nested مثل Screen 16.
+❌ إخفاء الـ Bottom Navigation في Screen 16 (تظل مرئية بـ 4 تبويبات مع بقاء تبويب الحساب Account نشطًا).
 
 ## 7.4 Typography
 

@@ -8,10 +8,10 @@ Apply only gates relevant to the phase, but explain any skipped gate.
 4. **Cross-app integration:** shared entities/states propagate correctly to applicable roles.
 5. **Booking/availability and finance:** whenever touched, explicitly review status, dates/quote, blocking, idempotency, deposit/commission/ledger/privacy consequences.
 6. **Auth/security and storage/media:** verify role/ownership boundaries, secret handling, private-object access, MIME/size/object validation where relevant.
-7. **UI/visual/mobile/Admin/RTL:** role-appropriate hierarchy, representative viewports, Arabic/RTL, accessibility, loading/empty/error/retry/disabled/conflict states.
+7. **UI/visual/mobile/Admin/RTL:** role-appropriate hierarchy, screen-family consistency (AUTH, TOP_LEVEL, NESTED, TRANSACTIONAL, TERMINAL_RESULT), representative viewports, Arabic/RTL, accessibility, loading/empty/error/retry/disabled/conflict states; adherence to FOUNDER_VISUAL_RULE_2026_09_27 (no yellow/amber/orange boxed UI by default; Summer Yellow #FFD700 is micro-accent only; preserved canonical data in stale states is informational on neutral/soft-blue surface with blue retry, no warning boxes; Screen 16 retains visible Bottom Nav with Account active).
 8. **Tests/regression:** focused executable tests plus proportionate typecheck/build; adjacent high-risk flows are checked.
 9. **Live verification:** for deployment-sensitive work, verify the actual affected live scenario and exact revision; build/CI alone is insufficient.
-10. **Evidence/report:** capture commands/results, screenshots where UI changed, known gaps, and update the matrix/reality/backlog.
+10. **Evidence/report:** capture commands/results, actual rendered visual evidence for any UI changes (green CI/build alone is not UI acceptance), known gaps, and update the matrix/reality/backlog.
 
 ## Mandatory self-fix loop
 

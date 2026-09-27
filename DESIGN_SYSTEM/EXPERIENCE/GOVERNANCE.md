@@ -8,6 +8,10 @@ ONE KONFRM Design System governs Customer, Owner and Admin. They share the brand
 
 **Consistency does not mean identical experience.** Information hierarchy, navigation, density, page composition, control prominence, contextual actions, visible data and workflow emphasis adapt to each role's job. The applications should visibly belong to one KONFRM product family without becoming copies of one another.
 
+Consistency also operates by **screen family**. Equivalent Auth, top-level, nested, transactional or terminal-result surfaces should share the same navigation/header grammar unless a documented Product reason requires a difference. Do not correct one screen by creating a new one-off rule while leaving equivalent screens inconsistent.
+
+Founder visual rule: yellow/amber/orange boxed surfaces are not part of the default KONFRM experience language. Summer Yellow remains a micro brand signature only. Stale/recovery/info containers use neutral or soft-blue treatment by default; genuine caution may use restrained warning icon/text on a neutral surface.
+
 ## Approval boundary
 
 Only established project rules are `APPROVED_EXISTING`. New navigation changes, entry behavior, screen priorities and interaction patterns remain `RECOMMENDED` or `NEEDS_FOUNDER_DECISION` until Founder review. Approved decisions are recorded in `DECISIONS.json`; they define future implementation direction and never alter business rules by themselves.

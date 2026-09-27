@@ -1,6 +1,6 @@
 # KONFRM — Design Lab Vision
 
-**Design System baseline:** 2.1.2  
+**Design System baseline:** 2.1.3  
 **Status:** Founder-authorized additive Design Lab guidance  
 **Scope:** Visual language, product experience, interaction grammar and UX quality across Customer, Owner and Admin.  
 **Non-goal:** This document does not change booking, finance, database, authorization, payment, privacy or roadmap rules.
@@ -40,7 +40,7 @@ Admin is desktop operational. It may be denser and table-oriented, but must rema
 - Cairo, Arabic-first, RTL-native.
 - White/light-first surfaces.
 - Primary Blue #0059FF.
-- Yellow #FFD700 is a sparse signature accent, never routine primary action.
+- Yellow `#FFD700` is a micro brand-signature accent only. It must not become a yellow/amber/orange card, banner, alert, pill, stale/recovery panel, status container or large surface unless the Founder explicitly approves that named exception.
 - Text hierarchy uses #0F172A, #475569, #64748B.
 - Borders stay quiet and restrained.
 - Rounded, not bubbly.
@@ -72,6 +72,8 @@ Prefer one temporary layer at a time.
 **Back** means hierarchy. **Close / X** dismisses a temporary layer.
 
 Authentication may interrupt a journey but should preserve the exact context needed to resume it.
+
+**Navigation/header consistency is defined by screen role, not by build history.** Auth screens must agree with Auth screens; top-level destinations with top-level destinations; nested entity/utility screens with their family; transactional screens with transactional screens; terminal-result screens with their family. Do not create a one-off logo, Back, title or header grammar for a single screen while equivalent screens remain different.
 
 ## 6. Mobile ergonomics
 
@@ -125,6 +127,7 @@ Loading, Loaded, Empty, Error, Offline, Disabled, Selected, Submission, Success,
 - A required action cannot depend only on a transient toast.
 - Success UI must wait for canonical success.
 - Recovery action should be visible when the user can recover.
+- **Stale-with-preserved-data is informational, not a warning by default:** keep safe last-known content visible and use a neutral/soft-blue notice with retry. Do not introduce yellow/amber/orange boxed treatment merely because a refresh failed.
 
 ## 10. Micro-UX
 

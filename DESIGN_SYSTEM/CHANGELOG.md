@@ -1,5 +1,15 @@
 # KONFRM Design System Changelog
 
+## 2.1.3 — 2026-09-27
+
+### Founder visual consistency rule
+
+- Recorded the Founder decision that Summer Yellow `#FFD700` is a micro brand-signature accent only and must not become yellow/amber/orange boxed UI (cards, banners, alerts, pills, stale/retry/recovery panels or large container fills) without an explicit named Founder exception.
+- Defined stale-with-preserved-data as informational by default: preserve safe canonical content and use neutral/soft-blue recovery treatment rather than amber warning containers.
+- Added screen-family navigation/header consistency: Auth, top-level, nested, transactional and terminal-result surfaces are reconciled within their own families rather than patched screen-by-screen.
+- Updated Customer notification guidance: Screen 16 may exist through Account without adding a Bell to Explore.
+- Documentation/design-authority update only; no runtime UI, backend, database, booking, payment or permission logic changed.
+
 ## 2.1.2 — 2026-08-23
 
 ### Founder entry and Owner UX decision sync

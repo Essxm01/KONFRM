@@ -85,45 +85,47 @@ export const CustomerNotificationCenter: React.FC<CustomerNotificationCenterProp
       aria-labelledby="customer-notifications-heading"
       className="w-full max-w-[430px] mx-auto px-4 pt-3 pb-28 text-slate-900"
     >
-      {/* Header */}
+      {/* Subview Header (Compact Account-nested Navigation Row) */}
       <header className="mb-4">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={onBack}
             aria-label={CUSTOMER_NOTIFICATIONS_COPY.backToAccount}
-            className="min-h-[44px] min-w-[44px] -mr-2 p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40"
+            className="min-h-[44px] min-w-[44px] -mr-2 p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center justify-center shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40"
           >
             <ChevronRight className="w-5 h-5 text-slate-700" />
           </button>
-          <h1
-            id="customer-notifications-heading"
-            ref={headingRef}
-            tabIndex={-1}
-            className="text-[20px] font-black text-slate-950 tracking-tight leading-tight focus:outline-none"
-          >
-            {CUSTOMER_NOTIFICATIONS_COPY.title}
-          </h1>
+          <div className="min-w-0">
+            <h1
+              id="customer-notifications-heading"
+              ref={headingRef}
+              tabIndex={-1}
+              className="text-lg font-black text-slate-950 tracking-tight leading-tight focus:outline-none"
+            >
+              {CUSTOMER_NOTIFICATIONS_COPY.title}
+            </h1>
+            <p className="text-xs font-medium text-slate-500 mt-0.5">
+              {CUSTOMER_NOTIFICATIONS_COPY.subtitle}
+            </p>
+          </div>
         </div>
-        <p className="text-xs font-semibold text-slate-500 mr-1">
-          {CUSTOMER_NOTIFICATIONS_COPY.subtitle}
-        </p>
       </header>
 
-      {/* Stale Error Notice (Preserves loaded list) */}
+      {/* Stale Error Notice (Preserves loaded list - Informational Soft-Blue) */}
       {isStaleError && (
         <div
           role="status"
-          className="mb-3 p-3 bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl text-xs font-bold flex items-center justify-between shadow-xs"
+          className="mb-3 p-3 bg-blue-50/80 border border-blue-200 text-slate-800 rounded-2xl text-xs font-bold flex items-center justify-between shadow-xs gap-2"
         >
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>{CUSTOMER_NOTIFICATIONS_COPY.stale}</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <AlertCircle className="w-4 h-4 text-[#0059FF] shrink-0" />
+            <span className="leading-snug">{CUSTOMER_NOTIFICATIONS_COPY.stale}</span>
           </div>
           <button
             type="button"
             onClick={onRetry}
-            className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-black text-[11px] rounded-lg shrink-0 transition-colors"
+            className="px-3 py-1.5 bg-[#0059FF] hover:bg-blue-600 text-white font-black text-[11px] rounded-lg shrink-0 transition-colors"
           >
             {CUSTOMER_NOTIFICATIONS_COPY.errorAction}
           </button>
@@ -142,7 +144,7 @@ export const CustomerNotificationCenter: React.FC<CustomerNotificationCenterProp
       {/* State: SESSION_EXPIRED */}
       {isSessionExpired && (
         <div className="bg-white rounded-3xl border border-slate-200 p-6 text-center space-y-4 shadow-xs">
-          <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto text-amber-600 border border-amber-100">
+          <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto text-[#0059FF] border border-blue-100">
             <AlertCircle className="w-7 h-7" aria-hidden="true" />
           </div>
           <div>
@@ -259,7 +261,7 @@ export const CustomerNotificationCenter: React.FC<CustomerNotificationCenterProp
                           </span>
                         )}
                         {isActionRequired && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-200">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black bg-white text-[#0059FF] border border-[#0059FF] shadow-2xs">
                             {CUSTOMER_NOTIFICATIONS_COPY.actionRequiredBadge}
                           </span>
                         )}

@@ -81,6 +81,7 @@ async function run(): Promise<void> {
   assert(!shouldKeepFavoritesAfterRefreshFailure([property('a')], true), 'Unauthorized refresh never preserves private list');
   assert(!componentSource.includes('ratings') && !componentSource.includes('reviews'), 'Screen 15 must not invent ratings or review counts');
   assert(!componentSource.includes('Favorite count') && !componentSource.includes('favoritesCount'), 'Screen 15 must not display a Favorite count');
+  assert(!componentSource.includes('amber'), 'CustomerFavoritesScreen must NOT contain any amber classes');
 
   // API-level unauthorized classification for GET and both mutations.
   await expectUnauthorized(() => fetchCustomerFavorites('token', async () => response(401, { success: false }), (path) => path), 'GET 401');

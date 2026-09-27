@@ -1655,9 +1655,9 @@ export function App() {
                           {userProfile.fullName.trim()}
                         </h3>
                       ) : (
-                        <div className="flex items-center gap-1.5 text-amber-800">
+                        <div className="flex items-center gap-1.5">
                           <h3 className="font-black text-sm text-slate-800">مستخدم جديد</h3>
-                          <span className="text-[10px] font-bold bg-amber-50 text-amber-700 px-2 py-0.5 rounded-md border border-amber-200">
+                          <span className="text-[10px] font-bold bg-blue-50 text-[#0059FF] px-2 py-0.5 rounded-md border border-blue-200">
                             أكمل بيانات حسابك
                           </span>
                         </div>
@@ -1684,16 +1684,16 @@ export function App() {
                     </button>
                   </div>
 
-                  {/* Clean Incomplete Profile Alert Prompt (Only when full_name is genuinely empty) */}
+                  {/* Clean Incomplete Profile Prompt (Only when full_name is genuinely empty) */}
                   {(!userProfile?.fullName || userProfile.fullName.trim().length === 0) && (
-                    <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold text-amber-900">
-                      <div className="flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <div className="mt-4 p-3 bg-blue-50/80 border border-blue-200 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold text-slate-800">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <AlertCircle className="w-4 h-4 text-[#0059FF] shrink-0" />
                         <span>يرجى إضافة اسمك بالكامل لإتمام الملف الشخصي.</span>
                       </div>
                       <button
                         onClick={() => setIsEditingAccount(true)}
-                        className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white font-black text-[11px] rounded-lg shrink-0 transition-colors"
+                        className="px-3 py-1.5 bg-[#0059FF] hover:bg-blue-600 text-white font-black text-[11px] rounded-lg shrink-0 transition-colors"
                       >
                         أكمل بيانات حسابك
                       </button>
@@ -1703,7 +1703,7 @@ export function App() {
 
                 {/* C. Real Account Summary Metrics */}
                 {accountSummaryError && (
-                  <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 text-amber-800 text-xs font-bold text-center">
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold text-center">
                     {accountSummaryError}
                   </div>
                 )}
@@ -1864,7 +1864,7 @@ export function App() {
                       className="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-right"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shrink-0">
+                        <div className="w-9 h-9 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center shrink-0">
                           <HelpCircle className="w-4 h-4" />
                         </div>
                         <div>

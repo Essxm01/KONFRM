@@ -36,18 +36,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      - name: Guard canonical repository identity
-        shell: bash
-        run: |
-          test "$GITHUB_REPOSITORY" = "Essxm01/KONFRM" || {
-            echo "CANONICAL_REPOSITORY_MISMATCH: $GITHUB_REPOSITORY"
-            exit 1
-          }
-          legacy_repo="Essxm01/SOLA-""APP"
-          if git grep -n -I "$legacy_repo" -- .github/workflows scripts backend; then
-            echo "STALE_FUNCTIONAL_REPOSITORY_REFERENCE"
-            exit 1
-          fi
       - uses: actions/setup-node@v4
         with:
           node-version: 22

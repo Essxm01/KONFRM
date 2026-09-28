@@ -63,7 +63,8 @@ export default {
       const allowed = url.pathname === '/api/v1/health'
         || url.pathname.startsWith('/api/v2/auth/')
         || url.pathname === '/api/v1/auth/refresh'
-        || url.pathname === '/api/v1/auth/revoke';
+        || url.pathname === '/api/v1/auth/revoke'
+        || url.pathname.startsWith('/api/v2/customer/identifiers/email/');
       if (!allowed) {
         return new Response(JSON.stringify({ success: false, error: { code: 'QA_ROUTE_NOT_ALLOWED', message: 'هذا المسار غير متاح في بيئة الاختبار.' } }), {
           status: 404,

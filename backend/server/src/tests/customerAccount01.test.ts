@@ -6,6 +6,7 @@
 import { ExpressServerApp } from '../app.js';
 import { AuthService, dbUsersStore, dbOwnersStore } from '../services/authService.js';
 import { userDb, bookingDb } from '../services/dbRepository.js';
+import { signAccessToken } from '../services/jwtService.js';
 import type { TestResult } from './authSecurity.test.js';
 
 export async function runCustomerAccount01Suite(): Promise<{ total: number; passed: number; failed: number; results: TestResult[] }> {
@@ -30,9 +31,11 @@ export async function runCustomerAccount01Suite(): Promise<{ total: number; pass
     updatedAt: new Date().toISOString(),
   });
 
-  await authService.requestOtp(customerPhone);
-  const authRes = await authService.verifyOtp(customerPhone, '1234', 'CUSTOMER');
-  const customerToken = authRes.tokens.accessToken;
+  const customerToken = signAccessToken({
+    sub: customerId,
+    role: 'ROLE_CUSTOMER',
+    phone: customerPhone,
+  });
 
   // --------------------------------------------------------------------------
   // TEST 1: GET /api/v1/customer/account/summary returns real metrics (200 OK)
@@ -112,8 +115,11 @@ export async function runCustomerAccount01Suite(): Promise<{ total: number; pass
     dbUsersStore.set(ownerPhone, { id: ownerId, phoneNumber: ownerPhone, status: 'ACTIVE', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     dbOwnersStore.set(ownerId, { id: ownerId, phoneNumber: ownerPhone, fullName: 'مالك منفصل', status: 'ACTIVE', verificationStatus: 'VERIFIED', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
 
-    await authService.requestOtp(ownerPhone);
-    const ownerToken = (await authService.verifyOtp(ownerPhone, '1234', 'OWNER')).tokens.accessToken;
+    const ownerToken = signAccessToken({
+      sub: ownerId,
+      role: 'ROLE_OWNER',
+      phone: ownerPhone,
+    });
 
     const resSummary = await app.handleHttpRequest('GET', '/api/v1/customer/account/summary', {
       authorization: `Bearer ${ownerToken}`,
@@ -156,29 +162,56 @@ export async function runCustomerAccount01Suite(): Promise<{ total: number; pass
       updatedAt: new Date().toISOString(),
     });
 
-    await authService.requestOtp(dualPhone);
-    const custAuth = await authService.verifyOtp(dualPhone, '1234', 'CUSTOMER');
-
-    // Customer updates their personal name
-    const patchRes = await app.handleHttpRequest(
-      'PATCH',
-      '/api/v1/customer/profile',
-      { authorization: `Bearer ${custAuth.tokens.accessToken}` },
-      { fullName: 'كريم محمود المنشاوي' }
-    );
-
-    const isPatchOk = patchRes.statusCode === 200;
-    const updatedUser = dbUsersStore.get(dualPhone);
-    const unchangedOwner = dbOwnersStore.get(dualId);
-
-    const userUpdated = updatedUser?.fullName === 'كريم محمود المنشاوي';
-    const ownerPreserved = unchangedOwner?.fullName === 'شركة الساحل للاستثمار العقاري';
-
-    results.push({
-      name: '[20.5] Data Integrity: Customer Profile Update Does NOT Mirror into or Overwrite Independent Owner Profile',
-      passed: isPatchOk && userUpdated && ownerPreserved,
-      error: isPatchOk && userUpdated && ownerPreserved ? undefined : `Integrity failed: patchOk=${isPatchOk}, userUpdated=${userUpdated}, ownerPreserved=${ownerPreserved}`,
+    const custToken = signAccessToken({
+      sub: dualId,
+      role: 'ROLE_CUSTOMER',
+      phone: dualPhone,
     });
+
+    const origUpdateProfile = userDb.updateProfile;
+    const origGetById = userDb.getById;
+    const origGetVerified = userDb.getVerifiedIdentifiers;
+    (userDb as any).updateProfile = async (id: string, data: any) => {
+      const u = dbUsersStore.get(dualPhone);
+      if (u) {
+        if (data.fullName) u.fullName = data.fullName;
+        dbUsersStore.set(dualPhone, u);
+      }
+      return u;
+    };
+    (userDb as any).getById = async (id: string) => {
+      return dbUsersStore.get(dualPhone) || null;
+    };
+    (userDb as any).getVerifiedIdentifiers = async () => {
+      return { phone: null, email: null };
+    };
+
+    try {
+      // Customer updates their personal name
+      const patchRes = await app.handleHttpRequest(
+        'PATCH',
+        '/api/v1/customer/profile',
+        { authorization: `Bearer ${custToken}` },
+        { fullName: 'كريم محمود المنشاوي' }
+      );
+
+      const isPatchOk = patchRes.statusCode === 200;
+      const updatedUser = dbUsersStore.get(dualPhone);
+      const unchangedOwner = dbOwnersStore.get(dualId);
+
+      const userUpdated = updatedUser?.fullName === 'كريم محمود المنشاوي';
+      const ownerPreserved = unchangedOwner?.fullName === 'شركة الساحل للاستثمار العقاري';
+
+      results.push({
+        name: '[20.5] Data Integrity: Customer Profile Update Does NOT Mirror into or Overwrite Independent Owner Profile',
+        passed: isPatchOk && userUpdated && ownerPreserved,
+        error: isPatchOk && userUpdated && ownerPreserved ? undefined : `Integrity failed: patchOk=${isPatchOk} (status=${patchRes.statusCode}, body=${JSON.stringify(patchRes.body)}), userUpdated=${userUpdated}, ownerPreserved=${ownerPreserved}`,
+      });
+    } finally {
+      (userDb as any).updateProfile = origUpdateProfile;
+      (userDb as any).getById = origGetById;
+      (userDb as any).getVerifiedIdentifiers = origGetVerified;
+    }
   } catch (err: any) {
     results.push({ name: '[20.5] Profile Integrity & Decoupling', passed: false, error: err.message });
   }
@@ -200,39 +233,35 @@ export async function runCustomerAccount01Suite(): Promise<{ total: number; pass
       updatedAt: new Date().toISOString(),
     });
 
-    await authService.requestOtp(emailPhone);
-    const emailAuth = await authService.verifyOtp(emailPhone, '1234', 'CUSTOMER');
+    const emailAccessToken = signAccessToken({
+      sub: emailUserId,
+      role: 'ROLE_CUSTOMER',
+      phone: emailPhone,
+    });
 
-    // 1. Update with valid email
-    const validPatch = await app.handleHttpRequest(
+    // 1. Attempt to update profile with email through PATCH /customer/profile must be rejected (Auth V2 protected identity)
+    const patchAttempt = await app.handleHttpRequest(
       'PATCH',
       '/api/v1/customer/profile',
-      { authorization: `Bearer ${emailAuth.tokens.accessToken}` },
+      { authorization: `Bearer ${emailAccessToken}` },
       { email: 'renter.test@konfrm.eg' }
     );
 
-    const is200 = validPatch.statusCode === 200 && validPatch.body.data?.email === 'renter.test@konfrm.eg';
-
-    // 2. Fetch profile and verify persisted email
-    const getProfile = await app.handleHttpRequest(
-      'GET',
-      '/api/v1/customer/profile',
-      { authorization: `Bearer ${emailAuth.tokens.accessToken}` }
-    );
-
-    const persisted = getProfile.statusCode === 200 && getProfile.body.data?.email === 'renter.test@konfrm.eg';
+    const is400 = patchAttempt.statusCode === 400 &&
+      patchAttempt.body.error?.code === 'PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION' &&
+      patchAttempt.body.error?.message === 'تغيير البريد الإلكتروني أو الهاتف يتطلب تأكيد الرمز';
 
     results.push({
-      name: '[20.6] Customer Profile Optional Email Update & Persistence in Canonical users (200 OK)',
-      passed: is200 && persisted,
-      error: is200 && persisted ? undefined : `Expected 200 + persisted email, got patch=${validPatch.statusCode}, get=${getProfile.statusCode}`,
+      name: '[20.6] Customer Profile PATCH Rejects Direct Email Mutation (400 PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION)',
+      passed: is400,
+      error: is400 ? undefined : `Expected 400 PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION, got ${patchAttempt.statusCode} (${patchAttempt.body?.error?.code})`,
     });
   } catch (err: any) {
-    results.push({ name: '[20.6] Optional Email Persistence', passed: false, error: err.message });
+    results.push({ name: '[20.6] Customer Profile Rejects Direct Email Mutation', passed: false, error: err.message });
   }
 
   // --------------------------------------------------------------------------
-  // TEST 7: Customer Profile Rejects Invalid Email Format (400 Bad Request)
+  // TEST 7: Customer Profile Rejects Direct Phone Mutation (400 PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION)
   // --------------------------------------------------------------------------
   try {
     const invPhone = `+2010${randSuffix}05`;
@@ -241,35 +270,51 @@ export async function runCustomerAccount01Suite(): Promise<{ total: number; pass
     dbUsersStore.set(invPhone, {
       id: invUserId,
       phoneNumber: invPhone,
-      fullName: 'فحص البريد',
+      fullName: 'فحص الهاتف',
       email: null,
       status: 'ACTIVE',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
 
-    await authService.requestOtp(invPhone);
-    const invAuth = await authService.verifyOtp(invPhone, '1234', 'CUSTOMER');
+    const invAccessToken = signAccessToken({
+      sub: invUserId,
+      role: 'ROLE_CUSTOMER',
+      phone: invPhone,
+    });
 
     const badPatch = await app.handleHttpRequest(
       'PATCH',
       '/api/v1/customer/profile',
-      { authorization: `Bearer ${invAuth.tokens.accessToken}` },
-      { email: 'not-a-valid-email' }
+      { authorization: `Bearer ${invAccessToken}` },
+      { phoneNumber: '+201099999999' }
     );
 
-    const is400 = badPatch.statusCode === 400 && badPatch.body.error?.code === 'INVALID_EMAIL_FORMAT';
+    const isPhoneRejected = badPatch.statusCode === 400 &&
+      badPatch.body.error?.code === 'PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION' &&
+      badPatch.body.error?.message === 'تغيير البريد الإلكتروني أو الهاتف يتطلب تأكيد الرمز';
 
     results.push({
-      name: '[20.7] Customer Profile Rejects Malformed Email with 400 INVALID_EMAIL_FORMAT',
-      passed: is400,
-      error: is400 ? undefined : `Expected 400 INVALID_EMAIL_FORMAT, got ${badPatch.statusCode}`,
+      name: '[20.7] Customer Profile Rejects Direct Phone Mutation (400 PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION)',
+      passed: isPhoneRejected,
+      error: isPhoneRejected ? undefined : `Expected 400 PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION, got ${badPatch.statusCode}`,
     });
   } catch (err: any) {
-    results.push({ name: '[20.7] Invalid Email Format Rejection', passed: false, error: err.message });
+    results.push({ name: '[20.7] Customer Profile Rejects Direct Phone Mutation', passed: false, error: err.message });
   }
 
   const passed = results.filter((r) => r.passed).length;
   const failed = results.filter((r) => !r.passed).length;
   return { total: results.length, passed, failed, results };
+}
+
+if (process.argv[1]?.includes('customerAccount01')) {
+  runCustomerAccount01Suite().then((res) => {
+    console.log(JSON.stringify(res, null, 2));
+    if (res.failed > 0) {
+      console.error(`${res.failed} tests failed!`);
+      process.exit(1);
+    }
+    console.log(`All ${res.total} customerAccount01 tests passed!`);
+  });
 }

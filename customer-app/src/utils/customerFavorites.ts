@@ -189,6 +189,37 @@ export function mergeCustomerProfile(canonicalData: any) {
     throw new Error('INVALID_CANONICAL_PROFILE: missing updatedAt');
   }
 
+  let verifiedIdentifiers: {
+    phone: { value: string; verifiedAt: string } | null;
+    email: { value: string; verifiedAt: string } | null;
+  } = {
+    phone: null,
+    email: null,
+  };
+
+  if (canonicalData.verifiedIdentifiers && typeof canonicalData.verifiedIdentifiers === 'object') {
+    const rawPhone = canonicalData.verifiedIdentifiers.phone;
+    const rawEmail = canonicalData.verifiedIdentifiers.email;
+    verifiedIdentifiers = {
+      phone: rawPhone && typeof rawPhone === 'object' && rawPhone.value ? {
+        value: String(rawPhone.value).trim(),
+        verifiedAt: String(rawPhone.verifiedAt).trim(),
+      } : null,
+      email: rawEmail && typeof rawEmail === 'object' && rawEmail.value ? {
+        value: String(rawEmail.value).trim(),
+        verifiedAt: String(rawEmail.verifiedAt).trim(),
+      } : null,
+    };
+  } else {
+    // Deterministic fallback for legacy objects without verifiedIdentifiers property
+    if (canonicalPhone && canonicalData.phoneVerifiedAt) {
+      verifiedIdentifiers.phone = {
+        value: canonicalPhone,
+        verifiedAt: String(canonicalData.phoneVerifiedAt).trim(),
+      };
+    }
+  }
+
   return {
     id: canonicalData.id.trim(),
     phoneNumber: canonicalPhone,
@@ -199,6 +230,7 @@ export function mergeCustomerProfile(canonicalData: any) {
     status: canonicalData.status.trim(),
     createdAt: canonicalData.createdAt.trim(),
     updatedAt: canonicalData.updatedAt.trim(),
+    verifiedIdentifiers,
   };
 }
 

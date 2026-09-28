@@ -61,6 +61,7 @@ async function run(): Promise<void> {
   const authSource = readFileSync(new URL('./customerAuthV2.ts', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   const headerSource = readFileSync(new URL('../components/CustomerHeader.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   const bottomNavSource = readFileSync(new URL('../components/CustomerBottomNav.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const accountHomeSource = readFileSync(new URL('../components/CustomerAccountHomeScreen.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
   // ==========================================
   // 1. ARCHITECTURE & SCREEN 03 PROTECTION CONTRACTS
@@ -76,9 +77,9 @@ async function run(): Promise<void> {
   assert(!clientSource.includes('supabase') && !clientSource.includes('@supabase'), 'Client must never call Supabase directly');
 
   // Account entry section & row
-  assert(appSource.includes('النشاط'), 'Account screen must contain Section: النشاط');
-  assert(appSource.includes('الإشعارات'), 'Account screen must contain Row: الإشعارات');
-  assert(appSource.includes('تحديثات مهمة على طلباتك وحجوزاتك'), 'Account screen must contain subtitle copy');
+  assert(accountHomeSource.includes('النشاط') || appSource.includes('النشاط'), 'Account screen must contain Section: النشاط');
+  assert(accountHomeSource.includes('الإشعارات') || appSource.includes('الإشعارات'), 'Account screen must contain Row: الإشعارات');
+  assert(accountHomeSource.includes('تحديثات مهمة على طلباتك وحجوزاتك') || appSource.includes('تحديثات مهمة على طلباتك وحجوزاتك'), 'Account screen must contain subtitle copy');
 
   // Strict Screen 03 (Explore) & Header Protection: NO bell icon or notification badge in Header or Explore
   assert(!headerSource.includes('Bell'), 'CustomerHeader must NOT contain Bell icon');

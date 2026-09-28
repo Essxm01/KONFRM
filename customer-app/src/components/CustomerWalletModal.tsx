@@ -63,7 +63,7 @@ export const CustomerWalletModal: React.FC<CustomerWalletModalProps> = ({ authTo
           <div className="w-12 h-12 bg-blue-50 text-[#0059FF] rounded-2xl flex items-center justify-center mx-auto mb-2.5 shadow-xs">
             <Wallet className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-black text-slate-900">المحفظة والمدفوعات</h3>
+          <h3 className="text-lg font-black text-slate-900">المدفوعات</h3>
           <p className="text-xs text-slate-500 font-bold mt-0.5">
             سجل العربون والمدفوعات المرتبطة بحجوزاتك
           </p>

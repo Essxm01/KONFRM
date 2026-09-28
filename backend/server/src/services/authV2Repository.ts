@@ -35,7 +35,7 @@ export interface UserIdentifierRecord {
 export interface AuthChallengeRecord {
   id: string;
   surface: 'CUSTOMER' | 'OWNER' | 'ADMIN';
-  intent: 'LOGIN' | 'CREATE_ACCOUNT';
+  intent: 'LOGIN' | 'CREATE_ACCOUNT' | 'LINK_IDENTIFIER';
   method: 'PHONE' | 'EMAIL';
   normalizedValue: string;
   otpDigest: string;
@@ -51,6 +51,7 @@ export interface AuthChallengeRecord {
   consumedAt: string | null;
   cancelledAt: string | null;
   providerMetadata: Record<string, any>;
+  subjectUserId?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -62,7 +63,7 @@ export interface VerifyChallengeResult {
   userId?: string | null;
   identifierType?: 'PHONE' | 'EMAIL';
   normalizedValue?: string;
-  intent?: 'LOGIN' | 'CREATE_ACCOUNT';
+  intent?: 'LOGIN' | 'CREATE_ACCOUNT' | 'LINK_IDENTIFIER';
   surface?: 'CUSTOMER' | 'OWNER' | 'ADMIN';
   failedAttempts: number;
   isLocked: boolean;
@@ -86,7 +87,7 @@ export interface IAuthChallengeRepository {
   create(challenge: {
     id?: string;
     surface: 'CUSTOMER' | 'OWNER' | 'ADMIN';
-    intent: 'LOGIN' | 'CREATE_ACCOUNT';
+    intent: 'LOGIN' | 'CREATE_ACCOUNT' | 'LINK_IDENTIFIER';
     method: 'PHONE' | 'EMAIL';
     normalizedValue: string;
     otpDigest: string;
@@ -94,6 +95,7 @@ export interface IAuthChallengeRepository {
     otpExpiresAt: string;
     challengeExpiresAt: string;
     resendAvailableAt: string;
+    subjectUserId?: string | null;
     providerMetadata?: Record<string, any>;
   }): Promise<AuthChallengeRecord>;
   getById(challengeId: string): Promise<AuthChallengeRecord | null>;
@@ -125,7 +127,8 @@ export interface IAuthChallengeRepository {
     normalizedValue?: string;
     method?: 'PHONE' | 'EMAIL';
     surface?: 'CUSTOMER' | 'OWNER' | 'ADMIN';
-    intent?: 'LOGIN' | 'CREATE_ACCOUNT';
+    intent?: 'LOGIN' | 'CREATE_ACCOUNT' | 'LINK_IDENTIFIER';
+    subjectUserId?: string | null;
   }>;
   commitResend(
     challengeId: string,
@@ -145,6 +148,17 @@ export interface IAuthChallengeRepository {
     challengeId: string,
     leaseToken: string
   ): Promise<{ success: boolean; errorCode?: string }>;
+  linkVerifiedEmailIdentifier(
+    challengeId: string,
+    subjectUserId: string
+  ): Promise<{
+    success: boolean;
+    errorCode?: string;
+    userId?: string;
+    email?: string;
+    verifiedAt?: string;
+    alreadyLinked?: boolean;
+  }>;
 }
 
 export interface IAuthRateLimitRepository {
@@ -257,7 +271,7 @@ export class PostgresAuthChallengeRepository implements IAuthChallengeRepository
   async create(challenge: {
     id?: string;
     surface: 'CUSTOMER' | 'OWNER' | 'ADMIN';
-    intent: 'LOGIN' | 'CREATE_ACCOUNT';
+    intent: 'LOGIN' | 'CREATE_ACCOUNT' | 'LINK_IDENTIFIER';
     method: 'PHONE' | 'EMAIL';
     normalizedValue: string;
     otpDigest: string;
@@ -265,6 +279,7 @@ export class PostgresAuthChallengeRepository implements IAuthChallengeRepository
     otpExpiresAt: string;
     challengeExpiresAt: string;
     resendAvailableAt: string;
+    subjectUserId?: string | null;
     providerMetadata?: Record<string, any>;
   }): Promise<AuthChallengeRecord> {
     const id = challenge.id || randomUUID();
@@ -272,15 +287,16 @@ export class PostgresAuthChallengeRepository implements IAuthChallengeRepository
       `INSERT INTO public.auth_challenges (
          id, surface, intent, method, normalized_value, otp_digest, generation,
          issued_at, otp_expires_at, challenge_expires_at, resend_available_at,
-         failed_attempts, issue_count, status, provider_metadata, created_at, updated_at
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, 0, 1, 'ACTIVE', $11, NOW(), NOW())
+         failed_attempts, issue_count, status, provider_metadata, subject_user_id, created_at, updated_at
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, 0, 1, 'ACTIVE', $11, $12, NOW(), NOW())
        RETURNING id, surface, intent, method, normalized_value AS "normalizedValue",
                  otp_digest AS "otpDigest", generation, issued_at AS "issuedAt",
                  otp_expires_at AS "otpExpiresAt", challenge_expires_at AS "challengeExpiresAt",
                  resend_available_at AS "resendAvailableAt", failed_attempts AS "failedAttempts",
                  issue_count AS "issueCount", status, verified_at AS "verifiedAt",
                  consumed_at AS "consumedAt", cancelled_at AS "cancelledAt",
-                 provider_metadata AS "providerMetadata", created_at AS "createdAt", updated_at AS "updatedAt"`,
+                 provider_metadata AS "providerMetadata", subject_user_id AS "subjectUserId",
+                 created_at AS "createdAt", updated_at AS "updatedAt"`,
       [
         id,
         challenge.surface,
@@ -293,6 +309,7 @@ export class PostgresAuthChallengeRepository implements IAuthChallengeRepository
         challenge.challengeExpiresAt,
         challenge.resendAvailableAt,
         JSON.stringify(challenge.providerMetadata || {}),
+        challenge.subjectUserId || null,
       ]
     );
     return res.rows[0];
@@ -306,7 +323,8 @@ export class PostgresAuthChallengeRepository implements IAuthChallengeRepository
               resend_available_at AS "resendAvailableAt", failed_attempts AS "failedAttempts",
               issue_count AS "issueCount", status, verified_at AS "verifiedAt",
               consumed_at AS "consumedAt", cancelled_at AS "cancelledAt",
-              provider_metadata AS "providerMetadata", created_at AS "createdAt", updated_at AS "updatedAt"
+              provider_metadata AS "providerMetadata", subject_user_id AS "subjectUserId",
+              created_at AS "createdAt", updated_at AS "updatedAt"
        FROM public.auth_challenges
        WHERE id = $1`,
       [challengeId]
@@ -335,7 +353,8 @@ export class PostgresAuthChallengeRepository implements IAuthChallengeRepository
                  resend_available_at AS "resendAvailableAt", failed_attempts AS "failedAttempts",
                  issue_count AS "issueCount", status, verified_at AS "verifiedAt",
                  consumed_at AS "consumedAt", cancelled_at AS "cancelledAt",
-                 provider_metadata AS "providerMetadata", created_at AS "createdAt", updated_at AS "updatedAt"`,
+                 provider_metadata AS "providerMetadata", subject_user_id AS "subjectUserId",
+                 created_at AS "createdAt", updated_at AS "updatedAt"`,
       [
         challengeId,
         updates.generation,
@@ -359,7 +378,8 @@ export class PostgresAuthChallengeRepository implements IAuthChallengeRepository
                  resend_available_at AS "resendAvailableAt", failed_attempts AS "failedAttempts",
                  issue_count AS "issueCount", status, verified_at AS "verifiedAt",
                  consumed_at AS "consumedAt", cancelled_at AS "cancelledAt",
-                 provider_metadata AS "providerMetadata", created_at AS "createdAt", updated_at AS "updatedAt"`,
+                 provider_metadata AS "providerMetadata", subject_user_id AS "subjectUserId",
+                 created_at AS "createdAt", updated_at AS "updatedAt"`,
       [challengeId]
     );
     return res.rows[0] || null;
@@ -405,7 +425,8 @@ export class PostgresAuthChallengeRepository implements IAuthChallengeRepository
     normalizedValue?: string;
     method?: 'PHONE' | 'EMAIL';
     surface?: 'CUSTOMER' | 'OWNER' | 'ADMIN';
-    intent?: 'LOGIN' | 'CREATE_ACCOUNT';
+    intent?: 'LOGIN' | 'CREATE_ACCOUNT' | 'LINK_IDENTIFIER';
+    subjectUserId?: string | null;
   }> {
     const res = await queryDb(
       `SELECT success, error_code AS "errorCode", lease_token AS "leaseToken",
@@ -458,6 +479,34 @@ export class PostgresAuthChallengeRepository implements IAuthChallengeRepository
       [challengeId, leaseToken]
     );
     return res.rows[0];
+  }
+
+  async linkVerifiedEmailIdentifier(
+    challengeId: string,
+    subjectUserId: string
+  ): Promise<{
+    success: boolean;
+    errorCode?: string;
+    userId?: string;
+    email?: string;
+    verifiedAt?: string;
+    alreadyLinked?: boolean;
+  }> {
+    const res = await queryDb(
+      `SELECT success, error_code AS "errorCode", user_id AS "userId",
+              email, verified_at AS "verifiedAt", already_linked AS "alreadyLinked"
+       FROM public.konfrm_link_verified_email_identifier_v1($1, $2)`,
+      [challengeId, subjectUserId]
+    );
+    const row = res.rows[0];
+    return {
+      success: Boolean(row?.success),
+      errorCode: row?.errorCode,
+      userId: row?.userId,
+      email: row?.email,
+      verifiedAt: row?.verifiedAt ? new Date(row.verifiedAt).toISOString() : undefined,
+      alreadyLinked: Boolean(row?.alreadyLinked),
+    };
   }
 }
 
@@ -555,6 +604,24 @@ export class InMemoryUserIdentifierRepository implements IUserIdentifierReposito
 export class InMemoryAuthChallengeRepository implements IAuthChallengeRepository {
   private store = new Map<string, AuthChallengeRecord>();
   private challengeLocks = new Map<string, Promise<any>>();
+  private userIdentifierRepo?: IUserIdentifierRepository;
+  private userRepo?: IUserRepository;
+
+  constructor(options?: {
+    userIdentifierRepo?: IUserIdentifierRepository;
+    userRepo?: IUserRepository;
+  }) {
+    this.userIdentifierRepo = options?.userIdentifierRepo;
+    this.userRepo = options?.userRepo;
+  }
+
+  setDependencies(options: {
+    userIdentifierRepo?: IUserIdentifierRepository;
+    userRepo?: IUserRepository;
+  }) {
+    if (options.userIdentifierRepo) this.userIdentifierRepo = options.userIdentifierRepo;
+    if (options.userRepo) this.userRepo = options.userRepo;
+  }
 
   private async withLock<T>(challengeId: string, fn: () => Promise<T>): Promise<T> {
     while (this.challengeLocks.has(challengeId)) {
@@ -595,6 +662,7 @@ export class InMemoryAuthChallengeRepository implements IAuthChallengeRepository
       consumedAt: null,
       cancelledAt: null,
       providerMetadata: challenge.providerMetadata || {},
+      subjectUserId: challenge.subjectUserId || null,
       createdAt: now,
       updatedAt: now,
     };
@@ -767,7 +835,8 @@ export class InMemoryAuthChallengeRepository implements IAuthChallengeRepository
     normalizedValue?: string;
     method?: 'PHONE' | 'EMAIL';
     surface?: 'CUSTOMER' | 'OWNER' | 'ADMIN';
-    intent?: 'LOGIN' | 'CREATE_ACCOUNT';
+    intent?: 'LOGIN' | 'CREATE_ACCOUNT' | 'LINK_IDENTIFIER';
+    subjectUserId?: string | null;
   }> {
     return await this.withLock(challengeId, async () => {
       const challenge = this.store.get(challengeId);
@@ -805,6 +874,7 @@ export class InMemoryAuthChallengeRepository implements IAuthChallengeRepository
         method: challenge.method,
         surface: challenge.surface,
         intent: challenge.intent,
+        subjectUserId: challenge.subjectUserId || null,
       };
     });
   }
@@ -872,6 +942,149 @@ export class InMemoryAuthChallengeRepository implements IAuthChallengeRepository
       challenge.updatedAt = new Date().toISOString();
 
       return { success: true };
+    });
+  }
+
+  async linkVerifiedEmailIdentifier(
+    challengeId: string,
+    subjectUserId: string
+  ): Promise<{
+    success: boolean;
+    errorCode?: string;
+    userId?: string;
+    email?: string;
+    verifiedAt?: string;
+    alreadyLinked?: boolean;
+  }> {
+    return await this.withLock(challengeId, async () => {
+      const challenge = this.store.get(challengeId);
+      if (!challenge) {
+        return { success: false, errorCode: 'CHALLENGE_NOT_FOUND' };
+      }
+      if (challenge.intent !== 'LINK_IDENTIFIER' || challenge.method !== 'EMAIL') {
+        return { success: false, errorCode: 'INVALID_LINK_CHALLENGE' };
+      }
+      if (!challenge.subjectUserId || challenge.subjectUserId !== subjectUserId) {
+        return { success: false, errorCode: 'CHALLENGE_SUBJECT_MISMATCH' };
+      }
+      if (challenge.status === 'CONSUMED') {
+        return { success: false, errorCode: 'CHALLENGE_ALREADY_CONSUMED' };
+      }
+      if (challenge.status === 'CANCELLED') {
+        return { success: false, errorCode: 'CHALLENGE_CANCELLED' };
+      }
+      if (challenge.status === 'LOCKED') {
+        return { success: false, errorCode: 'CHALLENGE_LOCKED' };
+      }
+      if (challenge.status !== 'VERIFIED') {
+        return { success: false, errorCode: 'CHALLENGE_NOT_VERIFIED' };
+      }
+      const now = Date.now();
+      if (now > new Date(challenge.challengeExpiresAt).getTime()) {
+        return { success: false, errorCode: 'CHALLENGE_EXPIRED' };
+      }
+
+      const normalizedEmail = (challenge.normalizedValue || '').trim();
+      if (!normalizedEmail) {
+        return { success: false, errorCode: 'INVALID_EMAIL' };
+      }
+
+      // 1. Collision check in userIdentifierRepo
+      if (this.userIdentifierRepo) {
+        const existing = await this.userIdentifierRepo.getByIdentifier('EMAIL', normalizedEmail);
+        if (existing) {
+          if (existing.userId === subjectUserId) {
+            challenge.status = 'CONSUMED';
+            challenge.consumedAt = new Date().toISOString();
+            if (this.userRepo) {
+              if (typeof (this.userRepo as any).updateProfile === 'function') {
+                await (this.userRepo as any).updateProfile(subjectUserId, { email: normalizedEmail }).catch(() => null);
+              } else if ((this.userRepo as any).users) {
+                const u = (this.userRepo as any).users.get(subjectUserId);
+                if (u) u.email = normalizedEmail;
+              } else if ((this.userRepo as any).store) {
+                const u = (this.userRepo as any).store.get(subjectUserId);
+                if (u) u.email = normalizedEmail;
+              }
+            }
+            return {
+              success: true,
+              userId: subjectUserId,
+              email: normalizedEmail,
+              verifiedAt: existing.verifiedAt || new Date().toISOString(),
+              alreadyLinked: true,
+            };
+          } else {
+            return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
+          }
+        }
+      }
+
+      // 2. Collision check in userRepo for legacy email conflict
+      if (this.userRepo) {
+        const user = await this.userRepo.getById(subjectUserId);
+        if (!user) {
+          return { success: false, errorCode: 'USER_NOT_FOUND' };
+        }
+        if (typeof (this.userRepo as any).getAllUsers === 'function') {
+          const allUsers = await (this.userRepo as any).getAllUsers();
+          const conflict = allUsers.find(
+            (u: any) => u.email && u.email.toLowerCase() === normalizedEmail.toLowerCase() && u.id !== subjectUserId
+          );
+          if (conflict) {
+            return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
+          }
+        } else if ((this.userRepo as any).users) {
+          for (const [id, u] of (this.userRepo as any).users.entries()) {
+            if (id !== subjectUserId && u.email && u.email.toLowerCase() === normalizedEmail.toLowerCase()) {
+              return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
+            }
+          }
+        } else if ((this.userRepo as any).store) {
+          for (const [id, u] of (this.userRepo as any).store.entries()) {
+            if (id !== subjectUserId && u.email && u.email.toLowerCase() === normalizedEmail.toLowerCase()) {
+              return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
+            }
+          }
+        }
+      }
+
+      // 3. Attach identifier to subject user
+      const nowIso = new Date().toISOString();
+      if (this.userIdentifierRepo) {
+        await this.userIdentifierRepo.create({
+          userId: subjectUserId,
+          identifierType: 'EMAIL',
+          normalizedValue: normalizedEmail,
+          verifiedAt: nowIso,
+        });
+      }
+
+      // 4. Update compatibility mirror in userRepo
+      if (this.userRepo) {
+        if (typeof (this.userRepo as any).updateProfile === 'function') {
+          await (this.userRepo as any).updateProfile(subjectUserId, { email: normalizedEmail }).catch(() => null);
+        } else if ((this.userRepo as any).users) {
+          const u = (this.userRepo as any).users.get(subjectUserId);
+          if (u) u.email = normalizedEmail;
+        } else if ((this.userRepo as any).store) {
+          const u = (this.userRepo as any).store.get(subjectUserId);
+          if (u) u.email = normalizedEmail;
+        }
+      }
+
+      // 5. Consume challenge atomically
+      challenge.status = 'CONSUMED';
+      challenge.consumedAt = nowIso;
+      challenge.updatedAt = nowIso;
+
+      return {
+        success: true,
+        userId: subjectUserId,
+        email: normalizedEmail,
+        verifiedAt: nowIso,
+        alreadyLinked: false,
+      };
     });
   }
 
@@ -952,6 +1165,17 @@ export class InMemoryUserRepository implements IUserRepository {
       u.updatedAt = new Date().toISOString();
     }
     return u;
+  }
+
+  async updateProfile(userId: string, data: { fullName?: string | null; email?: string | null; avatarUrl?: string | null }): Promise<any> {
+    const u = this.users.get(userId);
+    if (u) {
+      if (data.fullName !== undefined) u.fullName = data.fullName;
+      if (data.email !== undefined) u.email = data.email;
+      if (data.avatarUrl !== undefined) u.avatarUrl = data.avatarUrl;
+      u.updatedAt = new Date().toISOString();
+    }
+    return u || null;
   }
 
   clear(): void {

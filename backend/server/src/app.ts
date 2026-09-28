@@ -336,6 +336,94 @@ export class ExpressServerApp {
         return authV2Unavailable();
       }
 
+      // ----------------------------------------------------------------------
+      // 1B. CUSTOMER MULTI-IDENTIFIER API (/api/v2/customer/identifiers/email/*)
+      // ----------------------------------------------------------------------
+      const emailLinkChallengePath = path.match(/^\/api\/v2\/customer\/identifiers\/email\/challenges\/([^/]+)(?:\/(verify|resend))?$/);
+
+      if (path.startsWith('/api/v2/customer/identifiers/email/')) {
+        if (!authV2Decision.enabled) return authV2Unavailable();
+
+        // Enforce JWT Bearer Authentication & ROLE_CUSTOMER
+        const authHeader = headers['authorization'] || headers['Authorization'];
+        let subjectUserId: string;
+        try {
+          const jwt = verifyJwtToken(authHeader);
+          requireRole(jwt, ['ROLE_CUSTOMER']);
+          subjectUserId = jwt.sub;
+        } catch (authErr) {
+          return authV2ErrorResponse(authErr);
+        }
+
+        // 1. Issue email link challenge: POST /api/v2/customer/identifiers/email/challenges
+        if (path === '/api/v2/customer/identifiers/email/challenges' && method === 'POST') {
+          if (!isPlainBody || typeof bodyPayload.email !== 'string' || bodyPayload.email.trim().length === 0) {
+            return authV2ErrorResponse(new Error('INVALID_EMAIL'));
+          }
+          try {
+            const result = await authV2Service().requestEmailLinkChallenge({
+              subjectUserId,
+              email: bodyPayload.email,
+              ipAddress: clientIp,
+            });
+            return { statusCode: 200, body: { success: true, data: result, timestamp } };
+          } catch (error) {
+            return authV2ErrorResponse(error);
+          }
+        }
+
+        if (emailLinkChallengePath && emailLinkChallengePath[1] && !validChallengeId(emailLinkChallengePath[1])) {
+          return authV2ErrorResponse(new Error('INVALID_CHALLENGE_ID'));
+        }
+
+        // 2. Verify email link challenge: POST /api/v2/customer/identifiers/email/challenges/:challengeId/verify
+        if (emailLinkChallengePath && emailLinkChallengePath[1] && emailLinkChallengePath[2] === 'verify' && method === 'POST') {
+          if (!isPlainBody || typeof bodyPayload.otp !== 'string' || !/^\d{6}$/.test(bodyPayload.otp)) {
+            return authV2ErrorResponse(new Error('INVALID_OTP'));
+          }
+          try {
+            const result = await authV2Service().verifyEmailLinkChallenge({
+              challengeId: emailLinkChallengePath[1],
+              otp: bodyPayload.otp,
+              subjectUserId,
+              ipAddress: clientIp,
+            });
+            return { statusCode: 200, body: { success: true, data: result, timestamp } };
+          } catch (error) {
+            return authV2ErrorResponse(error);
+          }
+        }
+
+        // 3. Resend email link challenge: POST /api/v2/customer/identifiers/email/challenges/:challengeId/resend
+        if (emailLinkChallengePath && emailLinkChallengePath[1] && emailLinkChallengePath[2] === 'resend' && method === 'POST') {
+          try {
+            const result = await authV2Service().resendEmailLinkChallenge({
+              challengeId: emailLinkChallengePath[1],
+              subjectUserId,
+              ipAddress: clientIp,
+            });
+            return { statusCode: 200, body: { success: true, data: result, timestamp } };
+          } catch (error) {
+            return authV2ErrorResponse(error);
+          }
+        }
+
+        // 4. Cancel email link challenge: DELETE /api/v2/customer/identifiers/email/challenges/:challengeId
+        if (emailLinkChallengePath && emailLinkChallengePath[1] && !emailLinkChallengePath[2] && method === 'DELETE') {
+          try {
+            const result = await authV2Service().cancelEmailLinkChallenge({
+              challengeId: emailLinkChallengePath[1],
+              subjectUserId,
+            });
+            return { statusCode: 200, body: { success: true, data: result, timestamp } };
+          } catch (error) {
+            return authV2ErrorResponse(error);
+          }
+        }
+
+        return authV2Unavailable();
+      }
+
 
       if (path === '/api/v1/auth/request-otp' && method === 'POST') {
         const response = await this.authController.requestOtp(bodyPayload?.phone);

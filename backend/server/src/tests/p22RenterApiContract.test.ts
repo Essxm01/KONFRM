@@ -35,7 +35,7 @@ const rawUser = {
 
 const profileDto = toCustomerProfileDto(rawUser);
 assert.deepEqual(Object.keys(profileDto).sort(), [
-  'avatarUrl', 'createdAt', 'email', 'fullName', 'id', 'phoneNumber', 'phoneVerifiedAt', 'status', 'updatedAt',
+  'avatarUrl', 'createdAt', 'email', 'fullName', 'id', 'phoneNumber', 'phoneVerifiedAt', 'status', 'updatedAt', 'verifiedIdentifiers',
 ].sort());
 assert.equal(profileDto.id, '00000000-0000-4000-8000-000000000001');
 assert.equal(profileDto.phoneNumber, '+201012345678');
@@ -317,16 +317,22 @@ try {
 }
 
 // 2C. Profile GET returns sanitized CustomerProfileDto keys only
+const origUserGetVerified = userDb.getVerifiedIdentifiers;
 (userDb as any).getById = async () => ({ ...rawUser });
+(userDb as any).getVerifiedIdentifiers = async () => ({
+  phone: { value: '+201012345678', verifiedAt: '2026-09-01T00:00:00.000Z' },
+  email: null,
+});
 try {
   const res = await app.handleHttpRequest('GET', '/api/v1/customer/profile', customerHeaders);
   assert.equal(res.statusCode, 200);
   assert.equal((res.body as any).success, true);
   assert.deepEqual(Object.keys((res.body as any).data).sort(), [
-    'avatarUrl', 'createdAt', 'email', 'fullName', 'id', 'phoneNumber', 'phoneVerifiedAt', 'status', 'updatedAt',
+    'avatarUrl', 'createdAt', 'email', 'fullName', 'id', 'phoneNumber', 'phoneVerifiedAt', 'status', 'updatedAt', 'verifiedIdentifiers',
   ].sort());
 } finally {
   (userDb as any).getById = origUserGetById;
+  (userDb as any).getVerifiedIdentifiers = origUserGetVerified;
 }
 
 // 2D. Account summary booking read error must be 500, not a zero summary

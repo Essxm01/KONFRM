@@ -75,6 +75,42 @@ export const userDb = {
       [userId, data.fullName || null, data.email === null ? '__NULL__' : (data.email || null), data.avatarUrl || null]
     );
     return res.rows[0] || null;
+  },
+
+  async getVerifiedIdentifiers(userId: string): Promise<{
+    phone: { value: string; verifiedAt: string } | null;
+    email: { value: string; verifiedAt: string } | null;
+  }> {
+    const res = await queryDb(
+      `SELECT id, user_id AS "userId", identifier_type AS "identifierType",
+              normalized_value AS "normalizedValue", verified_at AS "verifiedAt",
+              created_at AS "createdAt", updated_at AS "updatedAt"
+       FROM public.user_identifiers
+       WHERE user_id = $1`,
+      [userId]
+    );
+    const rows = res.rows || [];
+    let phone: { value: string; verifiedAt: string } | null = null;
+    let email: { value: string; verifiedAt: string } | null = null;
+
+    for (const r of rows) {
+      const type = r.identifierType ?? r.identifier_type;
+      const val = r.normalizedValue ?? r.normalized_value;
+      const verifiedAt = r.verifiedAt ?? r.verified_at;
+      if (type === 'PHONE' && verifiedAt) {
+        phone = {
+          value: String(val),
+          verifiedAt: new Date(verifiedAt).toISOString(),
+        };
+      } else if (type === 'EMAIL' && verifiedAt) {
+        email = {
+          value: String(val),
+          verifiedAt: new Date(verifiedAt).toISOString(),
+        };
+      }
+    }
+
+    return { phone, email };
   }
 };
 

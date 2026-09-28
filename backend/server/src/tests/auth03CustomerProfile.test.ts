@@ -154,5 +154,362 @@ export async function runAuth03Tests(): Promise<{ name: string; passed: boolean;
     results.push({ name: '[19.6] Protected Profile Requires Valid Authentication (401)', passed: false, error: err.message });
   }
 
+  // Test 7: PATCH /api/v1/customer/profile rejects direct email mutation
+  try {
+    const testUserId = '00000000-0000-4000-8000-201012345678';
+    const customerToken = signAccessToken({
+      sub: testUserId,
+      role: 'ROLE_CUSTOMER',
+      phone: '+201012345678',
+    });
+
+    const response = await app.handleHttpRequest(
+      'PATCH',
+      '/api/v1/customer/profile',
+      { authorization: `Bearer ${customerToken}` },
+      { email: 'new.email@example.com' }
+    );
+
+    if (
+      response.statusCode !== 400 ||
+      response.body.error?.code !== 'PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION' ||
+      response.body.error?.message !== 'تغيير البريد الإلكتروني أو الهاتف يتطلب تأكيد الرمز'
+    ) {
+      throw new Error(`Expected 400 PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION, got ${response.statusCode} (${response.body.error?.code})`);
+    }
+
+    results.push({ name: '[19.7] Customer Profile PATCH Rejects Direct Email Mutation (400)', passed: true });
+  } catch (err: any) {
+    results.push({ name: '[19.7] Customer Profile PATCH Rejects Direct Email Mutation (400)', passed: false, error: err.message });
+  }
+
+  // Test 8: PATCH /api/v1/customer/profile rejects direct phone mutation
+  try {
+    const testUserId = '00000000-0000-4000-8000-201012345678';
+    const customerToken = signAccessToken({
+      sub: testUserId,
+      role: 'ROLE_CUSTOMER',
+      phone: '+201012345678',
+    });
+
+    const response = await app.handleHttpRequest(
+      'PATCH',
+      '/api/v1/customer/profile',
+      { authorization: `Bearer ${customerToken}` },
+      { phoneNumber: '+201099998888' }
+    );
+
+    if (
+      response.statusCode !== 400 ||
+      response.body.error?.code !== 'PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION'
+    ) {
+      throw new Error(`Expected 400 PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION, got ${response.statusCode} (${response.body.error?.code})`);
+    }
+
+    results.push({ name: '[19.8] Customer Profile PATCH Rejects Direct Phone Mutation (400)', passed: true });
+  } catch (err: any) {
+    results.push({ name: '[19.8] Customer Profile PATCH Rejects Direct Phone Mutation (400)', passed: false, error: err.message });
+  }
+
+  // Test 9: GET /api/v1/customer/profile returns canonical verified PHONE identity
+  try {
+    const testUserId = '00000000-0000-4000-8000-201012345678';
+    const customerToken = signAccessToken({
+      sub: testUserId,
+      role: 'ROLE_CUSTOMER',
+      phone: '+201012345678',
+    });
+
+    const origGetById = userDb.getById;
+    const origGetVerified = userDb.getVerifiedIdentifiers;
+
+    (userDb as any).getById = async () => ({
+      id: testUserId,
+      phoneNumber: '+201012345678',
+      phoneVerifiedAt: '2026-09-01T00:00:00.000Z',
+      fullName: 'أحمد محمود',
+      email: null,
+      avatarUrl: null,
+      status: 'ACTIVE',
+      createdAt: '2026-09-01T00:00:00.000Z',
+      updatedAt: '2026-09-01T00:00:00.000Z',
+    });
+    (userDb as any).getVerifiedIdentifiers = async () => ({
+      phone: { value: '+201012345678', verifiedAt: '2026-09-01T00:00:00.000Z' },
+      email: null,
+    });
+
+    try {
+      const response = await app.handleHttpRequest(
+        'GET',
+        '/api/v1/customer/profile',
+        { authorization: `Bearer ${customerToken}` },
+        {}
+      );
+
+      if (response.statusCode !== 200) {
+        throw new Error(`Expected status 200, got ${response.statusCode}`);
+      }
+      const data = response.body.data;
+      if (!data?.verifiedIdentifiers?.phone || data.verifiedIdentifiers.phone.value !== '+201012345678') {
+        throw new Error(`Expected verified phone, got ${JSON.stringify(data?.verifiedIdentifiers)}`);
+      }
+      if (data?.verifiedIdentifiers?.email !== null) {
+        throw new Error(`Expected verified email to be null, got ${JSON.stringify(data?.verifiedIdentifiers?.email)}`);
+      }
+
+      results.push({ name: '[19.9] Customer Profile GET Returns Verified Phone Identity', passed: true });
+    } finally {
+      (userDb as any).getById = origGetById;
+      (userDb as any).getVerifiedIdentifiers = origGetVerified;
+    }
+  } catch (err: any) {
+    results.push({ name: '[19.9] Customer Profile GET Returns Verified Phone Identity', passed: false, error: err.message });
+  }
+
+  // Test 10: GET /api/v1/customer/profile returns verified EMAIL for Email-First (phoneNumber null)
+  try {
+    const testUserId = '00000000-0000-4000-8000-000000000002';
+    const customerToken = signAccessToken({
+      sub: testUserId,
+      role: 'ROLE_CUSTOMER',
+    });
+
+    const origGetById = userDb.getById;
+    const origGetVerified = userDb.getVerifiedIdentifiers;
+
+    (userDb as any).getById = async () => ({
+      id: testUserId,
+      phoneNumber: null,
+      phoneVerifiedAt: null,
+      fullName: 'عميل بريد',
+      email: 'customer@konfrm.eg',
+      avatarUrl: null,
+      status: 'ACTIVE',
+      createdAt: '2026-09-01T00:00:00.000Z',
+      updatedAt: '2026-09-01T00:00:00.000Z',
+    });
+    (userDb as any).getVerifiedIdentifiers = async () => ({
+      phone: null,
+      email: { value: 'customer@konfrm.eg', verifiedAt: '2026-09-01T00:00:00.000Z' },
+    });
+
+    try {
+      const response = await app.handleHttpRequest(
+        'GET',
+        '/api/v1/customer/profile',
+        { authorization: `Bearer ${customerToken}` },
+        {}
+      );
+
+      if (response.statusCode !== 200) {
+        throw new Error(`Expected status 200, got ${response.statusCode}`);
+      }
+      const data = response.body.data;
+      if (data.phoneNumber !== null) {
+        throw new Error(`Expected phoneNumber to be null for Email-First, got ${data.phoneNumber}`);
+      }
+      if (!data?.verifiedIdentifiers?.email || data.verifiedIdentifiers.email.value !== 'customer@konfrm.eg') {
+        throw new Error(`Expected verified email, got ${JSON.stringify(data?.verifiedIdentifiers)}`);
+      }
+      if (data?.verifiedIdentifiers?.phone !== null) {
+        throw new Error(`Expected verified phone to be null, got ${JSON.stringify(data?.verifiedIdentifiers?.phone)}`);
+      }
+
+      results.push({ name: '[19.10] Email-First Customer Returns Verified Email with Null Phone', passed: true });
+    } finally {
+      (userDb as any).getById = origGetById;
+      (userDb as any).getVerifiedIdentifiers = origGetVerified;
+    }
+  } catch (err: any) {
+    results.push({ name: '[19.10] Email-First Customer Returns Verified Email with Null Phone', passed: false, error: err.message });
+  }
+
+  // Test 11: Dual identifier Customer returns both canonical verified identifiers
+  try {
+    const testUserId = '00000000-0000-4000-8000-000000000003';
+    const customerToken = signAccessToken({
+      sub: testUserId,
+      role: 'ROLE_CUSTOMER',
+      phone: '+201012345678',
+    });
+
+    const origGetById = userDb.getById;
+    const origGetVerified = userDb.getVerifiedIdentifiers;
+
+    (userDb as any).getById = async () => ({
+      id: testUserId,
+      phoneNumber: '+201012345678',
+      phoneVerifiedAt: '2026-09-01T00:00:00.000Z',
+      fullName: 'عميل مزدوج',
+      email: 'dual@konfrm.eg',
+      avatarUrl: null,
+      status: 'ACTIVE',
+      createdAt: '2026-09-01T00:00:00.000Z',
+      updatedAt: '2026-09-01T00:00:00.000Z',
+    });
+    (userDb as any).getVerifiedIdentifiers = async () => ({
+      phone: { value: '+201012345678', verifiedAt: '2026-09-01T00:00:00.000Z' },
+      email: { value: 'dual@konfrm.eg', verifiedAt: '2026-09-01T00:00:00.000Z' },
+    });
+
+    try {
+      const response = await app.handleHttpRequest(
+        'GET',
+        '/api/v1/customer/profile',
+        { authorization: `Bearer ${customerToken}` },
+        {}
+      );
+
+      if (response.statusCode !== 200) {
+        throw new Error(`Expected status 200, got ${response.statusCode}`);
+      }
+      const data = response.body.data;
+      if (!data?.verifiedIdentifiers?.phone || data.verifiedIdentifiers.phone.value !== '+201012345678') {
+        throw new Error(`Expected verified phone, got ${JSON.stringify(data?.verifiedIdentifiers)}`);
+      }
+      if (!data?.verifiedIdentifiers?.email || data.verifiedIdentifiers.email.value !== 'dual@konfrm.eg') {
+        throw new Error(`Expected verified email, got ${JSON.stringify(data?.verifiedIdentifiers)}`);
+      }
+
+      results.push({ name: '[19.11] Dual Identifier Customer Returns Both Verified Identifiers', passed: true });
+    } finally {
+      (userDb as any).getById = origGetById;
+      (userDb as any).getVerifiedIdentifiers = origGetVerified;
+    }
+  } catch (err: any) {
+    results.push({ name: '[19.11] Dual Identifier Customer Returns Both Verified Identifiers', passed: false, error: err.message });
+  }
+
+  // Test 12: Legacy users.email alone without verified record in user_identifiers is NOT verified
+  try {
+    const testUserId = '00000000-0000-4000-8000-000000000004';
+    const customerToken = signAccessToken({
+      sub: testUserId,
+      role: 'ROLE_CUSTOMER',
+      phone: '+201012345678',
+    });
+
+    const origGetById = userDb.getById;
+    const origGetVerified = userDb.getVerifiedIdentifiers;
+
+    (userDb as any).getById = async () => ({
+      id: testUserId,
+      phoneNumber: '+201012345678',
+      phoneVerifiedAt: '2026-09-01T00:00:00.000Z',
+      fullName: 'عميل قديم',
+      email: 'legacy.unverified@example.com',
+      avatarUrl: null,
+      status: 'ACTIVE',
+      createdAt: '2026-09-01T00:00:00.000Z',
+      updatedAt: '2026-09-01T00:00:00.000Z',
+    });
+    (userDb as any).getVerifiedIdentifiers = async () => ({
+      phone: { value: '+201012345678', verifiedAt: '2026-09-01T00:00:00.000Z' },
+      email: null, // No verified email in user_identifiers
+    });
+
+    try {
+      const response = await app.handleHttpRequest(
+        'GET',
+        '/api/v1/customer/profile',
+        { authorization: `Bearer ${customerToken}` },
+        {}
+      );
+
+      if (response.statusCode !== 200) {
+        throw new Error(`Expected status 200, got ${response.statusCode}`);
+      }
+      const data = response.body.data;
+      if (data.email !== 'legacy.unverified@example.com') {
+        throw new Error(`Expected legacy email preserved, got ${data.email}`);
+      }
+      if (data?.verifiedIdentifiers?.email !== null) {
+        throw new Error(`Expected unverified legacy email NOT to be in verifiedIdentifiers, got ${JSON.stringify(data?.verifiedIdentifiers?.email)}`);
+      }
+
+      results.push({ name: '[19.12] Unverified Legacy users.email is NOT Represented as Verified Identity', passed: true });
+    } finally {
+      (userDb as any).getById = origGetById;
+      (userDb as any).getVerifiedIdentifiers = origGetVerified;
+    }
+  } catch (err: any) {
+    results.push({ name: '[19.12] Unverified Legacy users.email is NOT Represented as Verified Identity', passed: false, error: err.message });
+  }
+
+  // Test 13: PATCH /customer/profile updates fullName without modifying user_identifiers
+  try {
+    const testUserId = '00000000-0000-4000-8000-201012345678';
+    const customerToken = signAccessToken({
+      sub: testUserId,
+      role: 'ROLE_CUSTOMER',
+      phone: '+201012345678',
+    });
+
+    const origUpdateProfile = userDb.updateProfile;
+    const origGetById = userDb.getById;
+    const origGetVerified = userDb.getVerifiedIdentifiers;
+
+    let updatePayload: any = null;
+    (userDb as any).updateProfile = async (id: string, payload: any) => {
+      updatePayload = payload;
+      return null;
+    };
+    (userDb as any).getById = async () => ({
+      id: testUserId,
+      phoneNumber: '+201012345678',
+      phoneVerifiedAt: '2026-09-01T00:00:00.000Z',
+      fullName: 'مستأجر محدث',
+      email: 'existing@konfrm.eg',
+      avatarUrl: null,
+      status: 'ACTIVE',
+      createdAt: '2026-09-01T00:00:00.000Z',
+      updatedAt: '2026-09-02T00:00:00.000Z',
+    });
+    (userDb as any).getVerifiedIdentifiers = async () => ({
+      phone: { value: '+201012345678', verifiedAt: '2026-09-01T00:00:00.000Z' },
+      email: null,
+    });
+
+    try {
+      const response = await app.handleHttpRequest(
+        'PATCH',
+        '/api/v1/customer/profile',
+        { authorization: `Bearer ${customerToken}` },
+        { fullName: 'مستأجر محدث' }
+      );
+
+      if (response.statusCode !== 200) {
+        throw new Error(`Expected status 200, got ${response.statusCode}`);
+      }
+      if (updatePayload?.email !== undefined) {
+        throw new Error(`updateProfile must not receive email in payload, got ${JSON.stringify(updatePayload)}`);
+      }
+      if (updatePayload?.fullName !== 'مستأجر محدث') {
+        throw new Error(`Expected fullName update, got ${updatePayload?.fullName}`);
+      }
+
+      results.push({ name: '[19.13] Profile PATCH Updates Full Name Without Mutating Identifiers', passed: true });
+    } finally {
+      (userDb as any).updateProfile = origUpdateProfile;
+      (userDb as any).getById = origGetById;
+      (userDb as any).getVerifiedIdentifiers = origGetVerified;
+    }
+  } catch (err: any) {
+    results.push({ name: '[19.13] Profile PATCH Updates Full Name Without Mutating Identifiers', passed: false, error: err.message });
+  }
+
   return results;
+}
+
+if (process.argv[1]?.includes('auth03CustomerProfile')) {
+  runAuth03Tests().then((res) => {
+    console.log(JSON.stringify(res, null, 2));
+    const failed = res.filter((r) => !r.passed);
+    if (failed.length > 0) {
+      console.error(`${failed.length} tests failed!`);
+      process.exit(1);
+    }
+    console.log(`All ${res.length} auth03 tests passed!`);
+  });
 }

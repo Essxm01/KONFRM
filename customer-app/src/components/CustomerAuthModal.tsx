@@ -4,7 +4,7 @@ import { X, Smartphone, User, CheckCircle2 } from 'lucide-react';
 
 export interface CustomerUserProfile {
   id: string;
-  phoneNumber: string;
+  phoneNumber?: string | null;
   fullName: string | null;
   email?: string | null;
   avatarUrl?: string | null;
@@ -12,6 +12,10 @@ export interface CustomerUserProfile {
   status?: string;
   createdAt?: string;
   updatedAt?: string;
+  verifiedIdentifiers?: {
+    phone: { value: string; verifiedAt: string } | null;
+    email: { value: string; verifiedAt: string } | null;
+  };
 }
 
 interface CustomerAuthModalProps {

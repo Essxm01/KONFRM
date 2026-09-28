@@ -6,6 +6,7 @@ import { ExploreSkeletonFeed, ExploreEmptyView, ExploreErrorView } from './compo
 import { PropertyDetailModal } from './components/PropertyDetailModal';
 import { CustomerAuthModal, type CustomerUserProfile } from './components/CustomerAuthModal';
 import { CustomerEditAccountPage } from './components/CustomerEditAccountPage';
+import { CustomerAccountHomeScreen } from './components/CustomerAccountHomeScreen';
 import { CustomerSupportModal } from './components/CustomerSupportModal';
 import { CustomerWalletModal } from './components/CustomerWalletModal';
 import type { BookingDetails } from './components/CustomerCheckoutModal';
@@ -70,7 +71,6 @@ import {
   CustomerNotificationsUnauthorizedError,
 } from './utils/customerNotifications';
 import {
-  formatUnreadCountBadge,
   mergeNotificationPages,
   markNotificationReadLocally,
   applySuccessfulNotificationRead,
@@ -79,18 +79,7 @@ import {
   notificationListStateAfterLoad,
   notificationFailureState,
 } from './utils/customerScreen16Notifications';
-import {
-  Heart,
-  CalendarCheck,
-  User,
-  AlertCircle,
-  ChevronLeft,
-  HelpCircle,
-  Wallet,
-  Edit3,
-  LogOut,
-  Bell as NotificationBellIcon,
-} from 'lucide-react';
+
 
 export function App() {
   const authV2Enabled = isCustomerAuthV2Enabled(import.meta.env.VITE_CUSTOMER_AUTH_V2_ENABLED);
@@ -108,13 +97,13 @@ export function App() {
   const [isEditingAccount, setIsEditingAccount] = useState<boolean>(false);
 
   // Account Hub Summary State
-  const [accountSummary, setAccountSummary] = useState<{
+  const [_accountSummary, setAccountSummary] = useState<{
     confirmedBookingsCount: number;
     upcomingStaysCount: number;
     totalBookingsCount: number;
     totalDepositsPaidEgp: number;
   } | null>(null);
-  const [accountSummaryError, setAccountSummaryError] = useState<string | null>(null);
+  const [_accountSummaryError, setAccountSummaryError] = useState<string | null>(null);
 
   // Data & Search States
   const [properties, setProperties] = useState<CustomerPropertyItem[]>([]);
@@ -820,14 +809,7 @@ export function App() {
     }
   }, [activeTab, authToken]);
 
-  const getInitials = (name?: string | null): string => {
-    if (!name || name.trim().length === 0) return 'ن';
-    const parts = name.trim().split(/\s+/);
-    if (parts.length >= 2) {
-      return `${parts[0][0]}.${parts[1][0]}`;
-    }
-    return parts[0].slice(0, 2);
-  };
+
 
   // Favorite Toggle Handler (Protected Action - P2.2)
   const handleToggleFavorite = async (id: string, e?: React.MouseEvent) => {
@@ -1457,6 +1439,10 @@ export function App() {
                 localStorage.setItem('sola_customer_access_token', newAccessToken);
               }
             }}
+            onReLogin={() => {
+              setIsEditingAccount(false);
+              openAuthEntry({ type: 'ACCOUNT_TAB' });
+            }}
           />
         ) : discoveryView !== 'EXPLORE' ? (
           // C2 discovery stack owns the screen; PropertyCard handoff from
@@ -1633,287 +1619,40 @@ export function App() {
               onReauthenticate={() => openAuthEntry({ type: 'NOTIFICATION_CENTER' }, 'LOGIN')}
             />
           ) : (
-          <div className="my-4 space-y-4 pb-20">
-            {/* A. Top App Bar */}
-            <div className="flex items-center justify-between pb-1">
-              <h2 className="text-lg font-black text-slate-900">حسابي</h2>
-            </div>
-
-            {authToken ? (
-              <div className="space-y-4 animate-fade-in">
-                {/* B. Profile Header Card */}
-                <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs relative overflow-hidden">
-                  <div className="flex items-center gap-4">
-                    {/* Neutral Initials Avatar */}
-                    <div className="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-black text-lg shadow-sm shrink-0">
-                      {getInitials(userProfile?.fullName)}
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      {userProfile?.fullName && userProfile.fullName.trim().length > 0 ? (
-                        <h3 className="font-black text-slate-900 text-base truncate">
-                          {userProfile.fullName.trim()}
-                        </h3>
-                      ) : (
-                        <div className="flex items-center gap-1.5">
-                          <h3 className="font-black text-sm text-slate-800">مستخدم جديد</h3>
-                          <span className="text-[10px] font-bold bg-blue-50 text-[var(--konfrm-color-primary)] px-2 py-0.5 rounded-md border border-blue-200">
-                            أكمل بيانات حسابك
-                          </span>
-                        </div>
-                      )}
-                      
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <bdi
-                          dir="ltr"
-                          style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
-                          className="text-xs text-slate-500 font-bold tracking-wide"
-                        >
-                          {userProfile?.phoneNumber || customerPhone}
-                        </bdi>
-                      </div>
-                    </div>
-
-                    {/* Clear Working Edit Profile Affordance */}
-                    <button
-                      onClick={() => setIsEditingAccount(true)}
-                      className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 font-black text-xs rounded-xl border border-slate-200 transition-colors flex items-center gap-1 shrink-0"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                      <span>تعديل</span>
-                    </button>
-                  </div>
-
-                  {/* Clean Incomplete Profile Prompt (Only when full_name is genuinely empty) */}
-                  {(!userProfile?.fullName || userProfile.fullName.trim().length === 0) && (
-                    <div className="mt-4 p-3 bg-blue-50/80 border border-blue-200 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold text-slate-800">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <AlertCircle className="w-4 h-4 text-[var(--konfrm-color-primary)] shrink-0" />
-                        <span>يرجى إضافة اسمك بالكامل لإتمام الملف الشخصي.</span>
-                      </div>
-                      <button
-                        onClick={() => setIsEditingAccount(true)}
-                        className="px-3 py-1.5 bg-[var(--konfrm-color-primary)] hover:bg-blue-600 text-white font-black text-[11px] rounded-lg shrink-0 transition-colors"
-                      >
-                        أكمل بيانات حسابك
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* C. Real Account Summary Metrics */}
-                {accountSummaryError && (
-                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold text-center">
-                    {accountSummaryError}
-                  </div>
-                )}
-                <div className="grid grid-cols-3 gap-2.5">
-                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 text-center shadow-xs">
-                    <p className="text-[11px] font-bold text-slate-400">الحجوزات المؤكدة</p>
-                    <p className="text-lg font-black text-slate-900 mt-0.5">
-                      {accountSummary ? accountSummary.confirmedBookingsCount : '-'}
-                    </p>
-                  </div>
-                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 text-center shadow-xs">
-                    <p className="text-[11px] font-bold text-slate-400">الإقامة القادمة</p>
-                    <p className="text-lg font-black text-slate-900 mt-0.5">
-                      {accountSummary ? accountSummary.upcomingStaysCount : '-'}
-                    </p>
-                  </div>
-                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 text-center shadow-xs">
-                    <p className="text-[11px] font-bold text-slate-400">المفضلة</p>
-                    <p className="text-lg font-black text-slate-900 mt-0.5">
-                      {favoritesLoadState === 'LOADED' || favoritesLoadState === 'EMPTY' ? favoriteProperties.length : '-'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Section: النشاط */}
-                <div className="space-y-1.5">
-                  <h4 className="text-xs font-black text-slate-400 px-1">النشاط</h4>
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-                    <button
-                      onClick={() => {
-                        setIsNotificationCenterOpen(true);
-                        if (authToken) {
-                          void loadNotifications(authToken, 'INITIAL');
-                        }
-                      }}
-                      className="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-right"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-blue-50 text-[#0059FF] rounded-xl flex items-center justify-center shrink-0">
-                          <NotificationBellIcon className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h5 className="font-black text-slate-900 text-xs">الإشعارات</h5>
-                          <p className="text-[11px] text-slate-400 font-bold">تحديثات مهمة على طلباتك وحجوزاتك</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {formatUnreadCountBadge(unreadNotificationCount) && (
-                          <span className="min-w-[20px] h-5 px-1.5 bg-[#0059FF] text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs">
-                            {formatUnreadCountBadge(unreadNotificationCount)}
-                          </span>
-                        )}
-                        <ChevronLeft className="w-4 h-4 text-slate-400" />
-                      </div>
-                    </button>
-                  </div>
-                </div>
-
-                {/* D. SECTION: رحلاتي */}
-                <div className="space-y-1.5">
-                  <h4 className="text-xs font-black text-slate-400 px-1">رحلاتي</h4>
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-xs divide-y divide-slate-100 overflow-hidden">
-                    {/* Row 1: حجوزاتي */}
-                    <button
-                      onClick={() => {
-                        setIsEditingAccount(false);
-                        setActiveTab('BOOKINGS');
-                      }}
-                      className="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-right"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-blue-50 text-[#0059FF] rounded-xl flex items-center justify-center shrink-0">
-                          <CalendarCheck className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h5 className="font-black text-slate-900 text-xs">حجوزاتي</h5>
-                          <p className="text-[11px] text-slate-400 font-bold">تابع حجوزاتك الحالية والسابقة</p>
-                        </div>
-                      </div>
-                      <ChevronLeft className="w-4 h-4 text-slate-400" />
-                    </button>
-
-                    {/* Row 2: المفضلة */}
-                    <button
-                      onClick={() => {
-                        setIsEditingAccount(false);
-                        setActiveTab('FAVORITES');
-                      }}
-                      className="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-right"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center shrink-0">
-                          <Heart className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h5 className="font-black text-slate-900 text-xs">المفضلة</h5>
-                          <p className="text-[11px] text-slate-400 font-bold">الوحدات التي حفظتها للرجوع إليها</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {favorites.length > 0 && (
-                          <span className="text-[10px] font-black text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">
-                            {favorites.length}
-                          </span>
-                        )}
-                        <ChevronLeft className="w-4 h-4 text-slate-400" />
-                      </div>
-                    </button>
-                  </div>
-                </div>
-
-                {/* E. SECTION: المحفظة والمدفوعات */}
-                <div className="space-y-1.5">
-                  <h4 className="text-xs font-black text-slate-400 px-1">المحفظة والمدفوعات</h4>
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-                    <button
-                      onClick={() => setShowWalletModal(true)}
-                      className="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-right"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0">
-                          <Wallet className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h5 className="font-black text-slate-900 text-xs">المحفظة والمدفوعات</h5>
-                          <p className="text-[11px] text-slate-400 font-bold">العربون والمدفوعات والمبالغ المتعلقة بحجوزاتك</p>
-                        </div>
-                      </div>
-                      <ChevronLeft className="w-4 h-4 text-slate-400" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* F. SECTION: الحساب */}
-                <div className="space-y-1.5">
-                  <h4 className="text-xs font-black text-slate-400 px-1">الحساب</h4>
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-xs divide-y divide-slate-100 overflow-hidden">
-                    {/* Row 1: البيانات الشخصية */}
-                    <button
-                      onClick={() => setIsEditingAccount(true)}
-                      className="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-right"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center shrink-0">
-                          <User className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h5 className="font-black text-slate-900 text-xs">البيانات الشخصية</h5>
-                          <p className="text-[11px] text-slate-400 font-bold">تعديل الاسم وتحديث بيانات الحساب</p>
-                        </div>
-                      </div>
-                      <ChevronLeft className="w-4 h-4 text-slate-400" />
-                    </button>
-
-                    {/* Row 2: المساعدة والدعم */}
-                    <button
-                      onClick={() => setShowSupportModal(true)}
-                      className="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-right"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center shrink-0">
-                          <HelpCircle className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h5 className="font-black text-slate-900 text-xs">المساعدة والدعم</h5>
-                          <p className="text-[11px] text-slate-400 font-bold">الأسئلة الشائعة وإرشادات الحجز</p>
-                        </div>
-                      </div>
-                      <ChevronLeft className="w-4 h-4 text-slate-400" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* G. LOGOUT */}
-                <div className="pt-2">
-                  <button
-                    onClick={handleLogout}
-                    className="w-full py-3 bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-600 font-black text-xs rounded-xl border border-slate-200 hover:border-rose-200 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>تسجيل الخروج</span>
-                  </button>
-                </div>
-              </div>
-            ) : customerAuthError ? (
-              <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-center">
-                <p className="text-sm font-bold text-rose-800">{customerAuthError}</p>
-                <button type="button" onClick={() => window.location.reload()} className="mt-3 min-h-11 rounded-xl bg-[var(--konfrm-color-primary)] px-4 text-xs font-bold text-white">إعادة المحاولة</button>
-              </div>
-            ) : (
-              /* Logged-Out State */
-              <div className="bg-white p-6 rounded-3xl border border-slate-200 text-center space-y-4 shadow-xs">
-                <div className="w-16 h-16 bg-blue-50 text-[#0059FF] rounded-3xl flex items-center justify-center mx-auto mb-2 shadow-xs">
-                  <User className="w-8 h-8" />
-                </div>
-                <div>
-                  <h3 className="font-black text-slate-900 text-base mb-1">تسجيل الدخول / إنشاء حساب</h3>
-                  <p className="text-xs text-slate-500 font-bold max-w-xs mx-auto leading-relaxed">
-                    ادخل رقم هاتفك لتتمكن من تقديم طلبات الحجز المباشرة وحفظ شاليهاتك المفضلة ومتابعة التأكيدات.
-                  </p>
-                </div>
-                <button
-                  onClick={() => openAuthEntry({ type: 'ACCOUNT_TAB' })}
-                  className="w-full py-3.5 bg-[#0059FF] hover:bg-blue-600 active:scale-[0.99] text-white font-black text-xs rounded-xl shadow-lg shadow-blue-500/25 transition-all"
-                >
-                  دخول برقم الجوال
-                </button>
-              </div>
-            )}
-          </div>
+            <CustomerAccountHomeScreen
+              isAuthenticated={Boolean(authToken)}
+              userProfile={userProfile}
+              customerPhone={customerPhone}
+              unreadNotificationCount={unreadNotificationCount}
+              onEditProfile={() => setIsEditingAccount(true)}
+              onOpenBookings={() => {
+                setIsEditingAccount(false);
+                setActiveTab('BOOKINGS');
+              }}
+              onOpenFavorites={() => {
+                setIsEditingAccount(false);
+                setActiveTab('FAVORITES');
+              }}
+              onOpenNotifications={() => {
+                setIsNotificationCenterOpen(true);
+                if (authToken) {
+                  void loadNotifications(authToken, 'INITIAL');
+                }
+              }}
+              onOpenPayments={() => setShowWalletModal(true)}
+              onOpenSupport={() => setShowSupportModal(true)}
+              onLogout={handleLogout}
+              onLogin={() => openAuthEntry({ type: 'ACCOUNT_TAB' })}
+              isSessionExpired={Boolean(authToken && (bookingsSessionExpired || favoritesLoadState === 'SESSION_EXPIRED'))}
+              accountError={customerAuthError}
+              onRetryAccount={() => {
+                if (authToken) {
+                  void fetchCustomerProfile(authToken);
+                } else {
+                  window.location.reload();
+                }
+              }}
+            />
           )
         )}
       </main>

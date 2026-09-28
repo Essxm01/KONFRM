@@ -165,8 +165,14 @@ export function mapAuthV2Error(error: unknown): { statusCode: number; code: stri
   const raw = error instanceof Error ? error.message : String(error || '');
   const code = errorCodeFromMessage(raw);
   if (code === 'CHALLENGE_NOT_FOUND' || code === 'USER_NOT_FOUND') return { statusCode: 404, code, message: ERROR_MESSAGES[code] || 'العنصر غير موجود.' };
-  if (code === 'UNAUTHORIZED_SUBJECT' || code === 'UNAUTHORIZED_MISSING_TOKEN' || code === 'UNAUTHORIZED_INVALID_TOKEN' || code === 'UNAUTHORIZED_TOKEN_EXPIRED') {
-    return { statusCode: 401, code: code === 'UNAUTHORIZED_TOKEN_EXPIRED' ? 'UNAUTHORIZED_INVALID_TOKEN' : code, message: ERROR_MESSAGES[code] || 'غير مصرح.' };
+  if (code === 'UNAUTHORIZED_SUBJECT' || code === 'UNAUTHORIZED_MISSING_TOKEN') {
+    return { statusCode: 401, code, message: ERROR_MESSAGES[code] || 'غير مصرح.' };
+  }
+  if (code === 'UNAUTHORIZED_TOKEN_EXPIRED') {
+    return { statusCode: 401, code: 'UNAUTHORIZED_TOKEN_EXPIRED', message: ERROR_MESSAGES.UNAUTHORIZED_TOKEN_EXPIRED };
+  }
+  if (code === 'UNAUTHORIZED_INVALID_TOKEN' || code === 'UNAUTHORIZED_INVALID_TOKEN_TYPE') {
+    return { statusCode: 401, code: 'UNAUTHORIZED_INVALID_TOKEN', message: ERROR_MESSAGES.UNAUTHORIZED_INVALID_TOKEN };
   }
   if (code === 'CHALLENGE_OWNERSHIP_MISMATCH' || code === 'CHALLENGE_SUBJECT_MISMATCH' || code === 'FORBIDDEN_INSUFFICIENT_ROLE') {
     return { statusCode: 403, code, message: ERROR_MESSAGES[code] || 'غير مصرح لك بالوصول.' };

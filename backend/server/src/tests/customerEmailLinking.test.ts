@@ -39,7 +39,7 @@ import {
   AUTH_V2_QA_PROJECT_REF,
   mapAuthV2Error,
 } from '../services/authV2Runtime.js';
-import { signAccessToken } from '../services/jwtService.js';
+import { signAccessToken, signRefreshToken, verifyAccessToken } from '../services/jwtService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -133,9 +133,22 @@ function mintCustomerToken(userId: string): string {
 }
 
 function mintExpiredCustomerToken(userId: string): string {
-  const payload = { sub: userId, role: 'ROLE_CUSTOMER' };
-  const token = jwt.sign(payload, TEST_ENV.JWT_ACCESS_SECRET, { expiresIn: -10 });
+  const claims = {
+    sub: userId,
+    role: 'ROLE_CUSTOMER',
+    type: 'access',
+  };
+  const token = jwt.sign(claims, TEST_ENV.JWT_ACCESS_SECRET, {
+    algorithm: 'HS256',
+    issuer: 'sola-vacation-rentals',
+    audience: 'sola-web-clients',
+    expiresIn: -10,
+  });
   return 'Bearer ' + token;
+}
+
+function mintCustomerRefreshToken(userId: string): string {
+  return 'Bearer ' + signRefreshToken({ sub: userId, role: 'ROLE_CUSTOMER' });
 }
 
 function mintOwnerToken(userId: string): string {
@@ -858,16 +871,65 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
     // ------------------------------------------------------------------------
     console.log('\n[AUTHORIZATION & RBAC]');
 
-    await record('HTTP RBAC: Unauthenticated requests return 401', async () => {
+    await record('Direct Unit Token Contract: verifyAccessToken distinguishes valid, expired, malformed, and wrong-type tokens', () => {
+      const userId = randomUUID();
+      const validBearer = mintCustomerToken(userId);
+      const validRaw = validBearer.replace('Bearer ', '');
+      const validDecoded = verifyAccessToken(validRaw);
+      assert.strictEqual(validDecoded.sub, userId);
+      assert.strictEqual(validDecoded.role, 'ROLE_CUSTOMER');
+
+      const expiredBearer = mintExpiredCustomerToken(userId);
+      const expiredRaw = expiredBearer.replace('Bearer ', '');
+      assert.throws(
+        () => verifyAccessToken(expiredRaw),
+        (err: any) => err.message === 'UNAUTHORIZED_TOKEN_EXPIRED',
+        'Expired token must throw UNAUTHORIZED_TOKEN_EXPIRED'
+      );
+
+      assert.throws(
+        () => verifyAccessToken('invalid-token-string'),
+        (err: any) => err.message === 'UNAUTHORIZED_INVALID_TOKEN',
+        'Malformed token must throw UNAUTHORIZED_INVALID_TOKEN'
+      );
+
+      const refreshBearer = mintCustomerRefreshToken(userId);
+      const refreshRaw = refreshBearer.replace('Bearer ', '');
+      assert.throws(
+        () => verifyAccessToken(refreshRaw),
+        (err: any) => err.message === 'UNAUTHORIZED_INVALID_TOKEN',
+        'Refresh token must throw UNAUTHORIZED_INVALID_TOKEN'
+      );
+    });
+
+    await record('HTTP RBAC: Valid Customer Access Token is accepted (200)', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201099990001', fullName: 'Valid Customer', status: 'ACTIVE' });
+      const validToken = mintCustomerToken(userId);
+      const res = await request(
+        ctx.app,
+        'POST',
+        '/api/v2/customer/identifiers/email/challenges',
+        { email: 'valid.customer@konfrm.test' },
+        validToken
+      );
+      assert.strictEqual(res.status, 200);
+      assert.strictEqual(res.body.success, true);
+      assert.ok(res.body.data.challengeId);
+    });
+
+    await record('HTTP RBAC: Unauthenticated requests return 401 UNAUTHORIZED_MISSING_TOKEN', async () => {
       const ctx = createTestContext();
       const res = await request(ctx.app, 'POST', '/api/v2/customer/identifiers/email/challenges', {
         email: 'unauth@konfrm.test',
       });
       assert.strictEqual(res.status, 401);
       assert.strictEqual(res.body.error.code, 'UNAUTHORIZED_MISSING_TOKEN');
+      assert.strictEqual(res.body.error.message, 'رمز الدخول مطلوب.');
     });
 
-    await record('HTTP RBAC: Invalid token returns 401', async () => {
+    await record('HTTP RBAC: Invalid/Malformed token returns 401 UNAUTHORIZED_INVALID_TOKEN', async () => {
       const ctx = createTestContext();
       const res = await request(
         ctx.app,
@@ -878,11 +940,30 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
       );
       assert.strictEqual(res.status, 401);
       assert.strictEqual(res.body.error.code, 'UNAUTHORIZED_INVALID_TOKEN');
+      assert.strictEqual(res.body.error.message, 'رمز الدخول غير صالح أو منتهي الصلاحية.');
     });
 
-    await record('HTTP RBAC: Expired token returns 401', async () => {
+    await record('HTTP RBAC: Refresh token supplied where Access Token required returns 401 UNAUTHORIZED_INVALID_TOKEN', async () => {
       const ctx = createTestContext();
-      const expiredToken = mintExpiredCustomerToken(randomUUID());
+      const userId = randomUUID();
+      const refreshToken = mintCustomerRefreshToken(userId);
+      const res = await request(
+        ctx.app,
+        'POST',
+        '/api/v2/customer/identifiers/email/challenges',
+        { email: 'refresh@konfrm.test' },
+        refreshToken
+      );
+      assert.strictEqual(res.status, 401);
+      assert.strictEqual(res.body.error.code, 'UNAUTHORIZED_INVALID_TOKEN');
+      assert.strictEqual(res.body.error.message, 'رمز الدخول غير صالح أو منتهي الصلاحية.');
+    });
+
+    await record('HTTP RBAC: Expired token returns 401 UNAUTHORIZED_TOKEN_EXPIRED with zero side effects', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201099990002', fullName: 'Expired Token User', status: 'ACTIVE' });
+      const expiredToken = mintExpiredCustomerToken(userId);
       const res = await request(
         ctx.app,
         'POST',
@@ -891,7 +972,23 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
         expiredToken
       );
       assert.strictEqual(res.status, 401);
-      assert.strictEqual(res.body.error.code, 'UNAUTHORIZED_INVALID_TOKEN');
+      assert.strictEqual(res.body.success, false);
+      assert.strictEqual(res.body.error.code, 'UNAUTHORIZED_TOKEN_EXPIRED');
+      assert.strictEqual(res.body.error.message, 'رمز الدخول غير صالح أو منتهي الصلاحية.');
+
+      // Invariant: zero side effects
+      // 1. Zero challenges created
+      assert.strictEqual((ctx.challenges as any).store.size, 0, 'No challenge created');
+      // 2. Zero rate limit buckets touched
+      assert.strictEqual((ctx.rateLimits as any).store.size, 0, 'No rate-limit bucket touched');
+      // 3. Zero identifiers linked/mutated
+      const userIdentifiers = await ctx.identifiers.getByUserId(userId);
+      assert.strictEqual(userIdentifiers.length, 0, 'No identifier should be created for expired token');
+      // 4. User remains untouched
+      const user = await ctx.users.getById(userId);
+      assert.strictEqual(user?.status, 'ACTIVE');
+      // 5. No session created
+      assert.strictEqual((ctx.sessions as any).sessions.size, 0, 'No session created');
     });
 
     await record('HTTP RBAC: Owner and Admin tokens return 403', async () => {

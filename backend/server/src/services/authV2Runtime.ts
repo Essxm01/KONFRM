@@ -155,6 +155,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   UNAUTHORIZED_MISSING_TOKEN: 'رمز الدخول مطلوب.',
   UNAUTHORIZED_INVALID_TOKEN: 'رمز الدخول غير صالح أو منتهي الصلاحية.',
   UNAUTHORIZED_TOKEN_EXPIRED: 'رمز الدخول غير صالح أو منتهي الصلاحية.',
+  CUSTOMER_EMAIL_LINKING_UNAVAILABLE: 'خدمة إضافة البريد الإلكتروني غير متاحة حاليًا.',
 };
 
 function errorCodeFromMessage(message: string): string {
@@ -164,6 +165,9 @@ function errorCodeFromMessage(message: string): string {
 export function mapAuthV2Error(error: unknown): { statusCode: number; code: string; message: string } {
   const raw = error instanceof Error ? error.message : String(error || '');
   const code = errorCodeFromMessage(raw);
+  if (code === 'CUSTOMER_EMAIL_LINKING_UNAVAILABLE') {
+    return { statusCode: 404, code, message: ERROR_MESSAGES.CUSTOMER_EMAIL_LINKING_UNAVAILABLE };
+  }
   if (code === 'CHALLENGE_NOT_FOUND' || code === 'USER_NOT_FOUND') return { statusCode: 404, code, message: ERROR_MESSAGES[code] || 'العنصر غير موجود.' };
   if (code === 'UNAUTHORIZED_SUBJECT' || code === 'UNAUTHORIZED_MISSING_TOKEN') {
     return { statusCode: 401, code, message: ERROR_MESSAGES[code] || 'غير مصرح.' };

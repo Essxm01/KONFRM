@@ -344,6 +344,21 @@ export class ExpressServerApp {
       if (path.startsWith('/api/v2/customer/identifiers/email/')) {
         if (!authV2Decision.enabled) return authV2Unavailable();
 
+        const customerEmailLinkingEnabled = String(process.env.CUSTOMER_EMAIL_LINKING_ENABLED || '').trim().toLowerCase() === 'true';
+        if (!customerEmailLinkingEnabled) {
+          return {
+            statusCode: 404,
+            body: {
+              success: false,
+              error: {
+                code: 'CUSTOMER_EMAIL_LINKING_UNAVAILABLE',
+                message: 'خدمة إضافة البريد الإلكتروني غير متاحة حاليًا.',
+              },
+              timestamp,
+            },
+          };
+        }
+
         // Enforce JWT Bearer Authentication & ROLE_CUSTOMER
         const authHeader = headers['authorization'] || headers['Authorization'];
         let subjectUserId: string;

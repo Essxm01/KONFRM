@@ -55,6 +55,7 @@ const TEST_ENV = {
   SUPABASE_PROJECT_REF: AUTH_V2_QA_PROJECT_REF,
   SUPABASE_SERVICE_ROLE_KEY: 'email-linking-test-service-role-key-32-chars',
   SUPABASE_URL: `https://${AUTH_V2_QA_PROJECT_REF}.supabase.co`,
+  CUSTOMER_EMAIL_LINKING_ENABLED: 'true',
 };
 
 function setupTestEnvironment(): Record<string, string | undefined> {
@@ -1420,6 +1421,134 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
       );
       assert.strictEqual(verifyAfterCancel.status, 400);
       assert.strictEqual(verifyAfterCancel.body.error.code, 'CHALLENGE_CANCELLED');
+    });
+
+    // ------------------------------------------------------------------------
+    // GROUP 10: CUSTOMER_EMAIL_LINKING_ENABLED FEATURE FLAG & RELEASE SAFETY GATES
+    // ------------------------------------------------------------------------
+    console.log('\n[FEATURE GATE & RELEASE SAFETY]');
+
+    await record('Flag disabled (CUSTOMER_EMAIL_LINKING_ENABLED=false): returns 404 CUSTOMER_EMAIL_LINKING_UNAVAILABLE with no side effects', async () => {
+      const prevFlag = process.env.CUSTOMER_EMAIL_LINKING_ENABLED;
+      process.env.CUSTOMER_EMAIL_LINKING_ENABLED = 'false';
+      try {
+        const ctx = createTestContext();
+        const user = await ctx.users.create({
+          id: randomUUID(),
+          phoneNumber: '+201019999901',
+          fullName: 'Feature Flag Test User',
+        });
+        const token = mintCustomerToken(user.id);
+
+        const initialChallengesCount = (ctx.challenges as any).store.size;
+        const initialIdentifiers = await ctx.identifiers.getByUserId(user.id);
+
+        const res = await request(
+          ctx.app,
+          'POST',
+          '/api/v2/customer/identifiers/email/challenges',
+          { email: 'flag.disabled@konfrm.test' },
+          token
+        );
+
+        assert.strictEqual(res.status, 404);
+        assert.strictEqual(res.body.success, false);
+        assert.strictEqual(res.body.error.code, 'CUSTOMER_EMAIL_LINKING_UNAVAILABLE');
+        assert.strictEqual(res.body.error.message, 'خدمة إضافة البريد الإلكتروني غير متاحة حاليًا.');
+
+        // Zero side effects: no challenge created, no identifier mutated
+        const finalChallengesCount = (ctx.challenges as any).store.size;
+        const finalIdentifiers = await ctx.identifiers.getByUserId(user.id);
+        assert.strictEqual(finalChallengesCount, initialChallengesCount);
+        assert.strictEqual(finalIdentifiers.length, initialIdentifiers.length);
+      } finally {
+        if (prevFlag === undefined) delete process.env.CUSTOMER_EMAIL_LINKING_ENABLED;
+        else process.env.CUSTOMER_EMAIL_LINKING_ENABLED = prevFlag;
+      }
+    });
+
+    await record('Flag absent (unset CUSTOMER_EMAIL_LINKING_ENABLED): returns 404 (fail closed)', async () => {
+      const prevFlag = process.env.CUSTOMER_EMAIL_LINKING_ENABLED;
+      delete process.env.CUSTOMER_EMAIL_LINKING_ENABLED;
+      try {
+        const ctx = createTestContext();
+        const user = await ctx.users.create({
+          id: randomUUID(),
+          phoneNumber: '+201019999902',
+          fullName: 'Unset Flag User',
+        });
+        const token = mintCustomerToken(user.id);
+
+        const res = await request(
+          ctx.app,
+          'POST',
+          '/api/v2/customer/identifiers/email/challenges',
+          { email: 'flag.unset@konfrm.test' },
+          token
+        );
+
+        assert.strictEqual(res.status, 404);
+        assert.strictEqual(res.body.success, false);
+        assert.strictEqual(res.body.error.code, 'CUSTOMER_EMAIL_LINKING_UNAVAILABLE');
+        assert.strictEqual(res.body.error.message, 'خدمة إضافة البريد الإلكتروني غير متاحة حاليًا.');
+      } finally {
+        if (prevFlag === undefined) delete process.env.CUSTOMER_EMAIL_LINKING_ENABLED;
+        else process.env.CUSTOMER_EMAIL_LINKING_ENABLED = prevFlag;
+      }
+    });
+
+    await record('Flag true: requires authentication (401 without token, 401 with invalid token)', async () => {
+      const prevFlag = process.env.CUSTOMER_EMAIL_LINKING_ENABLED;
+      process.env.CUSTOMER_EMAIL_LINKING_ENABLED = 'true';
+      try {
+        const ctx = createTestContext();
+
+        // 1. Without token -> 401 UNAUTHORIZED_MISSING_TOKEN
+        const noTokenRes = await request(
+          ctx.app,
+          'POST',
+          '/api/v2/customer/identifiers/email/challenges',
+          { email: 'flag.active@konfrm.test' }
+        );
+        assert.strictEqual(noTokenRes.status, 401);
+        assert.strictEqual(noTokenRes.body.error.code, 'UNAUTHORIZED_MISSING_TOKEN');
+
+        // 2. Invalid token -> 401 UNAUTHORIZED_INVALID_TOKEN
+        const invalidTokenRes = await request(
+          ctx.app,
+          'POST',
+          '/api/v2/customer/identifiers/email/challenges',
+          { email: 'flag.active@konfrm.test' },
+          'Bearer malformed.invalid.token'
+        );
+        assert.strictEqual(invalidTokenRes.status, 401);
+        assert.strictEqual(invalidTokenRes.body.error.code, 'UNAUTHORIZED_INVALID_TOKEN');
+      } finally {
+        if (prevFlag === undefined) delete process.env.CUSTOMER_EMAIL_LINKING_ENABLED;
+        else process.env.CUSTOMER_EMAIL_LINKING_ENABLED = prevFlag;
+      }
+    });
+
+    await record('Config contract: Production wrangler.json has CUSTOMER_EMAIL_LINKING_ENABLED=false, QA has true', () => {
+      const prodConfigPath = path.resolve(__dirname, '../../../wrangler.json');
+      const qaConfigPath = path.resolve(__dirname, '../../../wrangler.auth-v2-qa.json');
+
+      assert.ok(fs.existsSync(prodConfigPath), 'wrangler.json must exist');
+      assert.ok(fs.existsSync(qaConfigPath), 'wrangler.auth-v2-qa.json must exist');
+
+      const prodConfig = JSON.parse(fs.readFileSync(prodConfigPath, 'utf8'));
+      const qaConfig = JSON.parse(fs.readFileSync(qaConfigPath, 'utf8'));
+
+      assert.strictEqual(
+        prodConfig.vars?.CUSTOMER_EMAIL_LINKING_ENABLED,
+        'false',
+        'Production wrangler.json vars.CUSTOMER_EMAIL_LINKING_ENABLED must be explicitly "false"'
+      );
+      assert.strictEqual(
+        qaConfig.vars?.CUSTOMER_EMAIL_LINKING_ENABLED,
+        'true',
+        'QA wrangler.auth-v2-qa.json vars.CUSTOMER_EMAIL_LINKING_ENABLED must be "true"'
+      );
     });
 
     console.log('\n----------------------------------------------------------------------');

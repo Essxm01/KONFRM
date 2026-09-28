@@ -9,7 +9,8 @@
     "AUTH_V2_ENABLED": "true",
     "AUTH_ENVIRONMENT": "founder_qa",
     "AUTH_DELIVERY_MODE": "DEVELOPMENT_FIXED_OTP",
-    "AUTH_V2_QA_WORKER_ONLY": "true"
+    "AUTH_V2_QA_WORKER_ONLY": "true",
+    "CUSTOMER_EMAIL_LINKING_ENABLED": "true"
   },
   "observability": {
     "enabled": true,

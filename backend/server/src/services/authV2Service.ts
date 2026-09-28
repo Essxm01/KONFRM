@@ -374,6 +374,15 @@ export class AuthV2Service {
    * If delivery fails, lease is released and previous valid OTP is preserved.
    */
   async resendChallenge(input: ResendChallengeInput): Promise<ResendChallengeOutput> {
+    // 0. Reject LINK_IDENTIFIER before acquiring lease (Section 26)
+    const existing = await this.challengeRepo.getById(input.challengeId);
+    if (!existing) {
+      throw new Error('CHALLENGE_NOT_FOUND');
+    }
+    if (existing.intent === 'LINK_IDENTIFIER') {
+      throw new Error('INVALID_AUTH_CHALLENGE');
+    }
+
     // 1. Acquire Database-Authoritative Resend Lease
     const lease = await this.challengeRepo.acquireResendLease(input.challengeId, 30);
     if (!lease.success) {
@@ -384,11 +393,6 @@ export class AuthV2Service {
         throw new Error('RESEND_IN_PROGRESS: Resend already in progress for this challenge');
       }
       throw new Error(lease.errorCode || 'RESEND_FAILED');
-    }
-
-    if (lease.intent === 'LINK_IDENTIFIER') {
-      await this.challengeRepo.releaseResendLease(input.challengeId, lease.leaseToken!);
-      throw new Error('INVALID_AUTH_CHALLENGE');
     }
 
     const leaseToken = lease.leaseToken!;
@@ -734,10 +738,18 @@ export class AuthV2Service {
 
     const { normalized, masked } = this.normalize('EMAIL', input.email);
 
-    // Check if this exact user already has this email verified
-    const existingIdentifier = await this.userIdentifierRepo.getByIdentifier('EMAIL', normalized);
-    if (existingIdentifier && existingIdentifier.userId === input.subjectUserId && existingIdentifier.verifiedAt) {
-      throw new Error('IDENTIFIER_ALREADY_LINKED');
+    // Add-Only enforcement for current user's existing EMAIL identifiers (Section 24)
+    const userIdentifiers = await this.userIdentifierRepo.getByUserId(input.subjectUserId);
+    const existingEmailIdentifier = userIdentifiers.find((i) => i.identifierType === 'EMAIL');
+    if (existingEmailIdentifier) {
+      if (existingEmailIdentifier.verifiedAt) {
+        // Current user already has a verified email: reject Add Email
+        throw new Error('IDENTIFIER_ALREADY_LINKED');
+      } else if (existingEmailIdentifier.normalizedValue !== normalized) {
+        // Current user has an unverified email for a DIFFERENT candidate: fail closed
+        throw new Error('IDENTIFIER_ALREADY_LINKED');
+      }
+      // If unverified for SAME candidate: allow verification to continue
     }
 
     // Rate limiting per user and per identifier

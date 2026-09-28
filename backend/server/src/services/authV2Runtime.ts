@@ -144,7 +144,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   RATE_LIMIT_EXCEEDED: 'تم تجاوز عدد المحاولات. حاول لاحقًا.',
   OTP_DELIVERY_FAILED: 'تعذر إرسال رمز التحقق. حاول مرة أخرى.',
   IDENTIFIER_ALREADY_EXISTS: 'هذا البريد الإلكتروني مرتبط بحساب آخر.',
-  IDENTIFIER_ALREADY_LINKED: 'هذا البريد الإلكتروني مرتبط بحسابك بالفعل.',
+  IDENTIFIER_ALREADY_LINKED: 'يوجد بريد إلكتروني مرتبط بحسابك بالفعل.',
   CHALLENGE_OWNERSHIP_MISMATCH: 'جلسة التحقق لا تخص هذا الحساب.',
   CHALLENGE_SUBJECT_MISMATCH: 'جلسة التحقق لا تخص هذا الحساب.',
   UNAUTHORIZED_SUBJECT: 'يجب تسجيل الدخول بحساب مستأجر صالح.',
@@ -154,6 +154,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   FORBIDDEN_INSUFFICIENT_ROLE: 'غير مصرح لك بإجراء هذه العملية.',
   UNAUTHORIZED_MISSING_TOKEN: 'رمز الدخول مطلوب.',
   UNAUTHORIZED_INVALID_TOKEN: 'رمز الدخول غير صالح أو منتهي الصلاحية.',
+  UNAUTHORIZED_TOKEN_EXPIRED: 'رمز الدخول غير صالح أو منتهي الصلاحية.',
 };
 
 function errorCodeFromMessage(message: string): string {
@@ -164,8 +165,8 @@ export function mapAuthV2Error(error: unknown): { statusCode: number; code: stri
   const raw = error instanceof Error ? error.message : String(error || '');
   const code = errorCodeFromMessage(raw);
   if (code === 'CHALLENGE_NOT_FOUND' || code === 'USER_NOT_FOUND') return { statusCode: 404, code, message: ERROR_MESSAGES[code] || 'العنصر غير موجود.' };
-  if (code === 'UNAUTHORIZED_SUBJECT' || code === 'UNAUTHORIZED_MISSING_TOKEN' || code === 'UNAUTHORIZED_INVALID_TOKEN') {
-    return { statusCode: 401, code, message: ERROR_MESSAGES[code] || 'غير مصرح.' };
+  if (code === 'UNAUTHORIZED_SUBJECT' || code === 'UNAUTHORIZED_MISSING_TOKEN' || code === 'UNAUTHORIZED_INVALID_TOKEN' || code === 'UNAUTHORIZED_TOKEN_EXPIRED') {
+    return { statusCode: 401, code: code === 'UNAUTHORIZED_TOKEN_EXPIRED' ? 'UNAUTHORIZED_INVALID_TOKEN' : code, message: ERROR_MESSAGES[code] || 'غير مصرح.' };
   }
   if (code === 'CHALLENGE_OWNERSHIP_MISMATCH' || code === 'CHALLENGE_SUBJECT_MISMATCH' || code === 'FORBIDDEN_INSUFFICIENT_ROLE') {
     return { statusCode: 403, code, message: ERROR_MESSAGES[code] || 'غير مصرح لك بالوصول.' };

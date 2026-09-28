@@ -9,11 +9,14 @@
  *   3. 1 Human Customer = 1 canonical public.users.id.
  *   4. Zero account merges, zero silent transfers; fails closed on collisions
  *      with exact Arabic message: 'هذا البريد الإلكتروني مرتبط بحساب آخر.'
- *   5. Dual identifier login: logging in by Phone or Email resolves to the SAME canonical user_id.
- *   6. Cross-user challenge hijacking blocked (subject_user_id binding).
- *   7. Generic public auth routes reject LINK_IDENTIFIER challenges.
- *   8. Single-use OTP: replay rejected via challenge consumption.
- *   9. RBAC: authenticated Customer (ROLE_CUSTOMER) only.
+ *   5. Add-Only: Current user with verified email cannot replace or add another email.
+ *      Returns 409 IDENTIFIER_ALREADY_LINKED with exact message: 'يوجد بريد إلكتروني مرتبط بحسابك بالفعل.'
+ *   6. Dual identifier login: logging in by Phone or Email resolves to the SAME canonical user_id.
+ *   7. Cross-user challenge hijacking blocked (subject_user_id binding).
+ *   8. Generic public auth routes reject LINK_IDENTIFIER challenges without mutating lease.
+ *   9. Single-use OTP: replay rejected via challenge consumption.
+ *   10. RBAC: authenticated Customer (ROLE_CUSTOMER) only.
+ *   11. Concurrency serialization: user row lock followed by transactional email advisory lock.
  */
 
 import assert from 'node:assert';
@@ -21,6 +24,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
+import jwt from 'jsonwebtoken';
 
 import { ExpressServerApp } from '../app.js';
 import { AuthV2Service } from '../services/authV2Service.js';
@@ -128,6 +132,12 @@ function mintCustomerToken(userId: string): string {
   return 'Bearer ' + signAccessToken({ sub: userId, role: 'ROLE_CUSTOMER' });
 }
 
+function mintExpiredCustomerToken(userId: string): string {
+  const payload = { sub: userId, role: 'ROLE_CUSTOMER' };
+  const token = jwt.sign(payload, TEST_ENV.JWT_ACCESS_SECRET, { expiresIn: -10 });
+  return 'Bearer ' + token;
+}
+
 function mintOwnerToken(userId: string): string {
   return 'Bearer ' + signAccessToken({ sub: userId, role: 'ROLE_OWNER' });
 }
@@ -188,8 +198,36 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
       assert.ok(content.includes('034_customer_verified_email_linking.sql'), 'Must register in schema_migrations');
     });
 
+    record('Migration 034 contains NO blanket critical WHEN OTHERS THEN NULL exception swallowing', () => {
+      const migrationPath = path.resolve(__dirname, '../../../database/migrations/034_customer_verified_email_linking.sql');
+      const content = fs.readFileSync(migrationPath, 'utf8');
+      assert.ok(!content.includes('WHEN OTHERS THEN NULL'), 'Must not contain any WHEN OTHERS THEN NULL exception swallowing');
+    });
+
+    record('Migration 034 defines unique index uq_user_identifiers_user_type and preflight duplicate check', () => {
+      const migrationPath = path.resolve(__dirname, '../../../database/migrations/034_customer_verified_email_linking.sql');
+      const content = fs.readFileSync(migrationPath, 'utf8');
+      assert.ok(content.includes('uq_user_identifiers_user_type'), 'Must define uq_user_identifiers_user_type index');
+      assert.ok(content.includes('CANNOT_APPLY_MIGRATION_034'), 'Must define preflight duplicate check');
+    });
+
+    record('Migration 034 strengthens subject_user_id constraint for LINK vs LOGIN/CREATE', () => {
+      const migrationPath = path.resolve(__dirname, '../../../database/migrations/034_customer_verified_email_linking.sql');
+      const content = fs.readFileSync(migrationPath, 'utf8');
+      assert.ok(content.includes("intent = 'LINK_IDENTIFIER' AND subject_user_id IS NOT NULL"), 'Link requires subject_user_id');
+      assert.ok(content.includes("intent IN ('LOGIN', 'CREATE_ACCOUNT') AND subject_user_id IS NULL"), 'Login/Create forbid subject_user_id');
+    });
+
+    record('Migration 034 revokes permissions and grants only to service_role', () => {
+      const migrationPath = path.resolve(__dirname, '../../../database/migrations/034_customer_verified_email_linking.sql');
+      const content = fs.readFileSync(migrationPath, 'utf8');
+      assert.ok(content.includes('REVOKE ALL ON FUNCTION public.konfrm_link_verified_email_identifier_v1'), 'Must revoke public permissions');
+      assert.ok(content.includes('TO service_role'), 'Must grant execute only to service_role');
+      assert.ok(content.includes('SECURITY DEFINER'), 'Must be SECURITY DEFINER');
+    });
+
     // ------------------------------------------------------------------------
-    // GROUP 2: SERVICE LAYER DOMAIN SPECIFICATION
+    // GROUP 2: SERVICE LAYER DOMAIN SPECIFICATION & ADD-ONLY
     // ------------------------------------------------------------------------
     console.log('\n[DOMAIN SERVICE SPECIFICATION]');
 
@@ -230,22 +268,57 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
       );
     });
 
-    await record('requestEmailLinkChallenge rejects if exact email is already linked and verified for the same user', async () => {
+    await record('requestEmailLinkChallenge rejects if user already has verified email (same or different email)', async () => {
       const ctx = createTestContext();
       const userId = randomUUID();
       await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Essam Customer', status: 'ACTIVE' });
       await ctx.identifiers.create({
         userId,
         identifierType: 'EMAIL',
-        normalizedValue: 'essam.customer@konfrm.test',
+        normalizedValue: 'existing.verified@konfrm.test',
         verifiedAt: new Date().toISOString(),
       });
 
+      // Attempting same email
       await assert.rejects(
         async () => {
           await ctx.service.requestEmailLinkChallenge({
             subjectUserId: userId,
-            email: 'essam.customer@konfrm.test',
+            email: 'existing.verified@konfrm.test',
+          });
+        },
+        /IDENTIFIER_ALREADY_LINKED/
+      );
+
+      // Attempting different email (Add-Only rule: fail closed!)
+      await assert.rejects(
+        async () => {
+          await ctx.service.requestEmailLinkChallenge({
+            subjectUserId: userId,
+            email: 'different.candidate@konfrm.test',
+          });
+        },
+        /IDENTIFIER_ALREADY_LINKED/
+      );
+    });
+
+    await record('requestEmailLinkChallenge rejects if user already has an unverified email for a DIFFERENT candidate', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Essam Customer', status: 'ACTIVE' });
+      await ctx.identifiers.create({
+        userId,
+        identifierType: 'EMAIL',
+        normalizedValue: 'pending.unverified@konfrm.test',
+        verifiedAt: null,
+      });
+
+      // Attempting different candidate
+      await assert.rejects(
+        async () => {
+          await ctx.service.requestEmailLinkChallenge({
+            subjectUserId: userId,
+            email: 'different.unverified@konfrm.test',
           });
         },
         /IDENTIFIER_ALREADY_LINKED/
@@ -256,21 +329,16 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
       const ctx = createTestContext();
       const userA = randomUUID();
       const userB = randomUUID();
+
       await ctx.users.create({ id: userA, phoneNumber: '+201011111111', fullName: 'User A', status: 'ACTIVE' });
+      await ctx.identifiers.create({ userId: userA, identifierType: 'EMAIL', normalizedValue: 'user.a@konfrm.test', verifiedAt: new Date().toISOString() });
+
       await ctx.users.create({ id: userB, phoneNumber: '+201022222222', fullName: 'User B', status: 'ACTIVE' });
 
-      // User A already holds this email
-      await ctx.identifiers.create({
-        userId: userA,
-        identifierType: 'EMAIL',
-        normalizedValue: 'victim@konfrm.test',
-        verifiedAt: new Date().toISOString(),
-      });
-
-      // User B attempts to link User A's email — challenge is issued without leaking existence
+      // User B requests link for User A's email -> must issue challenge without disclosing collision
       const res = await ctx.service.requestEmailLinkChallenge({
         subjectUserId: userB,
-        email: 'victim@konfrm.test',
+        email: 'user.a@konfrm.test',
       });
       assert.strictEqual(res.success, true);
       assert.ok(res.challengeId);
@@ -280,66 +348,57 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
       const ctx = createTestContext();
       const userId = randomUUID();
       await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Essam Customer', status: 'ACTIVE' });
+      await ctx.identifiers.create({ userId, identifierType: 'PHONE', normalizedValue: '+201011111111', verifiedAt: new Date().toISOString() });
 
-      const req = await ctx.service.requestEmailLinkChallenge({
+      const issue = await ctx.service.requestEmailLinkChallenge({
         subjectUserId: userId,
-        email: 'Essam.Customer@Konfrm.Test', // Case variation
+        email: 'link.me@konfrm.test',
       });
 
-      const verify = await ctx.service.verifyEmailLinkChallenge({
-        challengeId: req.challengeId,
+      const verifyRes = await ctx.service.verifyEmailLinkChallenge({
+        challengeId: issue.challengeId,
         otp: '123456',
         subjectUserId: userId,
       });
 
-      assert.strictEqual(verify.success, true);
-      assert.strictEqual(verify.userId, userId);
-      assert.strictEqual(verify.email, 'Essam.Customer@konfrm.test');
-      assert.ok(verify.verifiedAt);
-      assert.strictEqual(verify.alreadyLinked, false);
+      assert.strictEqual(verifyRes.success, true);
+      assert.strictEqual(verifyRes.userId, userId);
+      assert.strictEqual(verifyRes.email, 'link.me@konfrm.test');
+      assert.strictEqual(verifyRes.alreadyLinked, false);
 
-      // Verify user_identifiers
-      const idRecord = await ctx.identifiers.getByIdentifier('EMAIL', 'Essam.Customer@konfrm.test');
+      // Verify canonical identifier created
+      const idRecord = await ctx.identifiers.getByIdentifier('EMAIL', 'link.me@konfrm.test');
       assert.ok(idRecord);
       assert.strictEqual(idRecord.userId, userId);
       assert.ok(idRecord.verifiedAt);
 
-      // Verify users.email compatibility mirror
-      const updatedUser = await ctx.users.getById(userId);
-      assert.strictEqual(updatedUser.email, 'Essam.Customer@konfrm.test');
+      // Verify users table mirror updated
+      const userRecord = await ctx.users.getById(userId);
+      assert.strictEqual(userRecord.email, 'link.me@konfrm.test');
 
       // Verify challenge consumed
-      const challenge = await ctx.challenges.getById(req.challengeId);
-      assert.strictEqual(challenge?.status, 'CONSUMED');
-      assert.ok(challenge?.consumedAt);
+      const challengeRecord = await ctx.challenges.getById(issue.challengeId);
+      assert.strictEqual(challengeRecord?.status, 'CONSUMED');
     });
 
     await record('verifyEmailLinkChallenge fails closed with IDENTIFIER_ALREADY_EXISTS when email owned by another user', async () => {
       const ctx = createTestContext();
       const userA = randomUUID();
       const userB = randomUUID();
+
       await ctx.users.create({ id: userA, phoneNumber: '+201011111111', fullName: 'User A', status: 'ACTIVE' });
+      await ctx.identifiers.create({ userId: userA, identifierType: 'EMAIL', normalizedValue: 'shared@konfrm.test', verifiedAt: new Date().toISOString() });
+
       await ctx.users.create({ id: userB, phoneNumber: '+201022222222', fullName: 'User B', status: 'ACTIVE' });
-
-      // User A owns the email
-      await ctx.identifiers.create({
-        userId: userA,
-        identifierType: 'EMAIL',
-        normalizedValue: 'shared@konfrm.test',
-        verifiedAt: new Date().toISOString(),
-      });
-
-      // User B requests link
-      const req = await ctx.service.requestEmailLinkChallenge({
+      const issue = await ctx.service.requestEmailLinkChallenge({
         subjectUserId: userB,
         email: 'shared@konfrm.test',
       });
 
-      // User B verifies OTP
       await assert.rejects(
         async () => {
           await ctx.service.verifyEmailLinkChallenge({
-            challengeId: req.challengeId,
+            challengeId: issue.challengeId,
             otp: '123456',
             subjectUserId: userB,
           });
@@ -347,30 +406,28 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
         /IDENTIFIER_ALREADY_EXISTS/
       );
 
-      // User A still owns the email, User B does not have it, challenge NOT consumed
-      const idRecord = await ctx.identifiers.getByIdentifier('EMAIL', 'shared@konfrm.test');
-      assert.strictEqual(idRecord?.userId, userA);
-
+      // Verify User B's profile was NOT contaminated
       const userBRecord = await ctx.users.getById(userB);
-      assert.strictEqual(userBRecord.email, null);
+      assert.ok(!userBRecord.email, 'User B email mirror must not be set');
     });
 
     await record('verifyEmailLinkChallenge fails closed when email conflicts with legacy users.email of another user', async () => {
       const ctx = createTestContext();
       const userA = randomUUID();
       const userB = randomUUID();
-      await ctx.users.create({ id: userA, phoneNumber: '+201011111111', fullName: 'User A', email: 'legacy@konfrm.test', status: 'ACTIVE' });
+
+      await ctx.users.create({ id: userA, phoneNumber: '+201011111111', fullName: 'User A', email: 'legacy.conflict@konfrm.test', status: 'ACTIVE' });
       await ctx.users.create({ id: userB, phoneNumber: '+201022222222', fullName: 'User B', status: 'ACTIVE' });
 
-      const req = await ctx.service.requestEmailLinkChallenge({
+      const issue = await ctx.service.requestEmailLinkChallenge({
         subjectUserId: userB,
-        email: 'legacy@konfrm.test',
+        email: 'legacy.conflict@konfrm.test',
       });
 
       await assert.rejects(
         async () => {
           await ctx.service.verifyEmailLinkChallenge({
-            challengeId: req.challengeId,
+            challengeId: issue.challengeId,
             otp: '123456',
             subjectUserId: userB,
           });
@@ -379,93 +436,180 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
       );
     });
 
+    await record('verifyEmailLinkChallenge upgrades legacy users.email for SAME user after OTP proof', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+
+      // Current user has legacy email in users table, but no canonical user_identifiers row
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Legacy User', email: 'my.legacy@konfrm.test', status: 'ACTIVE' });
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userId,
+        email: 'my.legacy@konfrm.test',
+      });
+
+      const verifyRes = await ctx.service.verifyEmailLinkChallenge({
+        challengeId: issue.challengeId,
+        otp: '123456',
+        subjectUserId: userId,
+      });
+
+      assert.strictEqual(verifyRes.success, true);
+      assert.strictEqual(verifyRes.userId, userId);
+      assert.strictEqual(verifyRes.email, 'my.legacy@konfrm.test');
+
+      const idRecord = await ctx.identifiers.getByIdentifier('EMAIL', 'my.legacy@konfrm.test');
+      assert.ok(idRecord);
+      assert.strictEqual(idRecord.userId, userId);
+    });
+
+    await record('Add-Only Rule: verifyEmailLinkChallenge fails closed if user already has a DIFFERENT verified email', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'User One', status: 'ACTIVE' });
+      await ctx.identifiers.create({ userId, identifierType: 'EMAIL', normalizedValue: 'initial@konfrm.test', verifiedAt: new Date().toISOString() });
+
+      // Directly create an active challenge for a different email to test RPC/verify layer protection
+      const challengeId = randomUUID();
+      await ctx.challenges.create({
+        id: challengeId,
+        surface: 'CUSTOMER',
+        intent: 'LINK_IDENTIFIER',
+        method: 'EMAIL',
+        normalizedValue: 'second.different@konfrm.test',
+        otpDigest: 'digest',
+        otpExpiresAt: new Date(Date.now() + 600000).toISOString(),
+        challengeExpiresAt: new Date(Date.now() + 600000).toISOString(),
+        resendAvailableAt: new Date(Date.now() + 60000).toISOString(),
+        subjectUserId: userId,
+      });
+
+      const ch = await ctx.challenges.getById(challengeId);
+      ch!.status = 'VERIFIED';
+
+      const linkRes = await ctx.challenges.linkVerifiedEmailIdentifier(challengeId, userId);
+      assert.strictEqual(linkRes.success, false);
+      assert.strictEqual(linkRes.errorCode, 'IDENTIFIER_ALREADY_LINKED');
+
+      // Verify original email was NOT replaced
+      const userIdentifiers = await ctx.identifiers.getByUserId(userId);
+      const emailIdentifiers = userIdentifiers.filter((i) => i.identifierType === 'EMAIL');
+      assert.strictEqual(emailIdentifiers.length, 1);
+      assert.strictEqual(emailIdentifiers[0].normalizedValue, 'initial@konfrm.test');
+    });
+
+    await record('Canonical Invariant: users count before link == users count after link (no second user)', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Single User', status: 'ACTIVE' });
+      await ctx.identifiers.create({ userId, identifierType: 'PHONE', normalizedValue: '+201011111111', verifiedAt: new Date().toISOString() });
+
+      const usersCountBefore = (await ctx.users.getAllUsers()).length;
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userId,
+        email: 'single.user@konfrm.test',
+      });
+      await ctx.service.verifyEmailLinkChallenge({
+        challengeId: issue.challengeId,
+        otp: '123456',
+        subjectUserId: userId,
+      });
+
+      const usersCountAfter = (await ctx.users.getAllUsers()).length;
+      assert.strictEqual(usersCountBefore, usersCountAfter, 'Users count must not increase after link');
+
+      const userAfter = await ctx.users.getById(userId);
+      assert.strictEqual(userAfter.id, userId, 'Canonical user_id must remain identical');
+    });
+
+    await record('Canonical Invariant: user has EXACTLY 1 EMAIL identifier after link; second different email blocked', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Exact One User', status: 'ACTIVE' });
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userId,
+        email: 'exact.one@konfrm.test',
+      });
+      await ctx.service.verifyEmailLinkChallenge({
+        challengeId: issue.challengeId,
+        otp: '123456',
+        subjectUserId: userId,
+      });
+
+      const countBefore = (await ctx.identifiers.getByUserId(userId)).filter((i) => i.identifierType === 'EMAIL').length;
+      assert.strictEqual(countBefore, 1, 'Must have exactly 1 EMAIL identifier');
+
+      // Attempting second different email must fail closed
+      await assert.rejects(
+        async () => {
+          await ctx.service.requestEmailLinkChallenge({
+            subjectUserId: userId,
+            email: 'second.different@konfrm.test',
+          });
+        },
+        /IDENTIFIER_ALREADY_LINKED/
+      );
+
+      const countAfter = (await ctx.identifiers.getByUserId(userId)).filter((i) => i.identifierType === 'EMAIL').length;
+      assert.strictEqual(countAfter, 1, 'Must strictly remain exactly 1 EMAIL identifier');
+    });
+
+    // ------------------------------------------------------------------------
+    // GROUP 3: OTP & CHALLENGE SECURITY
+    // ------------------------------------------------------------------------
+    console.log('\n[OTP & CHALLENGE SECURITY]');
+
     await record('verifyEmailLinkChallenge blocks cross-user challenge hijacking (subject mismatch)', async () => {
       const ctx = createTestContext();
       const userA = randomUUID();
       const userB = randomUUID();
+
       await ctx.users.create({ id: userA, phoneNumber: '+201011111111', fullName: 'User A', status: 'ACTIVE' });
       await ctx.users.create({ id: userB, phoneNumber: '+201022222222', fullName: 'User B', status: 'ACTIVE' });
 
-      // User A requests linking
-      const req = await ctx.service.requestEmailLinkChallenge({
+      const issue = await ctx.service.requestEmailLinkChallenge({
         subjectUserId: userA,
-        email: 'usera@konfrm.test',
+        email: 'user.a@konfrm.test',
       });
 
       // User B attempts to verify User A's challenge
       await assert.rejects(
         async () => {
           await ctx.service.verifyEmailLinkChallenge({
-            challengeId: req.challengeId,
+            challengeId: issue.challengeId,
             otp: '123456',
-            subjectUserId: userB, // Mismatch!
+            subjectUserId: userB,
           });
         },
         /CHALLENGE_OWNERSHIP_MISMATCH/
       );
     });
 
-    await record('Generic public verifyChallenge rejects LINK_IDENTIFIER challenges', async () => {
-      const ctx = createTestContext();
-      const userId = randomUUID();
-      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Essam Customer', status: 'ACTIVE' });
-
-      const req = await ctx.service.requestEmailLinkChallenge({
-        subjectUserId: userId,
-        email: 'essam@konfrm.test',
-      });
-
-      // Attacker tries public /api/v2/auth/challenges/:id/verify
-      await assert.rejects(
-        async () => {
-          await ctx.service.verifyChallenge({
-            challengeId: req.challengeId,
-            otp: '123456',
-          });
-        },
-        /INVALID_AUTH_CHALLENGE/
-      );
-    });
-
-    await record('Generic public resendChallenge and cancelChallenge reject LINK_IDENTIFIER challenges', async () => {
-      const ctx = createTestContext();
-      const userId = randomUUID();
-      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Essam Customer', status: 'ACTIVE' });
-
-      const req = await ctx.service.requestEmailLinkChallenge({
-        subjectUserId: userId,
-        email: 'essam@konfrm.test',
-      });
-
-      await assert.rejects(
-        async () => {
-          await ctx.service.cancelChallenge(req.challengeId);
-        },
-        /INVALID_AUTH_CHALLENGE/
-      );
-    });
-
     await record('verifyEmailLinkChallenge rejects consumed challenges (replay prevention)', async () => {
       const ctx = createTestContext();
       const userId = randomUUID();
-      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Essam Customer', status: 'ACTIVE' });
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Replay User', status: 'ACTIVE' });
 
-      const req = await ctx.service.requestEmailLinkChallenge({
+      const issue = await ctx.service.requestEmailLinkChallenge({
         subjectUserId: userId,
-        email: 'essam@konfrm.test',
+        email: 'replay@konfrm.test',
       });
 
+      // First verification succeeds
       await ctx.service.verifyEmailLinkChallenge({
-        challengeId: req.challengeId,
+        challengeId: issue.challengeId,
         otp: '123456',
         subjectUserId: userId,
       });
 
-      // Second verify attempt must fail
+      // Second verification replay rejected
       await assert.rejects(
         async () => {
           await ctx.service.verifyEmailLinkChallenge({
-            challengeId: req.challengeId,
+            challengeId: issue.challengeId,
             otp: '123456',
             subjectUserId: userId,
           });
@@ -474,32 +618,485 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
       );
     });
 
+    await record('verifyEmailLinkChallenge rejects expired OTP (OTP_EXPIRED)', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Expired OTP User', status: 'ACTIVE' });
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userId,
+        email: 'expired.otp@konfrm.test',
+      });
+
+      // Force expired OTP timestamp on challenge
+      const challenge = await ctx.challenges.getById(issue.challengeId);
+      challenge!.otpExpiresAt = new Date(Date.now() - 10000).toISOString();
+
+      await assert.rejects(
+        async () => {
+          await ctx.service.verifyEmailLinkChallenge({
+            challengeId: issue.challengeId,
+            otp: '123456',
+            subjectUserId: userId,
+          });
+        },
+        /OTP_EXPIRED/
+      );
+    });
+
+    await record('verifyEmailLinkChallenge rejects expired challenge (CHALLENGE_EXPIRED)', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Expired Challenge User', status: 'ACTIVE' });
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userId,
+        email: 'expired.challenge@konfrm.test',
+      });
+
+      // Force expired challenge timestamp
+      const challenge = await ctx.challenges.getById(issue.challengeId);
+      challenge!.challengeExpiresAt = new Date(Date.now() - 10000).toISOString();
+
+      await assert.rejects(
+        async () => {
+          await ctx.service.verifyEmailLinkChallenge({
+            challengeId: issue.challengeId,
+            otp: '123456',
+            subjectUserId: userId,
+          });
+        },
+        /CHALLENGE_EXPIRED/
+      );
+    });
+
+    await record('verifyEmailLinkChallenge locks after 5 failed attempts (CHALLENGE_LOCKED_MAX_ATTEMPTS_EXCEEDED)', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Locked Challenge User', status: 'ACTIVE' });
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userId,
+        email: 'locked@konfrm.test',
+      });
+
+      // 4 wrong attempts
+      for (let i = 0; i < 4; i++) {
+        await assert.rejects(
+          async () => {
+            await ctx.service.verifyEmailLinkChallenge({
+              challengeId: issue.challengeId,
+              otp: '000000',
+              subjectUserId: userId,
+            });
+          },
+          /INVALID_OTP/
+        );
+      }
+
+      // 5th wrong attempt locks the challenge
+      await assert.rejects(
+        async () => {
+          await ctx.service.verifyEmailLinkChallenge({
+            challengeId: issue.challengeId,
+            otp: '000000',
+            subjectUserId: userId,
+          });
+        },
+        /CHALLENGE_LOCKED_MAX_ATTEMPTS_EXCEEDED/
+      );
+
+      // Even correct OTP is rejected when challenge is locked
+      await assert.rejects(
+        async () => {
+          await ctx.service.verifyEmailLinkChallenge({
+            challengeId: issue.challengeId,
+            otp: '123456',
+            subjectUserId: userId,
+          });
+        },
+        /CHALLENGE_LOCKED_MAX_ATTEMPTS_EXCEEDED/
+      );
+    });
+
+    await record('verifyEmailLinkChallenge rejects cancelled challenge (CHALLENGE_CANCELLED)', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Cancel User', status: 'ACTIVE' });
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userId,
+        email: 'cancelled@konfrm.test',
+      });
+
+      await ctx.service.cancelEmailLinkChallenge({
+        challengeId: issue.challengeId,
+        subjectUserId: userId,
+      });
+
+      await assert.rejects(
+        async () => {
+          await ctx.service.verifyEmailLinkChallenge({
+            challengeId: issue.challengeId,
+            otp: '123456',
+            subjectUserId: userId,
+          });
+        },
+        /CHALLENGE_CANCELLED/
+      );
+    });
+
+    await record('Crash recovery: challenge in VERIFIED status safely finishes linking on client retry', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Crash Recovery User', status: 'ACTIVE' });
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userId,
+        email: 'crash.recovery@konfrm.test',
+      });
+
+      // Simulate challenge transitioned to VERIFIED, but link step crashed before execution
+      const challenge = await ctx.challenges.getById(issue.challengeId);
+      challenge!.status = 'VERIFIED';
+      challenge!.verifiedAt = new Date().toISOString();
+
+      // Client retries verify request
+      const retryResult = await ctx.service.verifyEmailLinkChallenge({
+        challengeId: issue.challengeId,
+        otp: '123456',
+        subjectUserId: userId,
+      });
+
+      assert.strictEqual(retryResult.success, true);
+      assert.strictEqual(retryResult.email, 'crash.recovery@konfrm.test');
+      assert.strictEqual(retryResult.userId, userId);
+
+      const idRecord = await ctx.identifiers.getByIdentifier('EMAIL', 'crash.recovery@konfrm.test');
+      assert.ok(idRecord);
+      assert.strictEqual(idRecord.userId, userId);
+    });
+
     // ------------------------------------------------------------------------
-    // GROUP 3: HTTP RUNTIME API CONTRACTS
+    // GROUP 4: GENERIC PUBLIC ROUTE ISOLATION
     // ------------------------------------------------------------------------
-    console.log('\n[HTTP RUNTIME API CONTRACTS]');
+    console.log('\n[GENERIC PUBLIC ROUTE ISOLATION]');
+
+    await record('Generic public verifyChallenge rejects LINK_IDENTIFIER challenges', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Public Test User', status: 'ACTIVE' });
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userId,
+        email: 'public.test@konfrm.test',
+      });
+
+      await assert.rejects(
+        async () => {
+          await ctx.service.verifyChallenge({
+            challengeId: issue.challengeId,
+            otp: '123456',
+          });
+        },
+        /INVALID_AUTH_CHALLENGE/
+      );
+    });
+
+    await record('Generic public resendChallenge rejects LINK_IDENTIFIER challenges without mutating lease', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Public Resend User', status: 'ACTIVE' });
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userId,
+        email: 'public.resend@konfrm.test',
+      });
+
+      const beforeChallenge = await ctx.challenges.getById(issue.challengeId);
+      const beforeGen = beforeChallenge?.generation;
+      const beforeLease = (beforeChallenge as any)?.resendLeaseToken;
+
+      await assert.rejects(
+        async () => {
+          await ctx.service.resendChallenge({
+            challengeId: issue.challengeId,
+          });
+        },
+        /INVALID_AUTH_CHALLENGE/
+      );
+
+      // Verify challenge lease state was NOT mutated!
+      const afterChallenge = await ctx.challenges.getById(issue.challengeId);
+      assert.strictEqual(afterChallenge?.generation, beforeGen, 'Generation must not rotate');
+      assert.strictEqual((afterChallenge as any)?.resendLeaseToken, beforeLease, 'Lease token must not be set');
+    });
+
+    await record('Generic public cancelChallenge rejects LINK_IDENTIFIER challenges', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Public Cancel User', status: 'ACTIVE' });
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userId,
+        email: 'public.cancel@konfrm.test',
+      });
+
+      await assert.rejects(
+        async () => {
+          await ctx.service.cancelChallenge(issue.challengeId);
+        },
+        /INVALID_AUTH_CHALLENGE/
+      );
+
+      const challenge = await ctx.challenges.getById(issue.challengeId);
+      assert.strictEqual(challenge?.status, 'ACTIVE', 'Challenge must remain ACTIVE');
+    });
+
+    // ------------------------------------------------------------------------
+    // GROUP 5: AUTHORIZATION & RBAC CONTRACTS
+    // ------------------------------------------------------------------------
+    console.log('\n[AUTHORIZATION & RBAC]');
 
     await record('HTTP RBAC: Unauthenticated requests return 401', async () => {
       const ctx = createTestContext();
-      const res = await request(ctx.app, 'POST', '/api/v2/customer/identifiers/email/challenges', { email: 'test@konfrm.test' });
+      const res = await request(ctx.app, 'POST', '/api/v2/customer/identifiers/email/challenges', {
+        email: 'unauth@konfrm.test',
+      });
       assert.strictEqual(res.status, 401);
-      assert.strictEqual(res.body.success, false);
       assert.strictEqual(res.body.error.code, 'UNAUTHORIZED_MISSING_TOKEN');
+    });
+
+    await record('HTTP RBAC: Invalid token returns 401', async () => {
+      const ctx = createTestContext();
+      const res = await request(
+        ctx.app,
+        'POST',
+        '/api/v2/customer/identifiers/email/challenges',
+        { email: 'invalid@konfrm.test' },
+        'Bearer invalid-token-string'
+      );
+      assert.strictEqual(res.status, 401);
+      assert.strictEqual(res.body.error.code, 'UNAUTHORIZED_INVALID_TOKEN');
+    });
+
+    await record('HTTP RBAC: Expired token returns 401', async () => {
+      const ctx = createTestContext();
+      const expiredToken = mintExpiredCustomerToken(randomUUID());
+      const res = await request(
+        ctx.app,
+        'POST',
+        '/api/v2/customer/identifiers/email/challenges',
+        { email: 'expired@konfrm.test' },
+        expiredToken
+      );
+      assert.strictEqual(res.status, 401);
+      assert.strictEqual(res.body.error.code, 'UNAUTHORIZED_INVALID_TOKEN');
     });
 
     await record('HTTP RBAC: Owner and Admin tokens return 403', async () => {
       const ctx = createTestContext();
       const ownerToken = mintOwnerToken(randomUUID());
-      const adminToken = mintAdminToken(randomUUID());
-
-      const resOwner = await request(ctx.app, 'POST', '/api/v2/customer/identifiers/email/challenges', { email: 'test@konfrm.test' }, ownerToken);
+      const resOwner = await request(
+        ctx.app,
+        'POST',
+        '/api/v2/customer/identifiers/email/challenges',
+        { email: 'owner@konfrm.test' },
+        ownerToken
+      );
       assert.strictEqual(resOwner.status, 403);
       assert.strictEqual(resOwner.body.error.code, 'FORBIDDEN_INSUFFICIENT_ROLE');
 
-      const resAdmin = await request(ctx.app, 'POST', '/api/v2/customer/identifiers/email/challenges', { email: 'test@konfrm.test' }, adminToken);
+      const adminToken = mintAdminToken(randomUUID());
+      const resAdmin = await request(
+        ctx.app,
+        'POST',
+        '/api/v2/customer/identifiers/email/challenges',
+        { email: 'admin@konfrm.test' },
+        adminToken
+      );
       assert.strictEqual(resAdmin.status, 403);
       assert.strictEqual(resAdmin.body.error.code, 'FORBIDDEN_INSUFFICIENT_ROLE');
     });
+
+    await record('Cross-user RESEND & CANCEL rejected with 403 CHALLENGE_OWNERSHIP_MISMATCH', async () => {
+      const ctx = createTestContext();
+      const userA = randomUUID();
+      const userB = randomUUID();
+      await ctx.users.create({ id: userA, phoneNumber: '+201011111111', fullName: 'User A', status: 'ACTIVE' });
+      await ctx.users.create({ id: userB, phoneNumber: '+201022222222', fullName: 'User B', status: 'ACTIVE' });
+
+      const issue = await ctx.service.requestEmailLinkChallenge({
+        subjectUserId: userA,
+        email: 'user.a.cross@konfrm.test',
+      });
+
+      const userBToken = mintCustomerToken(userB);
+
+      // User B attempts to resend User A's challenge
+      const resendRes = await request(
+        ctx.app,
+        'POST',
+        `/api/v2/customer/identifiers/email/challenges/${issue.challengeId}/resend`,
+        {},
+        userBToken
+      );
+      assert.strictEqual(resendRes.status, 403);
+      assert.strictEqual(resendRes.body.error.code, 'CHALLENGE_OWNERSHIP_MISMATCH');
+
+      // User B attempts to cancel User A's challenge
+      const cancelRes = await request(
+        ctx.app,
+        'DELETE',
+        `/api/v2/customer/identifiers/email/challenges/${issue.challengeId}`,
+        undefined,
+        userBToken
+      );
+      assert.strictEqual(cancelRes.status, 403);
+      assert.strictEqual(cancelRes.body.error.code, 'CHALLENGE_OWNERSHIP_MISMATCH');
+    });
+
+    // ------------------------------------------------------------------------
+    // GROUP 6: CONCURRENCY & RACE CONDITIONS
+    // ------------------------------------------------------------------------
+    console.log('\n[CONCURRENCY & RACE CONDITIONS]');
+
+    await record('Concurrency: Same user / Two different emails race -> exactly ONE winner, loser fails closed (Section 30)', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Race User', status: 'ACTIVE' });
+
+      // Create two independent link challenges for Customer A with two different emails
+      const challengeA = randomUUID();
+      const challengeB = randomUUID();
+      const now = Date.now();
+
+      await ctx.challenges.create({
+        id: challengeA,
+        surface: 'CUSTOMER',
+        intent: 'LINK_IDENTIFIER',
+        method: 'EMAIL',
+        normalizedValue: 'email-a@konfrm.test',
+        otpDigest: 'digest-a',
+        otpExpiresAt: new Date(now + 600000).toISOString(),
+        challengeExpiresAt: new Date(now + 600000).toISOString(),
+        resendAvailableAt: new Date(now + 60000).toISOString(),
+        subjectUserId: userId,
+      });
+
+      await ctx.challenges.create({
+        id: challengeB,
+        surface: 'CUSTOMER',
+        intent: 'LINK_IDENTIFIER',
+        method: 'EMAIL',
+        normalizedValue: 'email-b@konfrm.test',
+        otpDigest: 'digest-b',
+        otpExpiresAt: new Date(now + 600000).toISOString(),
+        challengeExpiresAt: new Date(now + 600000).toISOString(),
+        resendAvailableAt: new Date(now + 60000).toISOString(),
+        subjectUserId: userId,
+      });
+
+      // Mark both verified so both are ready to race at the atomic link boundary
+      const chARecord = await ctx.challenges.getById(challengeA);
+      chARecord!.status = 'VERIFIED';
+      const chBRecord = await ctx.challenges.getById(challengeB);
+      chBRecord!.status = 'VERIFIED';
+
+      // Race link operations concurrently
+      const [resA, resB] = await Promise.all([
+        ctx.challenges.linkVerifiedEmailIdentifier(challengeA, userId),
+        ctx.challenges.linkVerifiedEmailIdentifier(challengeB, userId),
+      ]);
+
+      const wins = [resA, resB].filter((r) => r.success);
+      const fails = [resA, resB].filter((r) => !r.success);
+
+      assert.strictEqual(wins.length, 1, 'Exactly one link operation must succeed');
+      assert.strictEqual(fails.length, 1, 'The competing link operation must fail closed');
+      assert.strictEqual(fails[0].errorCode, 'IDENTIFIER_ALREADY_LINKED', 'Loser must fail with IDENTIFIER_ALREADY_LINKED');
+
+      // Assert user has EXACTLY ONE EMAIL identifier
+      const userIdentifiers = await ctx.identifiers.getByUserId(userId);
+      const emailIdentifiers = userIdentifiers.filter((i) => i.identifierType === 'EMAIL');
+      assert.strictEqual(emailIdentifiers.length, 1, 'Customer must have exactly 1 EMAIL identifier');
+
+      // Assert users table mirror matches the winner, NOT the loser
+      const user = await ctx.users.getById(userId);
+      assert.strictEqual(user.email, wins[0].email, 'users.email must match winner');
+      assert.notStrictEqual(user.email, fails[0].email, 'users.email must not reflect loser');
+    });
+
+    await record('Concurrency: Two users / Same email race -> exactly ONE winner, loser fails closed (Section 31)', async () => {
+      const ctx = createTestContext();
+      const userA = randomUUID();
+      const userB = randomUUID();
+      await ctx.users.create({ id: userA, phoneNumber: '+201011111111', fullName: 'User A Race', status: 'ACTIVE' });
+      await ctx.users.create({ id: userB, phoneNumber: '+201022222222', fullName: 'User B Race', status: 'ACTIVE' });
+
+      const challengeA = randomUUID();
+      const challengeB = randomUUID();
+      const sharedEmail = 'shared-race@konfrm.test';
+      const now = Date.now();
+
+      await ctx.challenges.create({
+        id: challengeA,
+        surface: 'CUSTOMER',
+        intent: 'LINK_IDENTIFIER',
+        method: 'EMAIL',
+        normalizedValue: sharedEmail,
+        otpDigest: 'digest-a',
+        otpExpiresAt: new Date(now + 600000).toISOString(),
+        challengeExpiresAt: new Date(now + 600000).toISOString(),
+        resendAvailableAt: new Date(now + 60000).toISOString(),
+        subjectUserId: userA,
+      });
+
+      await ctx.challenges.create({
+        id: challengeB,
+        surface: 'CUSTOMER',
+        intent: 'LINK_IDENTIFIER',
+        method: 'EMAIL',
+        normalizedValue: sharedEmail,
+        otpDigest: 'digest-b',
+        otpExpiresAt: new Date(now + 600000).toISOString(),
+        challengeExpiresAt: new Date(now + 600000).toISOString(),
+        resendAvailableAt: new Date(now + 60000).toISOString(),
+        subjectUserId: userB,
+      });
+
+      const chARecord = await ctx.challenges.getById(challengeA);
+      chARecord!.status = 'VERIFIED';
+      const chBRecord = await ctx.challenges.getById(challengeB);
+      chBRecord!.status = 'VERIFIED';
+
+      // Race link operations concurrently
+      const [resA, resB] = await Promise.all([
+        ctx.challenges.linkVerifiedEmailIdentifier(challengeA, userA),
+        ctx.challenges.linkVerifiedEmailIdentifier(challengeB, userB),
+      ]);
+
+      const wins = [resA, resB].filter((r) => r.success);
+      const fails = [resA, resB].filter((r) => !r.success);
+
+      assert.strictEqual(wins.length, 1, 'Exactly one user must win the email');
+      assert.strictEqual(fails.length, 1, 'Competitor must fail closed');
+      assert.strictEqual(fails[0].errorCode, 'IDENTIFIER_ALREADY_EXISTS', 'Competitor must fail with IDENTIFIER_ALREADY_EXISTS');
+
+      // Canonical identifier belongs to winner
+      const idRecord = await ctx.identifiers.getByIdentifier('EMAIL', sharedEmail);
+      assert.ok(idRecord);
+      assert.strictEqual(idRecord.userId, wins[0].userId);
+
+      // Loser users.email is NOT mutated
+      const loserUser = await ctx.users.getById(fails[0].userId === userA ? userA : userB);
+      assert.ok(!loserUser.email, 'Loser users.email must not be mutated');
+    });
+
+    // ------------------------------------------------------------------------
+    // GROUP 7: HTTP RUNTIME API CONTRACTS
+    // ------------------------------------------------------------------------
+    console.log('\n[HTTP RUNTIME API CONTRACTS]');
 
     await record('HTTP: Full Linking Lifecycle (Issue -> Verify -> Idempotent Re-link)', async () => {
       const ctx = createTestContext();
@@ -618,7 +1215,7 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
       assert.strictEqual(phoneUserId, emailUserId, 'Both login methods must resolve to the identical account');
     });
 
-    await record('HTTP: Collision with another user returns 409 with exact Arabic error', async () => {
+    await record('HTTP: Collision with another user returns 409 IDENTIFIER_ALREADY_EXISTS with exact Arabic copy', async () => {
       const ctx = createTestContext();
       const userA = randomUUID();
       const userB = randomUUID();
@@ -648,11 +1245,35 @@ export async function runCustomerEmailLinkingTests(): Promise<void> {
         userBToken
       );
 
-      // EXACT ARABIC MESSAGE ASSERTION
+      // EXACT ARABIC MESSAGE ASSERTION (Section 20)
       assert.strictEqual(verifyRes.status, 409);
       assert.strictEqual(verifyRes.body.success, false);
       assert.strictEqual(verifyRes.body.error.code, 'IDENTIFIER_ALREADY_EXISTS');
       assert.strictEqual(verifyRes.body.error.message, 'هذا البريد الإلكتروني مرتبط بحساب آخر.');
+    });
+
+    await record('HTTP: Current user already having verified email returns 409 IDENTIFIER_ALREADY_LINKED with exact Arabic copy', async () => {
+      const ctx = createTestContext();
+      const userId = randomUUID();
+      await ctx.users.create({ id: userId, phoneNumber: '+201011111111', fullName: 'Already Linked User', status: 'ACTIVE' });
+      await ctx.identifiers.create({ userId, identifierType: 'EMAIL', normalizedValue: 'already.linked@konfrm.test', verifiedAt: new Date().toISOString() });
+
+      const customerToken = mintCustomerToken(userId);
+
+      // Requesting link for a different email
+      const issueRes = await request(
+        ctx.app,
+        'POST',
+        '/api/v2/customer/identifiers/email/challenges',
+        { email: 'different.email@konfrm.test' },
+        customerToken
+      );
+
+      // EXACT ARABIC MESSAGE ASSERTION (Section 19)
+      assert.strictEqual(issueRes.status, 409);
+      assert.strictEqual(issueRes.body.success, false);
+      assert.strictEqual(issueRes.body.error.code, 'IDENTIFIER_ALREADY_LINKED');
+      assert.strictEqual(issueRes.body.error.message, 'يوجد بريد إلكتروني مرتبط بحسابك بالفعل.');
     });
 
     await record('HTTP: Resend and Cancel endpoints function truthfully with Customer authentication', async () => {

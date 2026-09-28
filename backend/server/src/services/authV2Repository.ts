@@ -550,6 +550,13 @@ export class InMemoryUserIdentifierRepository implements IUserIdentifierReposito
     if (this.store.has(key)) {
       throw new Error('IDENTIFIER_ALREADY_EXISTS');
     }
+    // Enforce unique (user_id, identifier_type) - Migration 034 invariant
+    const hasExistingType = Array.from(this.store.values()).some(
+      (r) => r.userId === data.userId && r.identifierType === data.identifierType
+    );
+    if (hasExistingType) {
+      throw new Error('DUPLICATE_USER_IDENTIFIER_TYPE: User already has an identifier of this type');
+    }
     const now = new Date().toISOString();
     const record: UserIdentifierRecord = {
       id: randomUUID(),
@@ -604,6 +611,8 @@ export class InMemoryUserIdentifierRepository implements IUserIdentifierReposito
 export class InMemoryAuthChallengeRepository implements IAuthChallengeRepository {
   private store = new Map<string, AuthChallengeRecord>();
   private challengeLocks = new Map<string, Promise<any>>();
+  private userLocks = new Map<string, Promise<any>>();
+  private emailLocks = new Map<string, Promise<any>>();
   private userIdentifierRepo?: IUserIdentifierRepository;
   private userRepo?: IUserRepository;
 
@@ -638,6 +647,23 @@ export class InMemoryAuthChallengeRepository implements IAuthChallengeRepository
       this.challengeLocks.delete(challengeId);
       resolveLock!();
     }
+  }
+
+  private async acquireKeyLock(locksMap: Map<string, Promise<any>>, key: string): Promise<() => void> {
+    while (locksMap.has(key)) {
+      await locksMap.get(key);
+    }
+    let resolveLock!: () => void;
+    const lockPromise = new Promise<void>((resolve) => {
+      resolveLock = resolve;
+    });
+    locksMap.set(key, lockPromise);
+    return () => {
+      if (locksMap.get(key) === lockPromise) {
+        locksMap.delete(key);
+      }
+      resolveLock();
+    };
   }
 
   async create(challenge: any): Promise<AuthChallengeRecord> {
@@ -989,107 +1015,192 @@ export class InMemoryAuthChallengeRepository implements IAuthChallengeRepository
         return { success: false, errorCode: 'INVALID_EMAIL' };
       }
 
-      // 1. Collision check in userIdentifierRepo
-      if (this.userIdentifierRepo) {
-        const existing = await this.userIdentifierRepo.getByIdentifier('EMAIL', normalizedEmail);
-        if (existing) {
-          if (existing.userId === subjectUserId) {
-            challenge.status = 'CONSUMED';
-            challenge.consumedAt = new Date().toISOString();
-            if (this.userRepo) {
-              if (typeof (this.userRepo as any).updateProfile === 'function') {
-                await (this.userRepo as any).updateProfile(subjectUserId, { email: normalizedEmail }).catch(() => null);
-              } else if ((this.userRepo as any).users) {
-                const u = (this.userRepo as any).users.get(subjectUserId);
-                if (u) u.email = normalizedEmail;
-              } else if ((this.userRepo as any).store) {
-                const u = (this.userRepo as any).store.get(subjectUserId);
-                if (u) u.email = normalizedEmail;
+      // Order 1: Lock subject user row (Section 15)
+      const releaseUserLock = await this.acquireKeyLock(this.userLocks, subjectUserId);
+      try {
+        // Order 2: Lock normalized email (Section 15)
+        const releaseEmailLock = await this.acquireKeyLock(this.emailLocks, normalizedEmail);
+        try {
+          // Check subject user existence
+          if (this.userRepo) {
+            const user = await this.userRepo.getById(subjectUserId);
+            if (!user) {
+              return { success: false, errorCode: 'USER_NOT_FOUND' };
+            }
+          }
+
+          const nowIso = new Date().toISOString();
+
+          // Inspect current subject user's existing EMAIL identifier (Add-Only enforcement - Section 18)
+          if (this.userIdentifierRepo) {
+            const userIdentifiers = await this.userIdentifierRepo.getByUserId(subjectUserId);
+            const currentEmailIdentifier = userIdentifiers.find((i) => i.identifierType === 'EMAIL');
+            if (currentEmailIdentifier) {
+              if (currentEmailIdentifier.normalizedValue !== normalizedEmail) {
+                // CASE C & E: User already has a DIFFERENT EMAIL identifier (verified or unverified).
+                // FAIL CLOSED! Add-only flow does NOT allow replacing an existing email identifier.
+                return { success: false, errorCode: 'IDENTIFIER_ALREADY_LINKED' };
+              } else {
+                // Same email value:
+                if (currentEmailIdentifier.verifiedAt) {
+                  // CASE B: Idempotent success
+                  challenge.status = 'CONSUMED';
+                  challenge.consumedAt = nowIso;
+                  challenge.updatedAt = nowIso;
+                  if (this.userRepo) {
+                    if (typeof (this.userRepo as any).updateProfile === 'function') {
+                      await (this.userRepo as any).updateProfile(subjectUserId, { email: normalizedEmail });
+                    } else if ((this.userRepo as any).users) {
+                      const u = (this.userRepo as any).users.get(subjectUserId);
+                      if (u) u.email = normalizedEmail;
+                    } else if ((this.userRepo as any).store) {
+                      const u = (this.userRepo as any).store.get(subjectUserId);
+                      if (u) u.email = normalizedEmail;
+                    }
+                  }
+                  return {
+                    success: true,
+                    userId: subjectUserId,
+                    email: normalizedEmail,
+                    verifiedAt: currentEmailIdentifier.verifiedAt,
+                    alreadyLinked: true,
+                  };
+                } else {
+                  // CASE D: Unverified with same value -> promote to verified
+                  await this.userIdentifierRepo.markVerified('EMAIL', normalizedEmail);
+                  challenge.status = 'CONSUMED';
+                  challenge.consumedAt = nowIso;
+                  challenge.updatedAt = nowIso;
+                  if (this.userRepo) {
+                    if (typeof (this.userRepo as any).updateProfile === 'function') {
+                      await (this.userRepo as any).updateProfile(subjectUserId, { email: normalizedEmail });
+                    } else if ((this.userRepo as any).users) {
+                      const u = (this.userRepo as any).users.get(subjectUserId);
+                      if (u) u.email = normalizedEmail;
+                    } else if ((this.userRepo as any).store) {
+                      const u = (this.userRepo as any).store.get(subjectUserId);
+                      if (u) u.email = normalizedEmail;
+                    }
+                  }
+                  return {
+                    success: true,
+                    userId: subjectUserId,
+                    email: normalizedEmail,
+                    verifiedAt: nowIso,
+                    alreadyLinked: false,
+                  };
+                }
               }
             }
-            return {
-              success: true,
+          }
+
+          // CASE A: Current user has NO email identifier. Check collisions with other users.
+          // 1. Collision check in userIdentifierRepo for another user
+          if (this.userIdentifierRepo) {
+            const existing = await this.userIdentifierRepo.getByIdentifier('EMAIL', normalizedEmail);
+            if (existing) {
+              if (existing.userId === subjectUserId) {
+                challenge.status = 'CONSUMED';
+                challenge.consumedAt = nowIso;
+                challenge.updatedAt = nowIso;
+                if (this.userRepo) {
+                  if (typeof (this.userRepo as any).updateProfile === 'function') {
+                    await (this.userRepo as any).updateProfile(subjectUserId, { email: normalizedEmail });
+                  } else if ((this.userRepo as any).users) {
+                    const u = (this.userRepo as any).users.get(subjectUserId);
+                    if (u) u.email = normalizedEmail;
+                  } else if ((this.userRepo as any).store) {
+                    const u = (this.userRepo as any).store.get(subjectUserId);
+                    if (u) u.email = normalizedEmail;
+                  }
+                }
+                return {
+                  success: true,
+                  userId: subjectUserId,
+                  email: normalizedEmail,
+                  verifiedAt: existing.verifiedAt || nowIso,
+                  alreadyLinked: true,
+                };
+              } else {
+                return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
+              }
+            }
+          }
+
+          // 2. Collision check in userRepo for legacy email conflict with another user
+          if (this.userRepo) {
+            if (typeof (this.userRepo as any).getAllUsers === 'function') {
+              const allUsers = await (this.userRepo as any).getAllUsers();
+              const conflict = allUsers.find(
+                (u: any) => u.email && u.email.toLowerCase() === normalizedEmail.toLowerCase() && u.id !== subjectUserId
+              );
+              if (conflict) {
+                return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
+              }
+            } else if ((this.userRepo as any).users) {
+              for (const [id, u] of (this.userRepo as any).users.entries()) {
+                if (id !== subjectUserId && u.email && u.email.toLowerCase() === normalizedEmail.toLowerCase()) {
+                  return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
+                }
+              }
+            } else if ((this.userRepo as any).store) {
+              for (const [id, u] of (this.userRepo as any).store.entries()) {
+                if (id !== subjectUserId && u.email && u.email.toLowerCase() === normalizedEmail.toLowerCase()) {
+                  return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
+                }
+              }
+            }
+          }
+
+          // 3. Attach new identifier to subject user
+          if (this.userIdentifierRepo) {
+            await this.userIdentifierRepo.create({
               userId: subjectUserId,
-              email: normalizedEmail,
-              verifiedAt: existing.verifiedAt || new Date().toISOString(),
-              alreadyLinked: true,
-            };
-          } else {
-            return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
+              identifierType: 'EMAIL',
+              normalizedValue: normalizedEmail,
+              verifiedAt: nowIso,
+            });
           }
-        }
-      }
 
-      // 2. Collision check in userRepo for legacy email conflict
-      if (this.userRepo) {
-        const user = await this.userRepo.getById(subjectUserId);
-        if (!user) {
-          return { success: false, errorCode: 'USER_NOT_FOUND' };
-        }
-        if (typeof (this.userRepo as any).getAllUsers === 'function') {
-          const allUsers = await (this.userRepo as any).getAllUsers();
-          const conflict = allUsers.find(
-            (u: any) => u.email && u.email.toLowerCase() === normalizedEmail.toLowerCase() && u.id !== subjectUserId
-          );
-          if (conflict) {
-            return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
-          }
-        } else if ((this.userRepo as any).users) {
-          for (const [id, u] of (this.userRepo as any).users.entries()) {
-            if (id !== subjectUserId && u.email && u.email.toLowerCase() === normalizedEmail.toLowerCase()) {
-              return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
+          // 4. Update compatibility mirror in userRepo (no silent .catch(() => null))
+          if (this.userRepo) {
+            if (typeof (this.userRepo as any).updateProfile === 'function') {
+              await (this.userRepo as any).updateProfile(subjectUserId, { email: normalizedEmail });
+            } else if ((this.userRepo as any).users) {
+              const u = (this.userRepo as any).users.get(subjectUserId);
+              if (u) u.email = normalizedEmail;
+            } else if ((this.userRepo as any).store) {
+              const u = (this.userRepo as any).store.get(subjectUserId);
+              if (u) u.email = normalizedEmail;
             }
           }
-        } else if ((this.userRepo as any).store) {
-          for (const [id, u] of (this.userRepo as any).store.entries()) {
-            if (id !== subjectUserId && u.email && u.email.toLowerCase() === normalizedEmail.toLowerCase()) {
-              return { success: false, errorCode: 'IDENTIFIER_ALREADY_EXISTS' };
-            }
-          }
+
+          // 5. Consume challenge atomically
+          challenge.status = 'CONSUMED';
+          challenge.consumedAt = nowIso;
+          challenge.updatedAt = nowIso;
+
+          return {
+            success: true,
+            userId: subjectUserId,
+            email: normalizedEmail,
+            verifiedAt: nowIso,
+            alreadyLinked: false,
+          };
+        } finally {
+          releaseEmailLock();
         }
+      } finally {
+        releaseUserLock();
       }
-
-      // 3. Attach identifier to subject user
-      const nowIso = new Date().toISOString();
-      if (this.userIdentifierRepo) {
-        await this.userIdentifierRepo.create({
-          userId: subjectUserId,
-          identifierType: 'EMAIL',
-          normalizedValue: normalizedEmail,
-          verifiedAt: nowIso,
-        });
-      }
-
-      // 4. Update compatibility mirror in userRepo
-      if (this.userRepo) {
-        if (typeof (this.userRepo as any).updateProfile === 'function') {
-          await (this.userRepo as any).updateProfile(subjectUserId, { email: normalizedEmail }).catch(() => null);
-        } else if ((this.userRepo as any).users) {
-          const u = (this.userRepo as any).users.get(subjectUserId);
-          if (u) u.email = normalizedEmail;
-        } else if ((this.userRepo as any).store) {
-          const u = (this.userRepo as any).store.get(subjectUserId);
-          if (u) u.email = normalizedEmail;
-        }
-      }
-
-      // 5. Consume challenge atomically
-      challenge.status = 'CONSUMED';
-      challenge.consumedAt = nowIso;
-      challenge.updatedAt = nowIso;
-
-      return {
-        success: true,
-        userId: subjectUserId,
-        email: normalizedEmail,
-        verifiedAt: nowIso,
-        alreadyLinked: false,
-      };
     });
   }
 
   clear(): void {
     this.store.clear();
+    this.challengeLocks.clear();
+    this.userLocks.clear();
+    this.emailLocks.clear();
   }
 }
 
@@ -1176,6 +1287,14 @@ export class InMemoryUserRepository implements IUserRepository {
       u.updatedAt = new Date().toISOString();
     }
     return u || null;
+  }
+
+  async getAllUsers(): Promise<any[]> {
+    const unique = new Map<string, any>();
+    for (const u of this.users.values()) {
+      unique.set(u.id, u);
+    }
+    return Array.from(unique.values());
   }
 
   clear(): void {

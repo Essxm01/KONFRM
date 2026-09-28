@@ -211,6 +211,7 @@ async function queryViaSupabaseRest(text: string, params: any[] | undefined, url
     consumedAt: r?.consumed_at ?? r?.consumedAt ?? null,
     cancelledAt: r?.cancelled_at ?? r?.cancelledAt ?? null,
     providerMetadata: r?.provider_metadata ?? r?.providerMetadata ?? {},
+    subjectUserId: r?.subject_user_id ?? r?.subjectUserId ?? null,
     createdAt: r?.created_at ?? r?.createdAt,
     updatedAt: r?.updated_at ?? r?.updatedAt,
   });
@@ -243,14 +244,14 @@ async function queryViaSupabaseRest(text: string, params: any[] | undefined, url
     return authResult(row ? [mapIdentifier(row)] : [], 'UPDATE');
   }
 
-  const challengeSelect = /^select id, surface, intent, method, normalized_value as "normalizedvalue", otp_digest as "otpdigest", generation, issued_at as "issuedat", otp_expires_at as "otpexpiresat", challenge_expires_at as "challengeexpiresat", resend_available_at as "resendavailableat", failed_attempts as "failedattempts", issue_count as "issuecount", status, verified_at as "verifiedat", consumed_at as "consumedat", cancelled_at as "cancelledat", provider_metadata as "providermetadata", created_at as "createdat", updated_at as "updatedat" from public\.auth_challenges where id = \$1$/i;
+  const challengeSelect = /^select id, surface, intent, method, normalized_value as "normalizedvalue", otp_digest as "otpdigest", generation, issued_at as "issuedat", otp_expires_at as "otpexpiresat", challenge_expires_at as "challengeexpiresat", resend_available_at as "resendavailableat", failed_attempts as "failedattempts", issue_count as "issuecount", status, verified_at as "verifiedat", consumed_at as "consumedat", cancelled_at as "cancelledat", provider_metadata as "providermetadata", (?:subject_user_id as "subjectuserid", )?created_at as "createdat", updated_at as "updatedat" from public\.auth_challenges where id = \$1$/i;
   if (challengeSelect.test(normalizedSql)) {
     const raw = await authJson(await fetch(`${url}/rest/v1/auth_challenges?id=eq.${encodeURIComponent(params?.[0])}`, { headers }), 'REST_AUTH_CHALLENGE_LOOKUP_FAILED');
     const row = authRow(raw, 'REST_AUTH_CHALLENGE_LOOKUP_MALFORMED');
     return authResult(row ? [mapChallenge(row)] : []);
   }
-  if (/^insert into public\.auth_challenges\s*\(\s*id, surface, intent, method, normalized_value, otp_digest, generation, issued_at, otp_expires_at, challenge_expires_at, resend_available_at, failed_attempts, issue_count, status, provider_metadata, created_at, updated_at\s*\) values \(\$1, \$2, \$3, \$4, \$5, \$6, \$7, now\(\), \$8, \$9, \$10, 0, 1, 'active', \$11, now\(\), now\(\)\) returning /i.test(normalizedSql)) {
-    const raw = await authJson(await fetch(`${url}/rest/v1/auth_challenges`, { method: 'POST', headers: { ...headers, Prefer: 'return=representation' }, body: JSON.stringify({ id: params?.[0], surface: params?.[1], intent: params?.[2], method: params?.[3], normalized_value: params?.[4], otp_digest: params?.[5], generation: params?.[6] || 1, otp_expires_at: params?.[7], challenge_expires_at: params?.[8], resend_available_at: params?.[9], failed_attempts: 0, issue_count: 1, status: 'ACTIVE', provider_metadata: JSON.parse(params?.[10] || '{}') }) }), 'REST_AUTH_CHALLENGE_CREATE_FAILED');
+  if (/^insert into public\.auth_challenges\s*\(\s*id, surface, intent, method, normalized_value, otp_digest, generation, issued_at, otp_expires_at, challenge_expires_at, resend_available_at, failed_attempts, issue_count, status, provider_metadata,\s*(?:subject_user_id,\s*)?created_at, updated_at\s*\) values \(\$1, \$2, \$3, \$4, \$5, \$6, \$7, now\(\), \$8, \$9, \$10, 0, 1, 'active', \$11,\s*(?:\$12,\s*)?now\(\), now\(\)\) returning /i.test(normalizedSql)) {
+    const raw = await authJson(await fetch(`${url}/rest/v1/auth_challenges`, { method: 'POST', headers: { ...headers, Prefer: 'return=representation' }, body: JSON.stringify({ id: params?.[0], surface: params?.[1], intent: params?.[2], method: params?.[3], normalized_value: params?.[4], otp_digest: params?.[5], generation: params?.[6] || 1, otp_expires_at: params?.[7], challenge_expires_at: params?.[8], resend_available_at: params?.[9], failed_attempts: 0, issue_count: 1, status: 'ACTIVE', provider_metadata: JSON.parse(params?.[10] || '{}'), subject_user_id: params?.[11] || null }) }), 'REST_AUTH_CHALLENGE_CREATE_FAILED');
     const row = authRow(raw, 'REST_AUTH_CHALLENGE_CREATE_MALFORMED');
     if (!row) throw new Error('REST_AUTH_CHALLENGE_CREATE_ZERO_ROWS');
     return authResult([mapChallenge(row)], 'INSERT');
@@ -274,6 +275,7 @@ async function queryViaSupabaseRest(text: string, params: any[] | undefined, url
     { name: 'konfrm_acquire_resend_lease_v2', prefix: 'select success, error_code as "errorcode", lease_token as "leasetoken", generation, normalized_value as "normalizedvalue", method, surface, intent from public.konfrm_acquire_resend_lease_v2($1, $2)', body: p => ({ p_challenge_id: p?.[0], p_lease_ttl_seconds: p?.[1] }), code: 'REST_AUTH_RESEND_ACQUIRE_RPC_FAILED' },
     { name: 'konfrm_commit_resend_v2', prefix: 'select success, error_code as "errorcode", generation, otp_expires_at as "otpexpiresat", resend_available_at as "resendavailableat", challenge_expires_at as "challengeexpiresat" from public.konfrm_commit_resend_v2($1, $2, $3, $4, $5)', body: p => ({ p_challenge_id: p?.[0], p_lease_token: p?.[1], p_new_digest: p?.[2], p_new_generation: p?.[3], p_cooldown_seconds: p?.[4] }), code: 'REST_AUTH_RESEND_COMMIT_RPC_FAILED' },
     { name: 'konfrm_release_resend_lease_v2', prefix: 'select success, error_code as "errorcode" from public.konfrm_release_resend_lease_v2($1, $2)', body: p => ({ p_challenge_id: p?.[0], p_lease_token: p?.[1] }), code: 'REST_AUTH_RESEND_RELEASE_RPC_FAILED' },
+    { name: 'konfrm_link_verified_email_identifier_v1', prefix: 'select success, error_code as "errorcode", user_id as "userid", email, verified_at as "verifiedat", already_linked as "alreadylinked" from public.konfrm_link_verified_email_identifier_v1($1, $2)', body: p => ({ p_challenge_id: p?.[0], p_subject_user_id: p?.[1] }), code: 'REST_AUTH_LINK_VERIFIED_EMAIL_RPC_FAILED' },
   ];
   for (const shape of authRpcShapes) {
     if (normalizedSql === shape.prefix) {
@@ -283,6 +285,9 @@ async function queryViaSupabaseRest(text: string, params: any[] | undefined, url
         errorCode: r?.errorCode ?? r?.error_code,
         challengeId: r?.challengeId ?? r?.challenge_id,
         userId: r?.userId ?? r?.user_id,
+        email: r?.email,
+        verifiedAt: r?.verifiedAt ?? r?.verified_at,
+        alreadyLinked: r?.alreadyLinked ?? r?.already_linked,
         identifierType: r?.identifierType ?? r?.identifier_type,
         normalizedValue: r?.normalizedValue ?? r?.normalized_value,
         failedAttempts: r?.failedAttempts ?? r?.failed_attempts,

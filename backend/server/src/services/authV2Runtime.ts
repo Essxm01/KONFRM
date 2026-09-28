@@ -143,6 +143,19 @@ const ERROR_MESSAGES: Record<string, string> = {
   RESEND_IN_PROGRESS: 'تجري إعادة إرسال الرمز حاليًا.',
   RATE_LIMIT_EXCEEDED: 'تم تجاوز عدد المحاولات. حاول لاحقًا.',
   OTP_DELIVERY_FAILED: 'تعذر إرسال رمز التحقق. حاول مرة أخرى.',
+  IDENTIFIER_ALREADY_EXISTS: 'هذا البريد الإلكتروني مرتبط بحساب آخر.',
+  IDENTIFIER_ALREADY_LINKED: 'يوجد بريد إلكتروني مرتبط بحسابك بالفعل.',
+  CHALLENGE_OWNERSHIP_MISMATCH: 'جلسة التحقق لا تخص هذا الحساب.',
+  CHALLENGE_SUBJECT_MISMATCH: 'جلسة التحقق لا تخص هذا الحساب.',
+  UNAUTHORIZED_SUBJECT: 'يجب تسجيل الدخول بحساب مستأجر صالح.',
+  INVALID_LINK_CHALLENGE: 'طلب ربط البريد الإلكتروني غير صالح.',
+  CHALLENGE_ALREADY_CONSUMED: 'تم استخدام جلسة التحقق بالفعل.',
+  USER_NOT_FOUND: 'المستخدم غير موجود.',
+  FORBIDDEN_INSUFFICIENT_ROLE: 'غير مصرح لك بإجراء هذه العملية.',
+  UNAUTHORIZED_MISSING_TOKEN: 'رمز الدخول مطلوب.',
+  UNAUTHORIZED_INVALID_TOKEN: 'رمز الدخول غير صالح أو منتهي الصلاحية.',
+  UNAUTHORIZED_TOKEN_EXPIRED: 'رمز الدخول غير صالح أو منتهي الصلاحية.',
+  CUSTOMER_EMAIL_LINKING_UNAVAILABLE: 'خدمة إضافة البريد الإلكتروني غير متاحة حاليًا.',
 };
 
 function errorCodeFromMessage(message: string): string {
@@ -152,7 +165,22 @@ function errorCodeFromMessage(message: string): string {
 export function mapAuthV2Error(error: unknown): { statusCode: number; code: string; message: string } {
   const raw = error instanceof Error ? error.message : String(error || '');
   const code = errorCodeFromMessage(raw);
-  if (code === 'CHALLENGE_NOT_FOUND') return { statusCode: 404, code, message: ERROR_MESSAGES[code] };
+  if (code === 'CUSTOMER_EMAIL_LINKING_UNAVAILABLE') {
+    return { statusCode: 404, code, message: ERROR_MESSAGES.CUSTOMER_EMAIL_LINKING_UNAVAILABLE };
+  }
+  if (code === 'CHALLENGE_NOT_FOUND' || code === 'USER_NOT_FOUND') return { statusCode: 404, code, message: ERROR_MESSAGES[code] || 'العنصر غير موجود.' };
+  if (code === 'UNAUTHORIZED_SUBJECT' || code === 'UNAUTHORIZED_MISSING_TOKEN') {
+    return { statusCode: 401, code, message: ERROR_MESSAGES[code] || 'غير مصرح.' };
+  }
+  if (code === 'UNAUTHORIZED_TOKEN_EXPIRED') {
+    return { statusCode: 401, code: 'UNAUTHORIZED_TOKEN_EXPIRED', message: ERROR_MESSAGES.UNAUTHORIZED_TOKEN_EXPIRED };
+  }
+  if (code === 'UNAUTHORIZED_INVALID_TOKEN' || code === 'UNAUTHORIZED_INVALID_TOKEN_TYPE') {
+    return { statusCode: 401, code: 'UNAUTHORIZED_INVALID_TOKEN', message: ERROR_MESSAGES.UNAUTHORIZED_INVALID_TOKEN };
+  }
+  if (code === 'CHALLENGE_OWNERSHIP_MISMATCH' || code === 'CHALLENGE_SUBJECT_MISMATCH' || code === 'FORBIDDEN_INSUFFICIENT_ROLE') {
+    return { statusCode: 403, code, message: ERROR_MESSAGES[code] || 'غير مصرح لك بالوصول.' };
+  }
   if (code === 'CONTINUATION_TOKEN_EXPIRED') return { statusCode: 400, code, message: ERROR_MESSAGES.CONTINUATION_TOKEN_EXPIRED };
   if (code === 'INVALID_CONTINUATION_TOKEN' || code === 'MALFORMED_CONTINUATION_TOKEN' || code === 'INVALID_CONTINUATION_TOKEN_SIGNATURE' || code === 'CORRUPT_CONTINUATION_TOKEN_PAYLOAD') {
     return { statusCode: 400, code: 'INVALID_CONTINUATION_TOKEN', message: ERROR_MESSAGES.INVALID_CONTINUATION_TOKEN };
@@ -160,8 +188,8 @@ export function mapAuthV2Error(error: unknown): { statusCode: number; code: stri
   if (code === 'RATE_LIMIT_EXCEEDED' || code === 'RESEND_COOLDOWN_ACTIVE' || code === 'RESEND_IN_PROGRESS') {
     return { statusCode: 429, code, message: ERROR_MESSAGES[code] };
   }
-  if (code === 'CHALLENGE_ALREADY_VERIFIED' || code === 'CONTINUATION_ALREADY_CONSUMED' || code === 'CHALLENGE_NOT_VERIFIED' || code === 'CHALLENGE_BINDING_MISMATCH' || code === 'EMAIL_ONLY_ACCOUNT_CREATION_NOT_ENABLED' || code === 'EMAIL_ONLY_ACCOUNT_CREATION_DEFERRED') {
-    return { statusCode: 409, code: code === 'EMAIL_ONLY_ACCOUNT_CREATION_NOT_ENABLED' ? 'EMAIL_ONLY_ACCOUNT_CREATION_DEFERRED' : code, message: ERROR_MESSAGES[code] };
+  if (code === 'IDENTIFIER_ALREADY_EXISTS' || code === 'IDENTIFIER_ALREADY_LINKED' || code === 'CHALLENGE_ALREADY_CONSUMED' || code === 'CHALLENGE_ALREADY_VERIFIED' || code === 'CONTINUATION_ALREADY_CONSUMED' || code === 'CHALLENGE_NOT_VERIFIED' || code === 'CHALLENGE_BINDING_MISMATCH' || code === 'EMAIL_ONLY_ACCOUNT_CREATION_NOT_ENABLED' || code === 'EMAIL_ONLY_ACCOUNT_CREATION_DEFERRED') {
+    return { statusCode: 409, code: code === 'EMAIL_ONLY_ACCOUNT_CREATION_NOT_ENABLED' ? 'EMAIL_ONLY_ACCOUNT_CREATION_DEFERRED' : code, message: ERROR_MESSAGES[code] || 'تعارض في العملية.' };
   }
   if (code.startsWith('INVALID_') || code === 'UNAUTHORIZED_SURFACE' || code === 'UNSUPPORTED_AUTH_METHOD' || code === 'CHALLENGE_CANCELLED' || code === 'CHALLENGE_EXPIRED' || code === 'OTP_EXPIRED' || code === 'CHALLENGE_LOCKED_MAX_ATTEMPTS_EXCEEDED' || code === 'PRODUCTION_STATIC_OTP_FORBIDDEN' || code === 'FIXED_OTP_ENVIRONMENT_NOT_AUTHORIZED') {
     return { statusCode: 400, code, message: ERROR_MESSAGES[code] || 'الطلب غير صالح.' };

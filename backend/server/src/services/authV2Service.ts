@@ -43,6 +43,7 @@ import {
   authChallengeDb,
   authRateLimitDb,
   hashRefreshToken,
+  InMemoryAuthChallengeRepository,
   type IUserIdentifierRepository,
   type IAuthChallengeRepository,
   type IAuthRateLimitRepository,
@@ -104,6 +105,47 @@ export interface VerifyChallengeOutput {
   continuationToken?: string;
   requiresFullName?: boolean;
   requiresSignup?: boolean;
+}
+
+export interface RequestEmailLinkChallengeInput {
+  subjectUserId: string;
+  email: string;
+  ipAddress?: string;
+}
+
+export interface RequestEmailLinkChallengeOutput {
+  success: boolean;
+  challengeId: string;
+  maskedRecipient: string;
+  resendAvailableAt: string;
+  expiresAt: string;
+}
+
+export interface VerifyEmailLinkChallengeInput {
+  challengeId: string;
+  otp: string;
+  subjectUserId: string;
+  ipAddress?: string;
+}
+
+export interface VerifyEmailLinkChallengeOutput {
+  success: boolean;
+  challengeId: string;
+  userId: string;
+  email: string;
+  verifiedAt: string;
+  alreadyLinked: boolean;
+}
+
+export interface ResendEmailLinkChallengeInput {
+  challengeId: string;
+  subjectUserId: string;
+  ipAddress?: string;
+}
+
+export interface CancelEmailLinkChallengeInput {
+  challengeId: string;
+  subjectUserId: string;
 }
 
 export class AuthV2Service {
@@ -174,6 +216,13 @@ export class AuthV2Service {
         }
       : createCanonicalEmailCustomer);
     this.config = options?.config;
+
+    if (this.challengeRepo instanceof InMemoryAuthChallengeRepository) {
+      this.challengeRepo.setDependencies({
+        userIdentifierRepo: this.userIdentifierRepo,
+        userRepo: this.userRepo,
+      });
+    }
   }
 
   private normalize(method: 'PHONE' | 'EMAIL', raw: string): { normalized: string; masked: string } {
@@ -325,6 +374,15 @@ export class AuthV2Service {
    * If delivery fails, lease is released and previous valid OTP is preserved.
    */
   async resendChallenge(input: ResendChallengeInput): Promise<ResendChallengeOutput> {
+    // 0. Reject LINK_IDENTIFIER before acquiring lease (Section 26)
+    const existing = await this.challengeRepo.getById(input.challengeId);
+    if (!existing) {
+      throw new Error('CHALLENGE_NOT_FOUND');
+    }
+    if (existing.intent === 'LINK_IDENTIFIER') {
+      throw new Error('INVALID_AUTH_CHALLENGE');
+    }
+
     // 1. Acquire Database-Authoritative Resend Lease
     const lease = await this.challengeRepo.acquireResendLease(input.challengeId, 30);
     if (!lease.success) {
@@ -420,6 +478,10 @@ export class AuthV2Service {
    * Idempotent cancellation.
    */
   async cancelChallenge(challengeId: string): Promise<{ success: boolean; challengeId: string }> {
+    const challenge = await this.challengeRepo.getById(challengeId);
+    if (challenge && challenge.intent === 'LINK_IDENTIFIER') {
+      throw new Error('INVALID_AUTH_CHALLENGE');
+    }
     await this.challengeRepo.cancel(challengeId);
     return { success: true, challengeId };
   }
@@ -432,6 +494,9 @@ export class AuthV2Service {
     const challenge = await this.challengeRepo.getById(input.challengeId);
     if (!challenge) {
       throw new Error('CHALLENGE_NOT_FOUND');
+    }
+    if (challenge.intent === 'LINK_IDENTIFIER') {
+      throw new Error('INVALID_AUTH_CHALLENGE');
     }
 
     const hmacSecret = getAuthHmacSecret(this.config);
@@ -488,7 +553,7 @@ export class AuthV2Service {
           success: true,
           challengeId: challenge.id,
           method: challenge.method,
-          intent: challenge.intent,
+          intent: challenge.intent as 'LOGIN' | 'CREATE_ACCOUNT',
           isExistingUser: true,
           user,
           tokens,
@@ -502,7 +567,7 @@ export class AuthV2Service {
       {
         challengeId: challenge.id,
         surface: challenge.surface,
-        intent: challenge.intent,
+        intent: challenge.intent as 'LOGIN' | 'CREATE_ACCOUNT',
         method: challenge.method,
         normalizedValue: challenge.normalizedValue,
         verifiedAt: new Date().toISOString(),
@@ -515,7 +580,7 @@ export class AuthV2Service {
         success: true,
         challengeId: challenge.id,
         method: challenge.method,
-        intent: challenge.intent,
+        intent: challenge.intent as 'LOGIN' | 'CREATE_ACCOUNT',
         isExistingUser: false,
         continuationToken,
         requiresSignup: true,
@@ -526,7 +591,7 @@ export class AuthV2Service {
       success: true,
       challengeId: challenge.id,
       method: challenge.method,
-      intent: challenge.intent,
+      intent: challenge.intent as 'LOGIN' | 'CREATE_ACCOUNT',
       isExistingUser: false,
       continuationToken,
       requiresFullName: true,
@@ -653,5 +718,320 @@ export class AuthV2Service {
       refreshToken,
       expiresIn: 15 * 60, // 15 mins
     };
+  }
+
+  /**
+   * Request Email Link Challenge
+   * Restricted to authenticated Customer (subjectUserId).
+   * Binds challenge to subject_user_id.
+   * Fail-closed, enumeration-safe.
+   */
+  async requestEmailLinkChallenge(input: RequestEmailLinkChallengeInput): Promise<RequestEmailLinkChallengeOutput> {
+    if (!input.subjectUserId || typeof input.subjectUserId !== 'string') {
+      throw new Error('UNAUTHORIZED_SUBJECT');
+    }
+
+    const user = await this.userRepo.getById(input.subjectUserId);
+    if (!user) {
+      throw new Error('USER_NOT_FOUND');
+    }
+
+    const { normalized, masked } = this.normalize('EMAIL', input.email);
+
+    // Add-Only enforcement for current user's existing EMAIL identifiers (Section 24)
+    const userIdentifiers = await this.userIdentifierRepo.getByUserId(input.subjectUserId);
+    const existingEmailIdentifier = userIdentifiers.find((i) => i.identifierType === 'EMAIL');
+    if (existingEmailIdentifier) {
+      if (existingEmailIdentifier.verifiedAt) {
+        // Current user already has a verified email: reject Add Email
+        throw new Error('IDENTIFIER_ALREADY_LINKED');
+      } else if (existingEmailIdentifier.normalizedValue !== normalized) {
+        // Current user has an unverified email for a DIFFERENT candidate: fail closed
+        throw new Error('IDENTIFIER_ALREADY_LINKED');
+      }
+      // If unverified for SAME candidate: allow verification to continue
+    }
+
+    // Rate limiting per user and per identifier
+    const userRateLimitKey = `rate:send:link:user:${input.subjectUserId}`;
+    const userRateCheck = await this.rateLimitRepo.checkAndIncrement(
+      userRateLimitKey,
+      OTP_POLICY.RATE_LIMIT_SEND_WINDOW_SECONDS,
+      OTP_POLICY.RATE_LIMIT_MAX_SENDS_PER_IDENTIFIER
+    );
+    if (!userRateCheck.allowed) {
+      throw new Error(`RATE_LIMIT_EXCEEDED: Retry after ${userRateCheck.retryAfterSeconds} seconds`);
+    }
+
+    const idRateLimitKey = `rate:send:id:EMAIL:${normalized}`;
+    const idRateCheck = await this.rateLimitRepo.checkAndIncrement(
+      idRateLimitKey,
+      OTP_POLICY.RATE_LIMIT_SEND_WINDOW_SECONDS,
+      OTP_POLICY.RATE_LIMIT_MAX_SENDS_PER_IDENTIFIER
+    );
+    if (!idRateCheck.allowed) {
+      throw new Error(`RATE_LIMIT_EXCEEDED: Retry after ${idRateCheck.retryAfterSeconds} seconds`);
+    }
+
+    if (input.ipAddress) {
+      const ipRateLimitKey = `rate:send:ip:${input.ipAddress}`;
+      const ipRateCheck = await this.rateLimitRepo.checkAndIncrement(
+        ipRateLimitKey,
+        OTP_POLICY.RATE_LIMIT_SEND_WINDOW_SECONDS,
+        OTP_POLICY.RATE_LIMIT_MAX_SENDS_PER_IP
+      );
+      if (!ipRateCheck.allowed) {
+        throw new Error(`RATE_LIMIT_EXCEEDED: Retry after ${ipRateCheck.retryAfterSeconds} seconds`);
+      }
+    }
+
+    const challengeId = randomUUID();
+    const generation = 1;
+    const otp = this.resolveOtpForChallenge();
+
+    const hmacSecret = getAuthHmacSecret(this.config);
+    const otpDigest = computeChallengeOtpDigest(
+      hmacSecret,
+      challengeId,
+      generation,
+      normalized,
+      otp
+    );
+
+    const now = Date.now();
+    const otpExpiresAt = new Date(now + OTP_POLICY.OTP_TTL_MS).toISOString();
+    const challengeExpiresAt = new Date(now + OTP_POLICY.MAX_CHALLENGE_LIFECYCLE_MS).toISOString();
+    const resendAvailableAt = new Date(now + OTP_POLICY.RESEND_COOLDOWN_MS).toISOString();
+
+    await this.challengeRepo.create({
+      id: challengeId,
+      surface: 'CUSTOMER',
+      intent: 'LINK_IDENTIFIER',
+      method: 'EMAIL',
+      normalizedValue: normalized,
+      otpDigest,
+      generation,
+      otpExpiresAt,
+      challengeExpiresAt,
+      resendAvailableAt,
+      subjectUserId: input.subjectUserId,
+    });
+
+    try {
+      await this.emailAdapter.sendOtp(normalized, otp, this.config);
+    } catch (deliveryErr: any) {
+      await this.challengeRepo.cancel(challengeId).catch(() => null);
+      throw new Error(`OTP_DELIVERY_FAILED: Delivery adapter failed to dispatch verification code (${deliveryErr?.message || 'unknown error'})`);
+    }
+
+    return {
+      success: true,
+      challengeId,
+      maskedRecipient: masked,
+      resendAvailableAt,
+      expiresAt: otpExpiresAt,
+    };
+  }
+
+  /**
+   * Verify Email Link Challenge
+   * Atomically links email to current subjectUserId.
+   * Rejects collisions with exact error: IDENTIFIER_ALREADY_EXISTS.
+   */
+  async verifyEmailLinkChallenge(input: VerifyEmailLinkChallengeInput): Promise<VerifyEmailLinkChallengeOutput> {
+    if (!input.subjectUserId || typeof input.subjectUserId !== 'string') {
+      throw new Error('UNAUTHORIZED_SUBJECT');
+    }
+
+    const challenge = await this.challengeRepo.getById(input.challengeId);
+    if (!challenge) {
+      throw new Error('CHALLENGE_NOT_FOUND');
+    }
+
+    if (challenge.intent !== 'LINK_IDENTIFIER' || challenge.method !== 'EMAIL') {
+      throw new Error('INVALID_LINK_CHALLENGE');
+    }
+
+    if (challenge.subjectUserId !== input.subjectUserId) {
+      throw new Error('CHALLENGE_OWNERSHIP_MISMATCH');
+    }
+
+    if (challenge.status === 'CONSUMED') {
+      throw new Error('CHALLENGE_ALREADY_CONSUMED');
+    }
+    if (challenge.status === 'CANCELLED') {
+      throw new Error('CHALLENGE_CANCELLED');
+    }
+    if (challenge.status === 'LOCKED') {
+      throw new Error('CHALLENGE_LOCKED_MAX_ATTEMPTS_EXCEEDED');
+    }
+
+    const hmacSecret = getAuthHmacSecret(this.config);
+    const candidateDigest = computeChallengeOtpDigest(
+      hmacSecret,
+      challenge.id,
+      challenge.generation,
+      challenge.normalizedValue,
+      input.otp
+    );
+
+    const verifyResult = await this.challengeRepo.atomicVerify(
+      challenge.id,
+      candidateDigest,
+      OTP_POLICY.MAX_FAILED_ATTEMPTS
+    );
+
+    if (!verifyResult.success) {
+      if (verifyResult.errorCode === 'CHALLENGE_ALREADY_VERIFIED') {
+        // Continue to link step if verified
+      } else if (verifyResult.errorCode === 'CHALLENGE_LOCKED' || verifyResult.errorCode === 'MAX_ATTEMPTS_EXCEEDED') {
+        throw new Error('CHALLENGE_LOCKED_MAX_ATTEMPTS_EXCEEDED');
+      } else if (verifyResult.errorCode === 'CHALLENGE_CANCELLED') {
+        throw new Error('CHALLENGE_CANCELLED');
+      } else if (verifyResult.errorCode === 'CHALLENGE_EXPIRED') {
+        throw new Error('CHALLENGE_EXPIRED');
+      } else if (verifyResult.errorCode === 'OTP_EXPIRED') {
+        throw new Error('OTP_EXPIRED');
+      } else {
+        throw new Error('INVALID_OTP');
+      }
+    }
+
+    // Atomic link
+    const linkResult = await this.challengeRepo.linkVerifiedEmailIdentifier(challenge.id, input.subjectUserId);
+    if (!linkResult.success) {
+      throw new Error(linkResult.errorCode || 'LINK_IDENTIFIER_FAILED');
+    }
+
+    return {
+      success: true,
+      challengeId: challenge.id,
+      userId: linkResult.userId!,
+      email: linkResult.email!,
+      verifiedAt: linkResult.verifiedAt!,
+      alreadyLinked: Boolean(linkResult.alreadyLinked),
+    };
+  }
+
+  /**
+   * Resend Email Link Challenge
+   * Database-authoritative lease acquisition, bound to subjectUserId.
+   */
+  async resendEmailLinkChallenge(input: ResendEmailLinkChallengeInput): Promise<ResendChallengeOutput> {
+    if (!input.subjectUserId || typeof input.subjectUserId !== 'string') {
+      throw new Error('UNAUTHORIZED_SUBJECT');
+    }
+
+    const existing = await this.challengeRepo.getById(input.challengeId);
+    if (!existing) {
+      throw new Error('CHALLENGE_NOT_FOUND');
+    }
+    if (existing.intent !== 'LINK_IDENTIFIER' || existing.method !== 'EMAIL') {
+      throw new Error('INVALID_LINK_CHALLENGE');
+    }
+    if (existing.subjectUserId !== input.subjectUserId) {
+      throw new Error('CHALLENGE_OWNERSHIP_MISMATCH');
+    }
+
+    // Acquire Database-Authoritative Resend Lease
+    const lease = await this.challengeRepo.acquireResendLease(input.challengeId, 30);
+    if (!lease.success) {
+      if (lease.errorCode === 'RESEND_COOLDOWN_ACTIVE') {
+        throw new Error('RESEND_COOLDOWN_ACTIVE: Resend cooldown is still active');
+      }
+      if (lease.errorCode === 'RESEND_IN_PROGRESS') {
+        throw new Error('RESEND_IN_PROGRESS: Resend already in progress for this challenge');
+      }
+      throw new Error(lease.errorCode || 'RESEND_FAILED');
+    }
+
+    const leaseToken = lease.leaseToken!;
+    const currentGen = lease.generation || 1;
+    const nextGeneration = currentGen + 1;
+    const normalizedValue = lease.normalizedValue!;
+
+    const idRateLimitKey = `rate:send:id:EMAIL:${normalizedValue}`;
+    const idRateCheck = await this.rateLimitRepo.checkAndIncrement(
+      idRateLimitKey,
+      OTP_POLICY.RATE_LIMIT_SEND_WINDOW_SECONDS,
+      OTP_POLICY.RATE_LIMIT_MAX_SENDS_PER_IDENTIFIER
+    );
+    if (!idRateCheck.allowed) {
+      await this.challengeRepo.releaseResendLease(input.challengeId, leaseToken);
+      throw new Error(`RATE_LIMIT_EXCEEDED: Retry after ${idRateCheck.retryAfterSeconds} seconds`);
+    }
+
+    if (input.ipAddress) {
+      const ipRateLimitKey = `rate:send:ip:${input.ipAddress}`;
+      const ipRateCheck = await this.rateLimitRepo.checkAndIncrement(
+        ipRateLimitKey,
+        OTP_POLICY.RATE_LIMIT_SEND_WINDOW_SECONDS,
+        OTP_POLICY.RATE_LIMIT_MAX_SENDS_PER_IP
+      );
+      if (!ipRateCheck.allowed) {
+        await this.challengeRepo.releaseResendLease(input.challengeId, leaseToken);
+        throw new Error(`RATE_LIMIT_EXCEEDED: Retry after ${ipRateCheck.retryAfterSeconds} seconds`);
+      }
+    }
+
+    const otp = this.resolveOtpForChallenge();
+    const hmacSecret = getAuthHmacSecret(this.config);
+    const newDigest = computeChallengeOtpDigest(
+      hmacSecret,
+      input.challengeId,
+      nextGeneration,
+      normalizedValue,
+      otp
+    );
+
+    try {
+      await this.emailAdapter.sendOtp(normalizedValue, otp, this.config);
+    } catch (deliveryErr: any) {
+      await this.challengeRepo.releaseResendLease(input.challengeId, leaseToken);
+      throw new Error(`OTP_DELIVERY_FAILED: Resend delivery failed (${deliveryErr?.message || 'unknown error'})`);
+    }
+
+    const commit = await this.challengeRepo.commitResend(
+      input.challengeId,
+      leaseToken,
+      newDigest,
+      nextGeneration,
+      60
+    );
+    if (!commit.success) {
+      throw new Error(commit.errorCode || 'RESEND_COMMIT_FAILED');
+    }
+
+    return {
+      success: true,
+      challengeId: input.challengeId,
+      generation: commit.generation ?? nextGeneration,
+      resendAvailableAt: commit.resendAvailableAt!,
+      expiresAt: commit.otpExpiresAt!,
+    };
+  }
+
+  /**
+   * Cancel Email Link Challenge
+   * Bound to subjectUserId.
+   */
+  async cancelEmailLinkChallenge(input: CancelEmailLinkChallengeInput): Promise<{ success: boolean; challengeId: string }> {
+    if (!input.subjectUserId || typeof input.subjectUserId !== 'string') {
+      throw new Error('UNAUTHORIZED_SUBJECT');
+    }
+
+    const challenge = await this.challengeRepo.getById(input.challengeId);
+    if (!challenge) {
+      throw new Error('CHALLENGE_NOT_FOUND');
+    }
+    if (challenge.intent !== 'LINK_IDENTIFIER' || challenge.method !== 'EMAIL') {
+      throw new Error('INVALID_LINK_CHALLENGE');
+    }
+    if (challenge.subjectUserId !== input.subjectUserId) {
+      throw new Error('CHALLENGE_OWNERSHIP_MISMATCH');
+    }
+
+    await this.challengeRepo.cancel(input.challengeId);
+    return { success: true, challengeId: input.challengeId };
   }
 }

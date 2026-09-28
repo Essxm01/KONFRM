@@ -86,9 +86,6 @@ export async function runAuthV2QaBootstrapSuite(): Promise<{ total: number; pass
   };
 
   assertSafeTestDatabaseUrl(ISOLATED_PG_URL, 'AuthV2QaBootstrap');
-  if (isProductionDatabase()) {
-    throw new Error('REFUSING_TEST_EXECUTION_AGAINST_PRODUCTION_DB');
-  }
 
   const originalEnv = {
     databaseUrl: process.env.DATABASE_URL,
@@ -107,6 +104,10 @@ export async function runAuthV2QaBootstrapSuite(): Promise<{ total: number; pass
   process.env.NODE_ENV = 'test';
   process.env.JWT_ACCESS_SECRET = QA_ACCESS_SECRET;
   process.env.JWT_REFRESH_SECRET = QA_REFRESH_SECRET;
+
+  if (isProductionDatabase()) {
+    throw new Error('REFUSING_TEST_EXECUTION_AGAINST_PRODUCTION_DB');
+  }
 
   const pool = new pg.Pool({ connectionString: ISOLATED_PG_URL, max: 16, connectionTimeoutMillis: 5000 });
 
@@ -272,6 +273,126 @@ export async function runAuthV2QaBootstrapSuite(): Promise<{ total: number; pass
       }
     });
 
+    await record('Current Auth schema: applies Auth-relevant migrations 032 and 034 after verified 031 checkpoint', async () => {
+      const client = await pool.connect();
+      try {
+        // 1. Apply Migration 032 from source-controlled file
+        const migration032 = readRepoFile('../../../database/migrations/032_customer_email_first_nullable_phone.sql');
+        await client.query(migration032);
+
+        // Verify Migration 032 real effect on PostgreSQL
+        const phoneCol = await client.query(`
+          SELECT is_nullable FROM information_schema.columns
+          WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'phone_number'
+        `);
+        assert.strictEqual(phoneCol.rows[0]?.is_nullable, 'YES', 'users.phone_number must be nullable after Migration 032');
+
+        const fn032 = await client.query(`
+          SELECT proname FROM pg_proc
+          WHERE pronamespace = 'public'::regnamespace AND proname = 'konfrm_create_email_customer_v2'
+        `);
+        assert.strictEqual(fn032.rows.length, 1, 'konfrm_create_email_customer_v2 function must exist after Migration 032');
+
+        // 2. Apply Migration 034 from source-controlled file
+        const migration034 = readRepoFile('../../../database/migrations/034_customer_verified_email_linking.sql');
+        await client.query(migration034);
+
+        // Verify truthful migration history (031, 032, 034 applied; 033 omitted because minimal baseline excludes bookings/properties)
+        const history = await client.query('SELECT version FROM public.schema_migrations ORDER BY version');
+        assert.deepStrictEqual(
+          history.rows.map((r) => r.version),
+          [
+            '031_auth_v2_identity_and_challenges.sql',
+            '032_customer_email_first_nullable_phone.sql',
+            '034_customer_verified_email_linking.sql',
+          ],
+          'schema_migrations must contain exactly 031, 032, and 034'
+        );
+        assert.ok(
+          !history.rows.some((r) => r.version.includes('033')),
+          'Migration 033 must not be present in minimal Auth QA baseline history'
+        );
+
+        // 3. Verify Migration 034 real effect on PostgreSQL
+        // A. auth_challenges.subject_user_id exists and is UUID
+        const subjectCol = await client.query(`
+          SELECT data_type FROM information_schema.columns
+          WHERE table_schema = 'public' AND table_name = 'auth_challenges' AND column_name = 'subject_user_id'
+        `);
+        assert.strictEqual(subjectCol.rows.length, 1, 'auth_challenges.subject_user_id must exist after Migration 034');
+        assert.strictEqual(subjectCol.rows[0]?.data_type, 'uuid');
+
+        // B. Intent constraint permits LOGIN, CREATE_ACCOUNT, LINK_IDENTIFIER
+        const intentCheck = await client.query(`
+          SELECT pg_get_constraintdef(c.oid) AS definition
+          FROM pg_constraint c
+          JOIN pg_namespace n ON n.oid = c.connamespace
+          WHERE n.nspname = 'public' AND c.conrelid = 'public.auth_challenges'::regclass AND c.conname = 'auth_challenges_intent_check'
+        `);
+        assert.match(intentCheck.rows[0]?.definition || '', /LINK_IDENTIFIER/);
+
+        // C. subject_user_id constraint enforces LINK_IDENTIFIER NOT NULL and LOGIN/CREATE_ACCOUNT NULL
+        const subjectCheck = await client.query(`
+          SELECT pg_get_constraintdef(c.oid) AS definition
+          FROM pg_constraint c
+          JOIN pg_namespace n ON n.oid = c.connamespace
+          WHERE n.nspname = 'public' AND c.conrelid = 'public.auth_challenges'::regclass AND c.conname = 'chk_auth_challenges_subject_user_id'
+        `);
+        const subDef = subjectCheck.rows[0]?.definition || '';
+        assert.match(subDef, /LINK_IDENTIFIER.*subject_user_id IS NOT NULL/s);
+        assert.match(subDef, /subject_user_id IS NULL/s);
+
+        // D. uq_user_identifiers_user_type exists and is unique on (user_id, identifier_type)
+        const uqUserType = await client.query(`
+          SELECT indexname FROM pg_indexes
+          WHERE schemaname = 'public' AND tablename = 'user_identifiers' AND indexname = 'uq_user_identifiers_user_type'
+        `);
+        assert.strictEqual(uqUserType.rows.length, 1, 'uq_user_identifiers_user_type index must exist');
+
+        // E. Existing canonical unique index remains on (identifier_type, normalized_value)
+        const uqTypeValue = await client.query(`
+          SELECT indexname FROM pg_indexes
+          WHERE schemaname = 'public' AND tablename = 'user_identifiers' AND indexname = 'uq_user_identifiers_type_value'
+        `);
+        assert.strictEqual(uqTypeValue.rows.length, 1, 'uq_user_identifiers_type_value must remain');
+
+        // F. Function exists: public.konfrm_link_verified_email_identifier_v1(UUID, UUID)
+        const fn034 = await client.query(`
+          SELECT proname FROM pg_proc
+          WHERE pronamespace = 'public'::regnamespace AND proname = 'konfrm_link_verified_email_identifier_v1'
+        `);
+        assert.strictEqual(fn034.rows.length, 1, 'konfrm_link_verified_email_identifier_v1 must exist');
+
+        // 4. Security privilege validation on konfrm_link_verified_email_identifier_v1 (Section 11)
+        await client.query('SET ROLE anon');
+        try {
+          await expectRejected(
+            () => client.query('SELECT * FROM public.konfrm_link_verified_email_identifier_v1($1, $2)', [randomUUID(), randomUUID()]),
+            'anon must not execute konfrm_link_verified_email_identifier_v1'
+          );
+        } finally {
+          await client.query('RESET ROLE');
+        }
+
+        await client.query('SET ROLE authenticated');
+        try {
+          await expectRejected(
+            () => client.query('SELECT * FROM public.konfrm_link_verified_email_identifier_v1($1, $2)', [randomUUID(), randomUUID()]),
+            'authenticated must not execute konfrm_link_verified_email_identifier_v1'
+          );
+        } finally {
+          await client.query('RESET ROLE');
+        }
+
+        const svcPerm = await client.query(`
+          SELECT has_function_privilege('service_role', 'public.konfrm_link_verified_email_identifier_v1(uuid, uuid)', 'EXECUTE') AS allowed
+        `);
+        assert.strictEqual(svcPerm.rows[0]?.allowed, true, 'service_role must have EXECUTE on konfrm_link_verified_email_identifier_v1');
+      } finally {
+        client.release();
+      }
+    });
+
     await record('Actual repositories: PHONE/EMAIL lookup, challenge persistence, rate-limit persistence, and no plaintext OTP', async () => {
       const client = await pool.connect();
       const userId = randomUUID();
@@ -295,7 +416,22 @@ export async function runAuthV2QaBootstrapSuite(): Promise<{ total: number; pass
         id: challengeId, surface: 'CUSTOMER', intent: 'LOGIN', method: 'PHONE', normalizedValue: '+201011110001', otpDigest: digest,
         otpExpiresAt: new Date(Date.now() + 300000).toISOString(), challengeExpiresAt: new Date(Date.now() + 600000).toISOString(), resendAvailableAt: new Date(Date.now() - 1000).toISOString(),
       });
-      assert.strictEqual((await challenges.getById(challengeId))?.otpDigest, digest);
+      const savedLogin = await challenges.getById(challengeId);
+      assert.strictEqual(savedLogin?.otpDigest, digest);
+      assert.strictEqual(savedLogin?.subjectUserId, null, 'LOGIN challenge must persist with null subject_user_id');
+
+      // Test LINK_IDENTIFIER challenge persistence with bound Customer ID (Section 12)
+      const linkChallengeId = randomUUID();
+      const linkDigest = computeChallengeOtpDigest(QA_HMAC_SECRET, linkChallengeId, 1, 'qa-link-repo@example.test', QA_FIXED_OTP);
+      await challenges.create({
+        id: linkChallengeId, surface: 'CUSTOMER', intent: 'LINK_IDENTIFIER', method: 'EMAIL', normalizedValue: 'qa-link-repo@example.test', otpDigest: linkDigest,
+        otpExpiresAt: new Date(Date.now() + 300000).toISOString(), challengeExpiresAt: new Date(Date.now() + 600000).toISOString(), resendAvailableAt: new Date(Date.now() - 1000).toISOString(),
+        subjectUserId: userId,
+      });
+      const savedLink = await challenges.getById(linkChallengeId);
+      assert.strictEqual(savedLink?.otpDigest, linkDigest);
+      assert.strictEqual(savedLink?.subjectUserId, userId, 'LINK_IDENTIFIER challenge must persist with bound subject_user_id');
+
       const rateBucket = `qa-rate-${randomUUID()}`;
       const firstRate = await rates.checkAndIncrement(rateBucket, 60, 1);
       const secondRate = await rates.checkAndIncrement(rateBucket, 60, 1);
@@ -366,6 +502,256 @@ export async function runAuthV2QaBootstrapSuite(): Promise<{ total: number; pass
       assert.ok(refreshed.accessToken, 'canonical refresh must use the persisted session');
       await canonicalAuth.revokeSession(tokens.refreshToken);
       await expectRejected(() => canonicalAuth.refreshSession(tokens.refreshToken), 'revoked session must not refresh');
+    });
+
+    await record('Real PostgreSQL Migration 034: Email link RPC, single link, mirror update, and add-only rejection', async () => {
+      const client = await pool.connect();
+      try {
+        const customerA = randomUUID();
+        const phone = '+201099991111';
+        const emailA = 'link-a@konfrm.test';
+        const emailB = 'link-b@konfrm.test';
+
+        // Customer A: has canonical PHONE identifier, no EMAIL identifier
+        await client.query(`INSERT INTO public.users (id, phone_number, full_name, status) VALUES ($1, $2, 'Customer A', 'ACTIVE')`, [customerA, phone]);
+        await client.query(
+          `INSERT INTO public.user_identifiers (id, user_id, identifier_type, normalized_value, verified_at) VALUES ($1, $2, 'PHONE', $3, NOW())`,
+          [randomUUID(), customerA, phone]
+        );
+
+        // Count users before link
+        const usersBefore = await client.query('SELECT COUNT(*) FROM public.users');
+
+        // Create LINK_IDENTIFIER / EMAIL challenge bound to Customer A
+        const challengeA = randomUUID();
+        const digestA = computeChallengeOtpDigest(QA_HMAC_SECRET, challengeA, 1, emailA, QA_FIXED_OTP);
+        await client.query(
+          `INSERT INTO public.auth_challenges (
+            id, surface, intent, method, normalized_value, otp_digest, generation,
+            issued_at, otp_expires_at, challenge_expires_at, resend_available_at,
+            failed_attempts, issue_count, status, verified_at, subject_user_id
+          ) VALUES (
+            $1, 'CUSTOMER', 'LINK_IDENTIFIER', 'EMAIL', $2, $3, 1,
+            NOW(), NOW() + interval '5 min', NOW() + interval '10 min', NOW() + interval '1 min',
+            0, 1, 'VERIFIED', NOW(), $4
+          )`,
+          [challengeA, emailA, digestA, customerA]
+        );
+
+        // Call konfrm_link_verified_email_identifier_v1
+        const linkRes = await client.query('SELECT * FROM public.konfrm_link_verified_email_identifier_v1($1, $2)', [challengeA, customerA]);
+        assert.strictEqual(linkRes.rows.length, 1);
+        assert.strictEqual(linkRes.rows[0].success, true);
+        assert.strictEqual(linkRes.rows[0].user_id, customerA);
+
+        // Assert exactly one EMAIL identifier exists and belongs to Customer A
+        const emailIdents = await client.query(`SELECT * FROM public.user_identifiers WHERE user_id = $1 AND identifier_type = 'EMAIL'`, [customerA]);
+        assert.strictEqual(emailIdents.rows.length, 1);
+        assert.strictEqual(emailIdents.rows[0].normalized_value, emailA);
+
+        // Assert users.email mirror = link-a@konfrm.test
+        const userA = await client.query('SELECT email FROM public.users WHERE id = $1', [customerA]);
+        assert.strictEqual(userA.rows[0]?.email, emailA);
+
+        // Assert challenge = CONSUMED
+        const chRow = await client.query('SELECT status, consumed_at FROM public.auth_challenges WHERE id = $1', [challengeA]);
+        assert.strictEqual(chRow.rows[0]?.status, 'CONSUMED');
+        assert.ok(chRow.rows[0]?.consumed_at);
+
+        // Assert users table count did NOT increase
+        const usersAfter = await client.query('SELECT COUNT(*) FROM public.users');
+        assert.strictEqual(usersAfter.rows[0].count, usersBefore.rows[0].count);
+
+        // ADD-ONLY TEST: attempt second LINK_IDENTIFIER challenge for link-b@konfrm.test for SAME Customer A
+        const challengeB = randomUUID();
+        const digestB = computeChallengeOtpDigest(QA_HMAC_SECRET, challengeB, 1, emailB, QA_FIXED_OTP);
+        await client.query(
+          `INSERT INTO public.auth_challenges (
+            id, surface, intent, method, normalized_value, otp_digest, generation,
+            issued_at, otp_expires_at, challenge_expires_at, resend_available_at,
+            failed_attempts, issue_count, status, verified_at, subject_user_id
+          ) VALUES (
+            $1, 'CUSTOMER', 'LINK_IDENTIFIER', 'EMAIL', $2, $3, 1,
+            NOW(), NOW() + interval '5 min', NOW() + interval '10 min', NOW() + interval '1 min',
+            0, 1, 'VERIFIED', NOW(), $4
+          )`,
+          [challengeB, emailB, digestB, customerA]
+        );
+
+        // Attempting to link second email must fail closed with IDENTIFIER_ALREADY_LINKED
+        const linkRes2 = await client.query('SELECT * FROM public.konfrm_link_verified_email_identifier_v1($1, $2)', [challengeB, customerA]);
+        assert.strictEqual(linkRes2.rows[0]?.success, false);
+        assert.strictEqual(linkRes2.rows[0]?.error_code, 'IDENTIFIER_ALREADY_LINKED');
+
+        // Original email must remain unchanged
+        const emailIdentsAfter = await client.query(`SELECT * FROM public.user_identifiers WHERE user_id = $1 AND identifier_type = 'EMAIL'`, [customerA]);
+        assert.strictEqual(emailIdentsAfter.rows.length, 1);
+        assert.strictEqual(emailIdentsAfter.rows[0].normalized_value, emailA);
+
+        const userAAfter = await client.query('SELECT email FROM public.users WHERE id = $1', [customerA]);
+        assert.strictEqual(userAAfter.rows[0]?.email, emailA, 'users.email must not be replaced');
+      } finally {
+        client.release();
+      }
+    });
+
+    await record('Real PostgreSQL same-user / two-email concurrency: FOR UPDATE + unique (user_id, identifier_type) serialize race', async () => {
+      const customerC = randomUUID();
+      const phoneC = '+201099992222';
+      const emailRaceA = 'email-race-a@konfrm.test';
+      const emailRaceB = 'email-race-b@konfrm.test';
+
+      const setupClient = await pool.connect();
+      try {
+        await setupClient.query(`INSERT INTO public.users (id, phone_number, full_name, status) VALUES ($1, $2, 'Customer C', 'ACTIVE')`, [customerC, phoneC]);
+        await setupClient.query(
+          `INSERT INTO public.user_identifiers (id, user_id, identifier_type, normalized_value, verified_at) VALUES ($1, $2, 'PHONE', $3, NOW())`,
+          [randomUUID(), customerC, phoneC]
+        );
+      } finally {
+        setupClient.release();
+      }
+
+      const challengeRaceA = randomUUID();
+      const challengeRaceB = randomUUID();
+      const setupCh = await pool.connect();
+      try {
+        await setupCh.query(
+          `INSERT INTO public.auth_challenges (
+            id, surface, intent, method, normalized_value, otp_digest, generation,
+            issued_at, otp_expires_at, challenge_expires_at, resend_available_at,
+            failed_attempts, issue_count, status, verified_at, subject_user_id
+          ) VALUES
+            ($1, 'CUSTOMER', 'LINK_IDENTIFIER', 'EMAIL', $2, 'digest-a', 1, NOW(), NOW() + interval '5 min', NOW() + interval '10 min', NOW() + interval '1 min', 0, 1, 'VERIFIED', NOW(), $3),
+            ($4, 'CUSTOMER', 'LINK_IDENTIFIER', 'EMAIL', $5, 'digest-b', 1, NOW(), NOW() + interval '5 min', NOW() + interval '10 min', NOW() + interval '1 min', 0, 1, 'VERIFIED', NOW(), $3)`,
+          [challengeRaceA, emailRaceA, customerC, challengeRaceB, emailRaceB]
+        );
+      } finally {
+        setupCh.release();
+      }
+
+      // Run two independent PostgreSQL clients/transactions concurrently
+      const client1 = await pool.connect();
+      const client2 = await pool.connect();
+      let results: PromiseSettledResult<any>[];
+      try {
+        results = await Promise.allSettled([
+          client1.query('SELECT * FROM public.konfrm_link_verified_email_identifier_v1($1, $2)', [challengeRaceA, customerC]),
+          client2.query('SELECT * FROM public.konfrm_link_verified_email_identifier_v1($1, $2)', [challengeRaceB, customerC]),
+        ]);
+      } finally {
+        client1.release();
+        client2.release();
+      }
+
+      const successes = results.filter((r) => r.status === 'fulfilled' && (r as PromiseFulfilledResult<any>).value.rows[0]?.success === true);
+      const failures = results.filter((r) => {
+        if (r.status === 'rejected') return true;
+        const row = (r as PromiseFulfilledResult<any>).value.rows[0];
+        return row && row.success === false && row.error_code === 'IDENTIFIER_ALREADY_LINKED';
+      });
+      assert.strictEqual(successes.length, 1, 'Exactly one concurrent link must succeed');
+      assert.strictEqual(failures.length, 1, 'Exactly one concurrent link must fail with IDENTIFIER_ALREADY_LINKED');
+
+      // Verify Customer C has exactly one email identifier matching winner
+      const verClient = await pool.connect();
+      try {
+        const idents = await verClient.query(`SELECT * FROM public.user_identifiers WHERE user_id = $1 AND identifier_type = 'EMAIL'`, [customerC]);
+        assert.strictEqual(idents.rows.length, 1);
+        const winningEmail = idents.rows[0].normalized_value;
+        assert.ok(winningEmail === emailRaceA || winningEmail === emailRaceB);
+
+        const userRow = await verClient.query('SELECT email FROM public.users WHERE id = $1', [customerC]);
+        assert.strictEqual(userRow.rows[0]?.email, winningEmail);
+      } finally {
+        verClient.release();
+      }
+    });
+
+    await record('Real PostgreSQL two-users / same-email concurrency: transactional advisory lock + unique (type, value) race', async () => {
+      const customerD = randomUUID();
+      const customerE = randomUUID();
+      const phoneD = '+201099993333';
+      const phoneE = '+201099994444';
+      const sharedEmail = 'shared-race@konfrm.test';
+
+      const setupClient = await pool.connect();
+      try {
+        await setupClient.query(
+          `INSERT INTO public.users (id, phone_number, full_name, status) VALUES
+            ($1, $2, 'Customer D', 'ACTIVE'),
+            ($3, $4, 'Customer E', 'ACTIVE')`,
+          [customerD, phoneD, customerE, phoneE]
+        );
+        await setupClient.query(
+          `INSERT INTO public.user_identifiers (id, user_id, identifier_type, normalized_value, verified_at) VALUES
+            ($1, $2, 'PHONE', $3, NOW()),
+            ($4, $5, 'PHONE', $6, NOW())`,
+          [randomUUID(), customerD, phoneD, randomUUID(), customerE, phoneE]
+        );
+      } finally {
+        setupClient.release();
+      }
+
+      const challengeD = randomUUID();
+      const challengeE = randomUUID();
+      const setupCh = await pool.connect();
+      try {
+        await setupCh.query(
+          `INSERT INTO public.auth_challenges (
+            id, surface, intent, method, normalized_value, otp_digest, generation,
+            issued_at, otp_expires_at, challenge_expires_at, resend_available_at,
+            failed_attempts, issue_count, status, verified_at, subject_user_id
+          ) VALUES
+            ($1, 'CUSTOMER', 'LINK_IDENTIFIER', 'EMAIL', $2, 'digest-d', 1, NOW(), NOW() + interval '5 min', NOW() + interval '10 min', NOW() + interval '1 min', 0, 1, 'VERIFIED', NOW(), $3),
+            ($4, 'CUSTOMER', 'LINK_IDENTIFIER', 'EMAIL', $2, 'digest-e', 1, NOW(), NOW() + interval '5 min', NOW() + interval '10 min', NOW() + interval '1 min', 0, 1, 'VERIFIED', NOW(), $5)`,
+          [challengeD, sharedEmail, customerD, challengeE, customerE]
+        );
+      } finally {
+        setupCh.release();
+      }
+
+      // Run final link RPC calls concurrently using two separate DB clients
+      const client1 = await pool.connect();
+      const client2 = await pool.connect();
+      let results: PromiseSettledResult<any>[];
+      try {
+        results = await Promise.allSettled([
+          client1.query('SELECT * FROM public.konfrm_link_verified_email_identifier_v1($1, $2)', [challengeD, customerD]),
+          client2.query('SELECT * FROM public.konfrm_link_verified_email_identifier_v1($1, $2)', [challengeE, customerE]),
+        ]);
+      } finally {
+        client1.release();
+        client2.release();
+      }
+
+      const successes = results.filter((r) => r.status === 'fulfilled' && (r as PromiseFulfilledResult<any>).value.rows[0]?.success === true);
+      const failures = results.filter((r) => {
+        if (r.status === 'rejected') return true;
+        const row = (r as PromiseFulfilledResult<any>).value.rows[0];
+        return row && row.success === false && row.error_code === 'IDENTIFIER_ALREADY_EXISTS';
+      });
+      assert.strictEqual(successes.length, 1, 'Exactly one claimant must win the shared email');
+      assert.strictEqual(failures.length, 1, 'Exactly one claimant must fail with IDENTIFIER_ALREADY_EXISTS');
+
+      // Verify only 1 canonical EMAIL identifier exists for shared-race@konfrm.test
+      const verClient = await pool.connect();
+      try {
+        const idents = await verClient.query(`SELECT * FROM public.user_identifiers WHERE normalized_value = $1`, [sharedEmail]);
+        assert.strictEqual(idents.rows.length, 1);
+        const winningUserId = idents.rows[0].user_id;
+        const losingUserId = winningUserId === customerD ? customerE : customerD;
+
+        // Winning user has users.email set
+        const winUser = await verClient.query('SELECT email FROM public.users WHERE id = $1', [winningUserId]);
+        assert.strictEqual(winUser.rows[0]?.email, sharedEmail);
+
+        // Losing user's email remains null
+        const loseUser = await verClient.query('SELECT email FROM public.users WHERE id = $1', [losingUserId]);
+        assert.strictEqual(loseUser.rows[0]?.email, null);
+      } finally {
+        verClient.release();
+      }
     });
 
     await record('Migration runner safety: QA baseline cannot be discovered by production migration directory scan', async () => {

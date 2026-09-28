@@ -9,6 +9,7 @@ const QA_ENV: Record<string, string> = {
   AUTH_V2_ENABLED: 'true', AUTH_ENVIRONMENT: 'founder_qa', AUTH_DELIVERY_MODE: 'DEVELOPMENT_FIXED_OTP', AUTH_DEVELOPMENT_OTP: '123456',
   AUTH_OTP_HMAC_SECRET: 'worker-adapter-test-hmac-secret-32-chars', JWT_ACCESS_SECRET: 'worker-adapter-access-secret-32-chars', JWT_REFRESH_SECRET: 'worker-adapter-refresh-secret-32-chars',
   SUPABASE_PROJECT_REF: AUTH_V2_QA_PROJECT_REF, SUPABASE_URL: `https://${AUTH_V2_QA_PROJECT_REF}.supabase.co`, SUPABASE_SERVICE_ROLE_KEY: 'worker-adapter-service-role-key-32-chars',
+  CUSTOMER_EMAIL_LINKING_ENABLED: 'true',
 };
 const UUID = () => randomUUID();
 const json = (value: unknown, status = 200): Response => new Response(JSON.stringify(value), { status, headers: { 'content-type': 'application/json' } });
@@ -125,10 +126,68 @@ export async function runAuthV2WorkerAdapterSuite(): Promise<void> {
     assert.strictEqual(completed.statusCode, 201);
     assert.ok(completed.body.data.tokens.accessToken);
     const workerCtx = { waitUntil() {}, passThroughOnException() {} };
-    const blockedWorkerRoute = await worker.fetch(new Request('https://qa.invalid/api/v1/properties'), { AUTH_V2_QA_WORKER_ONLY: 'true' }, workerCtx);
-    assert.strictEqual(blockedWorkerRoute.status, 404);
+
+    // A. GET /api/v1/health -> allowed (200)
     const workerHealth = await worker.fetch(new Request('https://qa.invalid/api/v1/health'), { AUTH_V2_QA_WORKER_ONLY: 'true' }, workerCtx);
     assert.strictEqual(workerHealth.status, 200);
+
+    // B. POST /api/v2/auth/challenges -> allowed through Worker gate (200)
+    const workerAuthV2 = await worker.fetch(new Request('https://qa.invalid/api/v2/auth/challenges', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ surface: 'CUSTOMER', intent: 'LOGIN', method: 'PHONE', identifier: existingPhone }),
+    }), { AUTH_V2_QA_WORKER_ONLY: 'true' }, workerCtx);
+    assert.strictEqual(workerAuthV2.status, 200);
+
+    // C. POST /api/v2/customer/identifiers/email/challenges without Authorization -> passes Worker gate, reaches app auth logic (401)
+    const emailLinkNoAuth = await worker.fetch(new Request('https://qa.invalid/api/v2/customer/identifiers/email/challenges', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email: 'test@example.com' }),
+    }), { AUTH_V2_QA_WORKER_ONLY: 'true', CUSTOMER_EMAIL_LINKING_ENABLED: 'true' }, workerCtx);
+    assert.strictEqual(emailLinkNoAuth.status, 401);
+    const noAuthBody = await emailLinkNoAuth.json() as any;
+    assert.notStrictEqual(noAuthBody.error?.code, 'QA_ROUTE_NOT_ALLOWED', 'Email linking route must not be rejected by QA worker route allowlist');
+    assert.strictEqual(noAuthBody.error?.code, 'UNAUTHORIZED_MISSING_TOKEN');
+
+    // D. POST Email-link challenge with invalid Bearer token -> 401 (not 404 QA_ROUTE_NOT_ALLOWED)
+    const emailLinkInvalidAuth = await worker.fetch(new Request('https://qa.invalid/api/v2/customer/identifiers/email/challenges', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: 'Bearer invalid-token-sample' },
+      body: JSON.stringify({ email: 'test@example.com' }),
+    }), { AUTH_V2_QA_WORKER_ONLY: 'true', CUSTOMER_EMAIL_LINKING_ENABLED: 'true' }, workerCtx);
+    assert.strictEqual(emailLinkInvalidAuth.status, 401);
+    const invalidAuthBody = await emailLinkInvalidAuth.json() as any;
+    assert.notStrictEqual(invalidAuthBody.error?.code, 'QA_ROUTE_NOT_ALLOWED', 'Invalid token on email link must reach auth verification, not QA route block');
+    assert.strictEqual(invalidAuthBody.error?.code, 'UNAUTHORIZED_INVALID_TOKEN');
+
+    // D2. POST Email-link challenge with CUSTOMER_EMAIL_LINKING_ENABLED=false -> 404 CUSTOMER_EMAIL_LINKING_UNAVAILABLE (not 404 QA_ROUTE_NOT_ALLOWED)
+    const emailLinkDisabled = await worker.fetch(new Request('https://qa.invalid/api/v2/customer/identifiers/email/challenges', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: 'Bearer invalid-token-sample' },
+      body: JSON.stringify({ email: 'test@example.com' }),
+    }), { AUTH_V2_QA_WORKER_ONLY: 'true', CUSTOMER_EMAIL_LINKING_ENABLED: 'false' }, workerCtx);
+    assert.strictEqual(emailLinkDisabled.status, 404);
+    const disabledBody = await emailLinkDisabled.json() as any;
+    assert.notStrictEqual(disabledBody.error?.code, 'QA_ROUTE_NOT_ALLOWED', 'Disabled email linking must reach feature gate, not QA worker route block');
+    assert.strictEqual(disabledBody.error?.code, 'CUSTOMER_EMAIL_LINKING_UNAVAILABLE');
+    assert.strictEqual(disabledBody.error?.message, 'خدمة إضافة البريد الإلكتروني غير متاحة حاليًا.');
+
+    // Restore process.env.CUSTOMER_EMAIL_LINKING_ENABLED to 'true' for subsequent test steps
+    process.env.CUSTOMER_EMAIL_LINKING_ENABLED = 'true';
+
+    // E. GET /api/v1/properties -> 404 QA_ROUTE_NOT_ALLOWED
+    const blockedWorkerRoute = await worker.fetch(new Request('https://qa.invalid/api/v1/properties'), { AUTH_V2_QA_WORKER_ONLY: 'true' }, workerCtx);
+    assert.strictEqual(blockedWorkerRoute.status, 404);
+    const blockedRouteBody = await blockedWorkerRoute.json() as any;
+    assert.strictEqual(blockedRouteBody.error?.code, 'QA_ROUTE_NOT_ALLOWED');
+
+    // F. GET /api/v1/customer/profile -> 404 QA_ROUTE_NOT_ALLOWED
+    const blockedCustomerProfile = await worker.fetch(new Request('https://qa.invalid/api/v1/customer/profile'), { AUTH_V2_QA_WORKER_ONLY: 'true' }, workerCtx);
+    assert.strictEqual(blockedCustomerProfile.status, 404);
+    const blockedProfileBody = await blockedCustomerProfile.json() as any;
+    assert.strictEqual(blockedProfileBody.error?.code, 'QA_ROUTE_NOT_ALLOWED');
+
     console.log('AUTH_V2_WORKER_ADAPTER: PASS');
   } finally {
     globalThis.fetch = oldFetch;

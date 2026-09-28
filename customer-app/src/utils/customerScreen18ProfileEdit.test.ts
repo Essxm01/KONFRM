@@ -13,7 +13,7 @@ function assert(condition: unknown, message: string): asserts condition {
 }
 
 async function run(): Promise<void> {
-  console.log('Running Customer Screen 18 Profile Edit Test Suite (20 Cases)...');
+  console.log('Running Customer Screen 18 Profile Edit Test Suite (27 Cases)...');
 
   const componentSource = readFileSync(
     new URL('../components/CustomerEditAccountPage.tsx', import.meta.url),
@@ -73,13 +73,26 @@ async function run(): Promise<void> {
         },
       },
     };
-    const hasPhone = Boolean(
-      dualUser.verifiedIdentifiers?.phone?.value ||
-      (dualUser.phoneVerifiedAt && dualUser.phoneNumber)
-    );
+    const hasPhone = Boolean(dualUser.verifiedIdentifiers?.phone?.value);
     const hasEmail = Boolean(dualUser.verifiedIdentifiers?.email?.value);
     assert(hasPhone && hasEmail, 'Case 4 Failed: Dual user must have both verified identifiers resolved');
     console.log('✓ Case 4: Dual identifier user resolves both phone and email');
+  }
+
+  // Case 4b: Legacy phoneNumber+phoneVerifiedAt alone is never presented as verified
+  {
+    const legacyPhoneUser: CustomerUserProfile = {
+      id: 'usr_legacy_phone',
+      fullName: 'مصطفى فؤاد',
+      phoneNumber: '+201555000111',
+      phoneVerifiedAt: '2026-09-28T00:00:00.000Z',
+    };
+    const verifiedPhoneFromComponentRule = Boolean(legacyPhoneUser.verifiedIdentifiers?.phone?.value);
+    assert(
+      !verifiedPhoneFromComponentRule,
+      'Case 4b Failed: Legacy phoneNumber/phoneVerifiedAt without verifiedIdentifiers must NOT be presented as verified'
+    );
+    console.log('✓ Case 4b: Legacy phone fields alone never present as verified identity');
   }
 
   // Case 5: Email-first user does NOT display a blank editable phone field
@@ -268,7 +281,103 @@ async function run(): Promise<void> {
     console.log('✓ Case 20: No avatar/photo upload affordance exists; initials avatar only');
   }
 
-  console.log('\nALL 20 SCREEN 18 TESTS PASSED SUCCESSFULLY! ✓\n');
+  // Case 21: Profile fetch lifecycle is session/screen-driven, not field-interaction-driven
+  {
+    assert(
+      componentSource.includes("}, [authToken, reloadNonce, onSessionExpired]);"),
+      'Case 21 Failed: Canonical profile load effect must depend on session lifecycle, not nameTouched'
+    );
+    assert(
+      !componentSource.includes('[authToken, nameTouched]'),
+      'Case 21 Failed: Touching the name field must never trigger a canonical profile refetch'
+    );
+    assert(
+      componentSource.includes('userEditedRef') &&
+        componentSource.includes('if (!userEditedRef.current) {'),
+      'Case 21 Failed: A late canonical response must not overwrite active user edits'
+    );
+    assert(
+      componentSource.includes('profileLoadState') &&
+        componentSource.includes("'NETWORK_ERROR'") &&
+        componentSource.includes('إعادة المحاولة'),
+      'Case 21 Failed: Network/non-auth failure must expose a truthful retryable state'
+    );
+    console.log('✓ Case 21: Profile fetch lifecycle driven by session, protected against late responses');
+  }
+
+  // Case 22: Zero verified identifiers fail closed (no normal empty state)
+  {
+    assert(
+      !componentSource.includes('لا توجد معرفات إضافية موثقة'),
+      'Case 22 Failed: The neutral zero-identifier box must not exist'
+    );
+    assert(
+      componentSource.includes('identityIntegrity') &&
+        componentSource.includes('لا يمكن التحقق من هوية الحساب'),
+      'Case 22 Failed: Zero verified identifiers must fail closed as identity integrity state'
+    );
+    assert(
+      componentSource.includes("profileLoadState === 'READY' && !verifiedPhone && !verifiedEmail"),
+      'Case 22 Failed: Integrity evaluation must wait for the canonical load to settle'
+    );
+    console.log('✓ Case 22: Zero verified identifiers fail closed as identity integrity failure');
+  }
+
+  // Case 23: 401/403 on profile load is fail-closed Session Expired, surfaced to App
+  {
+    assert(
+      componentSource.includes('CustomerProfileUnauthorizedError') &&
+        componentSource.includes('setSessionExpired(true);\n          onSessionExpired?.();'),
+      'Case 23 Failed: 401/403 must trigger fail-closed Session Expired and notify App invalidation'
+    );
+    console.log('✓ Case 23: Profile GET 401/403 fails closed to Session Expired with App invalidation');
+  }
+
+  // Case 24: PATCH payload is fullName only — never email/phone
+  {
+    const patchBodyMatch = componentSource.match(/const patchBody = \{([\s\S]*?)\};/);
+    assert(patchBodyMatch, 'Case 24 Failed: PATCH body must be an explicit object literal');
+    const patchBody = patchBodyMatch![1];
+    assert(
+      patchBody.includes('fullName') &&
+        !patchBody.includes('email') &&
+        !patchBody.includes('phone'),
+      'Case 24 Failed: Ordinary profile PATCH must contain fullName only — no email/phone keys'
+    );
+    console.log('✓ Case 24: PATCH payload carries fullName only; identifiers never included');
+  }
+
+  // Case 25: Canonical identity response is validated through mergeCustomerProfile
+  {
+    assert(
+      componentSource.includes('fetchCanonicalCustomerProfile') &&
+        componentSource.includes('mergeCustomerProfile'),
+      'Case 25 Failed: Canonical profile and save responses must pass identity validation'
+    );
+    assert(
+      componentSource.includes('setIdentityIntegrityFailed(true)'),
+      'Case 25 Failed: Identity-invalid canonical payloads must fail closed'
+    );
+    console.log('✓ Case 25: Canonical identity validation guards load and save paths');
+  }
+
+  // Case 26: No amber/yellow/orange boxed UI (Founder visual rule)
+  {
+    assert(
+      !componentSource.includes('amber') &&
+        !componentSource.includes('yellow') &&
+        !componentSource.includes('orange'),
+      'Case 26 Failed: Screen 18 must not contain amber/yellow/orange styling'
+    );
+    assert(
+      componentSource.includes('bg-blue-50 text-[#0059FF]') &&
+        componentSource.includes('bg-slate-100 text-slate-600'),
+      'Case 26 Failed: Session Expired must use soft blue and Unsaved Changes neutral treatment'
+    );
+    console.log('✓ Case 26: Screen 18 contains no amber/yellow/orange boxed UI');
+  }
+
+  console.log('\nALL 27 SCREEN 18 TESTS PASSED SUCCESSFULLY! ✓\n');
 }
 
 run().catch((err) => {

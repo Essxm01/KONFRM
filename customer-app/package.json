@@ -25,7 +25,8 @@
     "test:screen15": "npx tsx src/utils/customerScreen15Favorites.test.ts",
     "test:screen16": "npx tsx src/utils/customerScreen16Notifications.test.ts",
     "test:screen17": "npx tsx src/utils/customerScreen17AccountHome.test.ts",
-    "test:screen18": "npx tsx src/utils/customerScreen18ProfileEdit.test.ts"
+    "test:screen18": "npx tsx src/utils/customerScreen18ProfileEdit.test.ts",
+    "test:screen1718-identity": "npx tsx src/utils/customerScreens17_18IdentitySession.test.ts"
   },
   "dependencies": {
     "lucide-react": "^1.31.0",

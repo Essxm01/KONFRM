@@ -56,6 +56,12 @@ import {
   fetchCustomerAccountSummary,
 } from './utils/customerFavorites';
 import {
+  CustomerProfileIdentityIntegrityError,
+  CustomerProfileUnauthorizedError,
+  canonicalDisplayPhoneFromProfile,
+  fetchCanonicalCustomerProfile,
+} from './utils/customerProfileSession';
+import {
   favoriteListStateAfterLoad,
   favoriteStateAfterServerRemoval,
   shouldApplyFavoriteRead,
@@ -92,6 +98,11 @@ export function App() {
     try { return saved ? JSON.parse(saved) : null; } catch { return null; }
   });
   const [customerAuthError, setCustomerAuthError] = useState<string | null>(null);
+  // Canonical Profile session truth (fail-closed): profile GET 401/403 invalidates
+  // private Account/Profile state; zero verified identifiers fails closed as an
+  // identity integrity failure. Public Explore state is never touched by either.
+  const [profileSessionExpired, setProfileSessionExpired] = useState<boolean>(false);
+  const [identityIntegrityFailed, setIdentityIntegrityFailed] = useState<boolean>(false);
 
   // Dedicated Full-Screen Edit Account View State
   const [isEditingAccount, setIsEditingAccount] = useState<boolean>(false);
@@ -511,25 +522,44 @@ export function App() {
   };
 
   const loadCanonicalCustomerProfile = async (token: string, signal?: AbortSignal) => {
-    const res = await fetch(getApiUrl('/customer/profile'), {
-      headers: { Authorization: `Bearer ${token}` },
-      signal,
-    });
-    const json = await res.json().catch(() => null);
-    if (!res.ok || !json?.success || !json.data) throw new Error('CUSTOMER_PROFILE_SESSION_INVALID');
-    return mergeCustomerProfile(json.data);
+    return fetchCanonicalCustomerProfile(
+      token,
+      signal
+        ? (input, init) => fetch(input, { ...init, signal })
+        : fetch
+    );
   };
 
-  const applyCanonicalCustomerProfile = (canonicalProfile: ReturnType<typeof mergeCustomerProfile>): void => {
-    setUserProfile(canonicalProfile as any);
+  const applyCanonicalCustomerProfile = (canonicalProfile: CustomerUserProfile): void => {
+    setUserProfile(canonicalProfile);
     localStorage.setItem('sola_customer_profile', JSON.stringify(canonicalProfile));
-    // Only the canonical profile may populate the legacy phone display field.
-    const canonicalPhone = canonicalProfile.phoneNumber;
+    // Only the canonical profile may populate the legacy phone display key —
+    // and a canonical phoneNumber === null must explicitly clear it, so a
+    // previous account's phone can never survive an account replacement.
+    const canonicalPhone = canonicalDisplayPhoneFromProfile(canonicalProfile);
     if (canonicalPhone) {
       setCustomerPhone(canonicalPhone);
       localStorage.setItem('sola_customer_phone', canonicalPhone);
+    } else {
+      setCustomerPhone(null);
+      localStorage.removeItem('sola_customer_phone');
     }
   };
+
+  /**
+   * Smallest centralized session invalidation for the Account/Profile domain:
+   * drops private profile identity state (state + persisted candidates) and
+   * exposes Session Expired UX. Unrelated public and private domain state
+   * (Explore, Bookings, Favorites) keeps its own handling.
+   */
+  const invalidateCustomerProfileSession = useCallback((): void => {
+    setProfileSessionExpired(true);
+    setIdentityIntegrityFailed(false);
+    setUserProfile(null);
+    localStorage.removeItem('sola_customer_profile');
+    setCustomerPhone(null);
+    localStorage.removeItem('sola_customer_phone');
+  }, []);
 
   // Fetch Real Customer Profile (AUTH-03 & P2.2)
   const fetchCustomerProfile = async (token?: string | null) => {
@@ -537,7 +567,21 @@ export function App() {
     if (!t) return;
     try {
       applyCanonicalCustomerProfile(await loadCanonicalCustomerProfile(t));
-    } catch {
+      setProfileSessionExpired(false);
+      setIdentityIntegrityFailed(false);
+    } catch (err: unknown) {
+      if (err instanceof CustomerProfileUnauthorizedError) {
+        invalidateCustomerProfileSession();
+        return;
+      }
+      if (err instanceof CustomerProfileIdentityIntegrityError) {
+        setIdentityIntegrityFailed(true);
+        setUserProfile(null);
+        localStorage.removeItem('sola_customer_profile');
+        setCustomerPhone(null);
+        localStorage.removeItem('sola_customer_phone');
+        return;
+      }
       setUserProfile(null);
       localStorage.removeItem('sola_customer_profile');
     }
@@ -718,13 +762,18 @@ export function App() {
           });
           const profileJson = await profileRes.json();
           if (profileRes.ok && profileJson.success && profileJson.data) {
-            const canonicalProfile = mergeCustomerProfile(profileJson.data);
-            setUserProfile(canonicalProfile as any);
-            localStorage.setItem('sola_customer_profile', JSON.stringify(canonicalProfile));
-            const canonicalPhone = (canonicalProfile as { phoneNumber?: unknown }).phoneNumber;
-            if (typeof canonicalPhone === 'string' && canonicalPhone.trim()) {
-              setCustomerPhone(canonicalPhone);
-              localStorage.setItem('sola_customer_phone', canonicalPhone);
+            try {
+              // Single canonical application path: explicit phone clearing on
+              // phoneNumber === null prevents cross-account stale phone restore.
+              applyCanonicalCustomerProfile(mergeCustomerProfile(profileJson.data));
+            } catch {
+              // Canonical payload without a verified identity fails closed.
+              setIdentityIntegrityFailed(true);
+              setUserProfile(null);
+              localStorage.removeItem('sola_customer_profile');
+              setCustomerPhone(null);
+              localStorage.removeItem('sola_customer_phone');
+              return;
             }
             activateNotificationSession(storedToken);
             setAuthToken(storedToken);
@@ -929,10 +978,20 @@ export function App() {
     if (refreshToken) {
       localStorage.setItem('sola_customer_refresh_token', refreshToken);
     }
-    localStorage.setItem('sola_customer_phone', phone);
+    // Session replacement: a fresh login must never keep a previous account's
+    // phone. Only this login's own phone may seed the legacy display key; the
+    // canonical profile fetch below remains the authority (and clears on null).
+    if (phone) {
+      localStorage.setItem('sola_customer_phone', phone);
+      setCustomerPhone(phone);
+    } else {
+      localStorage.removeItem('sola_customer_phone');
+      setCustomerPhone(null);
+    }
     setAuthToken(token);
     setCustomerAuthError(null);
-    setCustomerPhone(phone);
+    setProfileSessionExpired(false);
+    setIdentityIntegrityFailed(false);
 
     if (user) {
       try {
@@ -1016,18 +1075,20 @@ export function App() {
 
   const persistAuthV2Session = (
     tokens: { accessToken: string; refreshToken: string; expiresIn: number },
-    method: 'PHONE' | 'EMAIL',
+    _method: 'PHONE' | 'EMAIL',
     canonicalSession?: CanonicalCustomerSession,
   ): void => {
     const { accessToken, refreshToken } = tokens;
     activateNotificationSession(accessToken);
     localStorage.setItem('sola_customer_access_token', accessToken);
     localStorage.setItem('sola_customer_refresh_token', refreshToken);
-    if (method === 'EMAIL') {
-      // Email authentication must never be persisted in a phone-named key.
-      localStorage.removeItem('sola_customer_phone');
-      setCustomerPhone(null);
-    }
+    // Session replacement privacy: drop any previous account's phone BEFORE the
+    // new canonical profile is applied. The canonical profile re-seeds it only
+    // when its own phoneNumber is a real value (and clears it on null).
+    localStorage.removeItem('sola_customer_phone');
+    setCustomerPhone(null);
+    setProfileSessionExpired(false);
+    setIdentityIntegrityFailed(false);
     setAuthToken(accessToken);
     setCustomerAuthError(null);
 
@@ -1256,6 +1317,8 @@ export function App() {
     setBookingsSessionExpired(false);
     setRecentBookingSubmission(null);
     setCustomerAuthError(null);
+    setProfileSessionExpired(false);
+    setIdentityIntegrityFailed(false);
     setAuthResumePermission(null);
     setScreen10Handoff(null);
     setAuthV2Challenge(null);
@@ -1427,18 +1490,17 @@ export function App() {
         {isEditingAccount && authToken ? (
           <CustomerEditAccountPage
             user={userProfile}
-            customerPhone={customerPhone}
             authToken={authToken}
             onBack={() => setIsEditingAccount(false)}
             onUpdated={(updated, newAccessToken) => {
-              setUserProfile(updated);
-              localStorage.setItem('sola_customer_profile', JSON.stringify(updated));
+              applyCanonicalCustomerProfile(updated);
               if (newAccessToken) {
                 activateNotificationSession(newAccessToken);
                 setAuthToken(newAccessToken);
                 localStorage.setItem('sola_customer_access_token', newAccessToken);
               }
             }}
+            onSessionExpired={invalidateCustomerProfileSession}
             onReLogin={() => {
               setIsEditingAccount(false);
               openAuthEntry({ type: 'ACCOUNT_TAB' });
@@ -1622,7 +1684,6 @@ export function App() {
             <CustomerAccountHomeScreen
               isAuthenticated={Boolean(authToken)}
               userProfile={userProfile}
-              customerPhone={customerPhone}
               unreadNotificationCount={unreadNotificationCount}
               onEditProfile={() => setIsEditingAccount(true)}
               onOpenBookings={() => {
@@ -1643,7 +1704,13 @@ export function App() {
               onOpenSupport={() => setShowSupportModal(true)}
               onLogout={handleLogout}
               onLogin={() => openAuthEntry({ type: 'ACCOUNT_TAB' })}
-              isSessionExpired={Boolean(authToken && (bookingsSessionExpired || favoritesLoadState === 'SESSION_EXPIRED'))}
+              isSessionExpired={Boolean(
+                authToken &&
+                  (profileSessionExpired ||
+                    bookingsSessionExpired ||
+                    favoritesLoadState === 'SESSION_EXPIRED')
+              )}
+              identityIntegrityFailed={Boolean(authToken && identityIntegrityFailed)}
               accountError={customerAuthError}
               onRetryAccount={() => {
                 if (authToken) {

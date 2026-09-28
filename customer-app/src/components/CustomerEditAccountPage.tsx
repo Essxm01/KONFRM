@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ChevronRight,
   User,
@@ -7,17 +7,24 @@ import {
   CheckCircle2,
   AlertCircle,
 } from 'lucide-react';
-import { getApiUrl } from '../utils/api';
 import type { CustomerUserProfile } from './CustomerAuthModal';
 import { deriveUserInitials, resolveDisplayIdentifier } from './CustomerAccountHomeScreen';
+import { getApiUrl } from '../utils/api';
+import { mergeCustomerProfile } from '../utils/customerFavorites';
+import {
+  CustomerProfileIdentityIntegrityError,
+  CustomerProfileUnauthorizedError,
+  fetchCanonicalCustomerProfile,
+} from '../utils/customerProfileSession';
 
 interface CustomerEditAccountPageProps {
   user: CustomerUserProfile | null;
-  customerPhone?: string | null;
   authToken: string;
   onBack: () => void;
   onUpdated: (user: CustomerUserProfile, newAccessToken?: string) => void;
   onReLogin?: () => void;
+  /** Canonical 401/403 detected on this screen: App must invalidate private Account/Profile state fail-closed. */
+  onSessionExpired?: () => void;
 }
 
 interface VerifiedIdentityRowProps {
@@ -71,11 +78,11 @@ export function isProfileFormDirty(initialName: string, currentName: string): bo
 
 export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = ({
   user,
-  customerPhone,
   authToken,
   onBack,
   onUpdated,
   onReLogin,
+  onSessionExpired,
 }) => {
   const [currentUser, setCurrentUser] = useState<CustomerUserProfile | null>(user);
   const [fullName, setFullName] = useState<string>(user?.fullName || '');
@@ -85,6 +92,13 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
   const [successMsg, setSuccessMsg] = useState<string>('');
   const [sessionExpired, setSessionExpired] = useState<boolean>(false);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState<boolean>(false);
+  // Canonical profile load lifecycle: driven by screen/session lifecycle only,
+  // never by user field interaction. NETWORK_ERROR is a truthful retryable state.
+  const [profileLoadState, setProfileLoadState] = useState<'IDLE' | 'LOADING' | 'READY' | 'NETWORK_ERROR'>('IDLE');
+  const [identityIntegrityFailed, setIdentityIntegrityFailed] = useState<boolean>(false);
+  const [reloadNonce, setReloadNonce] = useState<number>(0);
+  // First user edit marker: a late canonical response must never overwrite active edits.
+  const userEditedRef = useRef<boolean>(false);
 
   // Sync state if user prop updates
   useEffect(() => {
@@ -96,30 +110,43 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
     }
   }, [user, nameTouched]);
 
-  // Fetch canonical profile from API on mount
+  // Canonical profile load: opens Screen 18 with server truth; 401/403 fails
+  // closed to Session Expired; network failure exposes a truthful retry state.
   useEffect(() => {
-    if (authToken) {
-      fetch(getApiUrl('/customer/profile'), {
-        headers: { Authorization: `Bearer ${authToken}` },
+    if (!authToken) return;
+    const controller = new AbortController();
+    let active = true;
+    setProfileLoadState('LOADING');
+    fetchCanonicalCustomerProfile(authToken, (input, init) =>
+      fetch(input, { ...init, signal: controller.signal })
+    )
+      .then((canonical) => {
+        if (!active) return;
+        setCurrentUser(canonical);
+        if (!userEditedRef.current) {
+          setFullName(canonical.fullName || '');
+        }
+        setProfileLoadState('READY');
       })
-        .then((res) => {
-          if (res.status === 401 || res.status === 403) {
-            setSessionExpired(true);
-            return null;
-          }
-          return res.json();
-        })
-        .then((json) => {
-          if (json && json.success && json.data) {
-            setCurrentUser(json.data);
-            if (!nameTouched) {
-              setFullName(json.data.fullName || '');
-            }
-          }
-        })
-        .catch(() => {});
-    }
-  }, [authToken, nameTouched]);
+      .catch((err: unknown) => {
+        if (!active || controller.signal.aborted) return;
+        if (err instanceof CustomerProfileUnauthorizedError) {
+          setSessionExpired(true);
+          onSessionExpired?.();
+          return;
+        }
+        if (err instanceof CustomerProfileIdentityIntegrityError) {
+          setIdentityIntegrityFailed(true);
+          return;
+        }
+        // Keep any user-entered text; expose a truthful retryable state.
+        setProfileLoadState('NETWORK_ERROR');
+      });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [authToken, reloadNonce, onSessionExpired]);
 
   // Derivations
   const initialName = (currentUser?.fullName || '').trim();
@@ -129,13 +156,20 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
   const isDirty = isProfileFormDirty(initialName, fullName);
   const isSaveEnabled = isDirty && isNameValid && !loading;
 
-  // Primary verified identity resolution
-  const verifiedPhone =
-    currentUser?.verifiedIdentifiers?.phone?.value ||
-    (currentUser?.phoneVerifiedAt && currentUser?.phoneNumber ? currentUser.phoneNumber : null);
-  const verifiedEmail = currentUser?.verifiedIdentifiers?.email?.value;
-  const displayIdentifier = resolveDisplayIdentifier(currentUser, customerPhone);
+  // Primary verified identity resolution — verified identifiers only.
+  // Legacy phoneNumber/phoneVerifiedAt and cached customerPhone are never
+  // presented as verified identity.
+  const verifiedPhone = currentUser?.verifiedIdentifiers?.phone?.value || null;
+  const verifiedEmail = currentUser?.verifiedIdentifiers?.email?.value || null;
+  const displayIdentifier = resolveDisplayIdentifier(currentUser);
   const initials = deriveUserInitials(trimmedName || currentUser?.fullName);
+
+  // Fail-closed identity integrity: an authenticated canonical Customer must
+  // carry at least one verified PHONE or EMAIL identifier. Evaluated only
+  // after the canonical load settles so in-flight loads are not misread.
+  const identityIntegrity =
+    identityIntegrityFailed ||
+    (profileLoadState === 'READY' && !verifiedPhone && !verifiedEmail);
 
   // Navigation back handler with dirty-state safety
   const handleBackClick = () => {
@@ -223,11 +257,15 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
                 });
                 const retryJson = await retryRes.json();
                 if (retryRes.ok && retryJson.success) {
-                  const updatedData: CustomerUserProfile = retryJson.data;
-                  setCurrentUser(updatedData);
-                  onUpdated(updatedData, newTok);
-                  setSuccessMsg('تم حفظ التغييرات');
-                  setTimeout(() => onBack(), 700);
+                  try {
+                    const updatedCanonical: CustomerUserProfile = mergeCustomerProfile(retryJson.data);
+                    setCurrentUser(updatedCanonical);
+                    onUpdated(updatedCanonical, newTok);
+                    setSuccessMsg('تم حفظ التغييرات');
+                    setTimeout(() => onBack(), 700);
+                  } catch {
+                    setIdentityIntegrityFailed(true);
+                  }
                   return;
                 }
               }
@@ -236,6 +274,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
             }
           }
           setSessionExpired(true);
+          onSessionExpired?.();
           throw new Error('انتهت جلسة تسجيل الدخول');
         }
 
@@ -245,18 +284,32 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
       }
 
       // Explicit Canonical Read-After-Write Verification
-      const getRes = await fetch(getApiUrl('/customer/profile'), {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${currentToken}`,
-        },
-      });
-      const getJson = await getRes.json().catch(() => null);
-      const finalData: CustomerUserProfile =
-        getRes.ok && getJson?.success && getJson?.data ? getJson.data : json.data;
+      let finalCanonical: CustomerUserProfile | null = null;
+      try {
+        finalCanonical = await fetchCanonicalCustomerProfile(currentToken);
+      } catch (verifyErr: unknown) {
+        if (verifyErr instanceof CustomerProfileUnauthorizedError) {
+          setSessionExpired(true);
+          onSessionExpired?.();
+          throw new Error('انتهت جلسة تسجيل الدخول');
+        }
+        if (verifyErr instanceof CustomerProfileIdentityIntegrityError) {
+          setIdentityIntegrityFailed(true);
+          return;
+        }
+        // Ordinary verification failure: fall back to the PATCH response payload.
+      }
+      if (!finalCanonical) {
+        try {
+          finalCanonical = mergeCustomerProfile(json?.data);
+        } catch {
+          setIdentityIntegrityFailed(true);
+          return;
+        }
+      }
 
-      setCurrentUser(finalData);
-      onUpdated(finalData);
+      setCurrentUser(finalCanonical);
+      onUpdated(finalCanonical);
       setSuccessMsg('تم حفظ التغييرات');
 
       // Subtle beat before return
@@ -272,12 +325,42 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
     }
   };
 
+  // Identity Integrity Fail-Closed State
+  // Zero verified identifiers is NOT a normal Account state: an authenticated
+  // canonical Customer always carries at least one verified PHONE or EMAIL.
+  if (identityIntegrity) {
+    return (
+      <div className="min-h-screen bg-slate-50 text-right animate-fade-in flex flex-col justify-center px-4 py-8">
+        <div className="max-w-[430px] w-full mx-auto bg-white p-6 rounded-3xl border border-slate-200 text-center space-y-4 shadow-xs">
+          <div className="w-14 h-14 bg-blue-50 text-[#0059FF] rounded-2xl flex items-center justify-center mx-auto mb-2">
+            <AlertCircle className="w-7 h-7" />
+          </div>
+          <div>
+            <h3 className="font-black text-slate-900 text-base mb-1">
+              لا يمكن التحقق من هوية الحساب
+            </h3>
+            <p className="text-xs text-slate-500 font-bold max-w-xs mx-auto leading-relaxed">
+              لم نتمكن من التحقق من معرفات تسجيل الدخول الموثقة لهذا الحساب. سجّل الدخول مرة أخرى لإعادة التحقق.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onReLogin || onBack}
+            className="w-full min-h-[44px] py-3.5 bg-[#0059FF] hover:bg-blue-600 text-white font-black text-xs rounded-xl shadow-md transition-all cursor-pointer"
+          >
+            تسجيل الدخول مجددًا
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Session Expired State
   if (sessionExpired) {
     return (
       <div className="min-h-screen bg-slate-50 text-right animate-fade-in flex flex-col justify-center px-4 py-8">
         <div className="max-w-[430px] w-full mx-auto bg-white p-6 rounded-3xl border border-slate-200 text-center space-y-4 shadow-xs">
-          <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-2">
+          <div className="w-14 h-14 bg-blue-50 text-[#0059FF] rounded-2xl flex items-center justify-center mx-auto mb-2">
             <AlertCircle className="w-7 h-7" />
           </div>
           <div>
@@ -322,6 +405,22 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-[430px] w-full mx-auto px-4 py-5 space-y-5 pb-32">
+        {/* Truthful retryable state when the canonical profile load failed on the network */}
+        {profileLoadState === 'NETWORK_ERROR' && (
+          <div className="p-3.5 bg-white border border-slate-200 rounded-2xl flex items-center justify-between gap-3">
+            <span className="text-xs font-bold text-slate-600">
+              تعذر تحميل البيانات الشخصية من الخادم. تحقق من الاتصال ثم أعد المحاولة.
+            </span>
+            <button
+              type="button"
+              onClick={() => setReloadNonce((n) => n + 1)}
+              className="min-h-[44px] px-3.5 py-2 bg-[#0059FF] hover:bg-blue-600 text-white font-black text-xs rounded-xl shrink-0 transition-colors cursor-pointer"
+            >
+              إعادة المحاولة
+            </button>
+          </div>
+        )}
+
         {/* 2. Compact Identity Context Card */}
         <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-none text-center space-y-2.5">
           <div
@@ -374,6 +473,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
                 type="text"
                 value={fullName}
                 onChange={(e) => {
+                  userEditedRef.current = true;
                   setFullName(e.target.value);
                   if (error) setError('');
                 }}
@@ -420,13 +520,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
               value={verifiedEmail}
             />
           )}
-
-          {/* Fallback if neither verified identifier exists */}
-          {!verifiedPhone && !verifiedEmail && (
-            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-500 font-bold text-center">
-              لا توجد معرفات إضافية موثقة
-            </div>
-          )}
+          {/* Zero verified identifiers never reaches here: identityIntegrity fails closed above */}
 
           <p className="text-[11px] text-slate-400 font-bold px-0.5 pt-1">
             بيانات تسجيل الدخول موثقة ولا يمكن تعديلها مباشرة من هذه الصفحة
@@ -467,7 +561,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
           className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
         >
           <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-200 text-center space-y-4 animate-scale-in">
-            <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-1">
+            <div className="w-12 h-12 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center mx-auto mb-1">
               <AlertCircle className="w-6 h-6" />
             </div>
             <div>

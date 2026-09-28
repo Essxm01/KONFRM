@@ -16,7 +16,6 @@ import type { CustomerUserProfile } from './CustomerAuthModal';
 export interface CustomerAccountHomeScreenProps {
   isAuthenticated: boolean;
   userProfile: CustomerUserProfile | null;
-  customerPhone?: string | null;
   unreadNotificationCount?: number | null;
   onEditProfile: () => void;
   onOpenBookings: () => void;
@@ -27,6 +26,7 @@ export interface CustomerAccountHomeScreenProps {
   onLogout: () => void;
   onLogin: () => void;
   isSessionExpired?: boolean;
+  identityIntegrityFailed?: boolean;
   accountError?: string | null;
   onRetryAccount?: () => void;
 }
@@ -38,23 +38,23 @@ export function deriveUserInitials(name?: string | null): string {
   return `${parts[0][0]}.${parts[1][0]}`;
 }
 
+/**
+ * The displayed login identity derives ONLY from canonical verified
+ * identifiers (public.user_identifiers). Legacy users.email, the cached
+ * phone display key, and fabricated placeholders are never presented as
+ * verified identity. Returns null when no verified identifier exists —
+ * callers must treat that as a fail-closed identity integrity state.
+ */
 export function resolveDisplayIdentifier(
-  userProfile: CustomerUserProfile | null,
-  fallbackPhone?: string | null
-): string {
+  userProfile: CustomerUserProfile | null
+): string | null {
   const verifiedPhone = userProfile?.verifiedIdentifiers?.phone?.value;
   const verifiedEmail = userProfile?.verifiedIdentifiers?.email?.value;
 
   // Dual verified: prioritize phone for primary account home identity
   if (verifiedPhone) return verifiedPhone;
   if (verifiedEmail) return verifiedEmail;
-
-  // Fallback to legacy fields if verifiedIdentifiers missing
-  if (userProfile?.phoneNumber) return userProfile.phoneNumber;
-  if (fallbackPhone) return fallbackPhone;
-  if (userProfile?.email) return userProfile.email;
-
-  return 'حساب نشط';
+  return null;
 }
 
 export function formatNotificationBadge(count?: number | null): string | null {
@@ -112,7 +112,6 @@ const AccountNavigationRow: React.FC<AccountNavigationRowProps> = ({
 export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps> = ({
   isAuthenticated,
   userProfile,
-  customerPhone,
   unreadNotificationCount,
   onEditProfile,
   onOpenBookings,
@@ -123,9 +122,20 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
   onLogout,
   onLogin,
   isSessionExpired,
+  identityIntegrityFailed,
   accountError,
   onRetryAccount,
 }) => {
+  // Fail-closed identity integrity: an authenticated Customer whose canonical
+  // profile carries zero verified PHONE/EMAIL identifiers is an integrity
+  // failure — never a normal Account state and never shown fabricated identity.
+  const hasVerifiedIdentifier =
+    Boolean(userProfile?.verifiedIdentifiers?.phone?.value) ||
+    Boolean(userProfile?.verifiedIdentifiers?.email?.value);
+  const identityIntegrity =
+    identityIntegrityFailed ||
+    (isAuthenticated && Boolean(userProfile) && !hasVerifiedIdentifier);
+
   // 1. Session Expired Recovery State
   if (isSessionExpired) {
     return (
@@ -154,7 +164,35 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
     );
   }
 
-  // 2. Hard Account Error State
+  // 2. Identity Integrity Fail-Closed State
+  if (identityIntegrity) {
+    return (
+      <div className="max-w-[430px] mx-auto px-4 py-8 text-right space-y-4 animate-fade-in">
+        <div className="bg-white p-6 rounded-3xl border border-slate-200 text-center space-y-4 shadow-xs">
+          <div className="w-14 h-14 bg-blue-50 text-[#0059FF] rounded-2xl flex items-center justify-center mx-auto mb-2">
+            <AlertCircle className="w-7 h-7" />
+          </div>
+          <div>
+            <h3 className="font-black text-slate-900 text-base mb-1">
+              لا يمكن التحقق من هوية الحساب
+            </h3>
+            <p className="text-xs text-slate-500 font-bold max-w-xs mx-auto leading-relaxed">
+              لم نتمكن من التحقق من معرفات تسجيل الدخول الموثقة لهذا الحساب. سجّل الدخول مرة أخرى لإعادة التحقق.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onLogin}
+            className="w-full min-h-[44px] py-3 bg-[#0059FF] hover:bg-blue-600 text-white font-black text-xs rounded-xl shadow-md transition-all cursor-pointer"
+          >
+            تسجيل الدخول مجددًا
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Hard Account Error State
   if (accountError) {
     return (
       <div className="max-w-[430px] mx-auto px-4 py-8 text-right space-y-4 animate-fade-in">
@@ -184,7 +222,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
     );
   }
 
-  // 3. Guest (Logged-Out) State
+  // 4. Guest (Logged-Out) State
   if (!isAuthenticated) {
     return (
       <div className="max-w-[430px] mx-auto px-4 py-6 text-right space-y-6 animate-fade-in">
@@ -213,10 +251,10 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
     );
   }
 
-  // 4. Authenticated Customer State
+  // 5. Authenticated Customer State
   const initials = deriveUserInitials(userProfile?.fullName);
   const displayName = userProfile?.fullName?.trim() || 'مستأجر';
-  const displayIdentifier = resolveDisplayIdentifier(userProfile, customerPhone);
+  const displayIdentifier = resolveDisplayIdentifier(userProfile);
   const isProfileIncomplete = isCustomerProfileIncomplete(userProfile?.fullName);
   const unreadBadgeText = formatNotificationBadge(unreadNotificationCount);
 
@@ -240,15 +278,17 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
               <h2 className="text-lg font-black text-slate-900 line-clamp-2 leading-tight">
                 {displayName}
               </h2>
-              <div className="mt-1 flex items-center">
-                <bdi
-                  dir="ltr"
-                  style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
-                  className="text-xs text-slate-500 font-bold tracking-wide"
-                >
-                  {displayIdentifier}
-                </bdi>
-              </div>
+              {displayIdentifier && (
+                <div className="mt-1 flex items-center">
+                  <bdi
+                    dir="ltr"
+                    style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
+                    className="text-xs text-slate-500 font-bold tracking-wide"
+                  >
+                    {displayIdentifier}
+                  </bdi>
+                </div>
+              )}
             </div>
           </div>
 

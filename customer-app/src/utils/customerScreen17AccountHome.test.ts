@@ -15,7 +15,7 @@ function assert(condition: unknown, message: string): asserts condition {
 }
 
 async function run(): Promise<void> {
-  console.log('Running Customer Screen 17 Account Home Test Suite (22 Cases)...');
+  console.log('Running Customer Screen 17 Account Home Test Suite (25 Cases)...');
 
   const appSource = readFileSync(new URL('../App.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   const componentSource = readFileSync(
@@ -122,7 +122,7 @@ async function run(): Promise<void> {
     console.log('✓ Case 5: Dual identifier user prioritizes phone identifier');
   }
 
-  // Case 6: No blank identity line rendered when only email is present
+  // Case 6: Legacy unverified email alone NEVER renders as the login identity
   {
     const emailOnlyUser: CustomerUserProfile = {
       id: 'usr_email_only',
@@ -132,10 +132,10 @@ async function run(): Promise<void> {
     };
     const displayId = resolveDisplayIdentifier(emailOnlyUser);
     assert(
-      displayId === 'huda@example.com' && displayId.trim().length > 0,
-      'Case 6 Failed: Email-only user must not produce blank line'
+      displayId === null,
+      `Case 6 Failed: Legacy users.email without a verified identifier must NOT be presented (got '${displayId}')`
     );
-    console.log('✓ Case 6: No blank identity line rendered for email-first users');
+    console.log('✓ Case 6: Legacy unverified email alone never renders as login identity');
   }
 
   // Case 7: Profile incomplete notice shown when fullName is empty
@@ -328,7 +328,49 @@ async function run(): Promise<void> {
     console.log('✓ Case 22: Logout button is restrained and visually distinct');
   }
 
-  console.log('\nALL 22 SCREEN 17 TESTS PASSED SUCCESSFULLY! ✓\n');
+  // Case 23: Identity resolution is verified-identifiers only (fail-closed)
+  {
+    assert(
+      !componentSource.includes("'حساب نشط'") && !componentSource.includes('حساب نشط'),
+      'Case 23 Failed: Fabricated "حساب نشط" identity placeholder must not exist'
+    );
+    assert(
+      componentSource.includes('displayIdentifier && ('),
+      'Case 23 Failed: Identity line must render only when a verified identifier exists'
+    );
+    assert(
+      !componentSource.includes('customerPhone'),
+      'Case 23 Failed: Screen 17 must not consume cached customerPhone as identity'
+    );
+    console.log('✓ Case 23: Identity is verified-identifiers only; no fabricated fallback');
+  }
+
+  // Case 24: Zero verified identifiers fail closed as identity integrity state
+  {
+    assert(
+      componentSource.includes('identityIntegrityFailed') &&
+        componentSource.includes('لا يمكن التحقق من هوية الحساب'),
+      'Case 24 Failed: Screen 17 must fail closed with an identity integrity card'
+    );
+    assert(
+      componentSource.indexOf('identityIntegrityFailed)') < componentSource.indexOf('4. Guest'),
+      'Case 24 Failed: Integrity state must block authenticated content before guest/authenticated shells'
+    );
+    console.log('✓ Case 24: Zero verified identifiers fail closed to integrity card');
+  }
+
+  // Case 25: No amber/yellow/orange boxed UI (Founder visual rule)
+  {
+    assert(
+      !componentSource.includes('amber') &&
+        !componentSource.includes('yellow') &&
+        !componentSource.includes('orange'),
+      'Case 25 Failed: Screen 17 must not contain amber/yellow/orange styling'
+    );
+    console.log('✓ Case 25: Screen 17 contains no amber/yellow/orange UI');
+  }
+
+  console.log('\nALL 25 SCREEN 17 TESTS PASSED SUCCESSFULLY! ✓\n');
 }
 
 run().catch((err) => {

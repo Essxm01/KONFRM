@@ -82,6 +82,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public, pg_temp
 AS $$
+#variable_conflict use_column
 DECLARE
   v_challenge public.auth_challenges%ROWTYPE;
   v_email VARCHAR(255);
@@ -175,11 +176,11 @@ BEGIN
   PERFORM pg_advisory_xact_lock(hashtextextended('KONFRM:EMAIL:' || v_email, 0));
 
   -- 9. Inspect current subject user's existing EMAIL identifier (Add-Only enforcement)
-  SELECT id, normalized_value, verified_at
+  SELECT ui.id, ui.normalized_value, ui.verified_at
   INTO v_current_email_id, v_current_email_val, v_current_verified_at
-  FROM public.user_identifiers
-  WHERE user_id = p_subject_user_id
-    AND identifier_type = 'EMAIL'
+  FROM public.user_identifiers ui
+  WHERE ui.user_id = p_subject_user_id
+    AND ui.identifier_type = 'EMAIL'
   LIMIT 1;
 
   IF v_current_email_id IS NOT NULL THEN
@@ -224,10 +225,10 @@ BEGIN
 
   -- 10. CASE A: Current user has NO email identifier. Check collisions with other users.
   -- 10a. Check public.user_identifiers for collisions with ANOTHER user
-  SELECT id, user_id INTO v_existing_id, v_existing_user_id
-  FROM public.user_identifiers
-  WHERE identifier_type = 'EMAIL'
-    AND normalized_value = v_email
+  SELECT ui.id, ui.user_id INTO v_existing_id, v_existing_user_id
+  FROM public.user_identifiers ui
+  WHERE ui.identifier_type = 'EMAIL'
+    AND ui.normalized_value = v_email
   LIMIT 1;
 
   IF v_existing_user_id IS NOT NULL THEN
@@ -251,10 +252,10 @@ BEGIN
   END IF;
 
   -- 10b. Check legacy public.users.email for conflict with ANOTHER user
-  SELECT id INTO v_legacy_conflict
-  FROM public.users
-  WHERE email = v_email
-    AND id <> p_subject_user_id
+  SELECT u.id INTO v_legacy_conflict
+  FROM public.users u
+  WHERE u.email = v_email
+    AND u.id <> p_subject_user_id
   LIMIT 1;
 
   IF v_legacy_conflict IS NOT NULL THEN

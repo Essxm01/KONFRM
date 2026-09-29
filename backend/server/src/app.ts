@@ -3301,6 +3301,24 @@ export class ExpressServerApp {
             };
           }
 
+          // Customer profile photo backend capability does not exist yet: no
+          // upload flow, storage bucket, ownership or image validation. Avatar
+          // mutation through this route is rejected fail-closed, never fetched
+          // or persisted.
+          if (bodyPayload?.avatarUrl !== undefined || bodyPayload?.avatar_url !== undefined) {
+            return {
+              statusCode: 400,
+              body: {
+                success: false,
+                error: {
+                  code: 'PROFILE_AVATAR_CHANGE_UNAVAILABLE',
+                  message: 'تغيير صورة الحساب غير متاح عبر هذا المسار حاليًا.',
+                },
+                timestamp,
+              },
+            };
+          }
+
           const rawName = bodyPayload?.fullName !== undefined ? String(bodyPayload.fullName).trim() : undefined;
           if (rawName !== undefined && rawName.length < 2) {
             return {
@@ -3316,10 +3334,11 @@ export class ExpressServerApp {
             };
           }
 
-          // 1. Write: PATCH canonical users row (fullName & avatarUrl only — email/phone protected)
+          // 1. Write: PATCH canonical users row (fullName only — email/phone
+          // protected, avatar mutation rejected above; repository COALESCE
+          // keeps the existing canonical avatar_url untouched).
           await userDb.updateProfile(customerId, {
             fullName: rawName,
-            avatarUrl: bodyPayload?.avatarUrl || null,
           });
 
           // 2. Read: GET canonical users row again

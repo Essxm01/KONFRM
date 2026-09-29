@@ -559,6 +559,165 @@ export async function runAuth03Tests(): Promise<{ name: string; passed: boolean;
     results.push({ name: '[19.13] Profile PATCH Updates Full Name Without Mutating Identifiers', passed: false, error: err.message });
   }
 
+  // Test 14: PATCH /customer/profile rejects direct avatarUrl mutation (400 PROFILE_AVATAR_CHANGE_UNAVAILABLE)
+  // Customer profile photo backend capability does not exist: the route must
+  // fail closed without fetching the URL or calling userDb.updateProfile.
+  {
+    const testUserId = '00000000-0000-4000-8000-201012345678';
+    const customerToken = signAccessToken({
+      sub: testUserId,
+      role: 'ROLE_CUSTOMER',
+      phone: '+201012345678',
+    });
+
+    const origUpdateProfile = userDb.updateProfile;
+    let updateCalled = false;
+    (userDb as any).updateProfile = async () => {
+      updateCalled = true;
+      return null;
+    };
+
+    try {
+      const response = await app.handleHttpRequest(
+        'PATCH',
+        '/api/v1/customer/profile',
+        { authorization: `Bearer ${customerToken}` },
+        { avatarUrl: 'https://example.invalid/avatar.jpg' }
+      );
+
+      if (response.statusCode !== 400) {
+        throw new Error(`Expected status 400, got ${response.statusCode}`);
+      }
+      if (response.body.error?.code !== 'PROFILE_AVATAR_CHANGE_UNAVAILABLE') {
+        throw new Error(`Expected PROFILE_AVATAR_CHANGE_UNAVAILABLE, got ${response.body.error?.code}`);
+      }
+      if (response.body.error?.message !== 'تغيير صورة الحساب غير متاح عبر هذا المسار حاليًا.') {
+        throw new Error(`Unexpected avatar rejection message: ${response.body.error?.message}`);
+      }
+      if (updateCalled) {
+        throw new Error('userDb.updateProfile must not be called when avatar mutation is rejected');
+      }
+
+      results.push({ name: '[19.14] Profile PATCH Rejects Direct avatarUrl Mutation (400 PROFILE_AVATAR_CHANGE_UNAVAILABLE)', passed: true });
+    } catch (err: any) {
+      results.push({ name: '[19.14] Profile PATCH Rejects Direct avatarUrl Mutation (400 PROFILE_AVATAR_CHANGE_UNAVAILABLE)', passed: false, error: err.message });
+    } finally {
+      (userDb as any).updateProfile = origUpdateProfile;
+    }
+  }
+
+  // Test 15: PATCH /customer/profile rejects snake_case avatar_url identically
+  {
+    const testUserId = '00000000-0000-4000-8000-201012345678';
+    const customerToken = signAccessToken({
+      sub: testUserId,
+      role: 'ROLE_CUSTOMER',
+      phone: '+201012345678',
+    });
+
+    const origUpdateProfile = userDb.updateProfile;
+    let updateCalled = false;
+    (userDb as any).updateProfile = async () => {
+      updateCalled = true;
+      return null;
+    };
+
+    try {
+      const response = await app.handleHttpRequest(
+        'PATCH',
+        '/api/v1/customer/profile',
+        { authorization: `Bearer ${customerToken}` },
+        { avatar_url: 'https://example.invalid/avatar.jpg' }
+      );
+
+      if (response.statusCode !== 400) {
+        throw new Error(`Expected status 400, got ${response.statusCode}`);
+      }
+      if (response.body.error?.code !== 'PROFILE_AVATAR_CHANGE_UNAVAILABLE') {
+        throw new Error(`Expected PROFILE_AVATAR_CHANGE_UNAVAILABLE, got ${response.body.error?.code}`);
+      }
+      if (updateCalled) {
+        throw new Error('userDb.updateProfile must not be called when avatar mutation is rejected');
+      }
+
+      results.push({ name: '[19.15] Profile PATCH Rejects Snake Case avatar_url Mutation (400 PROFILE_AVATAR_CHANGE_UNAVAILABLE)', passed: true });
+    } catch (err: any) {
+      results.push({ name: '[19.15] Profile PATCH Rejects Snake Case avatar_url Mutation (400 PROFILE_AVATAR_CHANGE_UNAVAILABLE)', passed: false, error: err.message });
+    } finally {
+      (userDb as any).updateProfile = origUpdateProfile;
+    }
+  }
+
+  // Test 16: Existing canonical avatar survives a fullName-only profile update
+  {
+    const testUserId = '00000000-0000-4000-8000-201012345678';
+    const customerToken = signAccessToken({
+      sub: testUserId,
+      role: 'ROLE_CUSTOMER',
+      phone: '+201012345678',
+    });
+
+    const existingAvatar = 'existing canonical avatar value';
+    const newName = 'اسم جديد';
+    const origUpdateProfile = userDb.updateProfile;
+    const origGetById = userDb.getById;
+    const origGetVerified = userDb.getVerifiedIdentifiers;
+
+    let updatePayload: any = null;
+    (userDb as any).updateProfile = async (id: string, payload: any) => {
+      updatePayload = payload;
+      return null;
+    };
+    (userDb as any).getById = async () => ({
+      id: testUserId,
+      phoneNumber: '+201012345678',
+      phoneVerifiedAt: '2026-09-01T00:00:00.000Z',
+      fullName: newName,
+      email: null,
+      avatarUrl: existingAvatar,
+      status: 'ACTIVE',
+      createdAt: '2026-09-01T00:00:00.000Z',
+      updatedAt: '2026-09-02T00:00:00.000Z',
+    });
+    (userDb as any).getVerifiedIdentifiers = async () => ({
+      phone: { value: '+201012345678', verifiedAt: '2026-09-01T00:00:00.000Z' },
+      email: null,
+    });
+
+    try {
+      const response = await app.handleHttpRequest(
+        'PATCH',
+        '/api/v1/customer/profile',
+        { authorization: `Bearer ${customerToken}` },
+        { fullName: newName }
+      );
+
+      if (response.statusCode !== 200) {
+        throw new Error(`Expected status 200, got ${response.statusCode}`);
+      }
+      if (response.body.data?.fullName !== newName) {
+        throw new Error(`Expected fullName "${newName}", got "${response.body.data?.fullName}"`);
+      }
+      if (response.body.data?.avatarUrl !== existingAvatar) {
+        throw new Error(`Expected existing avatar to survive unchanged, got ${JSON.stringify(response.body.data?.avatarUrl)}`);
+      }
+      if (updatePayload?.avatarUrl !== undefined || updatePayload?.avatar_url !== undefined) {
+        throw new Error(`updateProfile payload must not carry avatar keys, got ${JSON.stringify(updatePayload)}`);
+      }
+      if (updatePayload?.email !== undefined || updatePayload?.phone !== undefined || updatePayload?.phoneNumber !== undefined) {
+        throw new Error(`updateProfile payload must not carry identifier keys, got ${JSON.stringify(updatePayload)}`);
+      }
+
+      results.push({ name: '[19.16] Existing Canonical Avatar Survives Full Name Only Update', passed: true });
+    } catch (err: any) {
+      results.push({ name: '[19.16] Existing Canonical Avatar Survives Full Name Only Update', passed: false, error: err.message });
+    } finally {
+      (userDb as any).updateProfile = origUpdateProfile;
+      (userDb as any).getById = origGetById;
+      (userDb as any).getVerifiedIdentifiers = origGetVerified;
+    }
+  }
+
   return results;
 }
 

@@ -774,6 +774,10 @@ Two-sided Marketplace:
 
 # 11. Platform Architecture — Product Level
 
+> 📌 **مرجع القرار المعماري المعتمد لتطبيقات الموبايل (Approved Mobile Foundation):**
+> تم اعتماد **Flutter + Dart** كبنية تقنية أساسية لتطبيقي Mobile (Customer و Owner) على منصتي iOS و Android. التفاصيل الكاملة والقواعد الملزمة موثقة في:
+> [`docs/architecture/KONFRM_MOBILE_ARCHITECTURE_FOUNDATION_V1.md`](./docs/architecture/KONFRM_MOBILE_ARCHITECTURE_FOUNDATION_V1.md)
+
 ## 11.1 Admin Web Application
 
 ✅ Web App فقط.

@@ -315,7 +315,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
       {/* 1. Identity Block */}
       <div className="bg-white p-4 rounded-3xl border border-slate-200/90 shadow-none space-y-4">
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3.5 min-w-0">
+          <div className="flex items-center gap-3.5 min-w-0 flex-1">
             {/* 56x56 Circular Avatar / Initials / Fallback (Display only — no upload/edit affordance) */}
             {hasAvatar ? (
               <img
@@ -340,21 +340,10 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
               </div>
             )}
 
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <h2 className="text-lg font-bold text-slate-900 leading-snug break-words">
                 {displayName}
               </h2>
-              {displayIdentifier && (
-                <div className="mt-1 flex items-center">
-                  <bdi
-                    dir="ltr"
-                    style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
-                    className="text-xs text-slate-500 font-medium tracking-wide break-all"
-                  >
-                    {displayIdentifier}
-                  </bdi>
-                </div>
-              )}
             </div>
           </div>
 
@@ -369,6 +358,17 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
             <span>تعديل</span>
           </button>
         </div>
+
+        {/* Verified login identity — full-width line so normal emails stay on one line */}
+        {displayIdentifier && (
+          <bdi
+            dir="ltr"
+            style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
+            className="block text-xs text-slate-500 font-medium tracking-normal [word-break:normal] [overflow-wrap:anywhere]"
+          >
+            {displayIdentifier}
+          </bdi>
+        )}
 
         {/* 2. Incomplete Profile Prompt (Shown ONLY when fullName is genuinely empty, soft blue notice) */}
         {isProfileIncomplete && (
@@ -399,7 +399,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
       <div className="space-y-6">
         {/* Section: رحلاتك */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-400 px-1">رحلاتك</h4>
+          <h4 className="text-xs font-bold text-slate-500 px-1">رحلاتك</h4>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-none divide-y divide-slate-100 overflow-hidden">
             <AccountNavigationRow
               icon={<CalendarCheck className="w-4 h-4" />}
@@ -423,7 +423,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
 
         {/* Section: النشاط */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-400 px-1">النشاط</h4>
+          <h4 className="text-xs font-bold text-slate-500 px-1">النشاط</h4>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-none overflow-hidden">
             <AccountNavigationRow
               icon={<Bell className="w-4 h-4" />}
@@ -445,7 +445,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
 
         {/* Section: المدفوعات (Strictly المدفوعات - NO wallet internals, NO decorative emerald well) */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-400 px-1">المدفوعات</h4>
+          <h4 className="text-xs font-bold text-slate-500 px-1">المدفوعات</h4>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-none overflow-hidden">
             <AccountNavigationRow
               icon={<CreditCard className="w-4 h-4" />}
@@ -460,7 +460,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
 
         {/* Section: الحساب */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-400 px-1">الحساب</h4>
+          <h4 className="text-xs font-bold text-slate-500 px-1">الحساب</h4>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-none overflow-hidden">
             <AccountNavigationRow
               icon={<User className="w-4 h-4" />}
@@ -475,7 +475,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
 
         {/* Section: المساعدة (Strictly المساعدة - NO legal placeholder routes) */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-400 px-1">المساعدة</h4>
+          <h4 className="text-xs font-bold text-slate-500 px-1">المساعدة</h4>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-none overflow-hidden">
             <AccountNavigationRow
               icon={<HelpCircle className="w-4 h-4" />}

@@ -53,30 +53,36 @@ export interface VerifiedIdentityRowProps {
   value: string;
 }
 
+/**
+ * Flat verified-identity row inside the grouped login surface: label and
+ * restrained verification badge share the header line, giving the full
+ * canonical value the remaining width. Emails wrap naturally (LTR island,
+ * no break-all, no ellipsis, no orphaned characters).
+ */
 export const VerifiedIdentityRow: React.FC<VerifiedIdentityRowProps> = ({
   icon,
   label,
   value,
 }) => (
-  <div className="py-3 px-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between gap-3">
-    <div className="flex items-center gap-3 min-w-0">
-      <div className="w-9 h-9 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 shrink-0">
-        {icon}
-      </div>
-      <div className="min-w-0">
-        <span className="block text-[11px] font-medium text-slate-400">{label}</span>
-        <bdi
-          dir="ltr"
-          style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
-          className="text-xs font-bold text-slate-900 tracking-wide block break-all"
-        >
-          {value}
-        </bdi>
-      </div>
+  <div className="flex items-start gap-3 py-3.5 min-w-0">
+    <div className="w-9 h-9 bg-slate-50 border border-slate-200/60 rounded-xl flex items-center justify-center text-slate-600 shrink-0 mt-0.5">
+      {icon}
     </div>
-    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 rounded-full shrink-0 select-none">
-      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-      <span className="text-[11px] font-bold text-emerald-700">تم التحقق</span>
+    <div className="min-w-0 flex-1">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[11px] font-bold text-slate-500">{label}</span>
+        <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200 rounded-full shrink-0 select-none">
+          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+          <span className="text-[10px] font-bold text-emerald-700">تم التحقق</span>
+        </span>
+      </div>
+      <bdi
+        dir="ltr"
+        style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
+        className="block mt-1 text-[13px] font-bold text-slate-900 tracking-normal min-w-0 text-balance [word-break:normal] [overflow-wrap:anywhere]"
+      >
+        {value}
+      </bdi>
     </div>
   </div>
 );
@@ -482,48 +488,49 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
         )}
 
         {/* 2. Compact Identity Context (Subtle surface, not tall hero card, display-only avatar) */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
-          {hasAvatar ? (
-            <img
-              src={currentUser?.avatarUrl || ''}
-              alt={trimmedName || 'مستأجر'}
-              onError={() => setImgError(true)}
-              className="w-13 h-13 rounded-full object-cover shrink-0 select-none shadow-2xs border border-slate-100"
-            />
-          ) : initials ? (
-            <div
-              className="w-13 h-13 rounded-full bg-slate-900 text-white font-bold text-lg flex items-center justify-center shrink-0 select-none shadow-2xs"
-              aria-hidden="true"
-            >
-              {initials}
-            </div>
-          ) : (
-            <div
-              className="w-13 h-13 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 select-none shadow-2xs"
-              aria-hidden="true"
-            >
-              <User className="w-6 h-6" />
-            </div>
-          )}
-          <div className="min-w-0">
-            <h2 className="font-bold text-slate-900 text-base leading-snug break-words">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
+          <div className="flex items-center gap-3.5">
+            {hasAvatar ? (
+              <img
+                src={currentUser?.avatarUrl || ''}
+                alt={trimmedName || 'مستأجر'}
+                onError={() => setImgError(true)}
+                className="w-13 h-13 rounded-full object-cover shrink-0 select-none shadow-2xs border border-slate-100"
+              />
+            ) : initials ? (
+              <div
+                className="w-13 h-13 rounded-full bg-slate-900 text-white font-bold text-lg flex items-center justify-center shrink-0 select-none shadow-2xs"
+                aria-hidden="true"
+              >
+                {initials}
+              </div>
+            ) : (
+              <div
+                className="w-13 h-13 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 select-none shadow-2xs"
+                aria-hidden="true"
+              >
+                <User className="w-6 h-6" />
+              </div>
+            )}
+            <h2 className="min-w-0 flex-1 font-bold text-slate-900 text-base leading-snug break-words">
               {trimmedName || currentUser?.fullName || 'مستأجر'}
             </h2>
-            <div className="mt-0.5 flex items-center">
-              <bdi
-                dir="ltr"
-                style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
-                className="text-xs text-slate-500 font-medium tracking-wide break-all"
-              >
-                {displayIdentifier}
-              </bdi>
-            </div>
           </div>
+          {/* Verified login identity — full-width line so normal emails stay on one line */}
+          {displayIdentifier && (
+            <bdi
+              dir="ltr"
+              style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
+              className="block mt-2 text-xs text-slate-500 font-medium tracking-normal [word-break:normal] [overflow-wrap:anywhere]"
+            >
+              {displayIdentifier}
+            </bdi>
+          )}
         </div>
 
         {/* 3. Section 1: المعلومات الشخصية (Editable Full Name) */}
         <section aria-labelledby="section-personal-info" className="space-y-3">
-          <h3 id="section-personal-info" className="text-xs font-bold text-slate-400 px-1">
+          <h3 id="section-personal-info" className="text-xs font-bold text-slate-500 px-1">
             المعلومات الشخصية
           </h3>
 
@@ -580,41 +587,43 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
                   أدخل اسمك الكامل.
                 </p>
               )}
-              <p id="customer-fullName-help" className="text-[11px] text-slate-400 font-medium">
+              <p id="customer-fullName-help" className="text-[11px] text-slate-500 font-medium">
                 الاسم المستخدم في حسابك وطلبات الحجز على كونفرم
               </p>
             </div>
           </div>
         </section>
 
-        {/* 4. Section 2: بيانات تسجيل الدخول (Protected Read-Only Identity Rows) */}
+        {/* 4. Section 2: بيانات تسجيل الدخول (one grouped surface — flat identity rows, hairline dividers) */}
         <section aria-labelledby="section-login-identity" className="space-y-3">
-          <h3 id="section-login-identity" className="text-xs font-bold text-slate-400 px-1">
+          <h3 id="section-login-identity" className="text-xs font-bold text-slate-500 px-1">
             بيانات تسجيل الدخول
           </h3>
 
-          <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-2.5">
-            {/* Render verified phone if present */}
-            {verifiedPhone && (
-              <VerifiedIdentityRow
-                icon={<Phone className="w-4 h-4" />}
-                label="رقم الهاتف"
-                value={verifiedPhone}
-              />
-            )}
+          <div className="bg-white px-4 rounded-2xl border border-slate-200/80 shadow-2xs">
+            <div className="divide-y divide-slate-100">
+              {/* Render verified phone if present */}
+              {verifiedPhone && (
+                <VerifiedIdentityRow
+                  icon={<Phone className="w-4 h-4" />}
+                  label="رقم الهاتف"
+                  value={verifiedPhone}
+                />
+              )}
 
-            {/* Render verified email if present */}
-            {verifiedEmail && (
-              <VerifiedIdentityRow
-                icon={<Mail className="w-4 h-4" />}
-                label="البريد الإلكتروني"
-                value={verifiedEmail}
-              />
-            )}
+              {/* Render verified email if present */}
+              {verifiedEmail && (
+                <VerifiedIdentityRow
+                  icon={<Mail className="w-4 h-4" />}
+                  label="البريد الإلكتروني"
+                  value={verifiedEmail}
+                />
+              )}
+            </div>
 
             {/* Production Email Linking gate: no add email button when email is absent */}
 
-            <p className="text-[11px] text-slate-400 font-normal px-0.5 pt-1">
+            <p className="text-[11px] text-slate-500 font-normal pb-3.5 pt-1">
               بيانات تسجيل الدخول موثقة ولا يمكن تعديلها مباشرة من هذه الصفحة
             </p>
           </div>

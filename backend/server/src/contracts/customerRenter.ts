@@ -1,5 +1,15 @@
 import { PublicPropertyDetail } from './publicProperty.js';
 
+export interface VerifiedIdentifierItem {
+  value: string;
+  verifiedAt: string;
+}
+
+export interface CustomerVerifiedIdentifiersDto {
+  phone: VerifiedIdentifierItem | null;
+  email: VerifiedIdentifierItem | null;
+}
+
 export interface CustomerProfileDto {
   id: string;
   phoneNumber: string | null;
@@ -10,6 +20,7 @@ export interface CustomerProfileDto {
   status: string;
   createdAt: string;
   updatedAt: string;
+  verifiedIdentifiers: CustomerVerifiedIdentifiersDto;
 }
 
 export interface CustomerAccountSummaryDto {
@@ -206,6 +217,30 @@ export function toCustomerProfileDto(raw: any): CustomerProfileDto {
   const createdAt = validateIsoDate(raw.createdAt ?? raw.created_at, 'CUSTOMER_PROFILE_DATA', 'createdAt');
   const updatedAt = validateIsoDate(raw.updatedAt ?? raw.updated_at, 'CUSTOMER_PROFILE_DATA', 'updatedAt');
 
+  let verifiedIdentifiers: CustomerVerifiedIdentifiersDto = {
+    phone: null,
+    email: null,
+  };
+
+  if (raw.verifiedIdentifiers && typeof raw.verifiedIdentifiers === 'object') {
+    const rawPhone = raw.verifiedIdentifiers.phone;
+    const rawEmail = raw.verifiedIdentifiers.email;
+    verifiedIdentifiers = {
+      phone: rawPhone && typeof rawPhone === 'object' && rawPhone.value
+        ? {
+            value: String(rawPhone.value),
+            verifiedAt: validateIsoDate(rawPhone.verifiedAt, 'CUSTOMER_PROFILE_DATA', 'verifiedIdentifiers.phone.verifiedAt'),
+          }
+        : null,
+      email: rawEmail && typeof rawEmail === 'object' && rawEmail.value
+        ? {
+            value: String(rawEmail.value),
+            verifiedAt: validateIsoDate(rawEmail.verifiedAt, 'CUSTOMER_PROFILE_DATA', 'verifiedIdentifiers.email.verifiedAt'),
+          }
+        : null,
+    };
+  }
+
   return {
     id,
     phoneNumber,
@@ -216,6 +251,7 @@ export function toCustomerProfileDto(raw: any): CustomerProfileDto {
     status,
     createdAt,
     updatedAt,
+    verifiedIdentifiers,
   };
 }
 

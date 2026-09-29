@@ -3258,17 +3258,49 @@ export class ExpressServerApp {
             };
           }
 
+          let verifiedIdentifiers = { phone: null, email: null };
+          try {
+            if (user.verifiedIdentifiers) {
+              verifiedIdentifiers = user.verifiedIdentifiers;
+            } else if (typeof userDb.getVerifiedIdentifiers === 'function') {
+              verifiedIdentifiers = await userDb.getVerifiedIdentifiers(customerId);
+            }
+          } catch {
+            return {
+              statusCode: 500,
+              body: {
+                success: false,
+                error: { code: 'CUSTOMER_PROFILE_QUERY_FAILED', message: 'تعذر تحميل بيانات الحساب حالياً' },
+                timestamp,
+              },
+            };
+          }
+
           return {
             statusCode: 200,
             body: {
               success: true,
-              data: toCustomerProfileDto(user),
+              data: toCustomerProfileDto({ ...user, verifiedIdentifiers }),
               timestamp,
             },
           };
         }
 
         if (path === '/api/v1/customer/profile' && (method === 'PATCH' || method === 'PUT')) {
+          if (bodyPayload?.email !== undefined || bodyPayload?.phoneNumber !== undefined || bodyPayload?.phone !== undefined) {
+            return {
+              statusCode: 400,
+              body: {
+                success: false,
+                error: {
+                  code: 'PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION',
+                  message: 'تغيير البريد الإلكتروني أو الهاتف يتطلب تأكيد الرمز',
+                },
+                timestamp,
+              },
+            };
+          }
+
           const rawName = bodyPayload?.fullName !== undefined ? String(bodyPayload.fullName).trim() : undefined;
           if (rawName !== undefined && rawName.length < 2) {
             return {
@@ -3284,38 +3316,9 @@ export class ExpressServerApp {
             };
           }
 
-          let emailVal: string | null | undefined = undefined;
-          if (bodyPayload?.email !== undefined) {
-            if (bodyPayload.email === null || bodyPayload.email === '') {
-              emailVal = null;
-            } else {
-              const rawEmail = String(bodyPayload.email).trim();
-              if (rawEmail.length > 0) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(rawEmail)) {
-                  return {
-                    statusCode: 400,
-                    body: {
-                      success: false,
-                      error: {
-                        code: 'INVALID_EMAIL_FORMAT',
-                        message: 'يرجى إدخال بريد إلكتروني صالح',
-                      },
-                      timestamp,
-                    },
-                  };
-                }
-                emailVal = rawEmail;
-              } else {
-                emailVal = null;
-              }
-            }
-          }
-
-          // 1. Write: PATCH canonical users row
+          // 1. Write: PATCH canonical users row (fullName & avatarUrl only — email/phone protected)
           await userDb.updateProfile(customerId, {
             fullName: rawName,
-            email: emailVal,
             avatarUrl: bodyPayload?.avatarUrl || null,
           });
 
@@ -3330,18 +3333,33 @@ export class ExpressServerApp {
           if (rawName !== undefined && updatedUser.fullName !== rawName) {
             throw new Error('DATABASE_PERSISTENCE_VERIFICATION_FAILED: fullName did not persist');
           }
-          if (emailVal !== undefined && updatedUser.email !== emailVal) {
-            throw new Error('DATABASE_PERSISTENCE_VERIFICATION_FAILED: email did not persist');
+
+          let verifiedIdentifiers = { phone: null, email: null };
+          try {
+            if (updatedUser.verifiedIdentifiers) {
+              verifiedIdentifiers = updatedUser.verifiedIdentifiers;
+            } else if (typeof userDb.getVerifiedIdentifiers === 'function') {
+              verifiedIdentifiers = await userDb.getVerifiedIdentifiers(customerId);
+            }
+          } catch {
+            return {
+              statusCode: 500,
+              body: {
+                success: false,
+                error: { code: 'CUSTOMER_PROFILE_QUERY_FAILED', message: 'تعذر تحميل بيانات الحساب حالياً' },
+                timestamp,
+              },
+            };
           }
 
-          dbUsersStore.set(customerPhone, updatedUser);
+          if (customerPhone) dbUsersStore.set(customerPhone, updatedUser);
           dbUsersStore.set(customerId, updatedUser);
 
           return {
             statusCode: 200,
             body: {
               success: true,
-              data: toCustomerProfileDto(updatedUser),
+              data: toCustomerProfileDto({ ...updatedUser, verifiedIdentifiers }),
               timestamp,
             },
           };

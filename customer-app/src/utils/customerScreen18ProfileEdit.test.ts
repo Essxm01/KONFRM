@@ -13,7 +13,7 @@ function assert(condition: unknown, message: string): asserts condition {
 }
 
 async function run(): Promise<void> {
-  console.log('Running Customer Screen 18 Profile Edit Test Suite (30 Cases)...');
+  console.log('Running Customer Screen 18 Profile Edit Test Suite (32 Cases)...');
 
   const componentSource = readFileSync(
     new URL('../components/CustomerEditAccountPage.tsx', import.meta.url),
@@ -417,7 +417,39 @@ async function run(): Promise<void> {
     console.log('✓ Case 30: No fake Add Email button appears when email is absent');
   }
 
-  console.log('\nALL 30 SCREEN 18 TESTS PASSED SUCCESSFULLY! ✓\n');
+  // Case 31: Save status screen-reader live region exists and is non-duplicative
+  {
+    assert(
+      componentSource.includes('role="status"') && componentSource.includes('aria-live="polite"'),
+      'Case 31 Failed: A stable polite save-status live region must exist'
+    );
+    assert(
+      componentSource.includes("{loading ? 'جارٍ حفظ التغييرات…' : successMsg || ''}"),
+      'Case 31 Failed: Live region must announce saving and success states only'
+    );
+    assert(
+      componentSource.includes('جارٍ حفظ التغييرات…'),
+      'Case 31 Failed: Visible saving copy must remain unchanged'
+    );
+    console.log('✓ Case 31: Save status screen-reader live region present and stable');
+  }
+
+  // Case 32: Field helper semantics preserved (aria-describedby chain intact)
+  {
+    assert(
+      componentSource.includes('customer-fullName-help') &&
+        componentSource.includes('customer-fullName-error') &&
+        componentSource.includes('aria-describedby='),
+      'Case 32 Failed: Full Name aria-describedby chain must remain intact'
+    );
+    assert(
+      componentSource.includes('focus-visible:ring-2'),
+      'Case 32 Failed: Explicit keyboard focus treatment must exist on interactive controls'
+    );
+    console.log('✓ Case 32: Field helper semantics and keyboard focus treatment preserved');
+  }
+
+  console.log('\nALL 32 SCREEN 18 TESTS PASSED SUCCESSFULLY! ✓\n');
 }
 
 run().catch((err) => {

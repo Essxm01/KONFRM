@@ -16,7 +16,7 @@ function assert(condition: unknown, message: string): asserts condition {
 }
 
 async function run(): Promise<void> {
-  console.log('Running Customer Screen 17 Account Home Test Suite (26 Cases)...');
+  console.log('Running Customer Screen 17 Account Home Test Suite (27 Cases)...');
 
   const appSource = readFileSync(new URL('../App.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   const componentSource = readFileSync(
@@ -377,7 +377,22 @@ async function run(): Promise<void> {
     console.log('✓ Case 26: Screen 17 contains no fake avatar editing actions');
   }
 
-  console.log('\nALL 26 SCREEN 17 TESTS PASSED SUCCESSFULLY! ✓\n');
+  // Case 27: Explicit keyboard focus treatment on interactive controls
+  {
+    assert(
+      componentSource.includes('focus-visible:outline-none') &&
+        componentSource.includes('focus-visible:ring-2') &&
+        componentSource.includes('focus-visible:ring-[#0059FF]/40'),
+      'Case 27 Failed: Interactive controls must expose explicit KONFRM keyboard focus treatment'
+    );
+    assert(
+      componentSource.includes('focus-visible:ring-inset'),
+      'Case 27 Failed: Grouped list rows must use inset rings so the card surface does not clip focus'
+    );
+    console.log('✓ Case 27: Explicit keyboard focus treatment present on Screen 17 controls');
+  }
+
+  console.log('\nALL 27 SCREEN 17 TESTS PASSED SUCCESSFULLY! ✓\n');
 }
 
 run().catch((err) => {

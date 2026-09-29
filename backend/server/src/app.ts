@@ -3258,17 +3258,67 @@ export class ExpressServerApp {
             };
           }
 
+          let verifiedIdentifiers = { phone: null, email: null };
+          try {
+            if (user.verifiedIdentifiers) {
+              verifiedIdentifiers = user.verifiedIdentifiers;
+            } else if (typeof userDb.getVerifiedIdentifiers === 'function') {
+              verifiedIdentifiers = await userDb.getVerifiedIdentifiers(customerId);
+            }
+          } catch {
+            return {
+              statusCode: 500,
+              body: {
+                success: false,
+                error: { code: 'CUSTOMER_PROFILE_QUERY_FAILED', message: 'تعذر تحميل بيانات الحساب حالياً' },
+                timestamp,
+              },
+            };
+          }
+
           return {
             statusCode: 200,
             body: {
               success: true,
-              data: toCustomerProfileDto(user),
+              data: toCustomerProfileDto({ ...user, verifiedIdentifiers }),
               timestamp,
             },
           };
         }
 
         if (path === '/api/v1/customer/profile' && (method === 'PATCH' || method === 'PUT')) {
+          if (bodyPayload?.email !== undefined || bodyPayload?.phoneNumber !== undefined || bodyPayload?.phone !== undefined) {
+            return {
+              statusCode: 400,
+              body: {
+                success: false,
+                error: {
+                  code: 'PROFILE_IDENTIFIER_CHANGE_REQUIRES_VERIFICATION',
+                  message: 'تغيير البريد الإلكتروني أو الهاتف يتطلب تأكيد الرمز',
+                },
+                timestamp,
+              },
+            };
+          }
+
+          // Customer profile photo backend capability does not exist yet: no
+          // upload flow, storage bucket, ownership or image validation. Avatar
+          // mutation through this route is rejected fail-closed, never fetched
+          // or persisted.
+          if (bodyPayload?.avatarUrl !== undefined || bodyPayload?.avatar_url !== undefined) {
+            return {
+              statusCode: 400,
+              body: {
+                success: false,
+                error: {
+                  code: 'PROFILE_AVATAR_CHANGE_UNAVAILABLE',
+                  message: 'تغيير صورة الحساب غير متاح عبر هذا المسار حاليًا.',
+                },
+                timestamp,
+              },
+            };
+          }
+
           const rawName = bodyPayload?.fullName !== undefined ? String(bodyPayload.fullName).trim() : undefined;
           if (rawName !== undefined && rawName.length < 2) {
             return {
@@ -3284,39 +3334,11 @@ export class ExpressServerApp {
             };
           }
 
-          let emailVal: string | null | undefined = undefined;
-          if (bodyPayload?.email !== undefined) {
-            if (bodyPayload.email === null || bodyPayload.email === '') {
-              emailVal = null;
-            } else {
-              const rawEmail = String(bodyPayload.email).trim();
-              if (rawEmail.length > 0) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(rawEmail)) {
-                  return {
-                    statusCode: 400,
-                    body: {
-                      success: false,
-                      error: {
-                        code: 'INVALID_EMAIL_FORMAT',
-                        message: 'يرجى إدخال بريد إلكتروني صالح',
-                      },
-                      timestamp,
-                    },
-                  };
-                }
-                emailVal = rawEmail;
-              } else {
-                emailVal = null;
-              }
-            }
-          }
-
-          // 1. Write: PATCH canonical users row
+          // 1. Write: PATCH canonical users row (fullName only — email/phone
+          // protected, avatar mutation rejected above; repository COALESCE
+          // keeps the existing canonical avatar_url untouched).
           await userDb.updateProfile(customerId, {
             fullName: rawName,
-            email: emailVal,
-            avatarUrl: bodyPayload?.avatarUrl || null,
           });
 
           // 2. Read: GET canonical users row again
@@ -3330,18 +3352,33 @@ export class ExpressServerApp {
           if (rawName !== undefined && updatedUser.fullName !== rawName) {
             throw new Error('DATABASE_PERSISTENCE_VERIFICATION_FAILED: fullName did not persist');
           }
-          if (emailVal !== undefined && updatedUser.email !== emailVal) {
-            throw new Error('DATABASE_PERSISTENCE_VERIFICATION_FAILED: email did not persist');
+
+          let verifiedIdentifiers = { phone: null, email: null };
+          try {
+            if (updatedUser.verifiedIdentifiers) {
+              verifiedIdentifiers = updatedUser.verifiedIdentifiers;
+            } else if (typeof userDb.getVerifiedIdentifiers === 'function') {
+              verifiedIdentifiers = await userDb.getVerifiedIdentifiers(customerId);
+            }
+          } catch {
+            return {
+              statusCode: 500,
+              body: {
+                success: false,
+                error: { code: 'CUSTOMER_PROFILE_QUERY_FAILED', message: 'تعذر تحميل بيانات الحساب حالياً' },
+                timestamp,
+              },
+            };
           }
 
-          dbUsersStore.set(customerPhone, updatedUser);
+          if (customerPhone) dbUsersStore.set(customerPhone, updatedUser);
           dbUsersStore.set(customerId, updatedUser);
 
           return {
             statusCode: 200,
             body: {
               success: true,
-              data: toCustomerProfileDto(updatedUser),
+              data: toCustomerProfileDto({ ...updatedUser, verifiedIdentifiers }),
               timestamp,
             },
           };

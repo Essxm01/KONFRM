@@ -35,7 +35,7 @@ export const CustomerNestedAppBar: React.FC<CustomerNestedAppBarProps> = ({
         type="button"
         onClick={onBack}
         aria-label="الرجوع إلى حسابي"
-        className="w-12 h-12 flex items-center justify-center text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer shrink-0"
+        className="w-12 h-12 flex items-center justify-center text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 transition-colors cursor-pointer shrink-0"
       >
         <ChevronRight className="w-5 h-5" />
       </button>
@@ -70,10 +70,10 @@ export const VerifiedIdentityRow: React.FC<VerifiedIdentityRowProps> = ({
     </div>
     <div className="min-w-0 flex-1">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[11px] font-bold text-slate-500">{label}</span>
+        <span className="text-xs font-bold text-slate-500">{label}</span>
         <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200 rounded-full shrink-0 select-none">
           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-          <span className="text-[10px] font-bold text-emerald-700">تم التحقق</span>
+          <span className="text-xs font-bold text-emerald-700">تم التحقق</span>
         </span>
       </div>
       <bdi
@@ -422,7 +422,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
           <button
             type="button"
             onClick={onReLogin || onBack}
-            className="w-full min-h-[44px] py-3.5 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+            className="w-full min-h-[44px] py-3.5 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 focus-visible:ring-offset-2 transition-all cursor-pointer"
           >
             تسجيل الدخول مجددًا
           </button>
@@ -450,7 +450,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
           <button
             type="button"
             onClick={onReLogin || onBack}
-            className="w-full min-h-[44px] py-3.5 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+            className="w-full min-h-[44px] py-3.5 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 focus-visible:ring-offset-2 transition-all cursor-pointer"
           >
             تسجيل الدخول مجددًا
           </button>
@@ -480,7 +480,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
             <button
               type="button"
               onClick={() => setReloadNonce((n) => n + 1)}
-              className="text-[#0059FF] font-bold underline cursor-pointer"
+              className="text-[#0059FF] font-bold underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 cursor-pointer"
             >
               إعادة المحاولة
             </button>
@@ -530,7 +530,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
 
         {/* 3. Section 1: المعلومات الشخصية (Editable Full Name) */}
         <section aria-labelledby="section-personal-info" className="space-y-3">
-          <h3 id="section-personal-info" className="text-xs font-bold text-slate-500 px-1">
+          <h3 id="section-personal-info" className="text-[13px] font-bold text-slate-500 px-1">
             المعلومات الشخصية
           </h3>
 
@@ -587,7 +587,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
                   أدخل اسمك الكامل.
                 </p>
               )}
-              <p id="customer-fullName-help" className="text-[11px] text-slate-500 font-medium">
+              <p id="customer-fullName-help" className="text-xs text-slate-500 font-medium">
                 الاسم المستخدم في حسابك وطلبات الحجز على كونفرم
               </p>
             </div>
@@ -596,7 +596,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
 
         {/* 4. Section 2: بيانات تسجيل الدخول (one grouped surface — flat identity rows, hairline dividers) */}
         <section aria-labelledby="section-login-identity" className="space-y-3">
-          <h3 id="section-login-identity" className="text-xs font-bold text-slate-500 px-1">
+          <h3 id="section-login-identity" className="text-[13px] font-bold text-slate-500 px-1">
             بيانات تسجيل الدخول
           </h3>
 
@@ -623,7 +623,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
 
             {/* Production Email Linking gate: no add email button when email is absent */}
 
-            <p className="text-[11px] text-slate-500 font-normal pb-3.5 pt-1">
+            <p className="text-xs text-slate-500 font-normal pb-3.5 pt-1">
               بيانات تسجيل الدخول موثقة ولا يمكن تعديلها مباشرة من هذه الصفحة
             </p>
           </div>
@@ -633,11 +633,15 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
       {/* 5. Sticky Save Footer (StickyFormActionBar) */}
       <footer className="sticky bottom-0 z-20 bg-white/95 backdrop-blur-md border-t border-slate-200/80 p-4 shadow-md">
         <div className="max-w-[430px] mx-auto">
+          {/* Stable screen-reader status region: announces saving/success politely without duplicating visible copy */}
+          <div role="status" aria-live="polite" className="sr-only">
+            {loading ? 'جارٍ حفظ التغييرات…' : successMsg || ''}
+          </div>
           <button
             type="button"
             onClick={handleSave}
             disabled={!isSaveEnabled}
-            className={`w-full min-h-[48px] py-3 px-6 font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 ${
+            className={`w-full min-h-[48px] py-3 px-6 font-bold text-xs rounded-xl shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 focus-visible:ring-offset-2 transition-all flex items-center justify-center gap-2 ${
               isSaveEnabled
                 ? 'bg-[#0059FF] hover:bg-blue-600 active:scale-[0.99] text-white shadow-blue-500/25 shadow-md cursor-pointer'
                 : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
@@ -682,7 +686,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
                 ref={discardKeepEditingRef}
                 type="button"
                 onClick={() => setShowDiscardConfirm(false)}
-                className="min-h-[44px] py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                className="min-h-[44px] py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 transition-colors cursor-pointer"
               >
                 متابعة التعديل
               </button>
@@ -690,7 +694,7 @@ export const CustomerEditAccountPage: React.FC<CustomerEditAccountPageProps> = (
                 ref={discardConfirmRef}
                 type="button"
                 onClick={handleConfirmDiscard}
-                className="min-h-[44px] py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+                className="min-h-[44px] py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 focus-visible:ring-offset-2 transition-colors cursor-pointer"
               >
                 تجاهل التغييرات
               </button>

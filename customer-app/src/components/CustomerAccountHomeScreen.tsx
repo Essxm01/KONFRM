@@ -134,7 +134,7 @@ export const AccountNavigationRow: React.FC<AccountNavigationRowProps> = ({
   <button
     type="button"
     onClick={onClick}
-    className="w-full min-h-[64px] px-4 py-3.5 flex items-center justify-between hover:bg-slate-50 active:bg-slate-100 transition-colors text-right cursor-pointer"
+    className="w-full min-h-[64px] px-4 py-3.5 flex items-center justify-between hover:bg-slate-50 active:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0059FF]/40 transition-colors text-right cursor-pointer"
   >
     <div className="flex items-center gap-3.5 min-w-0">
       <div
@@ -202,7 +202,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
           <button
             type="button"
             onClick={onLogin}
-            className="w-full min-h-[44px] py-3 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+            className="w-full min-h-[44px] py-3 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 focus-visible:ring-offset-2 transition-all cursor-pointer"
           >
             تسجيل الدخول مجددًا
           </button>
@@ -230,7 +230,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
           <button
             type="button"
             onClick={onLogin}
-            className="w-full min-h-[44px] py-3 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+            className="w-full min-h-[44px] py-3 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 focus-visible:ring-offset-2 transition-all cursor-pointer"
           >
             تسجيل الدخول مجددًا
           </button>
@@ -259,7 +259,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
             <button
               type="button"
               onClick={onRetryAccount}
-              className="w-full min-h-[44px] py-3 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+              className="w-full min-h-[44px] py-3 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 focus-visible:ring-offset-2 transition-all cursor-pointer"
             >
               إعادة المحاولة
             </button>
@@ -289,7 +289,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
           <button
             type="button"
             onClick={onLogin}
-            className="w-full min-h-[48px] py-3.5 bg-[#0059FF] hover:bg-blue-600 active:scale-[0.99] text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-500/25 transition-all cursor-pointer"
+            className="w-full min-h-[48px] py-3.5 bg-[#0059FF] hover:bg-blue-600 active:scale-[0.99] text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-500/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 focus-visible:ring-offset-2 transition-all cursor-pointer"
           >
             دخول برقم الجوال
           </button>
@@ -352,7 +352,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
             type="button"
             onClick={onEditProfile}
             aria-label="تعديل البيانات الشخصية"
-            className="min-h-[44px] min-w-[44px] px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer"
+            className="min-h-[44px] min-w-[44px] px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer"
           >
             <Edit3 className="w-3.5 h-3.5" />
             <span>تعديل</span>
@@ -385,7 +385,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
             <button
               type="button"
               onClick={onEditProfile}
-              className="min-h-[44px] px-3.5 py-2 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shrink-0 transition-colors cursor-pointer"
+              className="min-h-[44px] px-3.5 py-2 bg-[#0059FF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 transition-colors cursor-pointer"
             >
               إكمال البيانات
             </button>
@@ -399,7 +399,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
       <div className="space-y-6">
         {/* Section: رحلاتك */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-500 px-1">رحلاتك</h4>
+          <h4 className="text-[13px] font-bold text-slate-500 px-1">رحلاتك</h4>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-none divide-y divide-slate-100 overflow-hidden">
             <AccountNavigationRow
               icon={<CalendarCheck className="w-4 h-4" />}
@@ -423,7 +423,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
 
         {/* Section: النشاط */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-500 px-1">النشاط</h4>
+          <h4 className="text-[13px] font-bold text-slate-500 px-1">النشاط</h4>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-none overflow-hidden">
             <AccountNavigationRow
               icon={<Bell className="w-4 h-4" />}
@@ -445,7 +445,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
 
         {/* Section: المدفوعات (Strictly المدفوعات - NO wallet internals, NO decorative emerald well) */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-500 px-1">المدفوعات</h4>
+          <h4 className="text-[13px] font-bold text-slate-500 px-1">المدفوعات</h4>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-none overflow-hidden">
             <AccountNavigationRow
               icon={<CreditCard className="w-4 h-4" />}
@@ -460,7 +460,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
 
         {/* Section: الحساب */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-500 px-1">الحساب</h4>
+          <h4 className="text-[13px] font-bold text-slate-500 px-1">الحساب</h4>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-none overflow-hidden">
             <AccountNavigationRow
               icon={<User className="w-4 h-4" />}
@@ -475,7 +475,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
 
         {/* Section: المساعدة (Strictly المساعدة - NO legal placeholder routes) */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-500 px-1">المساعدة</h4>
+          <h4 className="text-[13px] font-bold text-slate-500 px-1">المساعدة</h4>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-none overflow-hidden">
             <AccountNavigationRow
               icon={<HelpCircle className="w-4 h-4" />}
@@ -493,7 +493,7 @@ export const CustomerAccountHomeScreen: React.FC<CustomerAccountHomeScreenProps>
           <button
             type="button"
             onClick={onLogout}
-            className="min-h-[44px] w-full py-3 bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-600 font-bold text-xs rounded-xl border border-slate-200 hover:border-rose-200 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            className="min-h-[44px] w-full py-3 bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-600 font-bold text-xs rounded-xl border border-slate-200 hover:border-rose-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0059FF]/40 transition-colors flex items-center justify-center gap-2 cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
             <span>تسجيل الخروج</span>

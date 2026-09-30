@@ -781,6 +781,10 @@ Two-sided Marketplace:
 > 📌 **مرجع تبولوجيا المستودع المعتمدة لتطبيقات الموبايل (Approved Mobile Repository Topology):**
 > تم اعتماد الإبقاء على المستودع الكنسي الموحد (Single Canonical Repository) وتحديد حدود تطبيقات الموبايل المستقبلية تحت المسار `mobile/` بدون نقل أو تعديل المجلدات الحالية. التفاصيل الكاملة والقواعد الملزمة موثقة في:
 > [`docs/architecture/KONFRM_MOBILE_REPOSITORY_TOPOLOGY_V1.md`](./docs/architecture/KONFRM_MOBILE_REPOSITORY_TOPOLOGY_V1.md)
+>
+> 📌 **مرجع استراتيجية حوكمة عقود الـ API المعتمدة (Approved Canonical API Contract Governance):**
+> تم اعتماد استراتيجية **PROGRESSIVELY GOVERNED OPENAPI CONTRACT** باستخدام معيار **OpenAPI 3.x** كعقد خارجي موحد بين الخادم وتطبيقات الموبايل والعملاء يُطبق تدريجياً دون إعادة كتابة الـ Backend. التفاصيل الكاملة موثقة في:
+> [`docs/architecture/KONFRM_CANONICAL_API_CONTRACT_GOVERNANCE_V1.md`](./docs/architecture/KONFRM_CANONICAL_API_CONTRACT_GOVERNANCE_V1.md)
 
 ## 11.1 Admin Web Application
 

@@ -63,14 +63,14 @@ lib/
     ├── properties/              # wizard, media, out-of-order-safe revalidation
     ├── availability/            # calendar toggle-block
     ├── bookings/                # approve/reject + presentation of financial summary
-    └── payouts/                 # wallet + ledger read-only presentation
+    └── payouts/                 # wallet, ledger, eligibility, payout-request UX
 ```
 
 قواعد خاصة بالمالك:
 
 - **auth_boundary فقط:** أي إعادة تصميم مصادقة Owner (بما فيها "Owner Auth V2") **مؤجلة رسميًا** ولا يجوز لهذه المواصفة أن تفترضها أو تبني لها.
 - **revalidation lifecycle:** نمط الويب المثبت (property-scoped revalidation عند focus/visibility مع حماية out-of-order) هو العقد السلوكي لشاشات الملكية.
-- **Payouts/wallet:** قراءة وعرض فقط؛ لا حسابات عمولات أو صافي مالك محلي (القواعد المالية server-authoritative).
+- **payouts/:** يملك wallet وledger وpayout eligibility وpayout-request UX المسموح به وفق عقد الباكند/المنتج المحكوم. كل balance وeligibility وfee وreservation وحالة payout تبقى **server-authoritative**؛ العميل لا يجري أي حساب مالي محلي كسلطة. (لا مزود دفع إنتاج ولا معالجة payout تُختار هنا — القرارات المؤجلة قائمة.)
 
 ## 4. Shared Package Boundaries (`mobile/packages`)
 
@@ -78,18 +78,20 @@ lib/
 
 ### 4.1 `konfrm_core`
 
-- **يملك:** تجريدات البيئة/config (base URL لكل بيئة، أعلام قراءة فقط مثل بوابة `CUSTOMER_EMAIL_LINKING_ENABLED`)، أنواع الفشل/الخطأ الأساسية، عقود تسجيل مُنقَّح (redacted logging — ممنوع تسجيل الرموز أو بيانات التعريف الحساسة إطلاقًا)، أنواع مساعدة صغيرة (Result).
+- **يملك:** تجريدات config العميل العام (البيئة المستهدفة، public Backend base URL، إعدادات logging/debug الآمنة للعميل، وأي public client configuration يُكشف صراحةً مستقبلًا عبر عقد معتمد)، أنواع الفشل/الخطأ الأساسية، عقود تسجيل مُنقَّح (redacted logging — ممنوع تسجيل الرموز أو بيانات التعريف الحساسة إطلاقًا)، أنواع مساعدة صغيرة (Result).
+- **لا يملك:** أي علم بيئة داخلي للـWorker/Cloudflare (مثل أعلام تشغيل ميزات الباكند) — ليست جزءًا من عقد config عميل عام، ولا يجوز افتراض كشفها أو اختراع endpoint تكوين لها.
 - **قيود:** Dart خالص بلا Flutter UI ولا مكتبة نقل شبكي (النقل في konfrm_api)؛ لا يعتمد أي حزمة KONFRM أخرى.
 
 ### 4.2 `konfrm_api`
 
-- **يملك:** تجريد النقل HTTP (تنفيذ أولي خلف `package:http` — انظر §7)، تحليل مغلف الاستجابة القانوني (`success/data/timestamp`)، حدود wire DTO، adapters نقاط النهاية، تصنيف الأخطاء الشبكية إلى أنواع konfrm_core، حماية الاستجابات المتأخرة (out-of-order guard).
-- **قيود:** لا يعرف مفاهيم Customer/Owner (مجرد نقاط نهاية وتغليف)؛ ممنوع الاعتماد على konfrm_session مباشرة — عبر واجهة TokenProvider تُحقن في الـcomposition root.
+- **يملك:** تجريد النقل HTTP (حد النقل يملكه KONFRM — التنفيذ الملموس مرشح، انظر §7/§18)، تحليل مغلف الاستجابة القانوني (`success/data/timestamp`)، حدود wire DTO، adapters نقاط النهاية، تصنيف الأخطاء الشبكية إلى أنواع konfrm_core، حماية الاستجابات المتأخرة (out-of-order guard).
+- **عقد وصول رمز المصادقة:** حد النقل يعرض عقدًا صغيرًا (callback/provider) لتزويد رمز الوصول عند الطلب، يُقبل عند الإنشاء؛ **التطبيق (composition root) هو المُهايئ** الذي يربط هذا العقد بحالة konfrm_session.
+- **قيود:** لا يعرف مفاهيم Customer/Owner (مجرد نقاط نهاية وتغليف)؛ **ممنوع استيراد konfrm_session** — التبادل يتم عبر العقد المقبول عند الإنشاء والـwiring في التطبيق، لا عبر حافة حزم.
 
 ### 4.3 `konfrm_session`
 
 - **يملك:** حدود persistence آمنة لاعتمادات الجلسة، تنسيق refresh أحادي الطيران، revoke/logout، حالة جلسة قابلة للمراقبة (explicit states)، فضاءات اعتماد معزولة لكل دور.
-- **قيود:** يقدم واجهة TokenProvider لـkonfrm_api؛ ممنوع عليه معرفة تدفقات Auth V2 (تدفقات العميل في `customer_app/features/auth`) أو أي User interface — رموز وأدوار مجهولة الهوية.
+- **قيود:** **لا يستورد konfrm_api** (ولا العكس) — لا توجد حافة حزم بينهما؛ توفير رمز الوصول لنقل konfrm_api يتم عبر عقد يعرضه konfrm_api ويُربط في composition root التطبيق بحالة konfrm_session. ممنوع عليه معرفة تدفقات Auth V2 (تدفقات العميل في `customer_app/features/auth`) أو أي User interface — رموز وأدوار مجهولة الهوية.
 
 ### 4.4 `konfrm_design_system` (reserved boundary ONLY)
 
@@ -106,16 +108,18 @@ lib/
 
 ```text
 customer_app ──┐
-               ├──► konfrm_api ──► konfrm_core ◄── konfrm_session
-owner_app ─────┘        │                             ▲
-                        └──(TokenProvider interface)──┘
+               ├──► konfrm_api ─────► konfrm_core
+owner_app ─────┘                          ▲
+               └──► konfrm_session ───────┘
+(app composition root يربط عقد وصول الرمز الذي يعرضه konfrm_api
+ بحالة konfrm_session — لا حافة حزم بين konfrm_api وkonfrm_session)
 apps ──► konfrm_design_system ──► konfrm_core
 ```
 
 1. الرسم لا دوري (acyclic)؛ `konfrm_core` جذر لا يعتمد على أحد.
-2. ممنوع: package → app، package → package خارج الواجهات المصرح بها (§4)، app → app.
-3. `konfrm_api` لا يستورد `konfrm_session`؛ الربط عبر واجهة TokenProvider تُكتب في konfrm_api وتُنفذ في konfrm_session وتُحقن عند bootstrap.
-4. الميزات لا تستورد بعضها مباشرة؛ التقاطع عبر navigation routes فقط.
+2. ممنوع: package → app، package → package خارج الحدود المصرح بها (§4)، app → app.
+3. `konfrm_api` و`konfrm_session` مستقلان تمامًا: كلاهما يعتمد konfrm_core فقط. عقد وصول رمز المصادقة يعرضه konfrm_api (يُقبل عند الإنشاء)، وcomposition root التطبيق يربطه بحالة konfrm_session — لا استيراد متبادل ولا حزمة وسيطة لهذا العقد.
+4. **حد التغليف بين الميزات:** ميزة لا تستورد التنفيذ الخاص (UI/data) لميزة أخرى مباشرة. السلوك العابر للميزات مشروع عبر: عقود التنقل، orchestration على مستوى التطبيق، عقود ميزات عامة مصممة صراحةً، والبنية التحتية المشتركة حيث تكون cross-cutting حقًا. لا حزمة shared-domain عامة ولا اقتران عشوائي بين الميزات.
 5. لا UI في core/session/api.
 
 ## 6. State Architecture
@@ -126,15 +130,15 @@ apps ──► konfrm_design_system ──► konfrm_core
 - **بدون codegen** في البداية (`riverpod_generator` مؤجل).
 - `setState`/`ValueNotifier` للحالة العابرة المحلية genuinely-local.
 - حالة Auth/Session بـ**explicit, testable states** (sealed classes / immutable states): session = authenticated/expired/anonymous كما حددتها konfrm_session؛ آلة Auth V2 صريحة (draft → challenge issued → verifying → continuation → registering → session) بأكواد أخطاء العقد.
-- حالة كل تبويب طويلة العمر تنجو من التنقل (متطلب تنقل §8).
+- حالة التبويبات طويلة العمر: إن اعتمد بقاء الحزم المستقلة لاحقًا (§8/§18-candidate) فيجب أن تنجو حالة كل مسار من التنقل — التفاصيل تتبع نمط التنفيذ المختار.
 - revalidation واعية بالـlifecycle مع حماية out-of-order لكل قراءة قانونية.
 
 **ممنوع:** BLoC/Cubit، Redux، event buses، GetIt، أو أي إطار DI/حالة ثانٍ إلى جانب Riverpod.
 
 ## 7. Network Transport
 
-- **`package:http`** هو مرشح التنفيذ الأولي، **خلف واجهة نقل يملكها KONFRM** (`konfrm_api`).
-- ممنوع على أي كود feature/UI الاعتماد مباشرة على أنواع `http`.
+- **الثابت المعماري:** KONFRM يملك تجريد نقل HTTP داخل `konfrm_api`، وممنوع على أي كود feature/UI الاعتماد مباشرة على أي مكتبة نقل خارجية.
+- **`package:http`** هو **مرشح التنفيذ الأولي** خلف هذه الواجهة (IMPLEMENTATION CANDIDATE — انظر §18)، وليس قرارًا معماريًا دائمًا.
 - **Dio مؤجل:** لا يُدخل إلا إذا أثبت مطلب لاحق ملموس حاجة متقدمة (إلغاء دقيق، progress، interceptors معقدة) تبرر الاعتماد الإضافي.
 - **لا أرقام timeouts كنسية في Gate 3** — تُحدد وتُختبر لاحقًا ضمن ميزانية الشبكة الفعلية لكل بيئة.
 
@@ -142,7 +146,7 @@ apps ──► konfrm_design_system ──► konfrm_core
 
 **معتمد: `go_router`.**
 
-- **Customer:** متطلبات التنقل الموثقة (bottom nav بأربعة وجهات: استكشف/المفضلة/حجوزاتي/الحساب، مع بقاء حالة كل مسار مستقلًا) **تقتضي حزم تنقل مستقلة محفوظة** — أي أن `StatefulShellRoute` هو النمط المطلوب هنا، مفروضًا من المتطلب لا من التفضيل.
+- **Customer:** أربع وجهات عليا موثقة (استكشف/المفضلة/حجوزاتي/الحساب) هي دليل UX القانوني. **بقاء حزم تنقل مستقلة لكل تبويب و`StatefulShellRoute` تحديدًا ليسا مطلبًا منتجًا مثبتًا** — هما **نمط/مرشح تنفيذ** يُعتمد إذا أثبت سلوك التنقل الفعلي لاحقًا حاجة الحزم المستقلة المحفوظة.
 - **Owner:** nested routing dashboard-style بدون bottom nav.
 - يدعم: auth gates (redirect مربوط بحالة konfrm_session)، تدفقات متداخلة، تدفقات modal/full-screen (تدفقات Auth V2 كـfull-screen routes؛ الفلاتر/النوافذ السفلية كـsheets)، restoration.
 - **Deep links خارجية:** البنية محفوظة، لكن لا rollout خارجي في هذه المرحلة (DEFERRED) ولا hardcode لتفاصيلها.
@@ -156,10 +160,11 @@ apps ──► konfrm_design_system ──► konfrm_core
 
 ## 10. Session Lifecycle
 
-**حقيقة الباكند الحالية (مدخلات ثابتة للتصميم):**
+**حقول العقد الحالية (حقائق API/جلسة مُتحقق منها — مدخلات لتصميم العميل الحالي، وليست ثوابت معمارية أبدية):**
 
 - Access token عمره **900 ثانية**؛ refresh token موقّع بعمر **7 أيام**.
 - `/api/v1/auth/refresh` يتحقق من refresh token القائم ويعيد **access token جديد فقط** — **لا يدير (rotate) الـrefresh token**.
+- تنفيذ جلسة الموبايل يستهلك عقد API/الجلسة المحكوم؛ **إذا تغيرت هذه القيم أو دلالاتها عبر إدارة API المعتمدة فيجب على العميل اتباع التغيير ذريًا** (تحديث متزامن للعميل والعقد — لا افتراض خلود للقيم).
 
 **القواعد الكنونية:**
 
@@ -167,7 +172,7 @@ apps ──► konfrm_design_system ──► konfrm_core
 2. **لا يُدّعى أي revoke/rotate تلقائي للـrefresh token** عند التزامن — الباكند لا يفعل ذلك اليوم.
 3. **لا إعادة تشغيل (replay) عامة لكل طلب بعد refresh.** إعادة المحاولة التلقائية مسموحة **فقط** عندما تجعل دلالات العملية ذلك آمنًا (قراءات وعمليات idempotent). **ممنوع منعًا باتًا** الـreplay العام لـ: إنشاء challenge، تحقق OTP، إنشاء حجز، بدء دفع، موافقة/رفض، أو أي mutation غير idempotent.
 4. **Logout يمسح الاعتمادات المحلية حتى لو فشل الـrevoke البعيد** (يُسجل الفشل، لا يُحتجز الخروج عليه).
-5. **اعتمادات التحديث الحساسة تُخزن فقط عبر تجريد secure-storage محمي بنظام التشغيل.** الـaccess token يجوز أن يبقى في الذاكرة ويُعاد إنشاؤه عبر refresh عند الإقلاع البارد.
+5. **اعتمادات التحديث الحساسة تُخزن فقط عبر تجريد secure-storage محمي بنظام التشغيل.** الـaccess token يجوز أن يبقى في الذاكرة فقط. **نموذج الإقلاع البارد:** إذا كان الـrefresh credential وحده هو المخزن securely والـaccess token في الذاكرة فقط، فيجب على تهيئة التطبيق المحمية استعادة الجلسة بأمان باستخدام الـrefresh credential المخزن للحصول على access token حالي **قبل** معاملة الحالة المحمية كمصادقة؛ والفشل ينتقل fail-closed إلى حالة غير مصادقة/جلسة منتهية حسب الاقتضاء. (لا endpoints جديدة.)
 6. **فضاءات اعتماد معزولة:** مخازن مفاتيح/namespace منفصل تمامًا بين Customer وOwner.
 7. **secure storage:** `flutter_secure_storage` مرشح التنفيذ الرائد — **ليس ضمانة منصة نهائية لـGate 3**. تُحدد المتطلبات (تشفير على مستوى نظام التشغيل، عدم التسرب في backups غير مشفرة، إبطال عند إلغاء تثبيت التطبيق حسب المنصة) بدل أعلام Keychain/Keystore سابقة لأوانها؛ تُتحقق الإعدادات الأصلية النهائية في بوابات الجهاز الحقيقية (Android/iOS) لاحقًا.
 8. **ممنوع إدخال أسرار خادم** (service-role، مفاتيح توقيع JWT، أسرار دفع) في أي من التطبيقين.
@@ -182,7 +187,7 @@ apps ──► konfrm_design_system ──► konfrm_core
 
 ## 12. Environment / Secrets Boundary
 
-- konfrm_core يملك قراءة config لكل بيئة (dev/QA/production base URLs)؛ الأعلام ميزة قراءة فقط على الموبايل.
+- konfrm_core يملك قراءة config العميل العام لكل بيئة (dev/QA/production base URLs، إعدادات logging/debug الآمنة). أعلام تشغيل الباكند الداخلية (مثل أعلام ميزات الـWorker) ليست جزءًا من عقد config العميل ولا يجوز لـkonfrm_core قراءتها أو افتراض كشفها.
 - الأسرار تنتمي للباكند/CI (Cloudflare Workers env) — الموبايل يحمل إعدادات عميل عامة فقط (base URLs).
 - Logging مُنقَّح: عقود redaction في konfrm_core إلزامية منذ أول سطر تسجيل (لا رموز، لا OTP، لا بيانات تعريف كاملة).
 
@@ -192,7 +197,7 @@ apps ──► konfrm_design_system ──► konfrm_core
 
 - Arabic-first RTL، خط Cairo، direction-aware layout primitives.
 - أسس Material 3 + سلوك iOS أصبي مناسب (رجوع، sheets، حركات).
-- text scaling، VoiceOver/TalkBack semantics، أهداف لمس ≥44px منطقية.
+- text scaling، VoiceOver/TalkBack semantics مع تحقق حقيقي، وحدات لمس دنيا مناسبة للمنصة (الأبعاد المشتركة الدقيقة تُحسم في Design Foundation باحترام متطلبات كل منصة — لا تثبيت بُعد شامل في Gate 3).
 - بنية تحتية للـvisual-regression مستقبلًا.
 - KONFRM AI Design Skills مستقبلًا (نقطة تركيب في konfrm_design_system).
 - **ممنوع في هذا PR:** تثبيت رموز/ألوان/أنصاف أقطار/components/خرائط Base؛ وإعلان `DESIGN_SYSTEM/TOKENS` الويب كنونية Flutter تلقائيًا.
@@ -209,7 +214,7 @@ apps ──► konfrm_design_system ──► konfrm_core
 1. **وحدات state:** كل controller/state machine يُختبر بمعزل (Riverpod overrides) — حالات صريحة ونهايات fail-closed.
 2. **عقد طبقة API:** adapters ضد أخطاء/نجاحات مُحاكية بالتغليف القانوني + تطبيع JSON (omitted ≠ null كما في اختبار عقد الباكند).
 3. **session:** single-flight refresh (تزامن)، انتهاء 900s، فشل revoke عند logout، عزل الفضاءات.
-4. **widgets:** اختبارات ذهبية أساسية للحالات القانونية الصريحة (لا مطاردة pixel).
+4. **widgets:** دعم اختبارات ذهبية للحالات القانونية الصريحة — لكن خطوط الأساس الذهبية الكنونية تُنشأ فقط بعد قرارات Design Foundation ومراجع بصرية معتمدة وخطوط مستقرة وظروف rendering/أجهزة مضبوطة؛ Gate 3 لا يجعل لقطات golden مصدر قبول بصري سابقًا لـDesign Foundation.
 5. **لا شبكة حقيقية في اختبارات الوحدة**؛ mock transport خلف واجهة konfrm_api.
 6. الأدوات محلية لكل حزمة/تطبيق حتى يثبت استحقاق استخراج konfrm_testing (§4.5).
 
@@ -217,7 +222,7 @@ apps ──► konfrm_design_system ──► konfrm_core
 
 1. طبقة domain/use-cases احتفالية، أو repository interface لكل endpoint بلا مستهلكين متعددين.
 2. منطق عمل/منتج داخل widgets.
-3. اعتماد feature/UI مباشر على أنواع `http` أو Dio.
+3. اعتماد feature/UI مباشر على أي مكتبة نقل خارجية (`http`، Dio، أو غيرهما) — النقل خلف تجريد konfrm_api حصرًا.
 4. إطار حالة/DI ثانٍ (BLoC/Redux/GetIt/event bus) إلى جانب Riverpod.
 5. كود توليد OpenAPI داخل Gate 3، أو تسرب أنواع wire مولدة إلى UI.
 6. replay عام لـmutations غير idempotent (حجز/دفع/auth) بعد refresh أو فشل شبكة.
@@ -240,10 +245,10 @@ Owner Auth V2/إعادة تصميم دخول Owner؛ مزود الدفع ومو�
 
 1. feature-first مع presentation/application/data داخل كل ميزة؛ لا domain layer إلزامية.
 2. Riverpod (بلا codegen مبدئيًا) + explicit testable auth/session states؛ حظر أطر الحالة الموازية.
-3. go_router للتوجيه؛ Customer bottom-nav باستقلال حزم محفوظ (StatefulShellRoute مفروض بالمطلب)؛ auth gates على حالة الجلسة.
+3. go_router للتوجيه؛ أربع وجهات عليا للعميل (استكشف/المفضلة/حجوزاتي/الحساب)؛ auth gates على حالة الجلسة. (StatefulShellRoute/بقاء الحزم المستقلة = مرشح تنفيذ — انظر IMPLEMENTATION CANDIDATE.)
 4. الحدود الأربع: konfrm_core / konfrm_api / konfrm_session / konfrm_design_system (reserved) بمسؤوليات §4 حرفيًا.
-5. قواعد اتجاه الاعتماد (§5) اللا دورية، بما فيها فصل api/session عبر TokenProvider.
-6. `package:http` خلف واجهة نقل يملكها KONFRM؛ حظر تبعية feature المباشرة.
+5. قواعد اتجاه الاعتماد (§5) اللا دورية، بما فيها فصل konfrm_api/konfrm_session (عقد وصول الرمز يعرضه api والربط في composition root التطبيق).
+6. KONFRM يملك تجريد نقل HTTP داخل konfrm_api؛ ممنوع اعتماد feature/UI مباشر على أي مكتبة نقل خارجية.
 7. قواعد الجلسة §10 بالكامل (single-flight، لا rotate ادعاءً، replay الآمن فقط، logout ينجح محليًا دائمًا، secure-storage abstraction، عزل الفضاءات).
 8. أرشيتكتورة الأخطاء (حفظ code، فصل أنواع الفشل، copy محلي بالتجاز) وقواعد retry/offline §11.
 9. حد API/OpenAPI (handwritten أولاً، التوليد spike مؤجل داخل حد wire).
@@ -254,10 +259,11 @@ Owner Auth V2/إعادة تصميم دخول Owner؛ مزود الدفع ومو�
 ### IMPLEMENTATION CANDIDATE (مرشح تنفيذ — ليس حقائق منتج)
 
 1. `flutter_secure_storage` كتنفيذ أول لحد secure-storage (يُثبت في بوابات الجهاز).
-2. `package:http` كتنفيذ الواجهة (قابل للاستبدال خلفها).
-3. melos/Dart workspace لإدارة الحزم عند التهيئة.
-4. توليد DTO بعد spike محدود ضد الدومينات المتبناة.
-5. استخراج konfrm_testing إذا ثبت تكرار مستقر.
+2. `package:http` كمرشح التنفيذ الأولي لواجهة النقل (قابل للاستبدال خلفها).
+3. `StatefulShellRoute`/حزم تنقل مستقلة محفوظة لتبويبات العميل، إذا أثبت سلوك التنقل الفعلي الحاجة.
+4. melos/Dart workspace لإدارة الحزم عند التهيئة.
+5. توليد DTO بعد spike محدود ضد الدومينات المتبناة.
+6. استخراج konfrm_testing إذا ثبت تكرار مستقر.
 
 ### DEFERRED (قرارات مؤجلة لمصدرها الصحيح)
 
@@ -279,33 +285,35 @@ Owner Auth V2/إعادة تصميم دخول Owner؛ مزود الدفع ومو�
                     │  features(auth,discovery,  │
                     │  favorites,bookings,       │
                     │  account) + app/router     │
-                    └──────┬──────────┬──────────┘
-                           │          │
-              ┌────────────▼──┐   ┌───▼──────────────────────┐
-              │ konfrm_api    │   │ konfrm_design_system     │
-              │ transport(envelope,          │ (reserved: theme/widgets │
-              │ DTO boundary, adapters)      │  Cairo/RTL/l10n — Design │
-              └──┬─────────┬──┘   │  Foundation decides)     │
-   TokenProvider │         │      └────────┬─────────────────┘
-   (interface)   │         │               │
-        ┌────────▼───┐ ┌───▼────────┐      │
-        │konfrm_sess.│ │ konfrm_core │◄────┘
-        │single-flight│ │ env|errors │
-        │refresh,revok│ │redacted log│
-        └────────────┘ └────────────┘
-                    ┌────────────────────────────┐
-                    │  mobile/owner_app          │
-                    │  auth_boundary(v1 as-is),  │
-                    │  dashboard, properties,    │
-                    │  availability, bookings,   │
-                    │  payouts                   │
-                    └──────┬──────────┬──────────┘
-                           │          │
-                    (نفس حواف api/design_system/core)
+                    └──┬──────────┬──────────┬───┘
+                       │          │          │
+          ┌────────────▼──┐   ┌───▼──────────────────────┐
+          │ konfrm_api    │   │ konfrm_design_system     │
+          │ transport(envelope,          │ (reserved: theme/widgets │
+          │ DTO boundary, adapters,      │  Cairo/RTL/l10n — Design │
+          │ auth-token access contract)  │  Foundation decides)     │
+          └──────┬────────┘   └────────┬─────────────────┘
+                 │                     │
+                 │        ┌────────────┘
+                 ▼        ▼
+          ┌────────────────┐
+          │  konfrm_core   │
+          │ env|errors|log │
+          └───────▲────────┘
+                 │         ┌────────────────────────────┐
+          ┌──────┴─────┐   │  mobile/owner_app          │
+          │konfrm_sess.│   │  auth_boundary(v1 as-is),  │
+          │single-flight│  │  dashboard, properties,    │
+          │refresh,revok│  │  availability, bookings,   │
+          └────────────┘   │  payouts                   │
+                           └──┬──────────┬──────────┬───┘
+        (apps تعتمد session مباشرة كذلك؛ عقد وصول الرمز يعرضه
+         konfrm_api ويُربط عند bootstrap في التطبيق بحالة
+         konfrm_session — لا حافة حزم api↔session)
 
 قواعد الرسم: أسهم apps→packages وpackages→core فقط؛
-api ──✗──► session مباشرة (عبر TokenProvider interface)؛
-لا دورات؛ لا حزمة ترى ميزة؛ لا ميزة ترى ميزة (عبر routes فقط).
+لا حافة حزم api↔session (العقد يعرضه api والربط في التطبيق)؛
+لا دورات؛ لا حزمة ترى ميزة؛ حد التغليف بين الميزات وفق §5.
 ```
 
 ---
@@ -313,4 +321,4 @@ api ──✗──► session مباشرة (عبر TokenProvider interface)؛
 ## 20. Relationship to Existing Documents
 
 - لا يلغي ولا يعيد تفسير FOUNDATION_V1 أو TOPOLOGY_V1؛ يبني عليهما مباشرة (Flutter/Dart، التبولوجيا، فصل الأدوار، اتجاه التصميم platform-adaptive).
-- يحدّث عمليًا توصية Gate 3A الاستشارية حيث خالفها هذا التوليف المعتمد: أربع حزم (لا خمس — لا konfrm_testing)، تسمية `konfrm_api`، Riverpod بلا codegen مبدئيًا، و`package:http` خلف واجهة. في التعارض، هذه المواصفة (Gate 3B) هي الكنونية.
+- يحدّث عمليًا توصية Gate 3A الاستشارية حيث خالفها هذا التوليف المعتمد: أربع حزم (لا خمس — لا konfrm_testing)، تسمية `konfrm_api`، Riverpod بلا codegen مبدئيًا، وملكية تجريد النقل داخل konfrm_api (التنفيذ الملموس مرشح). في التعارض، هذه المواصفة (Gate 3B) هي الكنونية.

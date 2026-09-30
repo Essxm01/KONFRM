@@ -395,7 +395,7 @@ CANONICAL requirements (platform-appropriate mapping — Web WCAG numbers are no
 |---|---|---|---|
 | Back navigation | When the current surface has a parent context, provide a predictable return path without losing safe work | Follow iOS navigation/back conventions, including appropriate system gestures/affordances when a parent context exists | Honor system Back / predictive Back when a parent context exists; do not invent a redundant in-app Back affordance at a root |
 | Bottom navigation | Customer 4-destination model; state preserved | Tab bar conventions | Material navigation bar conventions |
-| Sheets | Contained task focus, bottom-origin | Detent-style sheet behavior | Modal bottom sheet conventions |
+| Sheets | Contained task presentation that preserves appropriate context | Use the appropriate iOS sheet, form-sheet, popover, or full-screen presentation for the task and window context | Use the appropriate Material bottom sheet, dialog, pane/side presentation, or full-screen pattern according to task and window/adaptive context |
 | Dialogs | Decision confirmation, destructive separation | Alert conventions | Dialog conventions |
 | Lists/rows | Grouped semantic rows, consistent action placement | iOS list styling | Material list styling |
 | Pickers/calendars | Canonical date semantics | System date pickers | Material date pickers |

@@ -321,6 +321,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthV2RegistrationClientError'
+        '404':
+          description: Auth V2 is unavailable under the current runtime configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2UnavailableError'
         '409':
           description: Continuation/challenge was already consumed or conflicts with its verified identity.
           content:

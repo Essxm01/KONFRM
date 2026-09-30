@@ -280,6 +280,12 @@ async function run(): Promise<void> {
   const previousAuthV2Enabled = process.env.AUTH_V2_ENABLED;
   try {
     process.env.AUTH_V2_ENABLED = 'false';
+    const disabledRegistration = await request(issueFixture.app, 'POST', '/api/v2/auth/registration/complete', {
+      continuationToken: 'synthetic-continuation-token',
+      fullName: 'Contract Test Customer',
+    });
+    assertErrorCode(disabledRegistration, 404, 'AUTH_V2_UNAVAILABLE');
+
     const disabled = await request(issueFixture.app, 'POST', '/api/v2/auth/challenges', {
       surface: 'CUSTOMER', intent: 'LOGIN', method: 'PHONE', identifier: phone('2199'),
     });

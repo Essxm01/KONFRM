@@ -15,6 +15,8 @@
     "test:auth-v2-postgres": "npx tsx server/src/tests/isolatedPostgres.test.ts",
     "test:auth-v2-qa-bootstrap": "npx tsx server/src/tests/authV2QaBootstrap.test.ts",
     "test:auth-v2-runtime-api-01": "npx tsx server/src/tests/authV2RuntimeApi01.test.ts",
+    "test:auth-session-openapi": "npx tsx server/src/tests/authSessionOpenapiContract.test.ts",
+    "validate:auth-session-openapi": "redocly lint ../docs/api/openapi.yaml --skip-rule=info-license",
     "test:auth-v2-worker-adapter": "npx tsx server/src/tests/authV2WorkerAdapter.test.ts",
     "test:customer-email-linking": "npx tsx server/src/tests/customerEmailLinking.test.ts",
     "qa:auth-v2-remote": "npx tsx server/src/tests/authV2RemoteAcceptance.ts",
@@ -57,10 +59,14 @@
     "pg": "^8.23.0"
   },
   "devDependencies": {
+    "@redocly/cli": "^2.56.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^24.13.3",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "tsx": "^4.20.0",
     "typescript": "~6.0.2",
-    "wrangler": "^4.123.0"
+    "wrangler": "^4.123.0",
+    "yaml": "^2.9.1"
   }
 }

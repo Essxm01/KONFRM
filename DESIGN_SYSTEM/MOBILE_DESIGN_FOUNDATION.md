@@ -1,7 +1,7 @@
 # KONFRM Mobile Design Foundation — v1
 
 **Status:** CANDIDATE CANONICAL SPECIFICATION — DF2
-Pending independent platform/accessibility/design-system review.
+Independent platform/accessibility/design-system review completed; required corrections applied; pending final Bridge verification.
 **Scope:** The design foundation governing future `mobile/customer_app`, `mobile/owner_app`, mobile design tokens, canonical mobile primitives, AI design Skills, visual QA and the controlled pilot.
 **Upstream authority (not reopened here):**
 
@@ -44,7 +44,9 @@ When design evidence conflicts, resolution follows this order. Higher levels alw
 8. Aesthetic references and trends (Telda screenshots — inspiration only).
 9. AI or agent preference (never authoritative).
 
-**KONFRM Canon always wins conflicts.** A genuinely new requirement follows the established chain: **propose → central approval → central documentation/token → version → app consumption.** Never the reverse.
+**Within the scope each authority legitimately governs, KONFRM Canon outranks lower-level external references and AI preference. Applicable legal/accessibility requirements remain implementation constraints and cannot be waived by Canonical visual preference.** A genuinely new requirement follows the established chain: **propose → central approval → central documentation/token → version → app consumption.** Never the reverse.
+
+Founder/Product authority governs KONFRM product meaning, business rules and brand intent. Applicable legal and accessibility requirements constrain implementation and are not waivable by aesthetic or brand preference. When a presentation choice conflicts with such a requirement, preserve the approved product meaning through an accessible implementation and escalate any unresolved product trade-off rather than shipping an inaccessible exception.
 
 ## 3. KONFRM Design North Star
 
@@ -210,10 +212,10 @@ Rule: role semantics are CANONICAL NOW (as defined in this document); concrete n
 
 Arabic-first RTL is **foundation-level, not post-processing.** CANONICAL rules:
 
-1. **Semantic RTL:** layout logic uses start/end semantics throughout; no physical left/right in product code.
+1. **Semantic RTL:** direction-relative layout and alignment use semantic start/end throughout. Physical left/right is permitted only when it intentionally represents fixed spatial or real-world direction, media/chart/map semantics, or platform-defined physical behavior. Such cases are explicit exceptions, not substitutes for RTL-aware layout.
 2. **Paragraph direction:** Arabic content lays out RTL; embedded Latin/numeric runs follow §12 isolation.
 3. **Mixed Arabic + English:** never concatenate fragments in ways that produce accidental reversal; embed foreign runs with isolation.
-4. **Phone numbers, money, IDs, URLs (where displayed):** isolated LTR runs (bdi/directional Text equivalents), preserving logical reading order.
+4. **Phone numbers, technical IDs, URLs where displayed, Latin technical strings, and direction-sensitive numeric sub-runs:** directional isolation as needed, preserving logical reading order. For mixed-direction monetary content, isolate only the required sub-runs while preserving the intended Arabic currency suffix order.
 5. **Directional icons:** back/forward use direction-aware semantics — back points toward the RTL-previous edge; do not mirror unrelated symbols.
 6. **Label + icon order:** the icon appears on the RTL-leading side of its label (document-order first), matching the existing web rule.
 7. **Dates:** presentation conventions are a separate localization decision (§12 numeral rule does not automatically define date/calendar localization); existing Product Truth governs specific cases.
@@ -231,6 +233,7 @@ Arabic-first RTL is **foundation-level, not post-processing.** CANONICAL rules:
 - Arabic UI remains RTL.
 - Numeric / phone / technical-ID runs may be isolated LTR (§11).
 - This decision does **not** automatically define every future date/calendar localization rule; date/calendar conventions remain a separate localization decision unless existing Product Truth already governs a specific case.
+- The approved rendering `1,600 ج.م` must be validated visually and with VoiceOver/TalkBack so numeric isolation does not reorder, detach, or misannounce the Arabic currency suffix.
 
 Financial display rules (CANONICAL NOW):
 
@@ -264,9 +267,9 @@ Financial display rules (CANONICAL NOW):
 
 **Rules (CANONICAL NOW):**
 
-- No card soup; no nested cards without a semantic reason; one separation technique (surface OR border OR shadow) per relationship — never stacked decoratively.
+- No card soup; no nested cards without a semantic reason. Prefer one primary separation cue for a relationship and avoid redundant decorative stacking; multiple signals may coexist when each communicates a distinct role or state, supports focus/contrast/accessibility, or follows platform elevation and overlay conventions.
 - Every border/shadow/surface treatment communicates something real (grouping, elevation, interactivity, danger).
-- Sheets originate from the bottom edge on mobile with the platform-appropriate presentation (existing web `bottomSheet` geometry is evidence, not the mobile canon).
+- Contained transient tasks use the presentation that best matches the task, platform and available window. A bottom sheet is one valid presentation on suitable compact contexts, not a universal KONFRM geometry. Platform-supported sheets, form sheets, popovers, dialogs, panes or full-screen presentations may be used when they better preserve context, usability or adaptivity.
 
 **IMPLEMENTATION CANDIDATE:** exact radius family, border widths/colors, shadow/elevation values (web values are the strongest evidence base, validated per §29).
 **DEFERRED:** dark-mode surface set.
@@ -390,7 +393,7 @@ CANONICAL requirements (platform-appropriate mapping — Web WCAG numbers are no
 
 | Pattern | Shared KONFRM intent | iOS adaptation principle | Android adaptation principle |
 |---|---|---|---|
-| Back navigation | Always available, predictable return to previous context | Leading-edge back (swipe + back affordance per platform) | System/gesture back honored; predictive back respected |
+| Back navigation | When the current surface has a parent context, provide a predictable return path without losing safe work | Follow iOS navigation/back conventions, including appropriate system gestures/affordances when a parent context exists | Honor system Back / predictive Back when a parent context exists; do not invent a redundant in-app Back affordance at a root |
 | Bottom navigation | Customer 4-destination model; state preserved | Tab bar conventions | Material navigation bar conventions |
 | Sheets | Contained task focus, bottom-origin | Detent-style sheet behavior | Modal bottom sheet conventions |
 | Dialogs | Decision confirmation, destructive separation | Alert conventions | Dialog conventions |
@@ -438,7 +441,7 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 9. Fake reviews, fake ratings, fake scarcity, fake trust badges, decorative alerts/status cards.
 10. Unnecessary modalization of simple flows.
 11. Web UI ported unchanged to native; platform-inappropriate navigation.
-12. Hardcoded physical left/right in RTL product code.
+12. Unjustified hardcoded physical left/right in direction-relative RTL product layout.
 13. Identical Customer and Owner layouts for consistency's sake.
 14. Yellow/amber/orange boxed containers (§9).
 15. Motion that delays work or loops decoratively.
@@ -470,7 +473,7 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 2. Exact spacing scale and insets (§13) — 8pt-derived web scale is the strongest evidence base.
 3. Exact radius/border/shadow/elevation values per surface role (§14).
 4. Exact semantic color role values beyond the locked brand facts (§9).
-5. `package:http`-era **transport-independent design token delivery**: the generated-token pipeline (`TOKENS/*.json` → codegen) concept carries over, with values validated for mobile before canonicalization (§29).
+5. **Transport-independent design-token delivery**: the existing generated-token pipeline concept (`TOKENS/*.json` → generated consumer artifacts) is an implementation candidate for mobile, with all mobile values validated before canonicalization.
 6. Exact state-surface compositions (skeletons, empty/error art) per state grammar (§16).
 7. Cairo as the bundled mobile UI family — pending mobile rendering/performance validation.
 8. Field/control dimensions and focus treatments (§18, §21).

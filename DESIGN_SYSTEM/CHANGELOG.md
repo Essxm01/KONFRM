@@ -6,7 +6,7 @@
 
 - Added [`MOBILE_DESIGN_FOUNDATION.md`](./MOBILE_DESIGN_FOUNDATION.md) as the candidate canonical mobile design foundation specification (Gate 3B follow-up): Trust/Clarity/Vitality North Star, dense-by-purpose philosophy, authority/evidence hierarchy, semantic role model, color/typography/RTL/numerals/session-state/action/motion/accessibility foundations, platform adaptation matrix, external-Skill policy, anti-patterns, and full CANONICAL NOW / IMPLEMENTATION CANDIDATE / DEFERRED classification.
 - Records the Founder numeral decision for Arabic KONFRM UI: Western Arabic numerals by default (`1,600 ج.م`), RTL preserved, LTR-isolated numeric/phone/ID runs, date/calendar localization unchanged.
-- Candidate specification pending independent platform/accessibility/design-system review; no token values changed, no component contracts modified, no legacy migration performed, no runtime UI/backend/database behavior changed.
+- Candidate specification; independent platform/accessibility/design-system review completed and its required corrections applied; pending final Bridge verification. No token values changed, no component contracts modified, no legacy migration performed, no runtime UI/backend/database behavior changed.
 
 ## 2.1.3 — 2026-09-27
 

@@ -1,0 +1,997 @@
+openapi: 3.0.4
+info:
+  title: KONFRM Customer Authentication and Session Lifecycle API
+  version: 1.0.0
+  description: >-
+    Canonical wire contract for the Customer authentication and session
+    lifecycle slice only. This contract documents existing backend behavior;
+    it does not authorize changes to Owner authentication or unify API versions.
+tags:
+  - name: Customer Authentication & Session Lifecycle
+    description: Customer challenge authentication, registration continuation, and existing session operations.
+servers:
+  - url: /
+    description: Relative to the deployment host.
+security: []
+paths:
+  /api/v2/auth/challenges:
+    post:
+      tags: [Customer Authentication & Session Lifecycle]
+      operationId: requestCustomerAuthChallenge
+      summary: Request a Customer phone or email verification challenge
+      description: >-
+        Auth V2 must be enabled and pass its runtime environment safety checks.
+        The response is enumeration-free; it does not disclose whether the
+        identifier already belongs to a Customer.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestChallengeRequest'
+            examples:
+              phoneLogin:
+                value:
+                  surface: CUSTOMER
+                  intent: LOGIN
+                  method: PHONE
+                  identifier: '+201011111111'
+              emailRegistration:
+                value:
+                  surface: CUSTOMER
+                  intent: CREATE_ACCOUNT
+                  method: EMAIL
+                  identifier: 'new@example.test'
+      responses:
+        '200':
+          description: Challenge created and dispatched.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestChallengeSuccess'
+              example:
+                success: true
+                data:
+                  success: true
+                  challengeId: '7c3002d5-f583-4f87-b868-75fe49b5d267'
+                  method: PHONE
+                  maskedRecipient: '+2010******11'
+                  resendAvailableAt: '2026-09-30T12:01:00.000Z'
+                  expiresAt: '2026-09-30T12:05:00.000Z'
+                timestamp: '2026-09-30T12:00:00.000Z'
+        '400':
+          description: Request, phone number, or email is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2RequestError'
+              examples:
+                invalidRequest:
+                  value:
+                    success: false
+                    error:
+                      code: INVALID_AUTH_REQUEST
+                      message: 'بيانات طلب التحقق غير صالحة.'
+                    timestamp: '2026-09-30T12:00:00.000Z'
+                invalidIdentifier:
+                  value:
+                    success: false
+                    error:
+                      code: INVALID_EGYPTIAN_MOBILE_NUMBER
+                      message: 'أدخل رقم هاتف مصري صالح.'
+                    timestamp: '2026-09-30T12:00:00.000Z'
+        '404':
+          description: Auth V2 is unavailable under the current runtime configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2UnavailableError'
+        '429':
+          description: Identifier or IP send-rate limit was exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2RateLimitError'
+        '503':
+          description: Challenge persistence or OTP delivery is unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2UnavailableError'
+
+  /api/v2/auth/challenges/{challengeId}/verify:
+    post:
+      tags: [Customer Authentication & Session Lifecycle]
+      operationId: verifyCustomerAuthChallenge
+      summary: Verify a Customer challenge
+      parameters:
+        - $ref: '#/components/parameters/ChallengeId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyChallengeRequest'
+            example:
+              otp: '123456'
+              deviceInfo: 'KONFRM web / browser'
+      responses:
+        '200':
+          description: >-
+            OTP verified. Existing Customers receive a safe user and session
+            tokens. A verified unregistered identifier receives a purpose-bound
+            continuation token. LOGIN then requires signup; CREATE_ACCOUNT then
+            requires the full name. Omitted flow-specific fields are absent in
+            the JSON response (not null).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyChallengeSuccess'
+              examples:
+                existingCustomer:
+                  value:
+                    success: true
+                    data:
+                      success: true
+                      challengeId: '7c3002d5-f583-4f87-b868-75fe49b5d267'
+                      method: EMAIL
+                      intent: LOGIN
+                      isExistingUser: true
+                      user:
+                        id: '52b7dcf1-832a-4a50-858f-35d2728dc801'
+                        fullName: 'Sample Customer'
+                      tokens:
+                        accessToken: 'synthetic-access-token'
+                        refreshToken: 'synthetic-refresh-token'
+                        expiresIn: 900
+                    timestamp: '2026-09-30T12:00:00.000Z'
+                newPhoneCreateAccount:
+                  value:
+                    success: true
+                    data:
+                      success: true
+                      challengeId: '7c3002d5-f583-4f87-b868-75fe49b5d267'
+                      method: PHONE
+                      intent: CREATE_ACCOUNT
+                      isExistingUser: false
+                      requiresFullName: true
+                      continuationToken: 'synthetic-continuation-token'
+                    timestamp: '2026-09-30T12:00:00.000Z'
+                newEmailLogin:
+                  value:
+                    success: true
+                    data:
+                      success: true
+                      challengeId: '7c3002d5-f583-4f87-b868-75fe49b5d267'
+                      method: EMAIL
+                      intent: LOGIN
+                      isExistingUser: false
+                      requiresSignup: true
+                      continuationToken: 'synthetic-continuation-token'
+                    timestamp: '2026-09-30T12:00:00.000Z'
+        '400':
+          description: Challenge ID, OTP, challenge state, or OTP expiry is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2VerifyClientError'
+        '404':
+          description: Challenge does not exist or Auth V2 is unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2NotFoundOrUnavailableError'
+        '409':
+          description: Challenge was already verified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2VerifyConflictError'
+        '503':
+          description: Verification persistence or Customer session issuance is unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2UnavailableError'
+
+  /api/v2/auth/challenges/{challengeId}/resend:
+    post:
+      tags: [Customer Authentication & Session Lifecycle]
+      operationId: resendCustomerAuthChallenge
+      summary: Resend a Customer challenge
+      parameters:
+        - $ref: '#/components/parameters/ChallengeId'
+      responses:
+        '200':
+          description: Challenge was resent and its generation/expiry updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResendChallengeSuccess'
+              example:
+                success: true
+                data:
+                  success: true
+                  challengeId: '7c3002d5-f583-4f87-b868-75fe49b5d267'
+                  generation: 2
+                  resendAvailableAt: '2026-09-30T12:02:00.000Z'
+                  expiresAt: '2026-09-30T12:06:00.000Z'
+                timestamp: '2026-09-30T12:01:00.000Z'
+        '400':
+          description: Challenge ID is malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2ChallengeClientError'
+        '404':
+          description: Challenge does not exist or Auth V2 is unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2NotFoundOrUnavailableError'
+        '429':
+          description: Resend cooldown, concurrent resend, or send rate limit applies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2RateLimitError'
+        '503':
+          description: Challenge persistence or OTP delivery is unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2UnavailableError'
+
+  /api/v2/auth/challenges/{challengeId}:
+    delete:
+      tags: [Customer Authentication & Session Lifecycle]
+      operationId: cancelCustomerAuthChallenge
+      summary: Cancel a Customer challenge
+      description: Cancellation is idempotent; an unknown well-formed challenge ID also returns success.
+      parameters:
+        - $ref: '#/components/parameters/ChallengeId'
+      responses:
+        '200':
+          description: Challenge cancellation completed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelChallengeSuccess'
+              example:
+                success: true
+                data:
+                  success: true
+                  challengeId: '7c3002d5-f583-4f87-b868-75fe49b5d267'
+                timestamp: '2026-09-30T12:00:00.000Z'
+        '400':
+          description: Challenge ID is malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2ChallengeClientError'
+        '404':
+          description: Auth V2 is unavailable under the current runtime configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2UnavailableError'
+        '503':
+          description: Challenge cancellation persistence is unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2UnavailableError'
+
+  /api/v2/auth/registration/complete:
+    post:
+      tags: [Customer Authentication & Session Lifecycle]
+      operationId: completeCustomerRegistration
+      summary: Complete Customer account creation after challenge verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteRegistrationRequest'
+            example:
+              continuationToken: 'synthetic-continuation-token'
+              fullName: 'Sample Customer'
+              deviceInfo: 'KONFRM web / browser'
+      responses:
+        '201':
+          description: Customer account/session was created or resolved and authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompleteRegistrationSuccess'
+              example:
+                success: true
+                data:
+                  user:
+                    id: '52b7dcf1-832a-4a50-858f-35d2728dc801'
+                    fullName: 'Sample Customer'
+                  tokens:
+                    accessToken: 'synthetic-access-token'
+                    refreshToken: 'synthetic-refresh-token'
+                    expiresIn: 900
+                timestamp: '2026-09-30T12:00:00.000Z'
+        '400':
+          description: Full name or continuation token is invalid or expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2RegistrationClientError'
+        '404':
+          description: Auth V2 is unavailable under the current runtime configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2UnavailableError'
+        '409':
+          description: Continuation/challenge was already consumed or conflicts with its verified identity.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2RegistrationConflictError'
+        '503':
+          description: Account/session persistence is unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthV2UnavailableError'
+
+  /api/v1/auth/refresh:
+    post:
+      tags: [Customer Authentication & Session Lifecycle]
+      operationId: refreshCustomerSessionV1
+      summary: Refresh a v1 Customer or Owner session access token
+      description: >-
+        This is the existing v1 session endpoint used by the current Customer
+        lifecycle and it continues to support existing Customer and Owner session
+        roles. Its presence does not migrate Owner Auth or unify API versions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshSessionRequest'
+            example:
+              refreshToken: 'synthetic-refresh-token'
+      responses:
+        '200':
+          description: Existing refresh session is valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshSessionSuccess'
+              example:
+                success: true
+                data:
+                  accessToken: 'synthetic-access-token'
+                  expiresIn: 900
+                timestamp: '2026-09-30T12:00:00.000Z'
+        '401':
+          description: Refresh failed; the route returns the service error message as the error code.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1RefreshError'
+              example:
+                success: false
+                error:
+                  code: SESSION_REVOKED
+                  message: 'جلسة عمل منتهية الصلاحية'
+                timestamp: '2026-09-30T12:00:00.000Z'
+
+  /api/v1/auth/revoke:
+    post:
+      tags: [Customer Authentication & Session Lifecycle]
+      operationId: revokeCustomerSessionV1
+      summary: Revoke a v1 session refresh token
+      description: >-
+        Revocation is idempotent for a valid string token, including an unknown
+        token. An omitted or empty refreshToken also returns success. This is the
+        existing v1 contract, not an Auth V2 endpoint migration.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevokeSessionRequest'
+            example:
+              refreshToken: 'synthetic-refresh-token'
+      responses:
+        '200':
+          description: Revocation completed (including no-token/idempotent calls).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevokeSessionSuccess'
+              example:
+                success: true
+                data:
+                  success: true
+                timestamp: '2026-09-30T12:00:00.000Z'
+        '400':
+          description: >-
+            A truthy supplied value that cannot be hashed or a persistence
+            exception failed in the v1 controller/service boundary. Falsy
+            values, including an omitted token, remain successful no-token calls.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1RevokeError'
+              example:
+                success: false
+                error:
+                  code: 'invalid token value'
+                  message: 'invalid token value'
+                timestamp: '2026-09-30T12:00:00.000Z'
+
+components:
+  parameters:
+    ChallengeId:
+      name: challengeId
+      in: path
+      required: true
+      description: Challenge UUID generated by the server.
+      schema:
+        type: string
+        format: uuid
+      example: '7c3002d5-f583-4f87-b868-75fe49b5d267'
+  schemas:
+    Timestamp:
+      type: string
+      format: date-time
+      description: Server response creation timestamp in ISO 8601 format.
+    RequestChallengeRequest:
+      type: object
+      required: [surface, intent, method, identifier]
+      properties:
+        surface:
+          type: string
+          enum: [CUSTOMER]
+        intent:
+          type: string
+          enum: [LOGIN, CREATE_ACCOUNT]
+        method:
+          type: string
+          enum: [PHONE, EMAIL]
+        identifier:
+          type: string
+          minLength: 1
+          pattern: '\S'
+          description: Non-blank phone number or email string; normalized/validated by the selected method.
+          example: '+201011111111'
+    VerifyChallengeRequest:
+      type: object
+      required: [otp]
+      properties:
+        otp:
+          type: string
+          pattern: '^\d{6}$'
+          example: '123456'
+        deviceInfo:
+          type: string
+          description: Optional device information; non-string values are ignored by the route.
+    CompleteRegistrationRequest:
+      type: object
+      required: [continuationToken, fullName]
+      properties:
+        continuationToken:
+          type: string
+          minLength: 1
+        fullName:
+          type: string
+          minLength: 2
+          description: Server requires at least two non-whitespace characters after trimming.
+        deviceInfo:
+          type: string
+          description: Optional device information; non-string values are ignored by the route.
+    RefreshSessionRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+          minLength: 1
+          description: Existing v1 refresh JWT for a Customer session.
+    RevokeSessionRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          nullable: true
+          description: Optional; absent, null, or empty values are accepted as idempotent success.
+    SessionTokens:
+      type: object
+      additionalProperties: false
+      required: [accessToken, refreshToken, expiresIn]
+      properties:
+        accessToken:
+          type: string
+          minLength: 1
+        refreshToken:
+          type: string
+          minLength: 1
+        expiresIn:
+          type: integer
+          format: int32
+          enum: [900]
+          description: Access-token lifetime in seconds.
+    SafeCustomerUser:
+      type: object
+      additionalProperties: false
+      required: [id]
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+          description: Present only when the canonical user has a string full name.
+    RequestChallengeData:
+      type: object
+      additionalProperties: false
+      required: [success, challengeId, method, maskedRecipient, resendAvailableAt, expiresAt]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        challengeId:
+          type: string
+          format: uuid
+        method:
+          type: string
+          enum: [PHONE, EMAIL]
+        maskedRecipient:
+          type: string
+        resendAvailableAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+    VerifyChallengeExistingData:
+      type: object
+      additionalProperties: false
+      required: [success, challengeId, method, intent, isExistingUser, user, tokens]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        challengeId:
+          type: string
+          format: uuid
+        method:
+          type: string
+          enum: [PHONE, EMAIL]
+        intent:
+          type: string
+          enum: [LOGIN, CREATE_ACCOUNT]
+        isExistingUser:
+          type: boolean
+          enum: [true]
+        user:
+          $ref: '#/components/schemas/SafeCustomerUser'
+        tokens:
+          $ref: '#/components/schemas/SessionTokens'
+    VerifyChallengeNewCustomerData:
+      oneOf:
+        - $ref: '#/components/schemas/VerifyChallengeNewLoginData'
+        - $ref: '#/components/schemas/VerifyChallengeNewAccountData'
+    VerifyChallengeNewLoginData:
+      type: object
+      additionalProperties: false
+      required: [success, challengeId, method, intent, isExistingUser, continuationToken, requiresSignup]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        challengeId:
+          type: string
+          format: uuid
+        method:
+          type: string
+          enum: [PHONE, EMAIL]
+        intent:
+          type: string
+          enum: [LOGIN]
+        isExistingUser:
+          type: boolean
+          enum: [false]
+        continuationToken:
+          type: string
+          minLength: 1
+        requiresSignup:
+          type: boolean
+          enum: [true]
+    VerifyChallengeNewAccountData:
+      type: object
+      additionalProperties: false
+      required: [success, challengeId, method, intent, isExistingUser, continuationToken, requiresFullName]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        challengeId:
+          type: string
+          format: uuid
+        method:
+          type: string
+          enum: [PHONE, EMAIL]
+        intent:
+          type: string
+          enum: [CREATE_ACCOUNT]
+        isExistingUser:
+          type: boolean
+          enum: [false]
+        continuationToken:
+          type: string
+          minLength: 1
+        requiresFullName:
+          type: boolean
+          enum: [true]
+    VerifyChallengeData:
+      oneOf:
+        - $ref: '#/components/schemas/VerifyChallengeExistingData'
+        - $ref: '#/components/schemas/VerifyChallengeNewCustomerData'
+    RequestChallengeSuccess:
+      type: object
+      additionalProperties: false
+      required: [success, data, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: '#/components/schemas/RequestChallengeData'
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    VerifyChallengeSuccess:
+      type: object
+      additionalProperties: false
+      required: [success, data, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: '#/components/schemas/VerifyChallengeData'
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    ResendChallengeData:
+      type: object
+      additionalProperties: false
+      required: [success, challengeId, resendAvailableAt, expiresAt]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        challengeId:
+          type: string
+          format: uuid
+        generation:
+          type: integer
+          format: int32
+          description: Present when the resend lease result includes generation.
+        resendAvailableAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+    ResendChallengeSuccess:
+      type: object
+      additionalProperties: false
+      required: [success, data, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: '#/components/schemas/ResendChallengeData'
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    CancelChallengeData:
+      type: object
+      additionalProperties: false
+      required: [success, challengeId]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        challengeId:
+          type: string
+          format: uuid
+    CancelChallengeSuccess:
+      type: object
+      additionalProperties: false
+      required: [success, data, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: '#/components/schemas/CancelChallengeData'
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    CompleteRegistrationData:
+      type: object
+      additionalProperties: false
+      required: [user, tokens]
+      properties:
+        user:
+          $ref: '#/components/schemas/SafeCustomerUser'
+        tokens:
+          $ref: '#/components/schemas/SessionTokens'
+    CompleteRegistrationSuccess:
+      type: object
+      additionalProperties: false
+      required: [success, data, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: '#/components/schemas/CompleteRegistrationData'
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    RefreshSessionData:
+      type: object
+      additionalProperties: false
+      required: [accessToken, expiresIn]
+      properties:
+        accessToken:
+          type: string
+          minLength: 1
+        expiresIn:
+          type: integer
+          format: int32
+          enum: [900]
+    RefreshSessionSuccess:
+      type: object
+      additionalProperties: false
+      required: [success, data, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: '#/components/schemas/RefreshSessionData'
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    RevokeSessionData:
+      type: object
+      additionalProperties: false
+      required: [success]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+    RevokeSessionSuccess:
+      type: object
+      additionalProperties: false
+      required: [success, data, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: '#/components/schemas/RevokeSessionData'
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          minLength: 1
+        message:
+          type: string
+    AuthV2RequestError:
+      type: object
+      additionalProperties: false
+      required: [success, error, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [INVALID_AUTH_REQUEST, INVALID_EGYPTIAN_MOBILE_NUMBER, INVALID_EMAIL_ADDRESS, INVALID_EMAIL_DOMAIN, INVALID_EMAIL_LOCAL_PART, PRODUCTION_STATIC_OTP_FORBIDDEN, FIXED_OTP_ENVIRONMENT_NOT_AUTHORIZED]
+            message:
+              type: string
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    AuthV2VerifyClientError:
+      type: object
+      additionalProperties: false
+      required: [success, error, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [INVALID_CHALLENGE_ID, INVALID_AUTH_CHALLENGE, INVALID_OTP, CHALLENGE_CANCELLED, CHALLENGE_EXPIRED, OTP_EXPIRED, CHALLENGE_LOCKED_MAX_ATTEMPTS_EXCEEDED]
+            message:
+              type: string
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    AuthV2RegistrationClientError:
+      type: object
+      additionalProperties: false
+      required: [success, error, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [INVALID_FULL_NAME, CONTINUATION_TOKEN_EXPIRED, INVALID_CONTINUATION_TOKEN]
+            message:
+              type: string
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    AuthV2ChallengeClientError:
+      type: object
+      additionalProperties: false
+      required: [success, error, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [INVALID_CHALLENGE_ID, INVALID_AUTH_CHALLENGE]
+            message:
+              type: string
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    AuthV2NotFoundOrUnavailableError:
+      type: object
+      additionalProperties: false
+      required: [success, error, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [CHALLENGE_NOT_FOUND, AUTH_V2_UNAVAILABLE]
+            message:
+              type: string
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    AuthV2VerifyConflictError:
+      type: object
+      additionalProperties: false
+      required: [success, error, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [CHALLENGE_ALREADY_VERIFIED]
+            message:
+              type: string
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    AuthV2RegistrationConflictError:
+      type: object
+      additionalProperties: false
+      required: [success, error, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [IDENTIFIER_ALREADY_EXISTS, IDENTIFIER_ALREADY_LINKED, CONTINUATION_ALREADY_CONSUMED, CHALLENGE_ALREADY_CONSUMED, CHALLENGE_NOT_VERIFIED, CHALLENGE_BINDING_MISMATCH, EMAIL_ONLY_ACCOUNT_CREATION_DEFERRED]
+            message:
+              type: string
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    AuthV2RateLimitError:
+      type: object
+      additionalProperties: false
+      required: [success, error, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [RATE_LIMIT_EXCEEDED, RESEND_COOLDOWN_ACTIVE, RESEND_IN_PROGRESS]
+            message:
+              type: string
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    AuthV2UnavailableError:
+      type: object
+      additionalProperties: false
+      required: [success, error, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [AUTH_V2_UNAVAILABLE]
+            message:
+              type: string
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    V1RefreshError:
+      type: object
+      additionalProperties: false
+      required: [success, error, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    V1RevokeError:
+      type: object
+      additionalProperties: false
+      required: [success, error, timestamp]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'

@@ -5,7 +5,7 @@ description: "Core product and UX design principles for KONFRM. Enforces role-sp
 
 # KONFRM Product UX Principles
 
-Defines the authoritative product user experience contracts across all three KONFRM applications: Customer, Owner, and Admin.
+Defines the authoritative product user experience contracts across all three KONFRM product roles: Customer, Owner, and Admin.
 
 ---
 
@@ -17,7 +17,7 @@ Defines the authoritative product user experience contracts across all three KON
 
 ## 1. Role-Specific UX Mandates
 
-### A. Customer App (`customer-app/`)
+### A. Customer Experience (Current `customer-app/` Web & Future Mobile Target)
 - **Friction-Free Discovery:** Instant access to real rental property inventory. Unauthenticated visitors can freely browse, filter, inspect details, and review amenities before auth is required.
 - **Zero Fake Scarcity:** No misleading countdown timers, false viewer counts ("5 people looking at this now"), artificially inflated strikethrough prices, or dark UX patterns.
 - **Instant Booking Clarity:**
@@ -26,7 +26,7 @@ Defines the authoritative product user experience contracts across all three KON
   - Instant booking confirmation without ambiguous pending states.
 - **Calm, High-Confidence Transaction Paths:** Customer interfaces must project financial safety, clarity, and legal certainty.
 
-### B. Owner App (`owner-app/`)
+### B. Owner Experience (Current `owner-app/` Web & Future Mobile Target)
 - **Operational Certainty:** Real-time visibility into property status, confirmed bookings, check-in schedules, and key exchange handoffs.
 - **Earnings Transparency:**
   - Net payout breakdown per booking: Gross rent minus platform fee equals net owner deposit.
@@ -37,7 +37,7 @@ Defines the authoritative product user experience contracts across all three KON
   - Granular seasonal and weekend pricing rules with immediate feedback.
 - **High Information Density:** Operational dashboards prioritize scannable data grids and calendar views over oversized empty hero banners.
 
-### C. Admin App (`admin-app/`)
+### C. Admin Experience (`admin-app/` Desktop Web Operational)
 - **Auditability & Traceability:** Every moderation decision, property verification, dispute reconciliation, and payout execution must have an immutable audit trail and explicit reason logging.
 - **Batch Efficiency:** Operations staff handle high-volume queues (KYC verification, property reviews, payout approvals). Keyboard navigation, dense data tables, and batch actions are prioritized.
 - **Uncompromised Governance:** No destructive actions occur without clear confirmations. Financial operations (payout releases, escrow freezes) require strict dual-check clarity.
@@ -47,7 +47,7 @@ Defines the authoritative product user experience contracts across all three KON
 
 ## 2. Truthful State Grammar
 
-Interfaces must never deceive the user about system state, network progress, or data availability:
+Interfaces must never deceive the user about system state, network progress, or data availability (DF2 §16):
 
 1. **No Phantom Progress:**
    - Never show simulated or indeterminate progress bars for discrete actions (e.g. artificial 0%→100% timers during API calls). Use honest spinner states or skeleton loaders.
@@ -64,9 +64,9 @@ Interfaces must never deceive the user about system state, network progress, or 
 ## 3. High Useful Density
 
 KONFRM is an operational marketplace platform, not a decorative brochure website:
-- **Prioritize Content over Padding:** Keep spacing disciplined (8pt base system: 4, 8, 12, 16, 24, 32px). Avoid excessive 64px+ empty spacing in operational screens.
+- **Prioritize Content over Padding:** Keep spacing purposeful. Avoid excessive empty space in operational screens.
 - **Scannable Information Hierarchy:**
-  - Primary metric or title (Cairo Bold/Extrabold).
+  - Primary metric or title clearly emphasized.
   - Supporting metadata and status badges immediately visible.
   - Clear, prominent primary action.
-- **Visual Restraint:** Restrained surface elevation, subtle borders (`border-neutral-200`), white dominant surfaces, and zero distracting background textures.
+- **Visual Restraint:** Restrained surface elevation, subtle borders, white/light dominant surfaces, and zero distracting background textures.

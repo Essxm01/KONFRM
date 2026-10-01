@@ -17,18 +17,20 @@ Wraps `nextlevelbuilder/ui-ux-pro-max-skill` (v2.13.0 / Commit `09170eec67eefd46
 
 ## 1. Mandatory Guardrails
 
-1. **Advisory Inspiration Only:** All search results, style presets, and color palettes are advisory suggestions for exploration. They must never override canonical KONFRM tokens in `DESIGN_SYSTEM/TOKENS/`.
+1. **Advisory Inspiration Only:** All search results, style presets, and color palettes are advisory suggestions for exploration. They must never override canonical KONFRM tokens in `DESIGN_SYSTEM/TOKENS/` or DF2 foundation principles.
 2. **Numeric Subordination:**
-   - External heuristics claiming universal minimums (e.g., universal 44×44px touch target, 12px/16px font minimums) are strictly subordinate to KONFRM Canon (48dp primary, 36–40dp secondary with adequate spacing).
-3. **Strict Ban on `--persist`:**
-   - The `--persist` flag is permanently disabled. External skills are prohibited from writing `design-system/` directories or modifying existing token trees.
-4. **Portable Local Runner:**
-   - Do not rely on `${CLAUDE_PLUGIN_ROOT}` environment variables. Use the project-local runner script:
+   - External heuristics claiming universal minimums (e.g., universal 44×44px touch target, 12px/16px font minimums) are strictly subordinate to KONFRM Canon and platform native guidelines (Apple HIG / Material 3).
+   - Exact mobile component dimensions, typography scales, and padding remain implementation candidates evaluated during component validation.
+3. **Strict Ban on Disk Persistence & Mutation:**
+   - The `--persist`, `--output-dir`, `--page`, and `--force` flags are permanently blocked. External skills are prohibited from writing `design-system/` directories, generating files, or modifying existing token trees.
+4. **Required Invocation Path (`runner.py` ONLY):**
+   - **Do NOT invoke the underlying vendor script (`search.py`) directly.** Agents must execute queries exclusively through the governed project-local runner:
      ```bash
      python docs/ai/skills/ui-ux-pro-max-wrapper/runner.py "<query>" --domain <domain>
      ```
+   - The runner intercepts arguments, strips unportable environment dependencies, rejects write flags, and prints the Canon advisory notice.
 5. **No Direct Production Application:**
-   - Do not apply raw output hex codes directly into production code. Map any desired style attribute to existing tokens in `DESIGN_SYSTEM/TOKENS/color.json`.
+   - Do not apply raw output hex codes directly into production code. Map any desired style attribute to existing tokens in `DESIGN_SYSTEM/TOKENS/` for Web or approved semantic roles for Mobile.
 
 ---
 
@@ -55,8 +57,8 @@ Available stacks: `flutter`, `react`, `html-tailwind`, `nextjs`, etc.
 ## 3. Resolving Conflicts with KONFRM Canon
 
 | UI/UX Pro Max Output | KONFRM Canonical Mandate | Resolution |
-|----------------------|--------------------------|------------|
-| Suggests colorful SaaS blue/purple palette | Solid Black/White core brand identity | **Discard external palette.** Use canonical `#000000` / `#FFFFFF` with `#276EF1` candidate interaction accent. |
-| Assumes LTR card flow | Arabic-first RTL native layout | **Mirror layout:** leading content on Right, disclosures on Left. |
-| Suggests universal 44×44px button | DF2 mobile component contracts | **Use 48–52dp height** for primary buttons (`KonfrmPrimaryButton`). |
-| Suggests writing tokens to disk via `--persist` | Guardrail blocks command | **Token changes must go through `DESIGN_SYSTEM/` workflow.** |
+|---|---|---|
+| Suggests colorful SaaS blue/purple palette | Monochrome-first Black/White brand identity | **Discard external palette.** Use canonical Black/White core with `#276EF1` candidate interaction accent role. |
+| Assumes LTR card flow | Arabic-first RTL native layout | **Mirror layout:** leading content at logical start (Right), disclosures at logical end (Left). |
+| Asserts universal 44×44px touch target | Platform-adaptive native sizing | **Follow platform conventions** (HIG / Material) and validate dense controls on device. |
+| Suggests writing tokens to disk via `--persist` | Guardrail blocks command | **Token changes must go through `DESIGN_SYSTEM/` governance workflow.** |

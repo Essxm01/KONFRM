@@ -1,6 +1,6 @@
 ---
 name: vercel-composition-wrapper
-description: "KONFRM-governed wrapper for Vercel's React component composition patterns. Provides architectural patterns for compound components, flexible prop contracts, and hook composition strictly for the React Admin web app while preventing Flutter architectural contamination."
+description: "KONFRM-governed wrapper for Vercel's React component composition patterns. Provides architectural patterns for compound components, flexible prop contracts, and hook composition strictly for React web applications while preventing Flutter architectural contamination."
 ---
 
 # React Composition Patterns — KONFRM Governed Wrapper
@@ -15,10 +15,10 @@ Wraps `vercel-labs/agent-skills` / `composition-patterns` (Commit `063bee94c3f4d
 
 ---
 
-## 1. Application Scope: React Admin Web App ONLY
+## 1. Application Scope: React Web Apps ONLY
 
-- **Permitted Scope:** Architectural design of React components located within `admin-app/src/components/` (e.g. data tables, governance queues, verification modals, detail views).
-- **Strictly Prohibited:** NEVER apply React compound component or hook composition mental models to Flutter mobile code. Flutter uses widget composition, InheritedWidgets, and Riverpod/Provider state management.
+- **Permitted Scope:** Architectural design of React components located within `admin-app/` and current React prototypes (`customer-app/`, `owner-app/`).
+- **Strictly Prohibited:** NEVER apply React compound component or hook composition mental models to future Flutter mobile architecture. Flutter uses widget composition, InheritedWidgets, and native state management patterns.
 
 ---
 
@@ -53,4 +53,4 @@ Wraps `vercel-labs/agent-skills` / `composition-patterns` (Commit `063bee94c3f4d
 ## 4. Upstream Reference
 
 The complete upstream guidance is preserved locally for reference at:
-[`vendor/UPSTREAM_SKILL.md`](file:///C:/Users/Essam/OneDrive/Desktop/KONFRM-SCREEN17-18-REMEDIATION/docs/ai/skills/vercel-composition-wrapper/vendor/UPSTREAM_SKILL.md)
+`docs/ai/skills/vercel-composition-wrapper/vendor/UPSTREAM_SKILL.md`

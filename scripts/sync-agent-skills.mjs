@@ -2,10 +2,10 @@
 /**
  * KONFRM AI Design Skill Synchronizer
  * 
- * Deterministically distributes governed skills from canonical source
- * (docs/ai/skills/) into project-local directories for Codex, Antigravity, and ZCode.
- * Enforces the file-copy principle (--copy, zero symlinks) and validates that no
- * unauthorized binary hooks exist.
+ * Generates lightweight discovery shims in .agents/skills/ and .zcode/skills/
+ * pointing directly to the canonical source of truth in docs/ai/skills/.
+ * Prevents PR bloat and duplicate storage while ensuring full discovery across
+ * Codex, Antigravity, and ZCode.
  */
 
 import fs from 'node:fs';
@@ -23,9 +23,9 @@ const TARGET_DIRS = [
 ];
 
 console.log('====================================================');
-console.log('KONFRM AI Design Skill Synchronizer');
+console.log('KONFRM AI Design Skill Synchronizer (Thin Shim Mode)');
 console.log('====================================================');
-console.log(`Source:  ${path.relative(projectRoot, SOURCE_DIR)}`);
+console.log(`Canonical Source: docs/ai/skills`);
 
 if (!fs.existsSync(SOURCE_DIR)) {
   console.error(`[ERROR]: Canonical source directory does not exist: ${SOURCE_DIR}`);
@@ -40,26 +40,61 @@ console.log(`Found ${skills.length} governed skills in canonical source:`);
 skills.forEach(s => console.log(`  - ${s}`));
 console.log();
 
-// Distribute to each target
+// Synchronize thin shims to each target directory
 for (const targetDir of TARGET_DIRS) {
-  const relTarget = path.relative(projectRoot, targetDir);
-  console.log(`Synchronizing to -> ${relTarget}...`);
+  const relTarget = path.relative(projectRoot, targetDir).replaceAll('\\', '/');
+  console.log(`Generating thin discovery shims in -> ${relTarget}...`);
   
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
   }
 
   for (const skill of skills) {
-    const srcPath = path.join(SOURCE_DIR, skill);
-    const destPath = path.join(targetDir, skill);
-    
-    // Copy recursively using real files (no symlinks)
-    fs.cpSync(srcPath, destPath, { recursive: true, force: true });
+    const srcSkillMd = path.join(SOURCE_DIR, skill, 'SKILL.md');
+    const destSkillDir = path.join(targetDir, skill);
+    const destSkillMd = path.join(destSkillDir, 'SKILL.md');
+
+    if (!fs.existsSync(srcSkillMd)) {
+      console.warn(`  [WARN]: Missing SKILL.md in source: ${skill}`);
+      continue;
+    }
+
+    // Clean destination directory to remove any previously copied vendor trees
+    if (fs.existsSync(destSkillDir)) {
+      fs.rmSync(destSkillDir, { recursive: true, force: true });
+    }
+    fs.mkdirSync(destSkillDir, { recursive: true });
+
+    // Extract frontmatter from canonical SKILL.md
+    const srcContent = fs.readFileSync(srcSkillMd, 'utf8');
+    const fmMatch = srcContent.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    let frontmatter = `name: ${skill}\ndescription: "KONFRM governed design skill: ${skill}."`;
+    if (fmMatch) {
+      frontmatter = fmMatch[1].trim();
+    }
+
+    // Author thin discovery shim pointing to repo-relative canonical document
+    const shimContent = [
+      '---',
+      frontmatter,
+      '---',
+      '',
+      `# ${skill} (Discovery Shim)`,
+      '',
+      'This is an agent discovery shim. The canonical, governed implementation and reference material for this skill is maintained in the KONFRM repository at:',
+      '',
+      `\`docs/ai/skills/${skill}/SKILL.md\``,
+      '',
+      `> Refer directly to \`docs/ai/skills/${skill}/SKILL.md\` for complete instructions, guardrails, and usage contracts.`,
+      '',
+    ].join('\n');
+
+    fs.writeFileSync(destSkillMd, shimContent, 'utf8');
   }
-  console.log(`  ✓ Synced ${skills.length} skills to ${relTarget}`);
+  console.log(`  ✓ Generated ${skills.length} thin discovery shims in ${relTarget}`);
 }
 
-// Security Check: ensure no unauthorized binary hooks exist
+// Security Check: verify zero disallowed binary hooks exist
 const disallowedHookPaths = [
   path.join(projectRoot, '.codex', 'hooks.json'),
   path.join(projectRoot, '.agents', 'hooks.json'),
@@ -74,5 +109,5 @@ for (const hookPath of disallowedHookPaths) {
 
 console.log();
 console.log('Security check passed: 0 unauthorized binary hooks.');
-console.log('All skills successfully synchronized across Codex, Antigravity, and ZCode.');
+console.log('Thin discovery shims synchronized successfully across Codex, Antigravity, and ZCode.');
 console.log('====================================================');

@@ -3,7 +3,7 @@
 """
 KONFRM Portable Safe Runner for UI/UX Pro Max
 Provides local, zero-network inspiration and guidelines queries while strictly
-enforcing KONFRM Canon Subordination and forbidding dangerous --persist flags.
+enforcing KONFRM Canon Subordination and forbidding dangerous write/persistence flags.
 """
 
 import sys
@@ -11,10 +11,13 @@ import os
 import subprocess
 from pathlib import Path
 
-# Enforce Canon Subordination: Disallow --persist
-if "--persist" in sys.argv:
-    print("[KONFRM GUARDRAIL ERROR]: The --persist flag is strictly forbidden under KONFRM Canon.", file=sys.stderr)
-    print("External design skills are not permitted to write to design-system/ or mutate tokens.", file=sys.stderr)
+# Enforce Canon Subordination: Disallow persistence and write flags
+forbidden_write_flags = {"--persist", "--output-dir", "--page", "--force"}
+detected_flags = forbidden_write_flags.intersection(set(sys.argv[1:]))
+
+if detected_flags:
+    print(f"[KONFRM GUARDRAIL ERROR]: Write/persistence flags ({', '.join(detected_flags)}) are strictly forbidden under KONFRM Canon.", file=sys.stderr)
+    print("External design skills are not permitted to write to disk, generate design-system/ directories, or mutate tokens.", file=sys.stderr)
     sys.exit(1)
 
 # Path to local vendor search.py

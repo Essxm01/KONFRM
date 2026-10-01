@@ -1,11 +1,11 @@
 ---
 name: konfrm-accessibility
-description: "Non-waivable accessibility engineering standards for KONFRM. Enforces WCAG 2.2 AA contrast ratios, platform-appropriate touch target scaling (48dp primary, 36-40dp secondary), Arabic screen reader semantics, dynamic type scaling resilience (up to 130%), visible focus indicators, and reduced-motion compliance."
+description: "Non-waivable accessibility engineering standards for KONFRM. Enforces platform-appropriate native target sizing, applicable contrast ratios, Arabic screen reader semantics, native text scaling support, and reduced-motion compliance without inventing unapproved numeric thresholds."
 ---
 
-# KONFRM Accessibility Engineering Standards (WCAG 2.2 AA)
+# KONFRM Accessibility Engineering Standards
 
-Authoritative, non-waivable accessibility specifications across Flutter Mobile and Web applications.
+Authoritative accessibility specifications across KONFRM Web and Mobile surfaces.
 
 ---
 
@@ -15,80 +15,62 @@ Authoritative, non-waivable accessibility specifications across Flutter Mobile a
 
 ---
 
-## 1. Contrast Ratios (WCAG 2.2 AA)
+## 1. Contrast Ratios & Legibility
 
-Every text element and essential user interface component must satisfy minimum luminance contrast ratios:
+Applicable accessibility requirements constrain implementation and cannot be waived by aesthetic or brand preference (DF2 §2):
 
-- **Body & Normal Text (< 18pt / 24px regular):** Minimum **4.5:1** contrast ratio.
-  - On White (`#FFFFFF`): Dark slate/black text (`#0F172A` / `#000000`) provides 15:1+ contrast.
-  - Secondary text (`#64748B` / `#475569`): must be verified to exceed 4.5:1 on light backgrounds. Never use `#94A3B8` for readable text on white.
-- **Large Text (>= 18pt / 24px regular or >= 14pt / 18.5px bold):** Minimum **3.0:1** contrast ratio.
-- **Essential UI Components & Interactive Borders:** Minimum **3.0:1** contrast ratio against adjacent background for inputs, checkboxes, toggles, and active button boundaries.
+- **Web Applications (WCAG 2.2 AA in CSS Pixels):**
+  - Normal text (< 18pt / 24px CSS): minimum **4.5:1** contrast ratio against adjacent background.
+  - Large text (>= 18pt / 24px CSS or >= 14pt / 18.5px bold CSS): minimum **3.0:1** contrast ratio.
+  - User interface components and graphical controls: minimum **3.0:1** contrast against adjacent surfaces.
+- **Native Mobile Applications:**
+  - Distinguish Web CSS-pixel criteria from native platform sizing; do not literally reinterpret WCAG CSS px rules as Flutter dp.
+  - Ensure high perceptual contrast between text, essential borders, and surface backgrounds on real mobile displays under diverse lighting conditions.
+  - Status must never be conveyed by color alone; pair color with unambiguous text labels or semantic icons.
 
 ---
 
-## 2. Touch Targets & Platform Ergonomics
+## 2. Touch Target Sizing & Platform Ergonomics
 
-KONFRM adapts touch target sizing according to task hierarchy and operational density:
-
-- **Primary Interactive Targets:** Minimum **48×48dp** (e.g. "احجز الآن", "تأكيد الدفع", navigation tabs, main back button).
-- **Secondary & Dense Controls:** **36–40dp touch target** with minimum 8dp clear spacing between interactive bounds is approved for high-density tables, chips, and secondary steppers.
-- **Visual vs Tap Area:** Use transparent padding around compact visual elements (e.g. `IconButton` with `visualDensity: VisualDensity.compact` but retaining a 44–48dp gesture hit test).
+- **Platform-Appropriate Sizing:**
+  - Follow native platform conventions (Apple HIG recommends ~44×44pt; Android Material 3 recommends ~48×48dp).
+  - High-density operational surfaces (e.g. Owner calendars, dense data tables) require validating compact controls on real devices to ensure operability without accidental taps.
+  - Exact mobile control target dimensions remain subject to Primitive and Component validation work (§29).
+- **Hit Test vs. Visual Bounds:**
+  - When visual density requires compact icons or chips, ensure gesture hit areas provide platform-appropriate touch clearance using transparent insets or touch delegation.
 
 ---
 
 ## 3. Screen Reader Semantics (Arabic Native)
 
-Both Mobile (TalkBack / VoiceOver) and Web (NVDA / VoiceOver) must receive informative Arabic semantic labels:
+Interfaces must expose complete semantic trees to assistive technologies (VoiceOver on iOS/macOS, TalkBack on Android, NVDA on Windows):
 
-### Mobile (Flutter)
-- Wrap interactive custom widgets in `Semantics`:
-  ```dart
-  Semantics(
-    button: true,
-    label: 'احجز الآن بسعر 1,600 ج.م لليلة',
-    hint: 'انقر مرتين للانتقال إلى شاشة الدفع',
-    child: KonfrmPrimaryButton(...),
-  )
-  ```
-- Exclude decorative artwork, background svgs, and divider lines with `ExcludeSemantics(child: ...)`.
-
-### Web (React)
-- Interactive buttons must use native `<button>` or include `role="button"` and `tabIndex={0}`.
-- Provide descriptive `aria-label` attributes in Arabic for icon-only buttons:
-  ```tsx
-  <button aria-label="إغلاق النافذة" onClick={onClose}>
-    <X className="w-5 h-5" aria-hidden="true" />
-  </button>
-  ```
+- **Meaningful Arabic Labels:**
+  - Interactive elements and icon-only buttons must declare descriptive Arabic accessibility labels.
+  - Avoid redundant labels (e.g. do not say "زر احجز الآن زر"; let the platform announce the button trait).
+- **Decorative Elements:**
+  - Purely decorative dividers, background illustrations, and ambient graphics must be hidden from screen readers.
+- **State Feedback:**
+  - Announce dynamic updates (e.g. validation error alerts, successful bookings) politely to screen readers.
 
 ---
 
-## 4. Dynamic Type & Text Scaling (130% Target)
+## 4. Text Scaling & Dynamic Type Resilience
 
-Mobile screens must remain completely functional and legible when users increase system font size:
-- Layouts must be tested at **1.3x (130%)** text scale.
-- **Avoid Fixed Container Heights:** Never hardcode fixed pixel heights (e.g. `height: 48`) on containers holding dynamic text. Use `minHeight` or padding-based sizing with flexible wrapping (`Wrap`, `Flex`).
-- **Ellipsis Rules:** Truncate secondary metadata with `TextOverflow.ellipsis`, but NEVER truncate primary financial prices, booking reference numbers, or legal consent checkboxes.
-
----
-
-## 5. Focus Indicators & Keyboard Navigation
-
-- **Web (Admin App):**
-  - All interactive elements must show a distinct, high-contrast focus ring when focused via keyboard:
-    `focus-visible:ring-2 focus-visible:ring-[#0059FF] focus-visible:outline-none focus-visible:ring-offset-2`.
-  - Never remove focus outlines (`outline: none` without `ring` replacement is strictly forbidden).
-- **Tab Order:** Logical DOM tab order following visual RTL flow (top-right to bottom-left).
+- **Platform Text Scaling Support:**
+  - Support the platform's full user text-scaling and accessibility font range.
+  - Never impose an arbitrary ceiling (e.g. capping scaling at 130%); interfaces must adapt fluidly.
+- **Layout Robustness:**
+  - Never place text inside containers with rigid, unyielding fixed pixel heights. Allow containers to expand vertically or wrap content gracefully.
+  - Decision-critical information (booking prices, dates, confirmation codes, legal terms) must never be truncated or clipped when text scales up.
 
 ---
 
-## 6. Reduced Motion Compliance
+## 5. Focus & Reduced Motion
 
-Users with vestibular disorders or motion sensitivity must have motion suppressed:
-- **Mobile (Flutter):**
-  - Check `MediaQuery.of(context).disableAnimations`.
-  - When true, transitions must be instantaneous (`Duration.zero`) or simple opacity cross-fades without translate/bounce spring curves.
-- **Web (React/Tailwind):**
-  - Respect `@media (prefers-reduced-motion: reduce)`.
-  - Use `motion-reduce:transition-none` or `motion-reduce:animate-none`.
+- **Keyboard Navigation & Focus (Web Admin):**
+  - All interactive elements must support visible, high-contrast focus rings when navigated via keyboard.
+  - Never remove focus outlines without providing an accessible alternative.
+- **Reduced Motion Compliance:**
+  - Always respect system reduced-motion preferences (`MediaQuery.of(context).disableAnimations` in Flutter; `@media (prefers-reduced-motion: reduce)` in Web).
+  - When reduced motion is enabled, suppress non-essential spatial motion and provide instantaneous transitions or simple opacity cross-fades.

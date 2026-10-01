@@ -1,6 +1,6 @@
 ---
 name: konfrm-design-router
-description: "Master design triage router for KONFRM. Classifies tasks by role (Customer/Owner/Admin), platform (Mobile Flutter/Web React), and task type. Activates the minimal necessary skill set, enforces Canon Subordination, and mandates the standardized KONFRM Design Skill Usage Report."
+description: "Master design triage router for KONFRM. Classifies tasks by role (Customer/Owner/Admin), surface reality (Current React/Web vs Future Native Mobile Flutter Target), and task type. Activates the minimal necessary skill set, enforces Canon Subordination, and mandates the standardized KONFRM Design Skill Usage Report."
 ---
 
 # KONFRM Design Router
@@ -18,53 +18,66 @@ The Master Design Triage Layer for the KONFRM platform across all AI agents (Cod
 ## 1. Responsibilities
 
 1. **Request Classification:** Automatically classify every incoming design/UI request by:
-   - **Role:** Customer, Owner, Admin, or Cross-role Platform.
-   - **Platform:** Mobile (Flutter / Dart), Web (React / TypeScript / Tailwind), or Shared Design Tokens.
-   - **Task Type:** UX Architecture, Visual Design, Micro-Polish, Accessibility Audit, Visual QA, or Code Refactor.
+   - **Role:** Customer, Owner, Admin, or Shared Design System.
+   - **Surface Reality:**
+     - **Current Web Implementation:** `customer-app/` (React SPA), `owner-app/` (React SPA), `admin-app/` (React SPA).
+     - **Future Native Mobile Target:** Future Flutter/Dart applications governed by DF2 v1.1 (`mobile/customer_app`, `mobile/owner_app` — topology not yet initialized).
+   - **Task Type:** UX Architecture, Visual Design, Micro-Polish, Accessibility Audit, Visual QA, or Code Structure.
 2. **Minimal Skill Activation:** Select ONLY the specific internal and wrapped external skills relevant to the task. Suppress unneeded or conflicting tools.
-3. **Pre-flight Conflict Resolution:** Detect potential conflicts between external advice and KONFRM Design Canon before code is written, ensuring Canon wins unconditionally.
+3. **Pre-flight Conflict Resolution:** Detect potential conflicts between external advice and KONFRM Design Canon before work begins, ensuring Canon wins unconditionally.
 4. **Standardized Reporting Enforcement:** Require the standardized `KONFRM DESIGN SKILL USAGE REPORT` block on completion.
 
 ---
 
-## 2. Request Classification Matrix
+## 2. Request Classification & Routing Matrix
 
-| Role | Primary Target App | Primary Technology | Core Operational Goal | Primary Activated Internal Skills | Approved External Wrappers |
-|------|--------------------|--------------------|-----------------------|-----------------------------------|----------------------------|
-| **Customer** | `customer-app/` | Flutter / Dart | Friction-free property discovery, transparent pricing, instant booking clarity, zero fake scarcity. | `konfrm-product-ux`, `konfrm-mobile-design`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `ui-ux-pro-max-wrapper` (advisory search only), `impeccable-wrapper` (polish/critique), `emil-wrapper` (tactile gestures) |
-| **Owner** | `owner-app/` | Flutter / Dart | Operational certainty, payout transparency, dispute tracking, calendar control, high density. | `konfrm-product-ux`, `konfrm-mobile-design`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `ui-ux-pro-max-wrapper` (advisory), `impeccable-wrapper` (polish/critique/distill), `emil-wrapper` (transitions) |
-| **Admin** | `admin-app/` | React / Vite / Tailwind | Auditability, fast high-density triage, batch verification, zero decorative fluff, desktop ergonomics. | `konfrm-product-ux`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`, `impeccable-wrapper` (distill/quieter) |
-| **Design System** | `DESIGN_SYSTEM/` | Tokens (JSON) / Components | Authority maintenance, token generation, accessibility contracts, drift prevention. | `konfrm-mobile-design`, `konfrm-rtl-arabic`, `konfrm-accessibility` | `impeccable-wrapper` (audit), `ui-ux-pro-max-wrapper` (advisory style search) |
+| Surface Reality | Codebase Location | Current Architecture | Applicable Internal Skills | Approved External Wrappers |
+|---|---|---|---|---|
+| **Current Customer Web** | `customer-app/` | React / Vite / Tailwind | `konfrm-product-ux`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`, `ui-ux-pro-max-wrapper` (advisory), `impeccable-wrapper` (polish/critique) |
+| **Current Owner Web** | `owner-app/` | React / Vite / Tailwind | `konfrm-product-ux`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`, `ui-ux-pro-max-wrapper` (advisory), `impeccable-wrapper` (polish/critique/distill) |
+| **Current Admin Web** | `admin-app/` | React / Vite / Tailwind | `konfrm-product-ux`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`, `impeccable-wrapper` (distill/quieter) |
+| **Future Mobile Target** | Future `mobile/` boundary (uninitialized) | Flutter / Dart (DF2 v1.1) | `konfrm-product-ux`, `konfrm-mobile-design`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `ui-ux-pro-max-wrapper` (advisory search only), `impeccable-wrapper` (polish/critique), `emil-wrapper` (tactile/gesture candidates) |
+| **Design System Authority** | `DESIGN_SYSTEM/` | Semantic Tokens & Specs | `konfrm-mobile-design`, `konfrm-rtl-arabic`, `konfrm-accessibility` | `impeccable-wrapper` (audit), `ui-ux-pro-max-wrapper` (advisory style search) |
+
+> [!WARNING]
+> **CRITICAL REPOSITORY MAPPING RULE:**
+> Existing `customer-app/` and `owner-app/` directories are **React/Web implementations**, NOT Flutter apps. Never silently route existing `customer-app/` source as Flutter. When reviewing current React applications, React composition and web guidelines are applicable; when architecting future Flutter surfaces, web-only wrappers are strictly prohibited.
 
 ---
 
 ## 3. Skill Suppression & Rejection Rules
 
 When routing, the following skills MUST be actively suppressed or rejected:
-- **`sleek-design-mobile-apps`**: REJECT. Requires paid third-party API key and leaks source code externally.
+- **`sleek-design-mobile-apps`**: REJECT. External network service requiring credentials; transmits prompts/design context; excluded from default KONFRM routing.
 - **`high-end-visual-design`**: REJECT. Enforces low-density luxury agency spacing and dark slabs directly contrary to KONFRM's high useful density.
-- **`vercel-web-guidelines` / `vercel-composition-patterns`**: SUPPRESS for all Mobile/Flutter tasks. Confined exclusively to `admin-app/`.
-- **`impeccable/bolder` & `impeccable/delight`**: SUPPRESS by default on all transactional flows (booking, checkout, payouts, verification). Requires explicit Founder/Spec permission.
+- **`vercel-web-guidelines` / `vercel-composition-patterns`**: PROHIBITED from governing future Flutter-native architecture. Confined strictly to React/Web codebases (`admin-app/`, current `customer-app/`, current `owner-app/`).
+- **`impeccable/bolder` & `impeccable/delight`**: SUPPRESS by default on all transactional flows (booking, checkout, payouts, verification). Requires explicit Founder authorization.
 - **`extract-design-system` / `canvas-design` / `design-taste-frontend`**: SUPPRESS from automated product routing. Manual sandbox exploration only.
 
 ---
 
-## 4. Conflict Resolution Pre-flight Check
+## 4. Canon vs. Candidate Pre-Flight Discipline
 
-Before executing design or UI code, check for and resolve the following canonical boundaries:
+Before reviewing or producing design work, enforce the decision boundaries established in DF2 (§26–§28):
 
-1. **Touch Target Sizing:**
-   - *External rule:* Universal 44×44px or 48×48px.
-   - *KONFRM Canon:* 48×48dp for primary interactive actions; 36–40dp acceptable for secondary/dense controls with adequate touch padding. Platform-appropriate, not universal 44px.
-2. **Color Palette & Brand Identity:**
-   - *External rule:* Blue primary brand buttons, colorful accents, or dark luxury slabs.
-   - *KONFRM Canon:* Monochrome-first Black/White core brand identity. Yellow is removed from core brand. White/light-first surfaces. `#276EF1` is a restrained candidate interaction role, never primary brand artwork.
-3. **Typography & Layout Direction:**
-   - *External rule:* LTR defaults, system fonts (Inter, Roboto), Eastern Arabic numerals (٠-٩).
-   - *KONFRM Canon:* Cairo font, Arabic-first RTL native layout, Western Arabic numerals (`0-9`, e.g. `1,600 ج.م`), directional mirroring.
-4. **Information Density:**
-   - *External rule:* Expansive whitespace, oversized cards, low-density marketing padding.
-   - *KONFRM Canon:* High useful density, operational clarity, truthful state grammar.
+1. **What is CANONICAL NOW:**
+   - Monochrome-first brand identity (Solid Black/White).
+   - Restrained blue interaction-accent **role** (separate from identity).
+   - Light-first dominant surfaces.
+   - Arabic-first RTL native layout with logical start/end and Western Arabic numerals (`0-9`).
+   - Truthful state grammar (ERROR ≠ EMPTY, STALE ≠ ERROR, PENDING ≠ SUCCESS, MISSING ≠ ZERO).
+   - Action hierarchy (Primary, Secondary, Tertiary, Contextual, Destructive).
+   - Platform adaptation (preserve meaning/hierarchy, adapt presentation).
+   - High useful density over decorative whitespace.
+2. **What is an IMPLEMENTATION CANDIDATE (Do NOT promote to Canon):**
+   - Exact primary CTA color treatment (whether black, blue, or other treatment — to be resolved by Primitive Pilots).
+   - Preferred interaction accent value (`#276EF1`).
+   - Exact neutral/ink token values (no UI-black invented in DF2).
+   - Exact typography scale and line-heights.
+   - Cairo as the bundled mobile UI font family (strong candidate pending mobile rendering validation).
+   - Exact spacing scale, corner radii, borders, shadows, and control dimensions.
+   - Exact motion durations, easing curves, and spring constants.
+   - Exact platform component mappings.
 
 ---
 
@@ -78,5 +91,5 @@ Every design/UI task executed under KONFRM must culminate in the standardized us
 - DESIGN_SKILLS_NOT_USED: [skills considered and excluded, with specific rationale]
 - CANON_CONFLICTS: [conflicts detected and explicit resolution per KONFRM Canon]
 - EVIDENCE_VS_CANON: [advisory search/inspiration inputs vs authoritative canonical decisions]
-- VISUAL_QA: [tested viewports (360/390/430), component states, RTL mirror verification]
+- VISUAL_QA: [tested viewports or explicit NOT EXECUTED statement if simulation/routing only]
 ```

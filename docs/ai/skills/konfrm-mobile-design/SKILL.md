@@ -1,11 +1,11 @@
 ---
 name: konfrm-mobile-design
-description: "Authoritative mobile design standards for KONFRM Flutter applications. Implements DF2 v1.1 foundations, monochrome-first Black/White core identity, #276EF1 candidate interaction role, platform ergonomics (iOS vs Android), and high-density mobile layouts while subordinating external numeric heuristics."
+description: "Authoritative mobile design interpretation and safety standards for KONFRM. Implements DF2 v1.1 foundations, monochrome-first brand identity, restrained interaction-accent role, platform adaptation, and useful density without inventing unapproved numeric Canon."
 ---
 
-# KONFRM Mobile Design Authority (DF2 v1.1)
+# KONFRM Mobile Design Authority (DF2 v1.1 Interpretation)
 
-Authoritative mobile design guidelines for KONFRM Customer App (`customer-app/`) and Owner App (`owner-app/`) implemented in Flutter / Dart.
+Authoritative mobile design guidelines for future KONFRM Customer and Owner Flutter applications (`mobile/customer_app`, `mobile/owner_app`) under DF2 v1.1.
 
 ---
 
@@ -15,70 +15,65 @@ Authoritative mobile design guidelines for KONFRM Customer App (`customer-app/`)
 
 ---
 
-## 1. Brand Identity & Visual Language
+## 1. Brand Identity & Visual Language (Canonical Principles)
 
-- **Monochrome-First Core:**
-  - The canonical brand identity is solid Black and White.
-  - Primary canonical symbol: [`konfrm-symbol-black.svg`](file:///C:/Users/Essam/OneDrive/Desktop/KONFRM-SCREEN17-18-REMEDIATION/DESIGN_SYSTEM/ASSETS/brand/konfrm-symbol-black.svg) on light/white background.
-  - Inverse canonical symbol: [`konfrm-symbol-white.svg`](file:///C:/Users/Essam/OneDrive/Desktop/KONFRM-SCREEN17-18-REMEDIATION/DESIGN_SYSTEM/ASSETS/brand/konfrm-symbol-white.svg) on dark surfaces.
-  - Yellow is completely REMOVED from the core mobile brand architecture (no yellow logos, badges, or brand subtitles).
-- **Candidate Interaction Role (`#276EF1`):**
-  - `#276EF1` is an active implementation candidate for interactive accents (focused input borders, active tab indicators, selected radio states, subtle link highlights).
-  - Primary action buttons: Solid Black background (`#000000` / `#0F172A`) with White text (`#FFFFFF`) is the canonical high-contrast primary CTA style. Blue is an interaction accent, NEVER the primary brand logo artwork.
-- **Light-First Dominant Surfaces:**
-  - App backgrounds: pure white (`#FFFFFF`) and light cool neutral (`#F8FAFC` / `#F1F5F9`).
-  - Dark navy/slate slabs, high-contrast dark cards, and glassmorphism are NOT normal product surfaces.
-
----
-
-## 2. Mobile Ergonomics & Platform Adaptation
-
-KONFRM adapts ergonomically to the underlying mobile operating system without compromising brand identity:
-
-### iOS Adaptation
-- **Navigation Bar:** Large Title behavior on top-level tabs collapsing to inline title on scroll; standard iOS back gesture (swipe from leading edge, mirrored for RTL).
-- **Haptics:** Tactile feedback on key actions (`HapticFeedback.lightImpact()` on toggle/selection, `HapticFeedback.mediumImpact()` on primary action confirmation).
-- **Bottom Sheets:** Modal bottom sheets with rounded top corners (16-24dp radius), dragging handle, and safe area insets at bottom for Home Indicator.
-
-### Android Adaptation
-- **Navigation:** Back gesture handled gracefully with `PopScope` / `WillPopScope`; predictive back animation support.
-- **Elevation & Touch Feedback:** Subtle material elevation (1-2dp) and ink splash ripple effect styled with monochromatic opacity (`Colors.black.withOpacity(0.06)`).
-- **System Navigation Bar:** Edge-to-edge transparent navigation bar with dynamic contrast icons.
+- **Monochrome-First Brand Identity:**
+  - The canonical brand identity direction is solid Black and White.
+  - Primary canonical symbol: `DESIGN_SYSTEM/ASSETS/brand/konfrm-symbol-black.svg` on light surfaces.
+  - Inverse canonical symbol: `DESIGN_SYSTEM/ASSETS/brand/konfrm-symbol-white.svg` on dark surfaces.
+  - Summer Yellow is permanently REMOVED from the core mobile brand architecture.
+- **Identity vs. Interaction Separation:**
+  - Brand identity (Black/White) and interaction accent are intentionally separated.
+  - A **restrained blue interaction-accent role** is canonical, while the specific token value `#276EF1` remains an **IMPLEMENTATION CANDIDATE**.
+  - Blue is an interaction accent role, NEVER the primary brand logo artwork.
+- **Important Action Treatment Discipline:**
+  - Black/White brand identity does **NOT** mean "every primary action button is canonically black."
+  - The exact visual treatment of primary actions (solid black vs. blue interaction role vs. outlined) is an **open candidate question** to be evaluated in component contexts during Primitive Pilots.
+  - Skills must not pre-answer or freeze this decision.
+- **Light-First Dominant Intent:**
+  - Light-first product intent is canonical: white and light neutral surfaces dominate.
+  - Dark navy/slate slabs, high-contrast dark cards, and glassmorphism are not normal product surfaces.
+  - Exact neutral and surface token values remain implementation candidates.
 
 ---
 
-## 3. Subordinating External Numeric Rules
+## 2. Platform Adaptation (HIG / Material 3 Conventions)
 
-Generic external UI skills often enforce rigid universal numbers. Under KONFRM Canon, these are explicitly overridden:
+KONFRM adapts presentation to native mobile platforms while preserving core meaning and action hierarchy:
+
+- **Apple HIG Adaptation:**
+  - Respect iOS navigation patterns (Large Title collapsing on scroll, edge swipe back gesture mirrored for RTL).
+  - Platform-appropriate sheets, dialogs, and navigation transitions.
+  - Haptic feedback candidates: purposeful tactile confirmation on key state changes; exact haptic patterns require device testing.
+- **Android / Material 3 Adaptation:**
+  - Respect Android system back handling (`PopScope` / predictive back).
+  - Platform-appropriate elevation, touch ripples, and edge-to-edge system navigation.
+  - Avoid literal web button ports; utilize native interaction ergonomics.
+
+---
+
+## 3. Subordinating External Numeric Heuristics
+
+External UI skills frequently assert rigid universal numbers (e.g., universal 44×44px touch target, universal 16px body text, 8px padding). Under KONFRM Canon, these are strictly subordinate:
 
 1. **Touch Target Dimensions:**
-   - *External Skill Claim:* "Must be strictly 44×44px" (or "strictly 48×48px").
-   - *KONFRM Canon:*
-     - Primary action buttons and critical navigation targets: **48×48dp minimum** touch area.
-     - Secondary, tertiary, and dense operational controls (table chips, inline action icons, stepper buttons): **36–40dp touch bounds** are fully valid provided there is adequate padding and spacing to avoid accidental taps.
-2. **Typography Minimums:**
-   - *External Skill Claim:* "Body text must never be smaller than 12px / 16px."
-   - *KONFRM Canon:*
-     - Primary body: 14–16sp (Cairo Regular / Medium).
-     - Secondary captions, badges, unit types, and timestamps: 11–12sp (Cairo Medium / SemiBold) is permitted and standard for dense mobile financial metadata, provided contrast meets WCAG AA (4.5:1).
+   - Universal external rules (e.g. 44px) are subordinate to platform-specific conventions (Apple HIG ~44pt, Android Material ~48dp).
+   - High-density operational controls (chips, compact steppers) must balance touch comfort with operational density on real devices.
+   - Exact mobile target dimensions remain subject to Primitive and Component validation work (§29).
+2. **Typography & Layout Dimensions:**
+   - Exact type scales, line-height multipliers, corner radii, borders, and elevation values are **candidates**, not pre-approved numbers.
+   - Cairo is an **implementation candidate** pending real mobile device rendering and performance validation (§27.7).
+   - The 8pt-derived spacing scale is strong implementation evidence from Web, but requires mobile validation before canonicalization.
 
 ---
 
-## 4. Mobile Component Contracts
+## 4. Semantic Action Hierarchy
 
-- **Primary Button (`KonfrmPrimaryButton`):**
-  - Height: 48–52dp.
-  - Background: Black (`#000000`).
-  - Text: White (`#FFFFFF`), Cairo Bold, 16sp.
-  - Corner Radius: 12–16dp (rounded-xl / rounded-2xl equivalent).
-  - State: Disabled = `#E2E8F0` background with `#94A3B8` text; Loading = embedded monochromatic circular indicator.
-- **Secondary Button (`KonfrmSecondaryButton`):**
-  - Height: 48–52dp.
-  - Background: Light neutral (`#F1F5F9` / `#F8FAFC`).
-  - Text: Black (`#0F172A`), Cairo SemiBold, 15–16sp.
-  - Border: 1dp `#E2E8F0` border.
-- **Card (`KonfrmCard`):**
-  - Background: White (`#FFFFFF`).
-  - Border: 1dp solid `#E2E8F0`.
-  - Radius: 16–20dp.
-  - Elevation: 0 to 1dp shadow (`rgba(0, 0, 0, 0.04)` blur 4dp).
+Every surface must declare its action hierarchy unambiguously (§15):
+- **Primary Action:** The single most important forward action on the surface.
+- **Secondary Action:** Important alternative or supporting actions.
+- **Tertiary Action:** Subtle, text-based, or low-prominence actions.
+- **Contextual Actions:** Inline actions scoped to specific cards or list items.
+- **Destructive Action:** Critical irreversible operations requiring distinct visual caution.
+
+Exact colors, dimensions, and radii for these roles are defined in component contracts, not hardcoded globally in this skill.

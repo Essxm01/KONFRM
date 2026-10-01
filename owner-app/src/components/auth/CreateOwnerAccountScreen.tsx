@@ -40,7 +40,7 @@ export const CreateOwnerAccountScreen: React.FC<{ onBack: () => void }> = ({ onB
         <ArrowRight className="h-5 w-5" aria-hidden="true" /> العودة لتسجيل الدخول
       </button>
       <div className="owner-entry-reveal mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-md flex-col justify-center py-8">
-        <img src="/LOGO.svg" alt="KONFRM / كونفرم" className="mb-8 h-12 w-12 object-contain" />
+        <img src="/konfrm-symbol-black.svg" alt="KONFRM / كونفرم" className="mb-8 h-12 w-12 object-contain" />
         <p className="mb-2 text-sm font-semibold text-[var(--konfrm-color-primary)]">KONFRM / كونفرم</p>
         <h1 className="mb-2 text-2xl font-extrabold text-[var(--konfrm-text-primary)]">إنشاء حساب مالك</h1>
         <p className="mb-8 text-base leading-7 text-[var(--konfrm-text-secondary)]">أنشئ حساب المالك ثم أرسل صور الهوية للمراجعة. لا يتم توثيق الحساب تلقائياً.</p>

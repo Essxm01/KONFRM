@@ -173,7 +173,7 @@ export function App() {
           
           {/* Standalone Brand Logo */}
           <div className="flex items-center">
-            <img src="/favicon.svg" alt="Brand Logo" className="w-9 h-9 object-contain" />
+            <img src="/konfrm-symbol-black.svg" alt="KONFRM" className="w-9 h-9 object-contain" />
           </div>
 
           {/* User Controls & Status Indicators */}

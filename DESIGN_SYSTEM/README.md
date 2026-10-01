@@ -1,6 +1,6 @@
 # KONFRM Design System
 
-**Version:** `2.1.3`
+**Version:** `2.1.6`
 **Authority:** `DESIGN_SYSTEM/` is the independent visual and product-experience source of truth for KONFRM / كونفرم.
 
 ```
@@ -15,7 +15,7 @@ Applications consume this system. They do not define it, and no production appli
 
 ## Approved foundations
 
-- Product identity: **KONFRM / كونفرم**; the official mark is [`LOGO.svg`](./LOGO.svg).
+- Product identity: **KONFRM / كونفرم**; canonical symbol: [`konfrm-symbol-black.svg`](./konfrm-symbol-black.svg), canonical wordmark: [`konfrm-wordmark-black.svg`](./konfrm-wordmark-black.svg) (inverse: [`konfrm-symbol-white.svg`](./konfrm-symbol-white.svg), [`konfrm-wordmark-white.svg`](./konfrm-wordmark-white.svg)).
 - Light-first product: white and light neutral surfaces are dominant.
 - Primary Blue: `#0059FF`; Summer Yellow `#FFD700` remains a **micro brand-signature accent only**. New yellow/amber/orange boxed surfaces—cards, banners, alerts, pills, stale/recovery panels or large fills—are prohibited unless the Founder explicitly approves a named exception.
 - UI font: Cairo; Arabic-first, RTL-native.

@@ -1,5 +1,20 @@
 # KONFRM Design System Changelog
 
+## 2.1.6 — 2026-10-01
+
+### Canonical brand asset integration & legacy logo replacement
+
+- Integrated official KONFRM brand assets provided by the Founder:
+  - `konfrm-symbol-black.svg` — Primary canonical symbol (black K symbol on transparent background)
+  - `konfrm-wordmark-black.svg` — Primary canonical wordmark (black KONFRM wordmark on transparent background)
+  - `konfrm-symbol-white.svg` — Inverse symbol (white K symbol on transparent background, for dark contexts)
+  - `konfrm-wordmark-white.svg` — Inverse wordmark (white KONFRM wordmark on transparent background, for dark contexts)
+- Deployed canonical runtime brand assets across `customer-app/public`, `owner-app/public`, and `admin-app/public`.
+- Replaced legacy blue logo references across `owner-app` auth screens (`SplashScreen`, `LoginScreen`, `CreateOwnerAccountScreen`, `OwnerKycOnboarding`) and `admin-app` (`App.tsx`, `AdminLogin.tsx`) to use `konfrm-symbol-black.svg`.
+- Updated compatibility runtime asset targets (`konfrm-mark.svg`, `favicon.svg`, `LOGO.svg`) with the canonical black symbol.
+- Removed obsolete `DESIGN_SYSTEM/Logo Final.svg`.
+- Asset intake and replacement only; no UI component redesign, no token changes, no business rule changes.
+
 ## 2.1.5 — 2026-10-01
 
 ### Founder mobile brand identity amendment

@@ -31,9 +31,9 @@ A forensic audit of all 17 candidate design skill sources from `skills.sh` was c
 |---|----------------|---------------------------|------------|---------|-----------------------|--------------------|-----------------|-----------------|----------------------------|------------------------|
 | 1 | `frontend-design` | `anthropics/skills` | `8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4` | Apache-2.0 | **ADAPT + WRAP** | Anti-generic UI reasoning, visual hierarchy | Web (Admin/Current apps) & Cross-platform concepts | Assumes LTR by default; colorful accent defaults | Local snapshot; zero network egress | INSTALLED_BUT_DISCOVERY_NOT_VERIFIED |
 | 2 | `skills.sh/topic/design` | `https://www.skills.sh/topic/design` | N/A (Web Catalog) | N/A | **REJECT / NON-INSTALLABLE** | Topic aggregator / index catalog | Reference only (outside repo) | N/A | N/A | N/A |
-| 3 | `web-design-guidelines` | `vercel-labs/agent-skills` + `web-interface-guidelines` | `063bee94c3f4df8453406c830b0a7df0f2860278` + `e3d624baaf29dc1fc645aff3e38f03e564d2d6b1` | MIT / Apache-2.0 | **ADAPT + WRAP (ADOPT WEB)** | Static checks against web interface best practices | Admin Web App (`admin-app/`) & current Web apps | Next.js/Vercel platform bias, no RTL/Arabic rules | Local pinned snapshot; zero network egress (Option 1) | INSTALLED_BUT_DISCOVERY_NOT_VERIFIED |
-| 4 | `vercel-composition-patterns` | `vercel-labs/agent-skills` | `063bee94c3f4df8453406c830b0a7df0f2860278` | MIT / Apache-2.0 | **ADAPT + WRAP (ADOPT REACT)** | React compound components, hook composition | React Web codebases (`admin-app/`, current web) | Flutter architecture clash if misused | Local snapshot; zero network egress | INSTALLED_BUT_DISCOVERY_NOT_VERIFIED |
-| 5 | `ui-ux-pro-max` | `nextlevelbuilder/ui-ux-pro-max-skill` | `09170eec67eefd46a7ae85de61b40c194020f997` | MIT | **ADAPT + WRAP** | Searchable UI/UX database (styles, stacks, charts, UX) | Advisory inspiration queries across all apps | Universal 44px/12px heuristics subordinate to DF2; `--persist` writes tokens | Local runner; zero network egress; write flags blocked | INSTALLED_BUT_DISCOVERY_NOT_VERIFIED |
+| 3 | `web-design-guidelines` | `vercel-labs/agent-skills` + `web-interface-guidelines` | `063bee94c3f4df8453406c830b0a7df0f2860278` + `e3d624baaf29dc1fc645aff3e38f03e564d2d6b1` | guidelines: MIT; agent-skills: UNRESOLVED | **ADAPT + WRAP (ADOPT WEB)** | Static checks against web interface best practices | Admin Web App (`admin-app/`) & current Web apps | Next.js/Vercel platform bias, no RTL/Arabic rules | Local pinned snapshot; zero network egress (Option 1) | INSTALLED_BUT_DISCOVERY_NOT_VERIFIED |
+| 4 | `vercel-composition-patterns` | `vercel-labs/agent-skills` | `063bee94c3f4df8453406c830b0a7df0f2860278` | UNRESOLVED (no upstream license file) | **ADAPT + WRAP (ADOPT REACT)** | React compound components, hook composition | React Web codebases (`admin-app/`, current web) | Flutter architecture clash if misused | Local snapshot; zero network egress | INSTALLED_BUT_DISCOVERY_NOT_VERIFIED |
+| 5 | `ui-ux-pro-max` | `nextlevelbuilder/ui-ux-pro-max-skill` | `09170eec67eefd46a7ae85de61b40c194020f997` | MIT (2024 Next Level Builder) | **ADAPT + WRAP** | Advisory searchable catalog & curated heuristic taxonomy | Advisory inspiration queries across all apps | Universal 44px/12px heuristics subordinate to DF2; runner blocks all write flags | Local runner; zero network egress; strict allowlist parser | INSTALLED_BUT_DISCOVERY_NOT_VERIFIED |
 | 6 | `sleek-design-mobile-apps` | `sleekdotdesign/agent-skills` | `aa88b4dc5b2e35def6e3a89df85a6461af66a4d0` | MIT | **REJECT / EXTERNAL SANDBOX** | Mobile screen generator via external service | Excluded from default product routing | Proprietary UI taste, bypasses KONFRM DF2 tokens | External network service requiring credentials; transmits prompts/context | AGENT_DOES_NOT_SUPPORT_PROJECT_SKILLS |
 | 7 | `canvas-design` | `anthropics/skills` | `8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4` | Apache-2.0 | **EXTERNAL SANDBOX** | HTML5 Canvas visual art, poster generation | Brand/Marketing artwork exploration only | Not suitable for transactional Flutter/React UI | Local only; zero network | Sandbox manual only |
 | 8 | `impeccable/polish` | `pbakaus/impeccable` | `c74755d920985f7a92cef691ca970ba95f90126e` | Apache-2.0 | **ADAPT + WRAP (CONSOLIDATED)** | Surface fit, finish, spacing, micro-polish | All apps (Customer, Owner, Admin) | Evaluated against DF2 semantic roles, not web tokens | Local markdown playbook; no binary execution | INSTALLED_BUT_DISCOVERY_NOT_VERIFIED |
@@ -65,7 +65,8 @@ A forensic audit of all 17 candidate design skill sources from `skills.sh` was c
 
 ### 3. `vercel-labs/agent-skills/web-design-guidelines`
 - **Source:** `github.com/vercel-labs/agent-skills` / `skills/web-design-guidelines/SKILL.md` + `github.com/vercel-labs/web-interface-guidelines`
-- **Revisions:** `063bee94c3f4df8453406c830b0a7df0f2860278` + `e3d624baaf29dc1fc645aff3e38f03e564d2d6b1` (MIT / Apache-2.0)
+- **Revisions:** `063bee94c3f4df8453406c830b0a7df0f2860278` + `e3d624baaf29dc1fc645aff3e38f03e564d2d6b1`
+- **Licenses:** `web-interface-guidelines`: MIT License, Copyright 2025 Vercel Labs (preserved at `docs/ai/licenses/VERCEL_WEB_INTERFACE_GUIDELINES_MIT.txt`); `agent-skills`: UNRESOLVED (no license file present in upstream repository tree at pinned commit).
 - **Forensic Assessment:** High-quality static checklist for web performance, accessibility, DOM size, and web typography. Upstream fetches rules dynamically via HTTP from GitHub.
 - **Resolution (Option 1):** Pinned exact commit `e3d624baaf29dc1fc645aff3e38f03e564d2d6b1` and vendored a local snapshot (`docs/ai/skills/vercel-web-guidelines-wrapper/vendor/web-interface-guidelines.md`). This eliminates all runtime network egress, ensuring 100% local-only execution.
 - **Canon Conflict:** Confined strictly to web; does not apply to future Flutter mobile apps.
@@ -73,20 +74,22 @@ A forensic audit of all 17 candidate design skill sources from `skills.sh` was c
 
 ### 4. `vercel-labs/agent-skills/vercel-composition-patterns`
 - **Source:** `github.com/vercel-labs/agent-skills` / `skills/composition-patterns/SKILL.md`
-- **Revision:** `063bee94c3f4df8453406c830b0a7df0f2860278` (MIT / Apache-2.0)
+- **Revision:** `063bee94c3f4df8453406c830b0a7df0f2860278`
+- **License:** UNRESOLVED (no license file present in upstream repository tree at pinned commit).
 - **Forensic Assessment:** Excellent architectural patterns for React component composition, compound components, and prop drilling mitigation.
 - **Canon Conflict:** Applicable strictly to React. Must not be applied to Flutter widget tree composition.
 - **Governing Guardrail:** Wrapped via `vercel-composition-wrapper`. Scope confined to React web components.
 
 ### 5. `nextlevelbuilder/ui-ux-pro-max-skill/ui-ux-pro-max`
 - **Source:** `github.com/nextlevelbuilder/ui-ux-pro-max-skill` / `src/ui-ux-pro-max/`
-- **Revision:** `09170eec67eefd46a7ae85de61b40c194020f997` (MIT)
-- **Forensic Assessment:** Contains an extensive BM25 search engine querying CSV catalogs across 79 styles, 192 palettes, 74 font pairings, and 119 UX guidelines.
+- **Revision:** `09170eec67eefd46a7ae85de61b40c194020f997`
+- **License:** MIT License, Copyright 2024 Next Level Builder (preserved at `docs/ai/licenses/UI_UX_PRO_MAX_MIT.txt`).
+- **Forensic Assessment:** Provides an advisory searchable catalog and curated heuristic taxonomy querying CSV catalogs across 79 styles, 192 palettes, 74 font pairings, and 119 UX guidelines. Individual records provide external craft suggestions, not verified empirical research or authoritative product decisions.
 - **Canon Conflict:**
   1. Enforces generic web numbers (e.g. universal 44×44px touch target, 12px min text) that contradict KONFRM DF2 mobile ergonomics.
-  2. The script command includes dangerous persistence flags (`--persist`, `--output-dir`, `--page`, `--force`) that output a `design-system/` directory in the repository, threatening canonical `DESIGN_SYSTEM/` integrity.
+  2. The upstream script includes persistence flags (`--persist`, `--output-dir`, `--page`, `--force`) that output a `design-system/` directory in the repository, threatening canonical `DESIGN_SYSTEM/` integrity.
   3. Relies on `${CLAUDE_PLUGIN_ROOT}` in invocation examples.
-- **Governing Guardrail:** Wrapped via `ui-ux-pro-max-wrapper`. The wrapper provides a safe runner (`docs/ai/skills/ui-ux-pro-max-wrapper/runner.py`) that executes queries locally, permanently blocks all write/persistence flags, and declares all numeric suggestions subordinate to DF2 tokens. Agents are instructed never to invoke the underlying vendor script directly.
+- **Governing Guardrail:** Wrapped via `ui-ux-pro-max-wrapper`. The wrapper provides a safe runner (`docs/ai/skills/ui-ux-pro-max-wrapper/runner.py`) using a strict allowlist parser (`allow_abbrev=False`) that executes queries locally, permanently blocks all write/persistence flags, rejects abbreviation bypasses, and declares all suggestions non-canonical and subordinate to DF2 tokens. Agents are instructed never to invoke the underlying vendor script directly.
 
 ### 6. `sleekdotdesign/agent-skills/sleek-design-mobile-apps`
 - **Source:** `github.com/sleekdotdesign/agent-skills` / `skills/design-mobile-apps/SKILL.md`
@@ -151,7 +154,7 @@ In addition to wrapped external sources, KONFRM maintains a suite of 7 project-l
 | 3 | `konfrm-product-ux` | Role-specific UX mandates (Customer request flow, Owner certainty, Admin audit), truthful state grammar | `docs/ai/skills/konfrm-product-ux/SKILL.md` |
 | 4 | `konfrm-mobile-design` | Future mobile/native architecture interpretation, platform ergonomics, candidate token safety | `docs/ai/skills/konfrm-mobile-design/SKILL.md` |
 | 5 | `konfrm-rtl-arabic` | Arabic-first layout, logical start/end, Western Arabic numerals (0-9), bidirectional typography | `docs/ai/skills/konfrm-rtl-arabic/SKILL.md` |
-| 6 | `konfrm-accessibility` | WCAG 2.1 AA/AAA contrast, touch targets, screen-reader semantics, reduced motion | `docs/ai/skills/konfrm-accessibility/SKILL.md` |
+| 6 | `konfrm-accessibility` | Web WCAG 2.2 AA baseline, platform-appropriate mobile accessibility criteria, touch targets, screen-reader semantics, reduced motion | `docs/ai/skills/konfrm-accessibility/SKILL.md` |
 | 7 | `konfrm-visual-qa` | Multi-viewport regression testing, responsive breakpoint checks, screenshot validation protocols | `docs/ai/skills/konfrm-visual-qa/SKILL.md` |
 
 ---
@@ -196,15 +199,17 @@ The agent discovery directories (`.agents/skills/` and `.zcode/skills/`) contain
 
 ---
 
-## 6. Usage Reporting Specification
+## 6. Usage Reporting Specification: Dual-Mode Reporting
 
-Any AI agent performing design or UI tasks on the KONFRM codebase MUST append the following standardized reporting block to its output:
+Any AI agent performing design or UI tasks on the KONFRM codebase MUST append the appropriate reporting block to its output:
 
+### Mode A: FULL REPORT (for unresolved visual decisions, new primitives, or token architecture)
 ```markdown
-### KONFRM DESIGN SKILL USAGE REPORT
+### KONFRM DESIGN SKILL USAGE REPORT (FULL)
+- TASK_CLASSIFICATION: [Role: Customer/Owner/Admin | Surface: Web/Future Mobile | Scope: Primitive/Language/Major Screen]
 - DESIGN_SKILLS_USED: [list installed skills used, e.g., konfrm-design-router v1.0, konfrm-design-reasoning v1.0]
 - DESIGN_SKILLS_NOT_USED: [list evaluated skills that were excluded, with rationale]
-- DESIGN_HYPOTHESES_CONSIDERED: [competing hypotheses formulated (e.g., A vs B), or N/A for literal bug fixes]
+- DESIGN_HYPOTHESES_CONSIDERED: [competing hypotheses formulated (e.g., A vs B), or N/A]
 - HUMAN_FACTORS_EVIDENCE: [empirical perception/ergonomic evidence cited, distinguishing real research from AI inference]
 - TARGET_ROLE_REASONING: [specific customer/owner/admin cognitive lens applied]
 - COUNTERARGUMENTS: [strongest critique or counterpoint considered against the chosen direction]
@@ -212,4 +217,14 @@ Any AI agent performing design or UI tasks on the KONFRM codebase MUST append th
 - EVIDENCE_VS_CANON: [distinction between advisory external inputs and canonical decisions taken]
 - VALIDATION_NEEDED: [recommended micro-validation method (prototype, test, survey), or NONE]
 - VISUAL_QA: [viewports tested or explicit NOT EXECUTED statement if simulation/routing only]
+```
+
+### Mode B: COMPACT REPORT (for routine fixes, literal bugs, typos, and known accessibility remediations)
+```markdown
+### KONFRM DESIGN SKILL USAGE REPORT (COMPACT)
+- TASK_CLASSIFICATION: [Role | Surface | Scope: Bugfix/Alignment/Copy/Routine A11y]
+- SKILLS_CONSULTED: [minimal internal/external skills consulted]
+- GOVERNING_CANON: [relevant DF2 / Business Rules section]
+- CANON_CHECK: [PASS — zero canon mutations or false promotions]
+- VISUAL_QA: [tested viewports or explicit NOT EXECUTED statement]
 ```

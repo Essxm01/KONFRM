@@ -26,11 +26,11 @@ Defines the authoritative product user experience contracts across all three KON
   - Transparent pricing display: total stay price, deposit amount (equal to the first-night price), and remaining balance (total stay price minus deposit).
   - Customers see only customer-relevant pricing; internal platform commission and Owner splits are never exposed to the customer.
   - Stay bounds are globally 2–30 nights.
-  - Explicit refund and cancellation terms presented prior to request submission (e.g. Owner fault requires full deposit refund; wider cancellation matrix remains product-unresolved per `docs/BUSINESS_RULES.md`).
+  - **Confirmed Cancellation Policy Representation:** Display only confirmed applicable policy (e.g. confirmed cancellation caused by Owner fault requires a full deposit refund and zero platform commission). Never invent unresolved cancellation or refund terms; the wider renter cancellation and refund matrix remains **OPEN / UNRESOLVED** per `docs/BUSINESS_RULES.md`.
 - **Calm, High-Confidence Transaction Paths:** Customer interfaces must project financial safety, clarity, and legal certainty without high-pressure marketing friction.
 
 ### B. Owner Experience (Current `owner-app/` Web & Future Mobile Target)
-- **Operational Certainty:** Real-time visibility into property status, booking requests awaiting review, approved bookings, confirmed stays, and check-in schedules.
+- **Operational Certainty:** Clear, current server-authoritative visibility into available canonical state (property status, booking requests awaiting review, approved bookings, confirmed stays, and check-in schedules). Never imply WebSockets, live-sync, or instantaneous background synchronization guarantees.
 - **Canonical Earnings & Split Structure:**
   - Platform commission is strictly **20% of the deposit only**. The Owner receives **80% of the deposit**.
   - Remaining balance equals total stay price minus deposit. The platform charges **zero commission** on the remaining balance.
@@ -45,7 +45,7 @@ Defines the authoritative product user experience contracts across all three KON
 - **High Information Density:** Operational dashboards prioritize scannable data grids, calendar matrices, and actionable request lists over oversized empty hero banners.
 
 ### C. Admin Experience (`admin-app/` Desktop Web Operational)
-- **Auditability & Traceability:** Every moderation decision, property verification, dispute reconciliation, and payout execution must have an immutable audit trail and explicit reason logging.
+- **Operational Governance & Audit Clarity:** Align moderation, property verification, dispute reconciliation, and payout actions with confirmed backend capabilities and audit logs. Do not invent unbacked claims of universal immutability or mandatory reason capture; separate confirmed existing audit behavior from desirable future governance candidates.
 - **Batch Efficiency:** Operations staff handle high-volume queues (KYC verification, property reviews, payout approvals). Keyboard navigation, dense data tables, and batch actions are prioritized.
 - **Governance Discipline:** Explicit confirmations for consequential state transitions. Financial operations display server-authoritative state without inventing unverified multi-party approvals or arbitrary operational procedures.
 - **Zero Decorative Fluff:** Admin is a clean, desktop-operational instrument. Strictly avoid animations that delay triage or obscure data.

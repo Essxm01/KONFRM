@@ -15,6 +15,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +34,10 @@ function pass(msg) {
 
 console.log('====================================================');
 console.log('KONFRM AI Design Skill Policy Checker');
+console.log('----------------------------------------------------');
+console.log('NOTE: ai:skills:check is a deterministic guardrail for known failure modes.');
+console.log('It is NOT proof that research is correct, UX is correct, licenses are legally complete,');
+console.log('or Canon interpretation is complete. Human / independent review remains mandatory.');
 console.log('====================================================');
 
 // 1. Scan for Machine-Specific Paths in docs/ai, .agents, .zcode, and scripts
@@ -212,6 +217,18 @@ const forbiddenCanonPhrases = [
   { pattern: /zero[- ]lag/i, desc: 'Invented zero-lag calendar behavior' },
   { pattern: /dual[- ]check/i, desc: 'Invented Admin dual-check financial policy' },
   { pattern: /no payment credentials or charges are taken before an owner explicitly approves/i, desc: 'Prototype card-credential behavior presented as global product rule' },
+  { pattern: /settled cancellation policy/i, desc: 'Invented settled cancellation policy' },
+  { pattern: /real-time visibility/i, desc: 'Invented unsupported real-time visibility guarantee' },
+  { pattern: /immutable audit trail and explicit reason logging/i, desc: 'Invented universal immutable admin audit trail requirement' },
+  // RTL boundary checks:
+  { pattern: /Eastern digits.*strictly forbidden/i, desc: 'Eastern digits strictly forbidden rule in RTL doctrine' },
+  { pattern: /strictly forbidden in dates/i, desc: 'Universal ban on Eastern digits in dates' },
+  { pattern: /Horizontal Progress MUST flow RTL/i, desc: 'Invented mandatory RTL horizontal progress canon' },
+  { pattern: /time-based progression always/i, desc: 'Invented mandatory RTL time progression canon' },
+  // Accessibility boundary checks:
+  { pattern: /WCAG.*AA\/AAA.*non-waivable.*across all platforms/i, desc: 'Universal AA/AAA requirement across native + web' },
+  { pattern: /all color pairings must satisfy AA\/AAA/i, desc: 'Universal AA/AAA color pairing requirement' },
+  { pattern: /platform (?:guidance|recommendation) is a non-waivable legal/i, desc: 'Platform guidance claimed as legal mandate' },
   // Research claim hygiene & doctrine anchoring checks:
   { pattern: /HIG.*10[–-]14pt/i, desc: 'Unsupported HIG 10-14pt radius claim' },
   { pattern: /4px[–-]8px|10px[–-]16px/i, desc: 'Exact numeric radius ranges anchored in reasoning doctrine' },
@@ -238,14 +255,27 @@ for (const skill of internalSkills) {
 }
 pass('Internal skill Canon vs Candidate discipline & research hygiene passed (0 false-canon phrases).');
 
-// 6. UI/UX Pro Max Write Flag Block Verification
+// 6. UI/UX Pro Max Behavioral Runner Safety Verification
+const testScript = path.join(projectRoot, 'scripts', 'test-uiux-runner-safety.py');
+if (fs.existsSync(testScript)) {
+  try {
+    const pythonExe = process.platform === 'win32' ? 'python' : 'python3';
+    execSync(`${pythonExe} "${testScript}"`, { stdio: 'pipe' });
+    pass('UI/UX Pro Max behavioral runner safety tests executed and passed (0 bypasses, 0 writes).');
+  } catch (err) {
+    fail(`UI/UX Pro Max behavioral runner safety tests FAILED: ${err.message}`);
+  }
+} else {
+  fail(`Missing runner safety test script: ${testScript}`);
+}
+
 const runnerFile = path.join(CANONICAL_DIR, 'ui-ux-pro-max-wrapper', 'runner.py');
 if (fs.existsSync(runnerFile)) {
   const runnerText = fs.readFileSync(runnerFile, 'utf8');
-  if (!runnerText.includes('--persist') || !runnerText.includes('--output-dir')) {
-    fail('runner.py does not explicitly check and block persistence flags');
+  if (!runnerText.includes('allow_abbrev=False') || !runnerText.includes('FORBIDDEN_WRITE_PREFIXES')) {
+    fail('runner.py does not implement strict allow_abbrev=False and prefix validation');
   } else {
-    pass('UI/UX Pro Max runner.py write guards verified.');
+    pass('UI/UX Pro Max runner.py strict parser and prefix guards verified.');
   }
 } else {
   fail('runner.py missing in ui-ux-pro-max-wrapper');

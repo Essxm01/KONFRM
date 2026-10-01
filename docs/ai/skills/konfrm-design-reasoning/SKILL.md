@@ -166,7 +166,7 @@ Instead, reason through multidimensional factors:
 3. **Content Photography:** Accommodating vibrant, multi-colored property photography without visual dissonance or competing color noise.
 4. **Context & Role:** Customer transactional flow vs. Owner operational dashboard vs. Admin governance table.
 5. **State Communication:** Unambiguous distinction between interactive states (default, hover, pressed, disabled) and semantic states (error, success, warning).
-6. **Accessibility:** Strict contrast compliance (WCAG AA/AAA) across all color pairings.
+6. **Accessibility:** Applicable contrast conformance (such as Web WCAG 2.2 AA baseline for text and essential controls) across color pairings.
 
 Current Canon remains:
 - Black/White primary identity.
@@ -178,15 +178,14 @@ Current Canon remains:
 
 ## 7. The Design Dialectic (Hypothesis A vs. B vs. C)
 
-Before adopting or proposing a major visual direction, formulate a structured dialectic comparing competing hypotheses:
+Before adopting or proposing a major visual direction, formulate a structured dialectic comparing genuinely distinct, credible design hypotheses appropriate to the actual question:
 
-1. **Hypothesis A:** The conservative or brand-congruent hypothesis (e.g. structured, low/sharper radius, monochrome-dominant).
-2. **Hypothesis B:** The ergonomic or platform-native hypothesis (e.g. moderate radius, platform-standard conventions).
-3. **Hypothesis C (Optional):** The expressive or warmth-optimized hypothesis (e.g. strongly rounded, softer visual texture).
+- **Problem-Appropriate Hypotheses:** Formulate 2 to 3 distinct hypotheses tailored to the specific problem. Do not force an artificial third option if only two credible alternatives exist, and do not force a rigid A/B/C taxonomy across dissimilar design challenges.
+- **Genuine Trade-offs:** Avoid superficial variations (e.g. changing 1px border without rationale). Each hypothesis must represent a distinct, defensible design philosophy, ergonomic approach, or architectural trade-off.
 
 For each hypothesis, document:
 - Strongest argument **FOR** (theoretical, ergonomic, or brand alignment).
-- Strongest argument **AGAINST** (risk of severity, generic-AI aesthetic, touch ambiguity, or platform friction).
+- Strongest argument **AGAINST** (risk of severity, cognitive friction, visual noise, or platform mismatch).
 - Target-role impact (Customer vs. Owner vs. Admin).
 - Brand fit and visual coherence.
 - Interaction clarity and affordance.
@@ -225,9 +224,9 @@ QUALITY            │
 - **Medium Relevance:** Direct visual inspection of relevant local/regional platforms (e.g. verified Egyptian fintech or real-estate flows) and mobile platform conventions on target hardware.
 - **Lower Relevance:** Abstract laboratory studies on generic polygons or neutral geometric objects without transaction risk, payment commitment, or Arabic typography.
 
-### Non-Waivable Constraints vs. Preference Evidence
-- **Non-Waivable Constraints (Not Trade-Off Evidence):** Legal requirements, WCAG 2.1 AA/AAA contrast ratios, and hard technical OS platform minimums (e.g. physical touch hit regions) are **non-negotiable constraints**. They are not subject to design dialectic trade-offs.
-- **Authoritative Platform Guidance:** Apple Human Interface Guidelines (HIG) and Google Material Design provide authoritative platform guidance and interaction conventions. However, **do not label every platform design recommendation as a universal legal mandate**. Platform components adapt presentation while preserving semantic hierarchy.
+### Non-Waivable Constraints vs. Authoritative Platform Guidance
+- **Non-Waivable Constraints (Not Trade-Off Evidence):** Applicable statutory legal requirements, the Web accessibility baseline (WCAG 2.2 AA where applicable), and physical hardware touch constraints are non-negotiable minimums.
+- **Authoritative Platform Guidance:** Apple Human Interface Guidelines (HIG) and Google Material Design provide authoritative platform guidance and interaction conventions. However, **do not label every platform design recommendation as a universal legal mandate or cross-platform law**. There is no universal raw 44px or 48px cross-platform rule; platform components adapt presentation while preserving semantic hierarchy.
 
 ---
 
@@ -289,7 +288,7 @@ BRAND-CONGRUENCE INTERPRETATION:
 [Analysis of alignment with KONFRM's angular, structured brand identity vs. warmth requirements]
 
 PLATFORM/A11Y CONSTRAINTS:
-[WCAG contrast, touch target dimensions, RTL flow, authoritative platform conventions]
+[Applicable Web WCAG baseline, platform touch target conventions, RTL flow, authoritative platform guidance]
 
 UNKNOWNS:
 [Assumptions that require real-world validation rather than AI speculation]

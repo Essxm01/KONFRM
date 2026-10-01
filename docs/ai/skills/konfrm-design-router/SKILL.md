@@ -24,10 +24,10 @@ The Master Design Triage Layer for the KONFRM platform across all AI agents (Cod
      - **Future Native Mobile Target:** Future Flutter/Dart applications governed by DF2 v1.1 (`mobile/customer_app`, `mobile/owner_app` — topology not yet initialized).
    - **Task Type:** UX Architecture, Visual Design, Micro-Polish, Accessibility Audit, Visual QA, or Code Structure.
 2. **Minimal Skill Activation:** Select ONLY the specific internal and wrapped external skills relevant to the task. Suppress unneeded or conflicting tools.
-3. **Structured Design Reasoning Pipeline:** For meaningful new Primitive, visual-hierarchy, or component-design choices, route requests through `konfrm-design-reasoning`. (Trivial bug fixes and literal pixel corrections do not trigger the full dialectic).
+3. **Structured Design Reasoning Pipeline:** For meaningful new Primitive, visual-hierarchy, or component-design choices, route requests through `konfrm-design-reasoning`. For routine bug fixes, typos, layout alignment, or known accessibility remediations, bypass the heavy dialectic and proceed directly with proportional discipline.
 4. **External Skills as Debate Participants:** Treat external skills as competing advisory perspectives in a disciplined dialectic, rather than authoritative commands.
 5. **Pre-flight Conflict Resolution:** Detect potential conflicts between external advice and KONFRM Design Canon before work begins, ensuring Canon wins unconditionally.
-6. **Standardized Reporting Enforcement:** Mandate the comprehensive `KONFRM DESIGN SKILL USAGE REPORT` block upon completion.
+6. **Standardized Reporting Enforcement:** Mandate the appropriate reporting block upon task completion: `FULL` mode for unresolved visual/architectural decisions, or `COMPACT` mode for routine implementations and fixes.
 
 ---
 
@@ -71,7 +71,22 @@ visual QA / prototype validation (konfrm-visual-qa)
     (Micro-validation plan or explicit NOT EXECUTED statement)
 ```
 
-*(Note: Routine code edits, lint fixes, or literal bug remediations proceed directly without triggering the full reasoning loop).*
+### Pipeline Execution Boundaries
+
+- **MANDATORY FULL REASONING PIPELINE (`konfrm-design-reasoning`):**
+  - New primitives or design token candidates
+  - Visual language or design-system specification changes
+  - High-impact interaction patterns (e.g. sheet vs modal, multi-step booking gestures)
+  - Unresolved brand/UX tradeoffs
+  - Meaningful new screen or flow design directions
+
+- **BYPASS FULL PIPELINE (Direct Implementation / Proportional Review):**
+  - Literal spacing, padding, or margin bug fixes
+  - Icon alignment and text typography clipping fixes
+  - Typo, translation string, or copy updates
+  - Obvious responsive overflow corrections
+  - Implementation parity fixes with existing screens
+  - Routine accessibility remediations where the standard requirement is already known
 
 ---
 
@@ -86,7 +101,7 @@ External skills are not authoritative command sources; they are structured parti
 - **`impeccable/bolder`**: Consulted as a counterpoint when a screen risks looking timid or bland (implementation strictly gated by Founder authorization).
 - **`impeccable/delight`**: Consulted for subtle micro-interaction moments on completion states (strictly prohibited from delaying transactional booking or payout flows).
 - **`emil-design-eng`**: Argues for physical interaction feel, tactile feedback, spring mechanics, and responsive gesture continuity.
-- **`ui-ux-pro-max`**: Provides broad empirical reference data and taxonomy benchmarks across styles, navigation models, and interaction patterns.
+- **`ui-ux-pro-max`**: Provides an advisory searchable catalog and curated heuristic/taxonomy reference material across styles, navigation models, and interaction patterns (individual recommendations are non-canonical craft references).
 - **`taste-skill` / `high-end`**: Strictly excluded from default product routing. Consulted only in **SANDBOX COUNTERPOINT** mode when the task explicitly requests an exploratory visual counter-hypothesis.
 
 > [!CAUTION]
@@ -131,15 +146,20 @@ Before reviewing or producing design work, enforce the decision boundaries estab
 
 ---
 
-## 7. Standardized Output Enforcement
+## 7. Standardized Output Enforcement: Dual-Mode Reporting
 
-Every design/UI task executed under KONFRM must culminate in the expanded, standardized usage block:
+To prevent context noise on micro-tasks while maintaining rigorous governance on major visual decisions, the router mandates two distinct reporting modes:
+
+### Mode A: FULL REPORT (for unresolved visual decisions, new primitives, or token architecture)
+
+Used whenever `konfrm-design-reasoning` is invoked:
 
 ```markdown
-### KONFRM DESIGN SKILL USAGE REPORT
+### KONFRM DESIGN SKILL USAGE REPORT (FULL)
+- TASK_CLASSIFICATION: [Role: Customer/Owner/Admin | Surface: Web/Future Mobile | Scope: Primitive/Language/Major Screen]
 - DESIGN_SKILLS_USED: [skills utilized with version/source]
 - DESIGN_SKILLS_NOT_USED: [skills evaluated and excluded, with specific rationale]
-- DESIGN_HYPOTHESES_CONSIDERED: [competing hypotheses formulated (e.g., A vs B), or N/A for literal bug fixes]
+- DESIGN_HYPOTHESES_CONSIDERED: [competing hypotheses formulated (e.g., A vs B), or N/A]
 - HUMAN_FACTORS_EVIDENCE: [empirical perception/ergonomic evidence cited, distinguishing real research from AI inference]
 - TARGET_ROLE_REASONING: [specific customer/owner/admin cognitive lens applied]
 - COUNTERARGUMENTS: [strongest critique or counterpoint considered against the chosen direction]
@@ -147,4 +167,17 @@ Every design/UI task executed under KONFRM must culminate in the expanded, stand
 - EVIDENCE_VS_CANON: [advisory external inputs vs authoritative canonical decisions]
 - VALIDATION_NEEDED: [recommended micro-validation method (prototype, test, survey), or NONE]
 - VISUAL_QA: [tested viewports or explicit NOT EXECUTED statement if simulation/routing only]
+```
+
+### Mode B: COMPACT REPORT (for routine fixes, literal bugs, typos, and known accessibility remediations)
+
+Used when bypassing the full 12-step reasoning pipeline:
+
+```markdown
+### KONFRM DESIGN SKILL USAGE REPORT (COMPACT)
+- TASK_CLASSIFICATION: [Role | Surface | Scope: Bugfix/Alignment/Copy/Routine A11y]
+- SKILLS_CONSULTED: [minimal internal/external skills consulted]
+- GOVERNING_CANON: [relevant DF2 / Business Rules section]
+- CANON_CHECK: [PASS — zero canon mutations or false promotions]
+- VISUAL_QA: [tested viewports or explicit NOT EXECUTED statement]
 ```

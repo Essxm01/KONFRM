@@ -1,6 +1,6 @@
 ---
 name: konfrm-product-ux
-description: "Core product and UX design principles for KONFRM. Enforces role-specific goals (Customer friction-free discovery, Owner operational certainty, Admin audit governance), truthful state grammar, financial transparency, and high useful density over decorative whitespace."
+description: "Core product and UX design principles for KONFRM. Enforces role-specific goals (Customer booking request clarity, Owner operational certainty, Admin audit governance), truthful state grammar, canonical financial rules, and high useful density over decorative whitespace."
 ---
 
 # konfrm-product-ux (Discovery Shim)

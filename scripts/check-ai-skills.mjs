@@ -169,7 +169,7 @@ validateFrontmatter(AGENTS_DIR);
 validateFrontmatter(ZCODE_DIR);
 pass('SKILL.md YAML frontmatter validated across canonical and shim directories.');
 
-// 5. False-Canon Verification in Internal Skills
+// 5. False-Canon & Product-Truth Verification in Internal Skills
 const internalSkills = [
   'konfrm-mobile-design',
   'konfrm-accessibility',
@@ -177,7 +177,26 @@ const internalSkills = [
   'konfrm-visual-qa',
   'konfrm-product-ux',
   'konfrm-design-router',
+  'konfrm-design-reasoning',
 ];
+
+// Verify konfrm-design-reasoning exists and router references it
+const reasoningSkillFile = path.join(CANONICAL_DIR, 'konfrm-design-reasoning', 'SKILL.md');
+if (!fs.existsSync(reasoningSkillFile)) {
+  fail('Missing konfrm-design-reasoning/SKILL.md in canonical skills');
+} else {
+  pass('konfrm-design-reasoning skill verified present in canonical skills.');
+}
+
+const routerFile = path.join(CANONICAL_DIR, 'konfrm-design-router', 'SKILL.md');
+if (fs.existsSync(routerFile)) {
+  const routerText = fs.readFileSync(routerFile, 'utf8');
+  if (!routerText.includes('konfrm-design-reasoning')) {
+    fail('konfrm-design-router/SKILL.md does not reference konfrm-design-reasoning for visual decisions');
+  } else {
+    pass('konfrm-design-router integration with konfrm-design-reasoning verified.');
+  }
+}
 
 const forbiddenCanonPhrases = [
   { pattern: /Primary CTA must be #000000/i, desc: 'Invented black primary CTA canon' },
@@ -186,6 +205,12 @@ const forbiddenCanonPhrases = [
   { pattern: /130% text-scaling ceiling/i, desc: 'Invented 130% text scaling ceiling' },
   { pattern: /Cairo is canonical/i, desc: 'Promoted Cairo candidate to canonical' },
   { pattern: /150[–-]250ms/i, desc: 'Invented mandatory transition duration canon' },
+  // Product truth contamination phrases:
+  { pattern: /instant booking confirmation/i, desc: 'Invented instant booking confirmation' },
+  { pattern: /gross rent minus platform fee/i, desc: 'Invented gross rent minus platform fee calculation' },
+  { pattern: /instant notification of bank transfers/i, desc: 'Invented bank transfer notification guarantee' },
+  { pattern: /zero[- ]lag/i, desc: 'Invented zero-lag calendar behavior' },
+  { pattern: /dual[- ]check/i, desc: 'Invented Admin dual-check financial policy' },
 ];
 
 for (const skill of internalSkills) {
@@ -199,7 +224,7 @@ for (const skill of internalSkills) {
     }
   }
 }
-pass('Internal skill Canon vs Candidate discipline passed (0 false-canon phrases).');
+pass('Internal skill Canon vs Candidate discipline & product truth passed (0 false-canon phrases).');
 
 // 6. UI/UX Pro Max Write Flag Block Verification
 const runnerFile = path.join(CANONICAL_DIR, 'ui-ux-pro-max-wrapper', 'runner.py');

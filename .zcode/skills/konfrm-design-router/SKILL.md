@@ -1,6 +1,6 @@
 ---
 name: konfrm-design-router
-description: "Master design triage router for KONFRM. Classifies tasks by role (Customer/Owner/Admin), surface reality (Current React/Web vs Future Native Mobile Flutter Target), and task type. Activates the minimal necessary skill set, enforces Canon Subordination, and mandates the standardized KONFRM Design Skill Usage Report."
+description: "Master design triage router for KONFRM. Classifies tasks by role (Customer/Owner/Admin), surface reality (Current React/Web vs Future Native Mobile Flutter Target), and task type. Activates the minimal necessary skill set, routes meaningful visual decisions through konfrm-design-reasoning, manages external skills as debate participants, and mandates the standardized KONFRM Design Skill Usage Report."
 ---
 
 # konfrm-design-router (Discovery Shim)

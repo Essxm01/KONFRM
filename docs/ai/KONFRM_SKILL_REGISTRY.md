@@ -140,7 +140,23 @@ A forensic audit of all 17 candidate design skill sources from `skills.sh` was c
 
 ---
 
-## 4. Multi-Agent Installation & Thin Discovery Shim Architecture
+## 4. Governed Internal Skills Suite
+
+In addition to wrapped external sources, KONFRM maintains a suite of 7 project-local, governed internal skills authored in `docs/ai/skills/`:
+
+| # | Internal Skill | Primary Mandate & Scope | Governed Reference |
+|---|----------------|-------------------------|--------------------|
+| 1 | `konfrm-design-router` | Master design triage, classification, minimal activation, external skills debate management | `docs/ai/skills/konfrm-design-router/SKILL.md` |
+| 2 | `konfrm-design-reasoning` | Human-centered perceptual decision layer, 12-step decision loop, Hypotheses A/B/C, micro-validation planning | `docs/ai/skills/konfrm-design-reasoning/SKILL.md` |
+| 3 | `konfrm-product-ux` | Role-specific UX mandates (Customer request flow, Owner certainty, Admin audit), truthful state grammar | `docs/ai/skills/konfrm-product-ux/SKILL.md` |
+| 4 | `konfrm-mobile-design` | Future mobile/native architecture interpretation, platform ergonomics, candidate token safety | `docs/ai/skills/konfrm-mobile-design/SKILL.md` |
+| 5 | `konfrm-rtl-arabic` | Arabic-first layout, logical start/end, Western Arabic numerals (0-9), bidirectional typography | `docs/ai/skills/konfrm-rtl-arabic/SKILL.md` |
+| 6 | `konfrm-accessibility` | WCAG 2.1 AA/AAA contrast, touch targets, screen-reader semantics, reduced motion | `docs/ai/skills/konfrm-accessibility/SKILL.md` |
+| 7 | `konfrm-visual-qa` | Multi-viewport regression testing, responsive breakpoint checks, screenshot validation protocols | `docs/ai/skills/konfrm-visual-qa/SKILL.md` |
+
+---
+
+## 5. Multi-Agent Installation & Thin Discovery Shim Architecture
 
 KONFRM supports three target AI engineering agents:
 1. **Codex**: Discovers skills via `.agents/skills/<skill-name>/SKILL.md` (or repo-root `skills/`).
@@ -180,15 +196,20 @@ The agent discovery directories (`.agents/skills/` and `.zcode/skills/`) contain
 
 ---
 
-## 5. Usage Reporting Specification
+## 6. Usage Reporting Specification
 
 Any AI agent performing design or UI tasks on the KONFRM codebase MUST append the following standardized reporting block to its output:
 
 ```markdown
 ### KONFRM DESIGN SKILL USAGE REPORT
-- DESIGN_SKILLS_USED: [list installed skills used, e.g., konfrm-design-router v1.0, konfrm-mobile-design v1.0]
+- DESIGN_SKILLS_USED: [list installed skills used, e.g., konfrm-design-router v1.0, konfrm-design-reasoning v1.0]
 - DESIGN_SKILLS_NOT_USED: [list evaluated skills that were excluded, with rationale]
+- DESIGN_HYPOTHESES_CONSIDERED: [competing hypotheses formulated (e.g., A vs B), or N/A for literal bug fixes]
+- HUMAN_FACTORS_EVIDENCE: [empirical perception/ergonomic evidence cited, distinguishing real research from AI inference]
+- TARGET_ROLE_REASONING: [specific customer/owner/admin cognitive lens applied]
+- COUNTERARGUMENTS: [strongest critique or counterpoint considered against the chosen direction]
 - CANON_CONFLICTS: [explicit list of external vs KONFRM conflicts detected and how resolved]
 - EVIDENCE_VS_CANON: [distinction between advisory external inputs and canonical decisions taken]
+- VALIDATION_NEEDED: [recommended micro-validation method (prototype, test, survey), or NONE]
 - VISUAL_QA: [viewports tested or explicit NOT EXECUTED statement if simulation/routing only]
 ```

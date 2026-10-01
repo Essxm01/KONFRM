@@ -43,7 +43,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onCreateOwnerAccount }
   return (
     <main className="min-h-screen w-full bg-[var(--konfrm-surface-canvas)] flex flex-col justify-between px-6 py-8 dir-rtl">
       <div className="flex items-center">
-        <img src="/LOGO.svg" alt="KONFRM / كونفرم" className="h-10 w-10 object-contain" />
+        <img src="/konfrm-symbol-black.svg" alt="KONFRM / كونفرم" className="h-10 w-10 object-contain" />
       </div>
 
       <div className="owner-entry-reveal my-auto w-full max-w-md py-8">

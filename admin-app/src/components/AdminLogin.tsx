@@ -50,7 +50,7 @@ export function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
         
         {/* Header Logo */}
         <div className="text-center">
-          <img src="/favicon.svg" alt="Brand Logo" className="w-14 h-14 object-contain mx-auto" />
+          <img src="/konfrm-symbol-black.svg" alt="KONFRM" className="w-14 h-14 object-contain mx-auto" />
         </div>
 
         {/* Login Card */}

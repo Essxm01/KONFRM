@@ -302,7 +302,7 @@ async function run() {
 
   // ── 26. Canonical KONFRM treatment ─────────────────────────────────────────
   assert(
-    screen11Source.includes('/konfrm-mark.svg') &&
+    screen11Source.includes('/konfrm-symbol-black.svg') &&
     screen11Source.includes('alt="KONFRM"') &&
     screen11Source.includes('KONFRM'),
     'RULE-26: Screen 11 must render canonical restrained KONFRM brand mark and wordmark'

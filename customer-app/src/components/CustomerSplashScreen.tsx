@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 
 // KONFRM Customer Splash — Screen 01 (Phase 5 / C1).
 //
-// Brand recognition only: white canvas, KONFRM mark + wordmark, one restrained
-// yellow signature accent. No progress percentage, no carousel, no data
-// dependency. The transition is a fixed short timer (deterministic), never
-// tied to Explore API success. Motion is disabled under
-// prefers-reduced-motion via CSS (see .customer-splash-* in index.css).
+// Brand recognition only: white canvas, KONFRM mark + wordmark. No progress
+// percentage, no carousel, no data dependency. The transition is a fixed short
+// timer (deterministic), never tied to Explore API success. Motion is disabled
+// under prefers-reduced-motion via CSS (see .customer-splash-* in index.css).
 
 const SPLASH_DURATION_MS = 1200;
 
@@ -36,8 +35,9 @@ export const CustomerSplashScreen: React.FC<{ onFinished: () => void }> = ({ onF
       {/* Canonical KONFRM brand mark */}
       <div className="customer-splash-logo relative flex items-center justify-center mb-5">
         <img
-          src="/konfrm-mark.svg"
-          alt="KONFRM"
+          src="/konfrm-symbol-black.svg"
+          alt=""
+          aria-hidden="true"
           width="88"
           height="88"
           className="w-[88px] h-[88px] object-contain"
@@ -45,10 +45,15 @@ export const CustomerSplashScreen: React.FC<{ onFinished: () => void }> = ({ onF
       </div>
 
       {/* Wordmark */}
-      <h1 className="customer-splash-logo text-[34px] leading-none font-extrabold text-[#0F172A] tracking-tight select-none" style={{ fontFamily: "'Cairo', sans-serif" }}>
-        KONFRM
-      </h1>
-      <p className="customer-splash-logo mt-2 text-sm font-bold text-[#475569] select-none">كونفرم</p>
+      <img
+        src="/konfrm-wordmark-black.svg"
+        alt=""
+        aria-hidden="true"
+        className="customer-splash-logo h-8 w-auto object-contain select-none"
+      />
+      <p className="customer-splash-logo mt-2 text-sm font-bold text-[#475569] select-none" aria-hidden="true">
+        كونفرم
+      </p>
     </div>
   );
 };

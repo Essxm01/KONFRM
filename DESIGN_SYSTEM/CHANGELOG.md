@@ -1,5 +1,21 @@
 # KONFRM Design System Changelog
 
+## 2.1.6 — 2026-10-01
+
+### Canonical brand asset integration & legacy logo replacement
+
+- Integrated official KONFRM brand assets provided by the Founder in `DESIGN_SYSTEM/ASSETS/brand/`:
+  - `konfrm-symbol-black.svg` — Primary canonical symbol (black K symbol on transparent background)
+  - `konfrm-wordmark-black.svg` — Primary canonical wordmark (black KONFRM wordmark on transparent background)
+  - `konfrm-symbol-white.svg` — Inverse symbol (white K symbol on transparent background, for dark contexts)
+  - `konfrm-wordmark-white.svg` — Inverse wordmark (white KONFRM wordmark on transparent background, for dark contexts)
+- Pruned speculative runtime assets; each app retains only assets it actively uses (`konfrm-symbol-black.svg`, `konfrm-wordmark-black.svg` on Customer/Owner splash, and `favicon.svg` solely for browser icon metadata).
+- Migrated visible UI references across `customer-app`, `owner-app`, and `admin-app` to canonical semantic asset paths.
+- Removed ambiguous duplicate legacy assets (`LOGO.svg`, `DESIGN_SYSTEM/LOGO.svg`, `owner-app/public/LOGO.svg`, `*/public/konfrm-mark.svg`).
+- Reconciled Customer and Owner splash screens with DF2 v1.1 brand governance (wordmark SVG rendering, removal of yellow accent bar on Owner splash, neutral secondary subtitle).
+- Updated visible browser titles to KONFRM and reconciled authority documentation (`DESIGN_SYSTEM/README.md`, `docs/DESIGN_SYSTEM.md`).
+- Asset intake, replacement, and authority reconciliation only; no token changes, no generated token mutations, no backend/database behavior changed.
+
 ## 2.1.5 — 2026-10-01
 
 ### Founder mobile brand identity amendment

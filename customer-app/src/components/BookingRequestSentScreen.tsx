@@ -47,7 +47,7 @@ export const BookingRequestSentScreen: React.FC<BookingRequestSentScreenProps> =
         <div className="flex-1">
           {/* Restrained KONFRM Brand Identity */}
           <header className="flex items-center gap-2 pb-6 pt-1">
-            <img src="/konfrm-mark.svg" alt="KONFRM" className="h-6 w-auto" aria-hidden="true" />
+            <img src="/konfrm-symbol-black.svg" alt="KONFRM" className="h-6 w-auto" aria-hidden="true" />
             <span className="text-sm font-black tracking-tight text-slate-900">KONFRM</span>
           </header>
 

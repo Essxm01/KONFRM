@@ -105,7 +105,7 @@ export const OwnerKycOnboarding: React.FC<{ onComplete: () => void; allowClose?:
     <main className="min-h-screen bg-[var(--konfrm-surface-canvas)] px-6 py-8 text-right dir-rtl">
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md flex-col">
         <div className="mb-8 flex items-center justify-between">
-          <img src="/LOGO.svg" alt="KONFRM / كونفرم" className="h-10 w-10" />
+          <img src="/konfrm-symbol-black.svg" alt="KONFRM / كونفرم" className="h-10 w-10" />
           {allowClose && <button type="button" onClick={onClose} className="min-h-11 px-2 text-sm font-semibold text-[var(--konfrm-text-secondary)]">لاحقاً</button>}
         </div>
         <div className="mb-6 flex gap-2" aria-label={`الخطوة ${current + 1} من 3`}>

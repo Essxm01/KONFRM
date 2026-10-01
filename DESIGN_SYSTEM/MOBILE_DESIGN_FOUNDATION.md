@@ -1,4 +1,4 @@
-# KONFRM Mobile Design Foundation — v1
+# KONFRM Mobile Design Foundation — v1.1
 
 **Status:** CANONICAL SPECIFICATION — DF2
 Independent platform/accessibility/design-system review and final Bridge verification completed. DF2 is canonical.
@@ -146,11 +146,11 @@ The future mobile design system is a **semantic role model**, not a palette of r
 
 | Family | Canonical intent (DF2) | Implementation values |
 |---|---|---|
-| **BRAND** | Monochrome-first identity language (black/white mark/wordmark expression); restrained interaction accent | Brand facts locked (§9 — Founder amendment); `#276EF1` accent value CANDIDATE |
+| **BRAND** | Monochrome-first Black/White identity language (mark / wordmark identity expression) | Exact neutral / ink values CANDIDATE |
 | **SURFACE** | canvas / grouped content / interactive container / elevated overlay / sheet roles | CANDIDATE |
 | **TEXT** | primary / secondary / muted / inverse roles + minimum readability requirement | CANDIDATE |
 | **BORDER** | separation vs emphasis vs focus roles | CANDIDATE |
-| **INTERACTION** | hover/pressed analogues, selected, disabled, focus ring behavior | CANDIDATE |
+| **INTERACTION** | Action / selection / focus / pressed / disabled interaction roles, including a restrained blue interaction-accent role where appropriate | `#276EF1` CANDIDATE; derived interaction states CANDIDATE |
 | **SEMANTIC STATUS** | success / info / warning / danger — never color-only (§16) | CANDIDATE |
 | **TYPOGRAPHY ROLE** | §10 role model | CANDIDATE |
 | **SPACING ROLE** | §13 relationship model | CANDIDATE |
@@ -460,7 +460,7 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 
 1. North Star: Trust / Clarity / Vitality; dense-by-purpose formulation (§3–§5).
 2. Authority hierarchy (§2) and governance chain (§24).
-3. Mobile brand identity is monochrome-first (Black/White); blue demoted to a restrained interaction accent (`#276EF1` directional candidate); Summer Yellow removed from the core mobile brand architecture; no yellow/amber/orange boxed UI; identity/interaction/status/surface/imagery separation; light-first; no dark containers as KONFRM identity.
+3. Mobile brand identity is monochrome-first (Black/White); identity and interaction color are intentionally separated; a restrained blue interaction-accent role is canonical while the preferred value `#276EF1` remains an IMPLEMENTATION CANDIDATE; Summer Yellow is removed from the core mobile brand architecture; identity/interaction/status/surface/imagery remain separate; light-first surfaces remain canonical; no yellow/amber/orange boxed UI.
 4. Arabic-first RTL as foundation-level concern; semantic start/end; isolated LTR runs; direction-aware icons; no "mirror everything".
 5. **Western Arabic numerals by default; money example `1,600 ج.م`; date/calendar localization remains separate.**
 6. Truth-first state grammar: ERROR ≠ EMPTY, STALE ≠ ERROR, PENDING ≠ SUCCESS, MISSING ≠ ZERO; no raw backend message as UI copy; status never color-only; financial states server-authoritative.

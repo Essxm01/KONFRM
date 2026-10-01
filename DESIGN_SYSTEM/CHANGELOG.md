@@ -1,5 +1,13 @@
 # KONFRM Design System Changelog
 
+## 2.1.4 — 2026-10-01
+
+### Mobile Design Foundation canonical specification (DF2)
+
+- Added [`MOBILE_DESIGN_FOUNDATION.md`](./MOBILE_DESIGN_FOUNDATION.md) as the canonical mobile design foundation specification (Gate 3B follow-up): Trust/Clarity/Vitality North Star, dense-by-purpose philosophy, authority/evidence hierarchy, semantic role model, color/typography/RTL/numerals/session-state/action/motion/accessibility foundations, platform adaptation matrix, external-Skill policy, anti-patterns, and full CANONICAL NOW / IMPLEMENTATION CANDIDATE / DEFERRED classification.
+- Records the Founder numeral decision for Arabic KONFRM UI: Western Arabic numerals by default (`1,600 ج.م`), RTL preserved, LTR-isolated numeric/phone/ID runs, date/calendar localization unchanged.
+- Independent platform/accessibility/design-system review completed; all required corrections applied; final Bridge verification passed; DF2 promoted to canonical. Documentation/design authority only; no runtime, token, component, backend, or database behavior changed.
+
 ## 2.1.3 — 2026-09-27
 
 ### Founder visual consistency rule

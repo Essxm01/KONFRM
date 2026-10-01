@@ -26,7 +26,7 @@ export const CustomerAuthAppBar: React.FC<CustomerAuthAppBarProps> = ({ onBack, 
         <ArrowRight className="h-5 w-5" aria-hidden="true" />
       </button>
     )}
-    <img src="/konfrm-mark.svg" alt="كونفرم" className="h-8 w-auto" />
+    <img src="/konfrm-symbol-black.svg" alt="كونفرم" className="h-8 w-auto" />
     <span className="h-11 w-11" aria-hidden="true" />
   </header>
 );

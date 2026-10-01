@@ -79,7 +79,7 @@ Chat remains contextual by default rather than a permanent bottom-navigation des
 
 Bottom navigation is hidden where a full entity/temporary flow requires focus.
 
-Screen 03 (Explore / Home) header combines the standalone KONFRM mark (`/favicon.svg` with `alt="KONFRM"`) and exactly one account/identity affordance across open space:
+Screen 03 (Explore / Home) header combines the standalone KONFRM mark (`/konfrm-symbol-black.svg` with `alt="KONFRM"`) and exactly one account/identity affordance across open space:
 - Guest: `UserRoundPlus` icon button opening existing auth modal (`aria-label="تسجيل الدخول أو إنشاء حساب"`); closing auth leaves Explore intact.
 - Authenticated: Truthful identity affordance routing to Account (`setActiveTab('ACCOUNT')`) with fallback hierarchy: canonical `avatarUrl` → initials (real canonical `fullName` only) → `UserRound`.
 - Notifications: no Bell icon in Explore. Screen 16 Notification Center is an Account-origin destination and does not change the Explore header grammar.

@@ -15,12 +15,13 @@ Applications consume this system. They do not define it, and no production appli
 
 ## Approved foundations
 
-- Product identity: **KONFRM / كونفرم**; canonical symbol: [`konfrm-symbol-black.svg`](./konfrm-symbol-black.svg), canonical wordmark: [`konfrm-wordmark-black.svg`](./konfrm-wordmark-black.svg) (inverse: [`konfrm-symbol-white.svg`](./konfrm-symbol-white.svg), [`konfrm-wordmark-white.svg`](./konfrm-wordmark-white.svg)).
+- Product identity: **KONFRM / كونفرم**; canonical symbol: [`konfrm-symbol-black.svg`](./ASSETS/brand/konfrm-symbol-black.svg), canonical wordmark: [`konfrm-wordmark-black.svg`](./ASSETS/brand/konfrm-wordmark-black.svg) (inverse: [`konfrm-symbol-white.svg`](./ASSETS/brand/konfrm-symbol-white.svg), [`konfrm-wordmark-white.svg`](./ASSETS/brand/konfrm-wordmark-white.svg)).
+- Mobile identity: monochrome-first Black/White. Yellow is removed from the core mobile brand architecture.
 - Light-first product: white and light neutral surfaces are dominant.
-- Primary Blue: `#0059FF`; Summer Yellow `#FFD700` remains a **micro brand-signature accent only**. New yellow/amber/orange boxed surfaces—cards, banners, alerts, pills, stale/recovery panels or large fills—are prohibited unless the Founder explicitly approves a named exception.
+- Restrained blue interaction role exists; `#276EF1` is an implementation candidate (not final token), while current Web token values (`#0059FF`) remain an implementation and historical baseline until a separately validated migration.
 - UI font: Cairo; Arabic-first, RTL-native.
 - Customer and Owner are mobile-first. Admin is desktop operational.
-- 8pt-derived spacing, restrained elevation, and 44px minimum mobile touch targets. Existing implementation uses Lucide React; preserve local consistency, but do not treat it as Founder approval for a project-wide icon migration.
+- 8pt-derived spacing, restrained elevation, and platform-appropriate mobile touch sizing (no universal 44px mobile canon). Existing implementation uses Lucide React; preserve local consistency, but do not treat it as Founder approval for a project-wide icon migration.
 
 Infrastructure identifiers that still contain `SOLA` are outside this design-system scope and remain unchanged.
 

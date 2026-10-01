@@ -339,7 +339,7 @@ async function run() {
   // 40. Explore Header Account/Identity Affordance Contract (Supersedes interim brand-only)
   // A. Explore still has KONFRM mark
   assert(
-    headerCode.includes('alt="KONFRM"') && headerCode.includes('/favicon.svg'),
+    headerCode.includes('alt="KONFRM"') && headerCode.includes('/konfrm-symbol-black.svg'),
     'Explore header must preserve the standalone KONFRM mark'
   );
 

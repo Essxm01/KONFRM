@@ -167,7 +167,7 @@ export function App() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans flex flex-col dir-rtl" dir="rtl">
       
-      {/* SOLA Master Header — Unified Design System Standard */}
+      {/* KONFRM Master Header — Unified Design System Standard */}
       <header className="bg-white sticky top-0 z-40 px-4 sm:px-6 py-3.5 border-b border-slate-200/90 shadow-xs">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           

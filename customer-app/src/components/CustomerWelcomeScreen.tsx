@@ -88,7 +88,7 @@ export const CustomerWelcomeScreen: React.FC<CustomerWelcomeScreenProps> = ({
           {/* Logo lockup */}
           <div className="px-5 pt-1.5 sm:pt-3 flex items-center gap-2">
             <img
-              src="/konfrm-mark.svg"
+              src="/konfrm-symbol-black.svg"
               alt=""
               aria-hidden="true"
               width="28"

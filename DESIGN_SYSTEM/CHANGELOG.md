@@ -1,5 +1,16 @@
 # KONFRM Design System Changelog
 
+## 2.1.5 — 2026-10-01
+
+### Founder mobile brand identity amendment
+
+- Recorded the Founder decision that KONFRM **mobile** brand identity is monochrome-first: **Black / White** (mark and wordmark expression), confident, minimal, structured, clear — with vitality coming from real imagery/content, useful state change, interaction feedback, motion, and confident hierarchy rather than multiple brand accent colors.
+- **Summer Yellow `#FFD700` removed from the core mobile brand architecture**: no longer a mobile micro-signature, CTA accent, identity color, or default decorative accent; not replaced by another secondary brand color.
+- **Blue no longer the dominant mobile brand-identity color**: retained only as a restrained product interaction accent; `#276EF1` recorded as the Founder-preferred interaction-accent **candidate**, pending validation in real component contexts (CTA, active navigation, selected state, focus, link/action text, progress, pressed/disabled, contrast) before lower-level token canonicalization.
+- The previous web blue `#0059FF` no longer governs the mobile primary brand/action identity; historical web token values are untouched by this amendment and must not be mistaken for the new Mobile Canon.
+- Logo assets (custom K symbol + wordmark SVGs) remain outside the repository pending a separate Logo Asset Intake / Integration task; logo artwork color ≠ UI text token ≠ surface token.
+- Documentation/design-authority amendment only; no token files changed, no generated files changed, no app/runtime code changed, no logo assets added, no backend/database behavior changed.
+
 ## 2.1.4 — 2026-10-01
 
 ### Mobile Design Foundation canonical specification (DF2)

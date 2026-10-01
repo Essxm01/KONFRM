@@ -1,7 +1,8 @@
-# KONFRM Mobile Design Foundation — v1
+# KONFRM Mobile Design Foundation — v1.1
 
 **Status:** CANONICAL SPECIFICATION — DF2
 Independent platform/accessibility/design-system review and final Bridge verification completed. DF2 is canonical.
+**Amendment v1.1 (Founder brand-identity decision):** mobile brand identity is monochrome-first — Black/White; Summer Yellow removed from the core mobile brand architecture; blue demoted to a restrained interaction accent (candidate `#276EF1`). See §9.
 **Scope:** The design foundation governing future `mobile/customer_app`, `mobile/owner_app`, mobile design tokens, canonical mobile primitives, AI design Skills, visual QA and the controlled pilot.
 **Upstream authority (not reopened here):**
 
@@ -88,7 +89,7 @@ This is a design direction, not a license to invent tokens or components outside
 **VITALITY** may come from:
 
 - real property imagery (Customer);
-- controlled accent (Summer Yellow as micro signature only — §9);
+- restrained interaction accent (§9) and confident black/white identity contrast;
 - useful state changes and interaction feedback;
 - content freshness and confident hierarchy.
 
@@ -145,11 +146,11 @@ The future mobile design system is a **semantic role model**, not a palette of r
 
 | Family | Canonical intent (DF2) | Implementation values |
 |---|---|---|
-| **BRAND** | KONFRM identity colors and signature usage rules | Brand facts locked (§9); derived shades CANDIDATE |
+| **BRAND** | Monochrome-first Black/White identity language (mark / wordmark identity expression) | Exact neutral / ink values CANDIDATE |
 | **SURFACE** | canvas / grouped content / interactive container / elevated overlay / sheet roles | CANDIDATE |
 | **TEXT** | primary / secondary / muted / inverse roles + minimum readability requirement | CANDIDATE |
 | **BORDER** | separation vs emphasis vs focus roles | CANDIDATE |
-| **INTERACTION** | hover/pressed analogues, selected, disabled, focus ring behavior | CANDIDATE |
+| **INTERACTION** | Action / selection / focus / pressed / disabled interaction roles, including a restrained blue interaction-accent role where appropriate | `#276EF1` CANDIDATE; derived interaction states CANDIDATE |
 | **SEMANTIC STATUS** | success / info / warning / danger — never color-only (§16) | CANDIDATE |
 | **TYPOGRAPHY ROLE** | §10 role model | CANDIDATE |
 | **SPACING ROLE** | §13 relationship model | CANDIDATE |
@@ -163,20 +164,26 @@ Rule: role semantics are CANONICAL NOW (as defined in this document); concrete n
 
 ## 9. Color Foundation
 
-**Locked brand facts (CANONICAL NOW — verified existing brand evidence):**
+**Brand-color architecture — Founder amendment (CANONICAL NOW; supersedes the previous mobile blue/yellow framing):**
 
-- **KONFRM Blue `#0059FF`** is the primary brand/action identity. It is the only primary action color; hover/pressed/soft variants derive from it.
-- **Summer Yellow `#FFD700` is a micro brand-signature accent ONLY** (UX-COLOR-01, GOVERNANCE 2.1.3). It must never become routine CTA background, status system, large card, banner, alert box, stale/recovery container, warning palette, or large surface fill. `accentSoft` has no default application-container use.
+- **Black / White is the primary KONFRM mobile brand identity**: confident, minimal, structured, clear. The Brand Mark / Wordmark identity is monochrome-first. Vitality comes from content — real property imagery, useful state change, interaction feedback, motion, information freshness, and confident hierarchy — not from multiple brand accent colors.
+- **Blue is no longer the dominant brand-identity color.** Blue remains only as a **restrained PRODUCT INTERACTION ACCENT**, appearing lightly and intentionally in actionable/interactive moments. Candidate: **`#276EF1`** — Founder-preferred directional candidate, **IMPLEMENTATION CANDIDATE**: it is not a final lower-level mobile token and must be validated in real component contexts (primary CTA, active navigation, selected state, focus treatment, link/action text, progress/loading, disabled/pressed relationships, contrast/accessibility on intended surfaces) before token canonicalization. Core screens must not feel "blue-branded".
+- **Summer Yellow `#FFD700` is removed from the core mobile brand architecture.** It is no longer a mobile micro-signature, CTA accent, identity color, or default decorative accent, and it is not replaced by another secondary brand color. (Historical/web yellow references remain web-governance history and carry no mobile authority.)
+- The previous saturated web blue (`#0059FF`) likewise no longer governs the mobile primary brand/action identity. (Historical web usage is untouched by this amendment.)
 
-**Separation of concerns (CANONICAL NOW):** BRAND color, INTERACTIVE color, SEMANTIC STATUS color, and SURFACE color are four distinct concerns. A brand color never doubles as a status color; a status color never doubles as decoration.
+**Separation of concerns (CANONICAL NOW):** BRAND IDENTITY (monochrome-first), PRODUCT INTERACTION ACCENT (restrained blue), SEMANTIC STATUS color, SURFACE color, and CONTENT IMAGERY are distinct concerns. Identity never doubles as status; status never doubles as decoration; imagery is content, not branding.
 
 **Status never by color alone** — status carries a text label and/or icon plus accessible name (§16, §21).
 
-**Rules carried from web evidence as CANONICAL principles (values remain CANDIDATE):**
+**Scope boundary:** the web `TOKENS/colors.json` values (including `#0059FF` and `#FFD700`) are untouched by this amendment and must **not** be mistaken for the new Mobile Canon. Mobile token integration happens later under its own validated implementation task.
 
-- Light-first identity; dark slate/navy surfaces are not standard KONFRM containers (GOVERNANCE forbidden-surfaces policy).
-- Semantic families exist for success / info / warning / danger; warning is copy-first on a neutral/light surface; amber background/border values are legacy-compatibility only and do not authorize boxed containers.
-- No yellow/amber/orange boxed UI anywhere (Founder rule 2026-09-27).
+**Logo assets:** the custom K symbol and full wordmark SVGs are ready for a separate Logo Asset Intake / Integration task — they are **not** integrated here. Logo artwork color ≠ UI text token ≠ surface token; that distinction is preserved explicitly. The symbol is expected to appear more frequently due to compactness, but exact symbol-vs-wordmark usage rules require asset/use-case validation first.
+
+**Unchanged surface principles (CANONICAL NOW):**
+
+- Light-first identity: white/neutral surfaces. Black/white identity expression concerns the mark/wordmark and monochrome contrast — it does **not** introduce dark UI surfaces (the GOVERNANCE forbidden-dark-surfaces policy remains).
+- Semantic families exist for success / info / warning / danger; warning is copy-first on a neutral/light surface; no amber/orange boxed containers.
+- Product feel remains calm, clear, modern, premium: lively through content, not through many colors.
 - Dark mode: **not decided** (§28). Android Dynamic Color: **not decided** (§28).
 
 ## 10. Typography Foundation
@@ -278,7 +285,7 @@ Financial display rules (CANONICAL NOW):
 
 CANONICAL action classes and rules:
 
-- **PRIMARY** — the one decision-critical action of the current state, when a state has one (KONFRM Blue identity).
+- **PRIMARY** — the one decision-critical action of the current state, when a state has one (restrained interaction-accent treatment — §9).
 - **SECONDARY** — subordinate alternatives (neutral treatment).
 - **TERTIARY** — low-emphasis inline/text actions.
 - **CONTEXTUAL** — actions attached to the object they affect (row-level actions follow the row).
@@ -453,7 +460,7 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 
 1. North Star: Trust / Clarity / Vitality; dense-by-purpose formulation (§3–§5).
 2. Authority hierarchy (§2) and governance chain (§24).
-3. KONFRM Blue as primary brand/action identity; Summer Yellow as micro-signature only; no yellow/amber/orange boxed UI; brand/interactive/status/surface color separation; light-first; no dark containers as KONFRM identity.
+3. Mobile brand identity is monochrome-first (Black/White); identity and interaction color are intentionally separated; a restrained blue interaction-accent role is canonical while the preferred value `#276EF1` remains an IMPLEMENTATION CANDIDATE; Summer Yellow is removed from the core mobile brand architecture; identity/interaction/status/surface/imagery remain separate; light-first surfaces remain canonical; no yellow/amber/orange boxed UI.
 4. Arabic-first RTL as foundation-level concern; semantic start/end; isolated LTR runs; direction-aware icons; no "mirror everything".
 5. **Western Arabic numerals by default; money example `1,600 ج.م`; date/calendar localization remains separate.**
 6. Truth-first state grammar: ERROR ≠ EMPTY, STALE ≠ ERROR, PENDING ≠ SUCCESS, MISSING ≠ ZERO; no raw backend message as UI copy; status never color-only; financial states server-authoritative.
@@ -472,7 +479,7 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 1. Exact mobile typography scale per role (§10) — validated for Arabic legibility, scaling, and screens.
 2. Exact spacing scale and insets (§13) — 8pt-derived web scale is the strongest evidence base.
 3. Exact radius/border/shadow/elevation values per surface role (§14).
-4. Exact semantic color role values beyond the locked brand facts (§9).
+4. Exact semantic color role values and the restrained interaction-accent value (`#276EF1`) validated in component contexts beyond the locked brand facts (§9); exact neutral/ink palette values (no UI-black invented in DF2).
 5. **Transport-independent design-token delivery**: the existing generated-token pipeline concept (`TOKENS/*.json` → generated consumer artifacts) is an implementation candidate for mobile, with all mobile values validated before canonicalization.
 6. Exact state-surface compositions (skeletons, empty/error art) per state grammar (§16).
 7. Cairo as the bundled mobile UI family — pending mobile rendering/performance validation.

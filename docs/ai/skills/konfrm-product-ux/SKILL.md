@@ -22,7 +22,7 @@ Defines the authoritative product user experience contracts across all three KON
 - **Zero Fake Scarcity:** No misleading countdown timers, false viewer counts ("5 people looking at this now"), artificially inflated strikethrough prices, or dark UX patterns.
 - **Booking Request Clarity (Never Instant Booking):**
   - Booking is strictly a **REQUEST**; instant confirmation does not exist in KONFRM.
-  - Owner review and approval strictly precedes payment collection. No payment credentials or charges are taken before an Owner explicitly approves the request.
+  - Owner review and approval strictly precedes deposit payment. No deposit payment occurs before Owner approval. (Current PAYMENT_MODE=PROTOTYPE never collects card credentials; live payment credential flows remain open for future production specification).
   - Transparent pricing display: total stay price, deposit amount (equal to the first-night price), and remaining balance (total stay price minus deposit).
   - Customers see only customer-relevant pricing; internal platform commission and Owner splits are never exposed to the customer.
   - Stay bounds are globally 2–30 nights.

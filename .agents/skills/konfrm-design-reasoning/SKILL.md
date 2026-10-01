@@ -1,6 +1,6 @@
 ---
 name: konfrm-design-reasoning
-description: "Human-centered design reasoning and perceptual decision layer for KONFRM. Sits between Canon and visual choices, running structured design dialectics (Hypotheses A/B/C), evaluating perception/Gestalt/brand congruence, role lenses, and recommending micro-validations."
+description: "Human-centered design reasoning and perceptual decision layer for KONFRM. Sits between Canon and visual choices, running structured design dialectics (Hypotheses A/B/C), evaluating perception/Gestalt/brand congruence, role lenses, research claim hygiene, and recommending micro-validations."
 ---
 
 # konfrm-design-reasoning (Discovery Shim)

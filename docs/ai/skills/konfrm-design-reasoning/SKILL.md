@@ -1,6 +1,6 @@
 ---
 name: konfrm-design-reasoning
-description: "Human-centered design reasoning and perceptual decision layer for KONFRM. Sits between Canon and visual choices, running structured design dialectics (Hypotheses A/B/C), evaluating perception/Gestalt/brand congruence, role lenses, and recommending micro-validations."
+description: "Human-centered design reasoning and perceptual decision layer for KONFRM. Sits between Canon and visual choices, running structured design dialectics (Hypotheses A/B/C), evaluating perception/Gestalt/brand congruence, role lenses, research claim hygiene, and recommending micro-validations."
 ---
 
 # KONFRM Human-Centered Design Reasoning
@@ -20,7 +20,31 @@ A disciplined perceptual and cognitive decision layer for the KONFRM design arch
 
 ---
 
-## 1. The Required Decision Loop
+## 1. Research Claim Hygiene & Evidence Extrapolation Rules
+
+AI reasoning engines must not merely cite academic papers or heuristics; they must accurately understand what the source studied and explicitly label the boundary between source findings and KONFRM inferences.
+
+Every empirical design claim must distinguish:
+1. **WHAT THE SOURCE DIRECTLY FOUND:** The literal empirical observation made in the study.
+2. **STUDY POPULATION / STIMULUS / TASK:** The subject pool (e.g. undergraduate students), stimuli (e.g. 2D geometric polygons, neutral household objects), and experimental task (e.g. rapid laboratory forced-choice preference).
+3. **WHAT KONFRM IS INFERRING FROM IT:** The specific UX or visual hypothesis KONFRM derives for its product.
+4. **LIMITATIONS / TRANSFER RISK:** Why findings from generic stimuli in a laboratory may not transfer directly to high-stakes Egyptian real-estate transactions, bilingual Arabic typography, or mobile touchscreen controls.
+5. **WHAT REQUIRES PRODUCT-SPECIFIC VALIDATION:** The empirical test needed on actual KONFRM prototypes to confirm the hypothesis.
+
+> [!TIP]
+> **Claim Hygiene Examples:**
+> - ✅ **ALLOWED (Disciplined Inference):**
+>   *"Bar & Neta (2006) found a preference bias toward curved over sharp contours in their tested 2D neutral visual-object stimuli. This supports a general contour-perception hypothesis, but does not directly prove that rounded mobile buttons improve booking confidence or reduce transaction hesitation in rental apps."*
+> - ❌ **FORBIDDEN (Unsubstantiated Extrapolation):**
+>   *"Sharp mobile buttons increase user anxiety."*
+> - ❌ **FORBIDDEN (Universal Psychology Law):**
+>   *"Users will feel uncomfortable with sharp corners."*
+
+Never extrapolate generic-object or abstract psychology studies directly into product-UI assertions without explicitly labeling the inference and transfer risk.
+
+---
+
+## 2. The Required Decision Loop
 
 For any meaningful, unresolved visual or design decision, agents must execute the 12-step reasoning loop:
 
@@ -34,13 +58,13 @@ ARGUE FOR
 ARGUE AGAINST
   └── Attack each hypothesis with usability, cognitive load, perceptual friction, or edge cases.
 RESEARCH
-  └── Gather empirical evidence (Levels A–G) across human factors, cognitive psychology, and mature systems.
+  └── Gather evidence evaluated along two axes: Methodological Quality × Contextual Relevance.
 ROLE LENS
   └── Filter through the specific cognitive and emotional needs of Customer, Owner, or Admin.
 BRAND CONGRUENCE
   └── Analyze alignment with the geometric, structured KONFRM brand identity.
 PLATFORM / ACCESSIBILITY CHECK
-  └── Validate against WCAG, touch targets, platform conventions, and RTL dynamics.
+  └── Validate against non-waivable WCAG/touch constraints and authoritative platform conventions.
 ALTERNATIVES
   └── Compare trade-offs between hypotheses without creating superficial variety.
 PROTOTYPE / VISUAL TEST
@@ -52,20 +76,20 @@ CONFIDENCE + STATUS
 ```
 
 > [!WARNING]
-> Never skip directly from *"Skill X recommends radius 12"* to *"use radius 12."* Every unresolved dimension requires structured dialectic evaluation.
+> Never skip directly from *"Skill X recommends radius 12"* to *"use radius 12."* Every unresolved dimension requires structured dialectic evaluation. Concrete numerical candidates belong in Primitive Pilots, never in the general reasoning doctrine.
 
 ---
 
-## 2. Human Perception Domains
+## 3. Human Perception Domains (Hypothesis Lenses)
 
-Agents must actively reason using established principles of human perception and cognitive psychology. These principles serve as **research lenses**, not universal laws; cultural context (Egyptian marketplace), user role, and task intent modulate their application:
+Agents must reason using established principles of human perception and cognitive psychology. These principles serve as **research lenses and perceptual hypotheses**, not universal laws; cultural context (Egyptian marketplace), user role, and task intent modulate their application:
 
 1. **Gestalt Organization:** Proximity, similarity, continuity, closure, figure/ground, and common region. How elements group and separate without relying on heavy borders or dividers.
 2. **Processing Fluency:** Ease of mental processing. Familiar layout structures and predictable alignments reduce cognitive load during high-stakes booking and payment tasks.
-3. **Contour & Curvature Perception:** How sharp vs. rounded contours affect human threat detection, warmth, and approachability.
+3. **Contour & Curvature Perception:** How sharp vs. rounded contours affect human threat detection, warmth, and approachability in generic perceptual studies.
 4. **Angular vs. Rounded Associations:**
-   - *Angular / Sharp Geometry:* Associated with precision, competence, structure, engineering, solidity, and authority.
-   - *Curved / Rounded Geometry:* Associated with warmth, friendliness, approachability, physical comfort, and human scale.
+   - *Angular / Sharp Geometry:* Research and design literature may associate angular contours with precision, competence, structure, engineering, solidity, and authority. This is a potential perceptual hypothesis; task context, cultural familiarity, and surrounding UI weight may alter or weaken this effect.
+   - *Curved / Rounded Geometry:* Literature often associates curved contours with warmth, friendliness, approachability, physical comfort, and human scale. Context and execution modulate this effect, and excessive curvature may introduce distinct trade-offs (e.g. reduced horizontal text real estate or generic-consumer styling).
 5. **Warmth vs. Competence Perception:** Balancing hospitality and trust (warmth) with financial rigor, auditability, and escrow safety (competence).
 6. **Color Associations & Action Salience:** Evaluating action contrast against white-dominant surfaces, ensuring primary CTAs draw immediate visual attention without introducing decorative noise.
 7. **Visual Weight & Salience:** Relative prominence of typography, buttons, and badges based on contrast, mass, and placement.
@@ -79,7 +103,7 @@ Agents must actively reason using established principles of human perception and
 
 ---
 
-## 3. Role-Specific Reasoning
+## 4. Role-Specific Reasoning
 
 Every major visual decision must be evaluated through the specific psychological and operational lens of the target role:
 
@@ -115,22 +139,22 @@ Every major visual decision must be evaluated through the specific psychological
 
 ---
 
-## 4. Brand Congruence Reasoning
+## 5. Brand Congruence Reasoning
 
 The canonical KONFRM brand identity (Founder masters under `DESIGN_SYSTEM/ASSETS/brand/`) features a **strongly geometric, angular, structured character** in its primary symbol and wordmark:
 
-- **Shape Continuity Hypothesis:** A lower, sharper corner-radius family (e.g., subtle 4px–8px radii) creates strong visual harmony with the angular brand mark, projecting engineering precision, institutional competence, and structural strength.
-- **Warmth / Touchability Counter-Hypothesis:** In Customer-facing contexts, overly sharp contours can appear severe or unapproachable. More pronounced corner rounding (e.g., 10px–16px radii) may increase perceived hospitality, comfort, and physical touch affordance.
+- **Shape Continuity Hypothesis:** A lower / sharper corner-radius family creates visual harmony with the angular brand mark, projecting engineering precision, institutional competence, and structural strength.
+- **Warmth / Touchability Counter-Hypothesis:** In Customer-facing contexts, overly sharp contours can appear severe or unapproachable. A moderate or strongly rounded radius family may increase perceived hospitality, comfort, and physical touch affordance.
 - **The Core Design Question:**
   *"What degree of shape continuity between KONFRM's angular brand identity and its product controls maximizes brand coherence while preserving warmth, usability, affordance, and platform appropriateness?"*
 
 > [!CAUTION]
 > **DO NOT CANONIZE SHAPE FAMILIES PREMATURELY:**
-> Neither sharp corners, rounded corners, zero radius, nor pill geometry are canonical. They remain competing implementation hypotheses to be evaluated in Primitive Pilots across specific role contexts.
+> Neither sharp corners, rounded corners, zero radius, nor pill geometry are canonical. They remain competing implementation hypotheses to be evaluated in Primitive Pilots across specific role contexts. Qualitative descriptors (low/sharper, moderate, strongly rounded) must be used in doctrine; concrete numerical candidates belong strictly in empirical pilot testing.
 
 ---
 
-## 5. Color Reasoning
+## 6. Color Reasoning
 
 Never apply naive or reductive color associations:
 - ❌ *"The logo is black, therefore all buttons must be solid black."*
@@ -152,13 +176,13 @@ Current Canon remains:
 
 ---
 
-## 6. The Design Dialectic (Hypothesis A vs. B vs. C)
+## 7. The Design Dialectic (Hypothesis A vs. B vs. C)
 
 Before adopting or proposing a major visual direction, formulate a structured dialectic comparing competing hypotheses:
 
-1. **Hypothesis A:** The conservative or brand-congruent hypothesis (e.g. structured, low-radius, monochrome-dominant).
-2. **Hypothesis B:** The ergonomic or platform-native hypothesis (e.g. moderate rounding, platform-standard conventions).
-3. **Hypothesis C (Optional):** The expressive or warmth-optimized hypothesis (e.g. higher rounding, softer visual texture).
+1. **Hypothesis A:** The conservative or brand-congruent hypothesis (e.g. structured, low/sharper radius, monochrome-dominant).
+2. **Hypothesis B:** The ergonomic or platform-native hypothesis (e.g. moderate radius, platform-standard conventions).
+3. **Hypothesis C (Optional):** The expressive or warmth-optimized hypothesis (e.g. strongly rounded, softer visual texture).
 
 For each hypothesis, document:
 - Strongest argument **FOR** (theoretical, ergonomic, or brand alignment).
@@ -171,23 +195,43 @@ For each hypothesis, document:
 
 ---
 
-## 7. Evidence Quality Hierarchy
+## 8. Two-Dimensional Evidence Model: Quality × Relevance
 
-When supporting a design hypothesis, agents must grade evidence by authoritative strength:
+Design decisions must not rely on a simplistic one-dimensional hierarchy that assumes generic academic papers automatically outrank project findings. Agents must evaluate evidence across **TWO independent dimensions**:
 
-| Level | Evidence Category | Description & Authority |
-|---|---|---|
-| **LEVEL A** | Legal / A11y / Platform Constraints | Mandatory platform human interface guidelines (iOS HIG, Android Material), WCAG 2.1 AA/AAA contrast ratios, legal requirements. Non-waivable. |
-| **LEVEL B** | Peer-Reviewed Human Factors & Perception | Published cognitive psychology, Gestalt visual perception research, ergonomic biomechanics, and consumer behavior studies. |
-| **LEVEL C** | Established Design-System Evidence | Empirical patterns from mature, battle-tested design systems (Apple HIG, Google Material Design 3, IBM Carbon, Uber Base). |
-| **LEVEL D** | KONFRM User Research & Behavioral Data | Qualitative interviews, task completion metrics, usability tests, and analytics gathered directly from KONFRM users. |
-| **LEVEL E** | Competitive & Reference Products | Benchmarking leading regional and global platforms (Airbnb, Booking.com, Bayut, Uber). Informative but not decisive. |
-| **LEVEL F** | External Skill Heuristic / Craft Opinion | Heuristics and playbooks from external skills (Frontend Design, Impeccable, UI/UX Pro Max). Useful guidance, but subordinate to Canon. |
-| **LEVEL G** | Pure Aesthetic Preference | Subjective designer intuition, personal taste, or generic AI default styling. Lowest authority; never justifies overriding higher levels. |
+```
+                  HIGH
+                   ▲
+                   │   [Cell 2]                      [Cell 1]
+                   │   Broad Academic Research       KONFRM In-Situ Usability Test
+                   │   (High Rigor, Low Relevance)   (High Rigor, High Relevance)
+METHODOLOGICAL     │
+QUALITY            │
+                   │   [Cell 4]                      [Cell 3]
+                   │   Generic AI Heuristic / Blog    Small Qualitative Interview
+                   │   (Low Rigor, Low Relevance)    (Low Rigor, High Relevance)
+                   │
+                  LOW ─────────────────────────────────────────────► HIGH
+                                CONTEXTUAL RELEVANCE TO KONFRM
+```
+
+### Dimension 1: Methodological Quality / Reliability
+- **High Quality:** Peer-reviewed empirical studies, controlled double-blind trials, verified benchmark datasets, large-sample behavioral analytics.
+- **Medium Quality:** Established design system patterns (Apple HIG, Google M3, IBM Carbon), formal heuristic evaluations by senior practitioners.
+- **Lower Quality / Causal Strength:** Small qualitative interviews (n=3–5), informal designer craft opinions, external skill heuristics, subjective taste.
+
+### Dimension 2: Contextual Relevance to KONFRM
+- **High Relevance:** Usability tests, task metrics, and interviews conducted directly with Egyptian property owners, local coastal renters, or KONFRM operational staff on bilingual Arabic/English interfaces.
+- **Medium Relevance:** Direct visual inspection of relevant local/regional platforms (e.g. verified Egyptian fintech or real-estate flows) and mobile platform conventions on target hardware.
+- **Lower Relevance:** Abstract laboratory studies on generic polygons or neutral geometric objects without transaction risk, payment commitment, or Arabic typography.
+
+### Non-Waivable Constraints vs. Preference Evidence
+- **Non-Waivable Constraints (Not Trade-Off Evidence):** Legal requirements, WCAG 2.1 AA/AAA contrast ratios, and hard technical OS platform minimums (e.g. physical touch hit regions) are **non-negotiable constraints**. They are not subject to design dialectic trade-offs.
+- **Authoritative Platform Guidance:** Apple Human Interface Guidelines (HIG) and Google Material Design provide authoritative platform guidance and interaction conventions. However, **do not label every platform design recommendation as a universal legal mandate**. Platform components adapt presentation while preserving semantic hierarchy.
 
 ---
 
-## 8. User-Research Humility & Micro-Validation
+## 9. User-Research Humility & Micro-Validation
 
 When an unresolved design decision materially depends on human perception or preference, agents must specify the **smallest useful validation method**:
 - **Comparative Prototype:** Side-by-side interactive micro-prototypes comparing Hypothesis A and B on target hardware.
@@ -201,7 +245,7 @@ Do not recommend expensive, prolonged research for trivial layout adjustments. R
 
 ---
 
-## 9. Standardized Decision Output Block
+## 10. Standardized Decision Output Block
 
 When evaluating any unresolved major design decision, agents must format the evaluation using this mandatory block:
 
@@ -218,12 +262,15 @@ KNOWN CANON:
 [Authoritative project canon that constrains this decision (e.g. DF2 monochrome identity, restrained blue role)]
 
 HYPOTHESES:
-- HYPOTHESIS A: [Description of first credible design direction]
-- HYPOTHESIS B: [Description of second credible design direction]
-- HYPOTHESIS C: [Optional third credible design direction]
+- HYPOTHESIS A: [Description of first credible design direction, e.g. low/sharper radius]
+- HYPOTHESIS B: [Description of second credible design direction, e.g. moderate radius]
+- HYPOTHESIS C: [Optional third credible design direction, e.g. strongly rounded]
 
-EVIDENCE:
-- [Cited evidence items categorized by Level A through Level G]
+EVIDENCE EVALUATION (Quality × Relevance):
+- [Evidence item 1]: Methodological Quality: [HIGH/MED/LOW] | Contextual Relevance: [HIGH/MED/LOW]
+  - What the source found: ...
+  - Stimulus / population: ...
+  - KONFRM inference & transfer risk: ...
 
 STRONGEST CASE FOR EACH:
 - HYPOTHESIS A: [Best argument FOR]
@@ -242,7 +289,7 @@ BRAND-CONGRUENCE INTERPRETATION:
 [Analysis of alignment with KONFRM's angular, structured brand identity vs. warmth requirements]
 
 PLATFORM/A11Y CONSTRAINTS:
-[WCAG contrast, touch target dimensions, RTL flow, platform conventions]
+[WCAG contrast, touch target dimensions, RTL flow, authoritative platform conventions]
 
 UNKNOWNS:
 [Assumptions that require real-world validation rather than AI speculation]

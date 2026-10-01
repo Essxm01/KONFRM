@@ -211,6 +211,10 @@ const forbiddenCanonPhrases = [
   { pattern: /instant notification of bank transfers/i, desc: 'Invented bank transfer notification guarantee' },
   { pattern: /zero[- ]lag/i, desc: 'Invented zero-lag calendar behavior' },
   { pattern: /dual[- ]check/i, desc: 'Invented Admin dual-check financial policy' },
+  { pattern: /no payment credentials or charges are taken before an owner explicitly approves/i, desc: 'Prototype card-credential behavior presented as global product rule' },
+  // Research claim hygiene & doctrine anchoring checks:
+  { pattern: /HIG.*10[–-]14pt/i, desc: 'Unsupported HIG 10-14pt radius claim' },
+  { pattern: /4px[–-]8px|10px[–-]16px/i, desc: 'Exact numeric radius ranges anchored in reasoning doctrine' },
 ];
 
 for (const skill of internalSkills) {
@@ -222,9 +226,17 @@ for (const skill of internalSkills) {
         fail(`Forbidden false-canon phrase in ${skill}/SKILL.md: ${desc}`);
       }
     }
+    // Check for unflagged categorical psychological claims outside quotes/prohibition blocks
+    const cleanText = text
+      .replace(/["'`*]users will feel[^"'`*]*["'`*]/gi, '')
+      .replace(/never claim:[^\n]*/gi, '')
+      .replace(/❌[^\n]*/g, '');
+    if (/users will feel\b/i.test(cleanText)) {
+      fail(`Forbidden categorical "users will feel" assertion in ${skill}/SKILL.md`);
+    }
   }
 }
-pass('Internal skill Canon vs Candidate discipline & product truth passed (0 false-canon phrases).');
+pass('Internal skill Canon vs Candidate discipline & research hygiene passed (0 false-canon phrases).');
 
 // 6. UI/UX Pro Max Write Flag Block Verification
 const runnerFile = path.join(CANONICAL_DIR, 'ui-ux-pro-max-wrapper', 'runner.py');

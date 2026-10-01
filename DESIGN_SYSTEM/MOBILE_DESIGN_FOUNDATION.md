@@ -1,7 +1,7 @@
 # KONFRM Mobile Design Foundation — v1
 
-**Status:** CANDIDATE CANONICAL SPECIFICATION — DF2
-Independent platform/accessibility/design-system review completed; required corrections applied; pending final Bridge verification.
+**Status:** CANONICAL SPECIFICATION — DF2
+Independent platform/accessibility/design-system review and final Bridge verification completed. DF2 is canonical.
 **Scope:** The design foundation governing future `mobile/customer_app`, `mobile/owner_app`, mobile design tokens, canonical mobile primitives, AI design Skills, visual QA and the controlled pilot.
 **Upstream authority (not reopened here):**
 

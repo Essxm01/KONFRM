@@ -272,16 +272,35 @@ if (fs.existsSync(testScript)) {
 const runnerFile = path.join(CANONICAL_DIR, 'ui-ux-pro-max-wrapper', 'runner.py');
 if (fs.existsSync(runnerFile)) {
   const runnerText = fs.readFileSync(runnerFile, 'utf8');
-  if (!runnerText.includes('allow_abbrev=False') || !runnerText.includes('FORBIDDEN_WRITE_PREFIXES')) {
-    fail('runner.py does not implement strict allow_abbrev=False and prefix validation');
+  if (!runnerText.includes('allow_abbrev=False')) {
+    fail('runner.py does not implement strict allow_abbrev=False');
   } else {
-    pass('UI/UX Pro Max runner.py strict parser and prefix guards verified.');
+    pass('UI/UX Pro Max runner.py strict parser (allow_abbrev=False) verified.');
   }
 } else {
   fail('runner.py missing in ui-ux-pro-max-wrapper');
 }
 
-// 7. Sandbox & Rejected Skill Isolation
+// 7. Vercel Licensing Boundary Verification
+const forbiddenVercelUpstreams = [
+  path.join(CANONICAL_DIR, 'vercel-composition-wrapper', 'vendor', 'UPSTREAM_SKILL.md'),
+  path.join(CANONICAL_DIR, 'vercel-web-guidelines-wrapper', 'vendor', 'UPSTREAM_SKILL.md'),
+];
+for (const p of forbiddenVercelUpstreams) {
+  if (fs.existsSync(p)) {
+    fail(`Unresolved verbatim Vercel upstream skill retained: ${path.relative(projectRoot, p)}`);
+  }
+}
+pass('Unresolved verbatim Vercel agent-skills files verified absent.');
+
+const vercelSnapshot = path.join(CANONICAL_DIR, 'vercel-web-guidelines-wrapper', 'vendor', 'web-interface-guidelines.md');
+if (!fs.existsSync(vercelSnapshot)) {
+  fail(`Missing documented Vercel Web Interface Guidelines snapshot at ${vercelSnapshot}`);
+} else {
+  pass('Documented Vercel Web Interface Guidelines snapshot verified present.');
+}
+
+// 8. Sandbox & Rejected Skill Isolation
 const forbiddenInstalledSkills = [
   'sleek-design-mobile-apps',
   'high-end-visual-design',

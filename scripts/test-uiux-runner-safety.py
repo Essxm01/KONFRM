@@ -69,24 +69,50 @@ for idx, vector in enumerate(NEGATIVE_VECTORS, 1):
 
         print(f"✓ PASS: Vector {idx} blocked correctly: {' '.join(vector[1:])}")
 
-# Positive test vector: Verify standard read-only query succeeds without side-effects
-print("\nVerifying legitimate read-only query...")
-with tempfile.TemporaryDirectory() as tmpdir:
-    positive_cmd = [sys.executable, str(RUNNER_SCRIPT), "contrast", "--domain", "ux", "--max-results", "1"]
-    res = subprocess.run(positive_cmd, cwd=tmpdir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    created_items = list(Path(tmpdir).iterdir())
+# Positive test vectors: Verify legitimate read-only options succeed without disk side-effects
+POSITIVE_VECTORS = [
+    ("normal domain query", ["contrast", "--domain", "ux", "--max-results", "1"]),
+    ("--json flag", ["contrast", "--domain", "ux", "--json", "--max-results", "1"]),
+    ("--full flag", ["contrast", "--domain", "ux", "--full", "--max-results", "1"]),
+    ("--stack option", ["button", "--stack", "react", "--max-results", "1"]),
+    ("--max-results option", ["button", "--domain", "style", "--max-results", "2"]),
+    ("--design-system without persistence", ["fintech", "--design-system"]),
+    ("--project-name option", ["fintech", "--design-system", "--project-name", "KONFRM_SAMPLE"]),
+    ("--format markdown option", ["fintech", "--design-system", "--format", "markdown"]),
+    ("--variance dial", ["fintech", "--design-system", "--variance", "5"]),
+    ("--motion dial", ["fintech", "--design-system", "--motion", "3"]),
+    ("--density dial", ["fintech", "--design-system", "--density", "8"]),
+    ("combined dials and format", ["booking", "--design-system", "-p", "KONFRM", "--format", "markdown", "--variance", "3", "--motion", "2", "--density", "9"]),
+]
 
-    if res.returncode != 0:
-        print(f"❌ FAIL: Read-only query failed with exit code {res.returncode}:\n{res.stderr}")
-        failures += 1
-    elif created_items:
-        print(f"❌ FAIL: Read-only query created unexpected files: {created_items}")
-        failures += 1
-    elif "[KONFRM CANON NOTICE]" not in res.stdout:
-        print(f"❌ FAIL: Advisory banner missing from output")
-        failures += 1
-    else:
-        print(f"✓ PASS: Legitimate read-only query succeeded safely (0 files created).")
+print("\nVerifying legitimate read-only queries (positive tests)...")
+for desc, vector in POSITIVE_VECTORS:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        cmd = [sys.executable, str(RUNNER_SCRIPT)] + vector
+        res = subprocess.run(cmd, cwd=tmpdir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        created_items = list(Path(tmpdir).iterdir())
+
+        if res.returncode != 0:
+            print(f"❌ FAIL: Positive test '{desc}' failed with exit code {res.returncode}:\n{res.stderr}")
+            failures += 1
+            continue
+
+        if created_items:
+            print(f"❌ FAIL: Positive test '{desc}' created unexpected files: {created_items}")
+            failures += 1
+            continue
+
+        if (REPO_ROOT / "design-system").exists():
+            print(f"❌ FAIL: Positive test '{desc}' created design-system/ in repository root!")
+            failures += 1
+            continue
+
+        if "--json" not in vector and "[KONFRM CANON NOTICE]" not in res.stdout:
+            print(f"❌ FAIL: Positive test '{desc}' missing advisory banner from stdout")
+            failures += 1
+            continue
+
+        print(f"✓ PASS: Legitimate query '{desc}' succeeded safely (0 writes).")
 
 print("=" * 70)
 if failures > 0:

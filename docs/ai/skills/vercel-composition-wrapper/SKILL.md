@@ -18,7 +18,7 @@ Wraps `vercel-labs/agent-skills` / `composition-patterns` (Commit `063bee94c3f4d
 ## 1. Application Scope: React Web Apps ONLY
 
 - **Permitted Scope:** Architectural design of React components located within `admin-app/` and current React prototypes (`customer-app/`, `owner-app/`).
-- **Strictly Prohibited:** NEVER apply React compound component or hook composition mental models to future Flutter mobile architecture. Flutter uses widget composition, InheritedWidgets, and native state management patterns.
+- **Strictly Prohibited:** Future Flutter applications follow the separately governed Gate3B Flutter architecture. React composition guidance must not cross that boundary.
 
 ---
 
@@ -50,7 +50,8 @@ Wraps `vercel-labs/agent-skills` / `composition-patterns` (Commit `063bee94c3f4d
 
 ---
 
-## 4. Upstream Reference
+## 4. Upstream Provenance & Reference
 
-The complete upstream guidance is preserved locally for reference at:
-`docs/ai/skills/vercel-composition-wrapper/vendor/UPSTREAM_SKILL.md`
+- **Upstream Repository:** `https://github.com/vercel-labs/agent-skills`
+- **Pinned Commit:** `063bee94c3f4df8453406c830b0a7df0f2860278`
+- **Source Path:** `skills/composition-patterns/SKILL.md` (the pinned file declares `license: MIT`, though the repository root lacks a general LICENSE file; retained as provenance reference only, with zero copied vendor files)

@@ -20,15 +20,14 @@ if not search_script.exists():
     print(f"[KONFRM ERROR]: Cannot locate search script at {search_script}", file=sys.stderr)
     sys.exit(1)
 
-# Pre-validation: Explicitly detect any write/persistence flags or their abbreviations
-FORBIDDEN_WRITE_PREFIXES = ("--per", "--out", "--pag", "--for", "-o")
+# Optional: exact forbidden write/persistence detection for clear error reporting
+EXACT_FORBIDDEN_OPTIONS = {"--persist", "--output-dir", "-o", "--page", "--force"}
 for arg in sys.argv[1:]:
-    lower_arg = arg.lower()
-    for prefix in FORBIDDEN_WRITE_PREFIXES:
-        if lower_arg == prefix or lower_arg.startswith(prefix + "=") or (prefix.startswith("--") and lower_arg.startswith(prefix)):
-            print(f"[KONFRM GUARDRAIL ERROR]: Forbidden write/persistence option detected: '{arg}'.", file=sys.stderr)
-            print("Persistence and disk mutations (--persist, --output-dir, -o, --page, --force) are strictly prohibited under KONFRM Canon.", file=sys.stderr)
-            sys.exit(1)
+    opt_name = arg.lower().split("=")[0]
+    if opt_name in EXACT_FORBIDDEN_OPTIONS:
+        print(f"[KONFRM GUARDRAIL ERROR]: Forbidden write/persistence option detected: '{arg}'.", file=sys.stderr)
+        print("Persistence and disk mutations (--persist, --output-dir, -o, --page, --force) are strictly prohibited under KONFRM Canon.", file=sys.stderr)
+        sys.exit(1)
 
 # Strict wrapper-owned parser with allow_abbrev=False to prevent prefix expansion
 parser = argparse.ArgumentParser(

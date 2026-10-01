@@ -49,7 +49,7 @@ python docs/ai/skills/ui-ux-pro-max-wrapper/runner.py "stacked bar" --domain cha
 python docs/ai/skills/ui-ux-pro-max-wrapper/runner.py "list performance" --stack flutter
 ```
 
-Available domains: `style`, `color`, `chart`, `landing`, `product`, `ux`, `typography`, `google-fonts`, `icons`, `gsap`, `react`, `web`.  
+Available domains: `style`, `color`, `chart`, `landing`, `product`, `ux`, `typography`, `google-fonts`, `icons`, `gsap`, `react`, `web`.
 Available stacks: `flutter`, `react`, `html-tailwind`, `nextjs`, etc.
 
 ---

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * KONFRM AI Design Skill Synchronizer
- * 
+ *
  * Generates lightweight discovery shims in .agents/skills/ and .zcode/skills/
  * pointing directly to the canonical source of truth in docs/ai/skills/.
  * Prevents PR bloat and duplicate storage while ensuring full discovery across
@@ -44,7 +44,7 @@ console.log();
 for (const targetDir of TARGET_DIRS) {
   const relTarget = path.relative(projectRoot, targetDir).replaceAll('\\', '/');
   console.log(`Generating thin discovery shims in -> ${relTarget}...`);
-  
+
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
   }

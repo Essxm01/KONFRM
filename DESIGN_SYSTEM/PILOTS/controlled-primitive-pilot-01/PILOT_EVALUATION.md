@@ -297,7 +297,7 @@ EVIDENCE NARROWED TO:
 ================================================================================
 ```
 
-*This evaluation report completes the Final Textual Evidence Closure Patch for Controlled Primitive Pilot 01. No code has been pushed or committed, and no values have been canonized.*
+*This evaluation report completes the Final Textual Evidence Closure Patch for Controlled Primitive Pilot 01. At the time of evidence-validation closure, no Pilot commit or push had yet been created. Repository checkpointing occurred subsequently after Founder selection and governance review, and no values have been canonized.*
 
 ---
 

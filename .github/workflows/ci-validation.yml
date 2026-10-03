@@ -59,7 +59,28 @@ jobs:
               - 'scripts/configurePagesEnv.cjs'
 
   # ----------------------------------------------------------------------------
-  # JOB 2: Validate Admin App
+  # JOB 2: Guard Canonical Repository References
+  # ----------------------------------------------------------------------------
+  canonical-repository-guard:
+    name: Validate Canonical Repository References
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Guard canonical repository identity
+        shell: bash
+        run: |
+          test "$GITHUB_REPOSITORY" = "Essxm01/KONFRM" || {
+            echo "CANONICAL_REPOSITORY_MISMATCH: $GITHUB_REPOSITORY"
+            exit 1
+          }
+          legacy_repo="Essxm01/SOLA-""APP"
+          if git grep -n -I "$legacy_repo" -- .github/workflows scripts backend; then
+            echo "STALE_FUNCTIONAL_REPOSITORY_REFERENCE"
+            exit 1
+          fi
+
+  # ----------------------------------------------------------------------------
+  # JOB 3: Validate Admin App
   # ----------------------------------------------------------------------------
   validate-admin:
     name: Validate Admin App

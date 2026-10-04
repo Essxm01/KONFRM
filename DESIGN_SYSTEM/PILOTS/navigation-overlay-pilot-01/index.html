@@ -23,7 +23,7 @@
       --field-radius: 8px;          /* Phase 4D Field-shaped controls */
       --struct-container-radius: 12px; /* Phase 4E Structural container provisional */
       --mobile-page-inset: 16px;    /* Phase 4E Page Inset provisional */
-      
+
       /* Colors */
       --accent-blue: #276EF1;       /* Restrained interaction accent candidate */
       --accent-blue-soft: #EAF1FF;
@@ -642,6 +642,7 @@
     <div class="title-group">
       <h1>KONFRM Phase 4F — نظام التنقل والطبقات الإضافية</h1>
       <span class="badge">PILOT 01</span>
+      <span class="badge" style="background:#475569;">LAB_SCENARIO_DATA (LAYOUT & PRESENTATION TESTING ONLY)</span>
     </div>
 
     <div class="controls-group">
@@ -649,7 +650,7 @@
       <select id="sel-candidate" onchange="updateView()">
         <option value="C">المرشح C: Role-Aware Contextual (الموصى به)</option>
         <option value="A">المرشح A: Persistence-First (التنقل الدائم)</option>
-        <option value="B">المرشح B: Immersive-Hierarchical (العمق الكامل)</option>
+        <option value="B">المرشح B: Immersive-Hierarchical (فرضية معمارية مستبعدة قبل الاختبار المرئي)</option>
       </select>
 
       <label class="control-label">الشاشة / التركيب:</label>
@@ -659,18 +660,17 @@
           <option value="cust-detail">2. تفاصيل الوحدة — المتداخل (Property Detail Nested)</option>
           <option value="cust-sheet">3. ورقة تصفية البحث (Search Filter Bottom Sheet)</option>
           <option value="cust-auth">4. المصادقة الكاملة (Auth V2 Full-Screen Route)</option>
-          <option value="cust-dialog">5. حوار إلغاء الحجز (Cancellation Consequence Dialog)</option>
         </optgroup>
         <optgroup label="المالك (Owner)">
-          <option value="owner-home">6. لوحة العمليات الأولى (Action-First Home — No Bottom Nav)</option>
-          <option value="owner-queue">7. قائمة طلبات الحجز (Bookings Operational Queue)</option>
-          <option value="owner-detail">8. تفاصيل الطلب والإجراء (Booking Decision Surface)</option>
-          <option value="owner-props">9. إدارة الوحدات والتقويم (Properties & Availability)</option>
-          <option value="owner-wallet">10. المحفظة والأرباح (Wallet & Payouts)</option>
-          <option value="owner-dialog">11. حوار رفض الطلب (Reject Consequence Dialog)</option>
+          <option value="owner-home">5. لوحة العمليات الأولى (Action-First Home — No Bottom Nav)</option>
+          <option value="owner-queue">6. قائمة طلبات الحجز (Bookings Operational Queue)</option>
+          <option value="owner-detail">7. تفاصيل الطلب والإجراء (Booking Decision Surface)</option>
+          <option value="owner-props">8. إدارة الوحدات والتقويم (Properties & Availability)</option>
+          <option value="owner-wallet">9. المحفظة والأرباح (Wallet & Payouts)</option>
+          <option value="owner-dialog">10. حوار رفض الطلب (Reject Consequence Dialog)</option>
         </optgroup>
         <optgroup label="لوحة الإدارة (Admin)">
-          <option value="admin-queue">12. مراجعة الوحدات المكتبية (Admin 1440 Desktop Boundary)</option>
+          <option value="admin-queue">11. مراجعة الوحدات المكتبية (Admin 1440 Desktop Boundary)</option>
         </optgroup>
       </select>
 
@@ -693,6 +693,13 @@
         <option value="16">16px (المتوازن الموصى به)</option>
         <option value="12">12px (مطابق للحاويات 4E)</option>
         <option value="20">20px (شديد الانحناء)</option>
+      </select>
+
+      <label class="control-label">استدارة الحوار:</label>
+      <select id="sel-dialog-radius" onchange="updateView()">
+        <option value="12">12px (المتوازن الموصى به)</option>
+        <option value="10">10px (بديل متقارب)</option>
+        <option value="16">16px (أكثر استدارة)</option>
       </select>
 
       <button class="btn-ctrl" onclick="toggleStress()">نصوص طويلة</button>
@@ -730,6 +737,7 @@
       if (p.has('viewport')) state.viewport = parseInt(p.get('viewport'), 10);
       if (p.has('scale')) state.scale = parseInt(p.get('scale'), 10);
       if (p.has('radius')) state.sheetRadius = parseInt(p.get('radius'), 10);
+      if (p.has('dialog_radius')) state.dialogRadius = parseInt(p.get('dialog_radius'), 10);
       if (p.has('stress')) state.stress = p.get('stress') === '1';
       if (p.has('keyboard')) state.keyboard = p.get('keyboard') === '1';
       if (p.has('embed')) state.embed = p.get('embed') === '1';
@@ -742,6 +750,7 @@
       document.getElementById('sel-viewport').value = state.viewport;
       document.getElementById('sel-scale').value = state.scale;
       document.getElementById('sel-sheet-radius').value = state.sheetRadius;
+      document.getElementById('sel-dialog-radius').value = state.dialogRadius;
     }
 
     function updateView() {
@@ -750,8 +759,10 @@
       state.viewport = parseInt(document.getElementById('sel-viewport').value, 10);
       state.scale = parseInt(document.getElementById('sel-scale').value, 10);
       state.sheetRadius = parseInt(document.getElementById('sel-sheet-radius').value, 10);
+      state.dialogRadius = parseInt(document.getElementById('sel-dialog-radius').value, 10);
 
       document.documentElement.style.setProperty('--sheet-radius', state.sheetRadius + 'px');
+      document.documentElement.style.setProperty('--dialog-radius', state.dialogRadius + 'px');
       if (state.scale === 200) {
         document.body.classList.add('scale-200');
       } else {
@@ -929,7 +940,7 @@
             <div class="card-container"><div style="height:120px; background:#CBD5E1;"></div></div>
           </div>
           ${customerBottomNav('EXPLORE')}
-          
+
           <!-- Bottom Sheet Overlay -->
           <div class="sheet-overlay">
             <div class="bottom-sheet">
@@ -1010,38 +1021,7 @@
         `;
       }
 
-      // SCREEN 5: Customer Booking Cancellation Consequence Dialog
-      else if (state.screen === 'cust-dialog') {
-        html = `
-          ${statusBar}
-          <!-- Underlying Screen -->
-          <header class="app-bar">
-            <button class="back-btn">➔</button>
-            <span class="bar-title">حجوزاتي</span>
-          </header>
-          <div class="screen-content" style="opacity:0.25;">
-            <div class="card-container"><h3 class="container-title">${t.propTitle}</h3></div>
-          </div>
-          ${customerBottomNav('BOOKINGS')}
-
-          <!-- Centered Consequential Dialog -->
-          <div class="dialog-overlay">
-            <div class="confirmation-dialog">
-              <h3 class="dialog-title">هل أنت متأكد من إلغاء طلب الحجز؟</h3>
-              <p class="dialog-body-text">
-                سيتم إلغاء طلب الحجز رقم ${t.unitId} نهائيًا وإعادة فتح التواريخ للضيوف الآخرين. لن يتم خصم أي مبالغ.
-              </p>
-              <div class="dialog-actions">
-                <button class="btn-dialog-cancel">تراجع</button>
-                <button class="btn-dialog-confirm-danger">تأكيد الإلغاء</button>
-              </div>
-            </div>
-          </div>
-          ${homeIndicator}
-        `;
-      }
-
-      // SCREEN 6: Owner Action-First Home (Top-Level Operational Hub — NO BOTTOM NAV)
+      // SCREEN 5: Owner Action-First Home (Top-Level Operational Hub — NO BOTTOM NAV)
       else if (state.screen === 'owner-home') {
         html = `
           ${statusBar}
@@ -1059,8 +1039,8 @@
             <!-- Action Needed Banner -->
             <div style="padding:14px; background:#FEF2F2; border:1px solid #FCA5A5; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
               <div>
-                <span style="font-size:13px; font-weight:700; color:#991B1B;">لديك طلب حجز معلق بانتظار الرد</span>
-                <p style="font-size:11px; color:#B91C1C; margin-top:2px;">ينتهي وقت الرد خلال 4 ساعات</p>
+                <span style="font-size:13px; font-weight:700; color:#991B1B;">طلب حجز جديد بانتظار ردك</span>
+                <p style="font-size:11px; color:#B91C1C; margin-top:2px;">فيلا الشاطئ • الضيف: سارة عبد العزيز</p>
               </div>
               <button style="padding:6px 12px; background:#DC2626; color:#FFF; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">مراجعة الطلب</button>
             </div>
@@ -1206,7 +1186,7 @@
         `;
       }
 
-      // SCREEN 11: Owner Reject Booking Consequence Dialog
+      // SCREEN 10: Owner Reject Booking Consequence Dialog
       else if (state.screen === 'owner-dialog') {
         html = `
           ${statusBar}
@@ -1221,7 +1201,7 @@
             <div class="confirmation-dialog">
               <h3 class="dialog-title">هل أنت متأكد من رفض طلب الحجز؟</h3>
               <p class="dialog-body-text">
-                سيتم إخطار الضيف ${t.guestName} برفض الطلب، ولن يتم حجز التواريخ. لن يؤثر هذا الإجراء سلبًا على تصنيفك إذا تم خلال المهلة المحددة.
+                سيتم رفض طلب الحجز ولن ينتقل هذا الطلب إلى خطوة دفع العربون.
               </p>
               <div class="dialog-actions">
                 <button class="btn-dialog-cancel">تراجع</button>

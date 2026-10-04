@@ -18,7 +18,7 @@ This manifest lists exclusively the current authoritative visual artifacts suppo
 | `pure_black_coherence_roles.png` | Cross-role comparison of Pure Black `#000000` across Customer hospitality and Owner operational control surfaces. | 390px (iPhone Standard) / Scale: 100% |
 | `pure_black_repeated_primary_density.png` | Operational density check across 3 consecutive Owner booking request cards (#KNF-88219, #KNF-88220, #KNF-88221). | 390px (iPhone Standard) / Scale: 100% |
 | `hybrid_destructive_primary_pairing.png` | Destructive action pairings: proportional 1.2:1 (Approve/Reject), equal 50/50 split, and vertical stacking with neutral test labels. | 390px (iPhone Standard) / Scale: 100% |
-| `hybrid_action_360_stress_reflow.png` | Stress test at 360px viewport under 200% text scale demonstrating the Action Group Reflow Contract (horizontal breakdown vs stacked solution). | 360px (Compact) / Scale: 200% |
+| `hybrid_action_360_stress_reflow.png` | 360px controlled local comparison: 100% horizontal baseline (15px) vs true 200% horizontal stress (30px) vs true 200% stacked reflow (30px). | 360px (Compact) / Scoped Local: 100% (15px) vs True 200% (30px) |
 | `pure_black_interaction_states.png` | Required action states for Pure Black `#000000`: Idle, Pressed, Focus-Visible (double ring), Loading (`aria-busy="true"` + `disabled`), and Disabled. | 390px (iPhone Standard) / Scale: 100% |
 | `destructive_focus_states.png` | Explicit visible keyboard focus evidence for destructive variants: Destructive Primary, Destructive Outline, and Destructive Ghost. | 390px (iPhone Standard) / Scale: 100% |
 

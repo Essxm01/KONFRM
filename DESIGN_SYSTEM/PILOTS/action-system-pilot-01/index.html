@@ -486,9 +486,29 @@
       padding: 8px 10px;
       text-align: right;
     }
-    .dialectic-table th {
-      background: var(--kf-color-surface-subtle);
-      font-weight: 700;
+    /* ========================================================= */
+    /* SECTION 8: DETERMINISTIC SELF-CONTAINED STRESS COMPARISON */
+    /* ========================================================= */
+    #sec-reflow-stress .stress-baseline-100 {
+      --kf-scale: 1.0 !important;
+    }
+    #sec-reflow-stress .stress-baseline-100 .kf-btn {
+      font-size: 15px !important; /* Cairo Profile B Button Baseline: 15px * 1.0 = 15px */
+      line-height: 1.20 !important;
+      min-height: 48px !important;
+      padding: 12px 16px !important;
+      word-break: normal !important;
+    }
+
+    #sec-reflow-stress .stress-condition-200 {
+      --kf-scale: 2.0 !important;
+    }
+    #sec-reflow-stress .stress-condition-200 .kf-btn {
+      font-size: 30px !important; /* Cairo Profile B Button True 200%: 15px * 2.0 = 30px */
+      line-height: 1.20 !important;
+      min-height: 56px !important;
+      padding: 12px 14px !important;
+      word-break: normal !important;
     }
   </style>
 </head>
@@ -816,29 +836,30 @@
         <div class="section-header">
           <h2 class="section-title">8. فحص الإجهاد وعقد تدفق المجموعات <span class="en-tag" dir="ltr">(360px Stress & Reflow Contract)</span></h2>
           <p class="section-desc">
-            فحص استجابة المجموعات تحت ضيق الشاشة (360px) والتكبير (200%). يوضح المعمل حالة الانكسار عند التوزيع الأفقي وحالة الحل عند تفعيل عقد التدفق الرأسي.
+            مقارنة ذاتية محكومة على عرض 360px: الأساس الأفقي عند 100% (15px) مقابل إجهاد التكبير الحقيقي 200% (30px) أفقياً ورأسياً، لإثبات ضرورة عقد التدفق الرأسي عند انكسار التوزيع الأفقي.
           </p>
         </div>
 
         <div class="card-box">
-          <div class="card-title">أ. التوزيع الأفقي عند مقياس 100% <span class="en-tag" dir="ltr">(Standard Horizontal Pairing — 100%)</span></div>
-          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <div class="card-title">أ. التوزيع الأفقي الأساسي عند مقياس 100% الحقيقي (15px) <span class="en-tag" dir="ltr">(True 100% Horizontal Baseline — 15px)</span></div>
+          <p style="font-size: 11px; color: var(--kf-color-text-secondary); margin-bottom: 8px;">توزيع أفقي طبيعي ومحكوم: حجم خط 15px، كلمات عربية تامة ومكتملة، واستقرار هندسي وبصري كامل:</p>
+          <div class="stress-baseline-100" style="display: flex; gap: 8px; margin-bottom: 24px;">
             <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
             <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
           </div>
 
-          <div class="card-title">ب. حالة الانكسار عند تكبير 200% بدون تدفق <span class="en-tag" dir="ltr">(Horizontal Breakdown Mode — 200%)</span></div>
-          <p style="font-size: 11px; color: var(--kf-color-danger); margin-bottom: 6px;">تفتت الكلمات وتقطيع الحروف بسبب ضيق العرض المتاح لكل زر (~140px):</p>
-          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <button class="kf-btn kf-btn-primary" style="flex: 1; font-size: 18px; padding: 8px 4px;">الموافقة على الطلب</button>
-            <button class="kf-btn kf-btn-danger-outline" style="flex: 1; font-size: 18px; padding: 8px 4px;">رفض الطلب</button>
+          <div class="card-title">ب. حالة الانكسار الأفقي عند تكبير 200% الحقيقي (30px) <span class="en-tag" dir="ltr">(True 200% Horizontal Failure — 30px)</span></div>
+          <p style="font-size: 11px; color: var(--kf-color-danger); margin-bottom: 8px;">انكسار التوزيع الأفقي الطبيعي: يضطر النص بحجم 30px للانكسار على أسطر متعددة ضيقة مع تضخم ارتفاع الزر وضيق المساحة اللمسية الأفقية في العرض المتاح (~140px):</p>
+          <div class="stress-condition-200" style="display: flex; gap: 8px; margin-bottom: 24px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+            <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
           </div>
 
-          <div class="card-title">ج. الحل المعتمد: عقد التدفق الرأسي عند تكبير 200% <span class="en-tag" dir="ltr">(Reflow Contract Applied)</span></div>
-          <p style="font-size: 11px; color: #166534; margin-bottom: 6px;">تراص رأسي كامل يحافظ على اكتمال الكلمات وسلامة الهدف اللمسي:</p>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <button class="kf-btn kf-btn-primary kf-btn-full" style="font-size: 18px;">الموافقة على طلب الحجز وتأكيد الميعاد</button>
-            <button class="kf-btn kf-btn-danger-outline kf-btn-full" style="font-size: 18px;">رفض طلب الحجز وإشعار الضيف</button>
+          <div class="card-title">ج. الحل المعتمد: تطبيق عقد التدفق الرأسي عند تكبير 200% الحقيقي (30px) <span class="en-tag" dir="ltr">(True 200% Stacked Reflow — 30px)</span></div>
+          <p style="font-size: 11px; color: #166534; margin-bottom: 8px;">تراص رأسي كامل (100% Width): استيعاب كامل لحجم الخط 30px، كلمات عربية تامة دون انكسار قسري، سلامة تامة للهدف اللمسي، وحفظ التسلسل الهرمي:</p>
+          <div class="stress-condition-200" style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="kf-btn kf-btn-primary kf-btn-full">الموافقة على الطلب</button>
+            <button class="kf-btn kf-btn-danger-outline kf-btn-full">رفض الطلب</button>
           </div>
         </div>
       </section>

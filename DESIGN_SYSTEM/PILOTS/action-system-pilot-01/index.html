@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONFRM Action System Pilot 01 — معمل الأزرار والإجراءات (Phase 4C)</title>
+  <style>
+    @font-face {
+      font-family: 'Cairo';
+      src: url('fonts/Cairo-VariableFont.ttf') format('truetype');
+      font-weight: 200 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      /* Pinned Typography: Cairo Profile B (Mobile Balanced Candidate) */
+      --kf-font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      --kf-type-button-size: 15px;
+      --kf-type-button-weight: 700;
+      --kf-type-button-lh: 1.20;
+
+      /* Primary Button Radius (Locked Provisional 6px) */
+      --kf-radius-primary: 6px;
+
+      /* Color Authorities: Stable Black Strategy (Stage 2 Founder Preference) */
+      --kf-black-candidate-preferred: #000000; /* Founder Preferred Exact Black Candidate */
+      --kf-black-candidate-fallback: #18181B;  /* Fallback Comparator */
+
+      /* Active Primary Black (Default: Founder Preferred Candidate #000000) */
+      --kf-primary-black: var(--kf-black-candidate-preferred);
+
+      /* Exact Blue: OPEN (Pilot candidate #276EF1) */
+      --kf-accent-blue: #276EF1;
+
+      /* Neutrals & Borders: OPEN (Pilot rendering values) */
+      --kf-color-surface: #FFFFFF;
+      --kf-color-bg: #F8FAFC;
+      --kf-color-surface-subtle: #F1F5F9;
+      --kf-color-border-subtle: #E2E8F0;
+      --kf-color-border-strong: #CBD5E1;
+      --kf-color-text-primary: #0F172A;
+      --kf-color-text-secondary: #475569;
+      --kf-color-text-muted: #94A3B8;
+
+      /* Destructive (Candidate) */
+      --kf-color-danger: #DC2626;
+      --kf-color-danger-subtle: #FEF2F2;
+      --kf-color-danger-border: #FCA5A5;
+
+      /* Active Scale Multiplier */
+      --kf-scale: 1.0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--kf-font-family);
+      background-color: var(--kf-color-bg);
+      color: var(--kf-color-text-primary);
+      line-height: 1.5;
+      direction: rtl;
+      text-align: right;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Bidi Sub-run Isolation Utility */
+    .en-tag {
+      direction: ltr;
+      unicode-bidi: isolate;
+      display: inline-block;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 0.9em;
+      opacity: 0.85;
+    }
+
+    /* Governance Top Disclaimer Banner (Neutral Lab Chrome — UX-COLOR-01 Compliant) */
+    .governance-disclaimer {
+      background-color: #FFFFFF;
+      border: 1px solid var(--kf-color-border-subtle);
+      color: var(--kf-color-text-secondary);
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .governance-disclaimer strong,
+    .governance-disclaimer .disclaimer-title {
+      color: var(--kf-color-text-primary);
+      font-weight: 700;
+    }
+
+    /* Lab Header */
+    .lab-header {
+      background: #FFFFFF;
+      border: 1px solid var(--kf-color-border-subtle);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+    .lab-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--kf-color-text-primary);
+    }
+    .lab-subtitle {
+      font-size: 13px;
+      color: var(--kf-color-text-secondary);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    /* Lab Controls Bar */
+    .controls-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid var(--kf-color-border-subtle);
+      font-size: 13px;
+    }
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .control-label {
+      font-weight: 600;
+      color: var(--kf-color-text-secondary);
+      margin-left: 4px;
+    }
+    .control-btn {
+      font-family: var(--kf-font-family);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border: 1px solid var(--kf-color-border-strong);
+      background: #FFFFFF;
+      color: var(--kf-color-text-primary);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .control-btn:hover {
+      background: var(--kf-color-surface-subtle);
+    }
+    .control-btn.active {
+      background: var(--kf-primary-black);
+      color: #FFFFFF;
+      border-color: var(--kf-primary-black);
+    }
+
+    /* Frame Wrapper */
+    .lab-viewport-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 32px;
+      transition: width 0.2s ease;
+    }
+    .lab-frame {
+      width: 100%;
+      max-width: 390px; /* Default: iPhone standard */
+      background: #FFFFFF;
+      border: 1px solid var(--kf-color-border-subtle);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      transition: max-width 0.2s ease;
+    }
+
+    /* Section Styling */
+    .section-block {
+      margin-bottom: 40px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--kf-color-border-subtle);
+    }
+    .section-block:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .section-header {
+      margin-bottom: 18px;
+    }
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--kf-color-text-primary);
+      margin-bottom: 4px;
+    }
+    .section-desc {
+      font-size: 12px;
+      color: var(--kf-color-text-secondary);
+      line-height: 1.4;
+    }
+
+    /* Card Box */
+    .card-box {
+      background: #FFFFFF;
+      border: 1px solid var(--kf-color-border-subtle);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--kf-color-text-primary);
+      margin-bottom: 12px;
+    }
+
+    /* ========================================================= */
+    /* THE ACTION SYSTEM STYLES (Phase 4C Candidates)            */
+    /* ========================================================= */
+
+    .kf-btn {
+      font-family: var(--kf-font-family);
+      font-size: calc(var(--kf-type-button-size) * var(--kf-scale));
+      font-weight: var(--kf-type-button-weight);
+      line-height: var(--kf-type-button-lh);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.08s ease, opacity 0.15s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      position: relative;
+      white-space: normal;
+      word-break: break-word;
+      min-height: 48px; /* Web pilot rendering min-height only — not cross-platform touch-target authority */
+      padding: 12px 20px;
+    }
+
+    /* Touch target container representation (iOS 44pt / Android 48dp) */
+    .touch-target-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .target-boundary-box {
+      position: absolute;
+      border: 1px dashed rgba(220, 38, 38, 0.45);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+    .target-ios { width: 44px; height: 44px; }
+    .target-android { width: 48px; height: 48px; }
+
+    /* PRIMARY ACTION (Stable Black Strategy, 6px radius) */
+    .kf-btn-primary {
+      background-color: var(--kf-primary-black);
+      color: #FFFFFF;
+      border: 1px solid var(--kf-primary-black);
+      border-radius: var(--kf-radius-primary);
+    }
+    .kf-btn-primary:active {
+      transform: scale(0.98);
+      filter: brightness(0.90);
+    }
+    .kf-btn-primary:focus-visible,
+    .kf-btn-primary.is-focused {
+      outline: none;
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-primary-black);
+    }
+
+    /* SECONDARY CANDIDATE 1: OUTLINE */
+    .kf-btn-secondary-outline {
+      background-color: transparent;
+      color: var(--kf-color-text-primary);
+      border: 1.5px solid var(--kf-color-border-strong);
+      border-radius: var(--kf-radius-primary);
+    }
+    .kf-btn-secondary-outline:active {
+      transform: scale(0.98);
+      background-color: var(--kf-color-surface-subtle);
+    }
+    .kf-btn-secondary-outline:focus-visible,
+    .kf-btn-secondary-outline.is-focused {
+      outline: none;
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-primary-black);
+      background-color: var(--kf-color-surface-subtle);
+    }
+
+    /* SECONDARY CANDIDATE 2: NEUTRAL SUBTLE FILL */
+    .kf-btn-secondary-fill {
+      background-color: var(--kf-color-surface-subtle);
+      color: var(--kf-color-text-primary);
+      border: 1px solid transparent;
+      border-radius: var(--kf-radius-primary);
+    }
+    .kf-btn-secondary-fill:active {
+      transform: scale(0.98);
+      background-color: #E2E8F0;
+    }
+    .kf-btn-secondary-fill:focus-visible,
+    .kf-btn-secondary-fill.is-focused {
+      outline: none;
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-primary-black);
+    }
+
+    /* SECONDARY CANDIDATE 3: GHOST / TEXT-LIKE */
+    .kf-btn-secondary-ghost {
+      background-color: transparent;
+      color: var(--kf-color-text-primary);
+      border: 1px solid transparent;
+      border-radius: var(--kf-radius-primary);
+    }
+    .kf-btn-secondary-ghost:active {
+      transform: scale(0.98);
+      background-color: var(--kf-color-surface-subtle);
+    }
+    .kf-btn-secondary-ghost:focus-visible,
+    .kf-btn-secondary-ghost.is-focused {
+      outline: none;
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-primary-black);
+      background-color: var(--kf-color-surface-subtle);
+    }
+
+    /* DESTRUCTIVE ACTION (Primary & Outline & Ghost) */
+    .kf-btn-danger-primary {
+      background-color: var(--kf-color-danger);
+      color: #FFFFFF;
+      border: 1px solid var(--kf-color-danger);
+      border-radius: var(--kf-radius-primary);
+    }
+    .kf-btn-danger-primary:active {
+      transform: scale(0.98);
+      filter: brightness(0.90);
+    }
+    .kf-btn-danger-primary:focus-visible,
+    .kf-btn-danger-primary.is-focused {
+      outline: none;
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-color-danger);
+    }
+
+    .kf-btn-danger-outline {
+      background-color: transparent;
+      color: var(--kf-color-danger);
+      border: 1.5px solid var(--kf-color-danger-border);
+      border-radius: var(--kf-radius-primary);
+    }
+    .kf-btn-danger-outline:active {
+      transform: scale(0.98);
+      background-color: var(--kf-color-danger-subtle);
+    }
+    .kf-btn-danger-outline:focus-visible,
+    .kf-btn-danger-outline.is-focused {
+      outline: none;
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-color-danger);
+      background-color: var(--kf-color-danger-subtle);
+    }
+
+    .kf-btn-danger-ghost {
+      background-color: transparent;
+      color: var(--kf-color-danger);
+      border: 1px solid transparent;
+      border-radius: var(--kf-radius-primary);
+    }
+    .kf-btn-danger-ghost:active {
+      transform: scale(0.98);
+      background-color: var(--kf-color-danger-subtle);
+    }
+    .kf-btn-danger-ghost:focus-visible,
+    .kf-btn-danger-ghost.is-focused {
+      outline: none;
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-color-danger);
+      background-color: var(--kf-color-danger-subtle);
+    }
+
+    /* ICON BUTTON (Standalone 44x44 or 48x48) */
+    .kf-btn-icon {
+      width: 44px;
+      height: 44px;
+      min-height: 44px;
+      padding: 0;
+      border-radius: var(--kf-radius-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 1px solid var(--kf-color-border-subtle);
+      color: var(--kf-color-text-primary);
+      cursor: pointer;
+    }
+    .kf-btn-icon:active {
+      transform: scale(0.96);
+      background: var(--kf-color-surface-subtle);
+    }
+    .kf-btn-icon:focus-visible,
+    .kf-btn-icon.is-focused {
+      outline: none;
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-primary-black);
+      background: var(--kf-color-surface-subtle);
+    }
+
+    /* STATES: LOADING & DISABLED */
+    .kf-btn:disabled:not(.is-loading),
+    .kf-btn.is-disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      pointer-events: none;
+      transform: none !important;
+    }
+    .kf-btn.is-loading,
+    .kf-btn.is-loading:disabled,
+    .kf-btn[aria-busy="true"]:disabled {
+      cursor: wait;
+      pointer-events: none;
+      opacity: 0.85; /* Visually distinct from disabled: maintains high text contrast and active feel */
+    }
+    .kf-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .kf-btn-secondary-outline .kf-spinner,
+    .kf-btn-secondary-fill .kf-spinner,
+    .kf-btn-secondary-ghost .kf-spinner {
+      border: 2px solid rgba(15, 23, 42, 0.2);
+      border-top-color: var(--kf-primary-black);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* FULL WIDTH BUTTON */
+    .kf-btn-full {
+      width: 100%;
+    }
+
+    /* STICKY BOTTOM BAR MOCKUP */
+    .sticky-bar-mockup {
+      background: #FFFFFF;
+      border: 1px solid var(--kf-color-border-subtle);
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
+    }
+    .price-cluster {
+      display: flex;
+      flex-direction: column;
+    }
+    .price-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--kf-primary-black);
+    }
+    .price-sub {
+      font-size: 11px;
+      color: var(--kf-color-text-muted);
+    }
+
+    /* DIALECTIC ANALYSIS TABLE */
+    .dialectic-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 14px;
+    }
+    .dialectic-table th, .dialectic-table td {
+      border: 1px solid var(--kf-color-border-subtle);
+      padding: 8px 10px;
+      text-align: right;
+    }
+    /* ========================================================= */
+    /* SECTION 8: DETERMINISTIC SELF-CONTAINED STRESS COMPARISON */
+    /* ========================================================= */
+    #sec-reflow-stress .stress-baseline-100 {
+      --kf-scale: 1.0 !important;
+    }
+    #sec-reflow-stress .stress-baseline-100 .kf-btn {
+      font-size: 15px !important; /* Cairo Profile B Button Baseline: 15px * 1.0 = 15px */
+      line-height: 1.20 !important;
+      min-height: 48px !important;
+      padding: 12px 16px !important;
+      word-break: normal !important;
+    }
+
+    #sec-reflow-stress .stress-condition-200 {
+      --kf-scale: 2.0 !important;
+    }
+    #sec-reflow-stress .stress-condition-200 .kf-btn {
+      font-size: 30px !important; /* Cairo Profile B Button True 200%: 15px * 2.0 = 30px */
+      line-height: 1.20 !important;
+      min-height: 56px !important;
+      padding: 12px 14px !important;
+      word-break: normal !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Synthetic Test Data Governance Disclaimer (Neutral Lab Chrome — UX-COLOR-01 Compliant) -->
+  <aside class="governance-disclaimer" aria-label="إشعار بيانات الاختبار">
+    <div class="disclaimer-title" style="margin-bottom: 4px;">
+      إشعار حوكمة البيانات التجريبية <span class="en-tag" dir="ltr">(Synthetic Test Data Governance Disclaimer)</span>:
+    </div>
+    <div>
+      محتوى تجريبي تركيبي واقعي <span class="en-tag" dir="ltr">(REALISTIC SYNTHETIC TEST CONTENT)</span> • لا يمثل بيانات إنتاجية حقيقية <span class="en-tag" dir="ltr">(NOT PRODUCTION DATA)</span> • خالٍ تماماً من التقييمات أو المراجعات أو إشارات الندرة المصطنعة <span class="en-tag" dir="ltr">(NO FAKE RATINGS / REVIEWS / SCARCITY)</span>. جميع السيناريوهات مخصصة حصراً لاختبار وهندسة نظام الأزرار <span class="en-tag" dir="ltr">(Phase 4C)</span>.
+    </div>
+  </aside>
+
+  <!-- Lab Header & Interactive Switchers -->
+  <header class="lab-header">
+    <h1 class="lab-title">KONFRM Action System Pilot 01 — معمل الأزرار والإجراءات</h1>
+    <p class="lab-subtitle">
+      Phase 4C Stage 2 System Coherence | Cairo Profile B (15 / 700 / 1.20) + 6px Primary Radius + Preferred Black #000000 + Contextual Hybrid Grammar
+    </p>
+
+    <!-- Controls Panel -->
+    <div class="controls-panel">
+      <!-- Viewport Switcher -->
+      <div class="control-group">
+        <span class="control-label">عرض الإطار:</span>
+        <button class="control-btn" id="vp360" onclick="setViewport('360px', this)">360px (مدمج)</button>
+        <button class="control-btn active" id="vp390" onclick="setViewport('390px', this)">390px (قياسي)</button>
+        <button class="control-btn" id="vp430" onclick="setViewport('430px', this)">430px (عريض)</button>
+        <button class="control-btn" id="vpFull" onclick="setViewport('100%', this)">عرض كامل</button>
+      </div>
+
+      <!-- Text Scaling Switcher -->
+      <div class="control-group">
+        <span class="control-label">تكبير النص:</span>
+        <button class="control-btn active" id="sc100" onclick="setScale(1.0, this)">100%</button>
+        <button class="control-btn" id="sc125" onclick="setScale(1.25, this)">125%</button>
+        <button class="control-btn" id="sc150" onclick="setScale(1.5, this)">150%</button>
+        <button class="control-btn" id="sc200" onclick="setScale(2.0, this)">200%</button>
+      </div>
+
+      <!-- Stable Black Candidate Switcher (Stage 2: Preferred #000000 vs Fallback #18181B) -->
+      <div class="control-group">
+        <span class="control-label">درجة الأسود:</span>
+        <button class="control-btn active" id="bkPreferred" onclick="setBlack('#000000', this)">#000000 (المفضل للمؤسس)</button>
+        <button class="control-btn" id="bkFallback" onclick="setBlack('#18181B', this)">#18181B (احتياطي للمقارنة)</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="lab-viewport-container">
+    <main class="lab-frame" id="labFrame">
+
+      <!-- SECTION 1: PRIMARY ACTION CONTRACT -->
+      <section class="section-block" id="sec-primary">
+        <div class="section-header">
+          <h2 class="section-title">1. عقد الزر الرئيسي <span class="en-tag" dir="ltr">(Primary Action Contract)</span></h2>
+          <p class="section-desc">خط كايرو Profile B (15 / 700 / 1.20) مع نصف قطر 6px واستراتيجية الأسود المستقر (Stable Black).</p>
+        </div>
+
+        <div class="card-box">
+          <div class="card-title">الحالات الأساسية للزر الرئيسي</div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">الافتراضي <span class="en-tag" dir="ltr">(Default)</span>:</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full">طلب الحجز الآن</button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">جاري المعالجة <span class="en-tag" dir="ltr">(Loading — aria-busy)</span>:</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full is-loading" aria-busy="true" disabled>
+                <span class="kf-spinner"></span>
+                <span>جاري إرسال الطلب...</span>
+              </button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">غير متاح <span class="en-tag" dir="ltr">(Disabled)</span>:</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full is-disabled" disabled>تأكيد الحجز (غير متاح)</button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">أيقونة مرافقة بالبداية <span class="en-tag" dir="ltr">(Leading Icon RTL)</span>:</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <span>متابعة إلى الخطوة التالية</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: SECONDARY CANDIDATES COMPARISON -->
+      <section class="section-block" id="sec-secondary">
+        <div class="section-header">
+          <h2 class="section-title">2. مقارنة بدائل الزر الثانوي <span class="en-tag" dir="ltr">(Secondary Action Candidates)</span></h2>
+          <p class="section-desc">
+            مقارنة استراتيجيات المعالجة البصرية للزر الثانوي لاختبار التدرج البصري والهدوء في الشاشات المدمجة.<br>
+            <strong>تنويه حوكمي:</strong> نصف القطر 6px هنا هو <em>متغير ضبط تجريبي للمقارنة العادلة فقط (Controlled Comparison Variable)</em> وليس نصف قطر معتمد للزر الثانوي (نصف القطر 6px محصور حصراً بالزر الرئيسي Primary Only). كما أن قيم الألوان الرمادية (#F1F5F9 و #CBD5E1) هي <em>قيم عرض معملية تجريبية فقط</em>، واختيار استراتيجية المعالجة مستقل تماماً عن اعتماد كود اللون النهائي المتروك مفتوحاً (Exact Neutrals: OPEN).
+          </p>
+        </div>
+
+        <!-- Candidate 1: Outline -->
+        <div class="card-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div class="card-title" style="margin-bottom: 0;">البديل الأول: خطي <span class="en-tag" dir="ltr">(Outline Strategy)</span></div>
+            <span style="font-size: 10px; background: #EEF2F6; padding: 2px 6px; border-radius: 4px; font-weight: 700;">حد 1.5px (تجريبي #CBD5E1)</span>
+          </div>
+          <p style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 12px;">حد خارجي 1.5px مع خلفية شفافة ونصف قطر تجريبي 6px لضبط المقارنة البصرية مع الزر الرئيسي.</p>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="kf-btn kf-btn-secondary-outline kf-btn-full">تعديل البيانات</button>
+            <button class="kf-btn kf-btn-secondary-outline kf-btn-full is-disabled" disabled>تعديل البيانات (غير متاح)</button>
+          </div>
+        </div>
+
+        <!-- Candidate 2: Subtle Fill -->
+        <div class="card-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div class="card-title" style="margin-bottom: 0;">البديل الثاني: تعبئة ناعمة <span class="en-tag" dir="ltr">(Subtle Fill Strategy)</span></div>
+            <span style="font-size: 10px; background: #EEF2F6; padding: 2px 6px; border-radius: 4px; font-weight: 700;">تعبئة تجريبية (#F1F5F9)</span>
+          </div>
+          <p style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 12px;">تعبئة رمادية ناعمة بدون خطوط خارجية حادة لتقليل الضوضاء البصرية. (قيمة اللون المعروضة تجريبية للعرض فقط؛ الكود المحايد النهائي يبقى OPEN).</p>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="kf-btn kf-btn-secondary-fill kf-btn-full">تعديل البيانات</button>
+            <button class="kf-btn kf-btn-secondary-fill kf-btn-full is-disabled" disabled>تعديل البيانات (غير متاح)</button>
+          </div>
+        </div>
+
+        <!-- Candidate 3: Ghost -->
+        <div class="card-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div class="card-title" style="margin-bottom: 0;">البديل الثالث: شفاف / نصي <span class="en-tag" dir="ltr">(Ghost / Text-like)</span></div>
+            <span style="font-size: 10px; background: #EEF2F6; padding: 2px 6px; border-radius: 4px; font-weight: 700;">شفاف بالكامل</span>
+          </div>
+          <p style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 12px;">بدون إطار أو تعبئة، يعتمد على المساحة اللمسية الصريحة ووضوح النص (يُصنف كإجراء ثالث أو ثانوي ذي وزن منخفض ما لم يثبت كفاية إدراكه اللمسي).</p>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full">تعديل البيانات</button>
+            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full is-disabled" disabled>تعديل البيانات (غير متاح)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: PAIRINGS & STACKING -->
+      <section class="section-block" id="sec-pairings">
+        <div class="section-header">
+          <h2 class="section-title">3. أنماط الاقتران والترتيب <span class="en-tag" dir="ltr">(Action Pairings & Stacking)</span></h2>
+          <p class="section-desc">اختبار الأزرار المتجاورة والمتراصة رأسياً لمنع الالتباس على الشاشات اللمسية.</p>
+        </div>
+
+        <div class="card-box">
+          <div class="card-title">الاقتران الأفقي المزدوج <span class="en-tag" dir="ltr">(Side-by-Side 50/50)</span></div>
+          <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1;">تأكيد الطلب</button>
+            <button class="kf-btn kf-btn-secondary-fill" style="flex: 1;">تراجع</button>
+          </div>
+
+          <div class="card-title">التراص الرأسي الكامل <span class="en-tag" dir="ltr">(Vertical Stacking)</span></div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="kf-btn kf-btn-primary kf-btn-full">إرسال طلب الحجز للطرف الآخر</button>
+            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full">الرجوع ومراجعة الشروط</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: DESTRUCTIVE ACTIONS -->
+      <section class="section-block" id="sec-destructive">
+        <div class="section-header">
+          <h2 class="section-title">4. الإجراءات الحذرة والتحذيرية <span class="en-tag" dir="ltr">(Destructive Actions)</span></h2>
+          <p class="section-desc">أحمر دلالي رصين لا ينافس بصرياً الزر الرئيسي الأسود إلا في حالات التأكيد النهائي.</p>
+        </div>
+
+        <div class="card-box">
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">إجراء حذر رئيسي <span class="en-tag" dir="ltr">(Critical Confirmation)</span>:</span>
+              <button class="kf-btn kf-btn-danger-primary kf-btn-full">تأكيد الإجراء الحذر</button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">إجراء حذر ثانوي <span class="en-tag" dir="ltr">(Optional Rejection in Queue)</span>:</span>
+              <button class="kf-btn kf-btn-danger-outline kf-btn-full">رفض طلب الحجز</button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">إجراء حذر نصي <span class="en-tag" dir="ltr">(Low-risk dismissal)</span>:</span>
+              <button class="kf-btn kf-btn-danger-ghost kf-btn-full">حذف الوحدة من المسودات</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: ICON ACTIONS -->
+      <section class="section-block" id="sec-icons">
+        <div class="section-header">
+          <h2 class="section-title">5. أزرار الأيقونات والأهداف اللمسية <span class="en-tag" dir="ltr">(Icon Actions & Platform Boundaries)</span></h2>
+          <p class="section-desc">
+            توضيح الفرق الصريح بين <strong>حجم الحاوية البصرية (Visible Box: 44×44px)</strong> وبين <strong>حدود المستهدف اللمسي التفاعلي (Interactive Target Bounds)</strong>:<br>
+            • إرشادات iOS المفاهيمية: <strong>44pt</strong> (تطابق الحاوية البصرية المعروضة).<br>
+            • إرشادات Android المفاهيمية: <strong>48dp</strong> (موضحة بالإطار المتقطع الأحمر الذي يمثل توسيع منطقة النقر التفاعلية برمجياً، حيث أن صندوق 44px المجرد لا يمثل بذاته امتثالاً لـ 48dp).<br>
+            • معمل الويب الحالي: محاكاة وأدلة استكشافية فقط (Web Pilot Evidence Only)؛ والاعتماد والتطبيق الأصيل مؤجل للمرحلة 4I <span class="en-tag" dir="ltr">(Native Acceptance: DEFERRED TO PHASE 4I)</span>.
+          </p>
+        </div>
+
+        <div class="card-box" style="display: flex; gap: 16px; align-items: center; justify-content: space-around;">
+          <div style="text-align: center;">
+            <div class="touch-target-wrap">
+              <button class="kf-btn-icon" aria-label="الرجوع للخلف">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+              <div class="target-boundary-box target-ios"></div>
+            </div>
+            <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-top: 6px;">حاوية 44px (هدف iOS: 44pt)</span>
+          </div>
+
+          <div style="text-align: center;">
+            <div class="touch-target-wrap">
+              <button class="kf-btn-icon" aria-label="إغلاق النافذة">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+              <div class="target-boundary-box target-android"></div>
+            </div>
+            <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-top: 6px;">حاوية 44px + توسعة أندرويد (48dp)</span>
+          </div>
+
+          <div style="text-align: center;">
+            <div class="touch-target-wrap">
+              <button class="kf-btn-icon" aria-label="خيارات إضافية">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+              </button>
+              <div class="target-boundary-box target-android"></div>
+            </div>
+            <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-top: 6px;">حاوية 44px + توسعة أندرويد (48dp)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: HYBRID ACTION HIERARCHY — CUSTOMER COMPOSED CONTEXT -->
+      <section class="section-block" id="sec-customer-hybrid">
+        <div class="section-header">
+          <h2 class="section-title">6. سياق العميل: تسلسل الإجراءات الهجين <span class="en-tag" dir="ltr">(Customer Hybrid Context)</span></h2>
+          <p class="section-desc">
+            تطبيق التسلسل الهجين المعتمد: الزر الرئيسي الأسود (#000000) + ثانوي هادئ (Subtle Fill) + ثالثي شفاف (Ghost) + إطار مشروط (Conditional Outline).
+          </p>
+        </div>
+
+        <!-- Sticky Bar Context -->
+        <div class="card-box">
+          <div class="card-title">أ. شريط الحجز الثابت بأسفل شاشة الوحدة <span class="en-tag" dir="ltr">(Sticky Booking Bar)</span></div>
+          <div class="sticky-bar-mockup">
+            <div class="price-cluster">
+              <span class="price-val">1,600 ج.م</span>
+              <span class="price-sub">إجمالي الإقامة لليلتين</span>
+            </div>
+            <button class="kf-btn kf-btn-primary" style="min-width: 140px;">طلب الحجز</button>
+          </div>
+        </div>
+
+        <!-- Booking Review Card -->
+        <div class="card-box">
+          <div class="card-title">ب. نموذج تأكيد مراجعة الطلب <span class="en-tag" dir="ltr">(Booking Review Sheet)</span></div>
+          <p style="font-size: 13px; color: var(--kf-color-text-secondary); margin-bottom: 14px;">
+            فيلا هادئة بالساحل الشمالي • 3 ليالٍ • العربون المطلوب: 1,600 ج.م بعد موافقة المالك.
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="kf-btn kf-btn-primary kf-btn-full">إرسال طلب الحجز إلى المالك</button>
+            <button class="kf-btn kf-btn-secondary-fill kf-btn-full">تعديل التواريخ والضيوف</button>
+            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full">الرجوع لتفاصيل الوحدة</button>
+          </div>
+        </div>
+
+        <!-- Conditional Outline Demonstration -->
+        <div class="card-box" style="background: #F8FAFC; border: 1px dashed var(--kf-color-border-strong);">
+          <div class="card-title">ج. إجراء مشروط على خلفية بطاقة رمادية <span class="en-tag" dir="ltr">(Conditional Neutral Outline)</span></div>
+          <p style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+            يُستخدم الإطار المحايد (Neutral Outline) هنا لأن التعبئة الرمادية الناعمة لا توفر تبايناً كافياً مع خلفية الحاوية.
+          </p>
+          <button class="kf-btn kf-btn-secondary-outline kf-btn-full">حفظ الوحدة في قائمة المفضلة</button>
+        </div>
+
+        <!-- Customer States -->
+        <div class="card-box">
+          <div class="card-title">د. حالات الزر الرئيسي للعميل <span class="en-tag" dir="ltr">(Customer Action States)</span></div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="kf-btn kf-btn-primary kf-btn-full is-loading" aria-busy="true" disabled>
+              <span class="kf-spinner"></span>
+              <span>جاري إرسال الطلب إلى المالك...</span>
+            </button>
+            <button class="kf-btn kf-btn-primary kf-btn-full is-disabled" disabled>طلب الحجز (غير متاح حالياً)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 7: HYBRID ACTION HIERARCHY — OWNER COMPOSED CONTEXT -->
+      <section class="section-block" id="sec-owner-hybrid">
+        <div class="section-header">
+          <h2 class="section-title">7. سياق المالك التشغيلي: تسلسل الإجراءات الهجين <span class="en-tag" dir="ltr">(Owner Hybrid Context)</span></h2>
+          <p class="section-desc">
+            تطبيق التسلسل الهجين: رئيسي أسود (#000000) + ثانوي حذر محدد بخط (Destructive Outline) + ثانوي محايد هادئ (Subtle Fill) + ثالثي شفاف (Ghost).
+          </p>
+        </div>
+
+        <!-- Owner Decision Card -->
+        <div class="card-box">
+          <div class="card-title">أ. بطاقة قرار المالك على طلب جديد <span class="en-tag" dir="ltr">(Owner Decision Card)</span></div>
+          <div style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 12px; line-height: 1.6;">
+            طلب حجز #KNF-88219 • الضيف: أحمد م. • 3 ليالٍ (14 - 17 أكتوبر)<br>
+            قيمة الحجز: 4,800 ج.م (العربون: 1,600 ج.م)
+          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+            <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+          </div>
+          <button class="kf-btn kf-btn-secondary-ghost kf-btn-full" style="font-size: 13px; padding: 6px;">عرض تفاصيل الحجز وسجل المحادثة</button>
+        </div>
+
+        <!-- Owner Edit Property -->
+        <div class="card-box">
+          <div class="card-title">ب. إدارة تسعير الوحدة والعمليات <span class="en-tag" dir="ltr">(Unit Pricing Management)</span></div>
+          <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1;">حفظ التغييرات</button>
+            <button class="kf-btn kf-btn-secondary-fill" style="flex: 1;">إلغاء التعديل</button>
+          </div>
+          <button class="kf-btn kf-btn-secondary-outline kf-btn-full" style="font-size: 13px;">تصدير كشف الحساب المالي (PDF)</button>
+        </div>
+      </section>
+
+      <!-- SECTION 8: 360PX STRESS & REFLOW CONTRACT -->
+      <section class="section-block" id="sec-reflow-stress">
+        <div class="section-header">
+          <h2 class="section-title">8. فحص الإجهاد وعقد تدفق المجموعات <span class="en-tag" dir="ltr">(360px Stress & Reflow Contract)</span></h2>
+          <p class="section-desc">
+            مقارنة ذاتية محكومة على عرض 360px: الأساس الأفقي عند 100% (15px) مقابل إجهاد التكبير الحقيقي 200% (30px) أفقياً ورأسياً، لإثبات ضرورة عقد التدفق الرأسي عند انكسار التوزيع الأفقي.
+          </p>
+        </div>
+
+        <div class="card-box">
+          <div class="card-title">أ. التوزيع الأفقي الأساسي عند مقياس 100% الحقيقي (15px) <span class="en-tag" dir="ltr">(True 100% Horizontal Baseline — 15px)</span></div>
+          <p style="font-size: 11px; color: var(--kf-color-text-secondary); margin-bottom: 8px;">توزيع أفقي طبيعي ومحكوم: حجم خط 15px، كلمات عربية تامة ومكتملة، واستقرار هندسي وبصري كامل:</p>
+          <div class="stress-baseline-100" style="display: flex; gap: 8px; margin-bottom: 24px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+            <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+          </div>
+
+          <div class="card-title">ب. حالة الانكسار الأفقي عند تكبير 200% الحقيقي (30px) <span class="en-tag" dir="ltr">(True 200% Horizontal Failure — 30px)</span></div>
+          <p style="font-size: 11px; color: var(--kf-color-danger); margin-bottom: 8px;">انكسار التوزيع الأفقي الطبيعي: يضطر النص بحجم 30px للانكسار على أسطر متعددة ضيقة مع تضخم ارتفاع الزر وضيق المساحة اللمسية الأفقية في العرض المتاح (~140px):</p>
+          <div class="stress-condition-200" style="display: flex; gap: 8px; margin-bottom: 24px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+            <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+          </div>
+
+          <div class="card-title">ج. الحل المعتمد: تطبيق عقد التدفق الرأسي عند تكبير 200% الحقيقي (30px) <span class="en-tag" dir="ltr">(True 200% Stacked Reflow — 30px)</span></div>
+          <p style="font-size: 11px; color: #166534; margin-bottom: 8px;">تراص رأسي كامل (100% Width): استيعاب كامل لحجم الخط 30px، كلمات عربية تامة دون انكسار قسري، سلامة تامة للهدف اللمسي، وحفظ التسلسل الهرمي:</p>
+          <div class="stress-condition-200" style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="kf-btn kf-btn-primary kf-btn-full">الموافقة على الطلب</button>
+            <button class="kf-btn kf-btn-danger-outline kf-btn-full">رفض الطلب</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 9: BLACK SENSITIVITY COMPARISON (STAGE 2: PREFERRED VS FALLBACK ONLY) -->
+      <section class="section-block" id="sec-black-comparison">
+        <div class="section-header">
+          <h2 class="section-title">9. مقارنة الأسود المفضل والاحتياطي <span class="en-tag" dir="ltr">(Founder Preferred vs Fallback)</span></h2>
+          <p class="section-desc">
+            مقارنة حصرية بين المرشح المفضل للمؤسس (#000000) والبديل الاحتياطي الوحيد (#18181B). تم استبعاد #0F172A و #111827 رسمياً من المقارنة النشطة بقرار المؤسس.
+          </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+          <div class="card-box" style="border-top: 3px solid #000000; text-align: center; padding: 14px;">
+            <div style="font-weight: 700; font-size: 13px;">المرشح المفضل للمؤسس</div>
+            <div style="font-size: 11px; color: var(--kf-color-text-secondary); margin-bottom: 8px;">#000000 (داكن نقي)</div>
+            <button class="kf-btn kf-btn-full" style="background: #000000; color: #fff; min-height: 44px; padding: 8px; font-size: 14px;">تأكيد الإجراء</button>
+            <span style="font-size: 10px; color: #166534; display: block; margin-top: 6px; font-weight: 600;">الحالة: مختار ومفضل مؤقتاً</span>
+          </div>
+
+          <div class="card-box" style="border-top: 3px solid #18181B; text-align: center; padding: 14px;">
+            <div style="font-weight: 700; font-size: 13px;">البديل الاحتياطي للمقارنة</div>
+            <div style="font-size: 11px; color: var(--kf-color-text-secondary); margin-bottom: 8px;">#18181B (زنك محايد)</div>
+            <button class="kf-btn kf-btn-full" style="background: #18181B; color: #fff; min-height: 44px; padding: 8px; font-size: 14px;">تأكيد الإجراء</button>
+            <span style="font-size: 10px; color: var(--kf-color-text-muted); display: block; margin-top: 6px;">احتياطي عند الحاجة المادية فقط</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 10: REPEATED-PRIMARY DENSITY CHECK -->
+      <section class="section-block" id="sec-repeated-density">
+        <div class="section-header">
+          <h2 class="section-title">10. فحص كثافة تكرار الزر الرئيسي #000000 <span class="en-tag" dir="ltr">(Repeated-Primary Density Check)</span></h2>
+          <p class="section-desc">
+            اختبار الكثافة التشغيلية في قائمة المالك: هل يسبب تكرار الزر الأسود #000000 في بطاقات متتالية إجهاداً بصرياً (Visual Fatigue) أو ثقلاً مفرطاً؟
+          </p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Card 1 -->
+          <div class="card-box" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-weight: 700; font-size: 13px;">طلب حجز #KNF-88219</span>
+              <span style="font-size: 11px; background: var(--kf-color-surface-subtle); color: var(--kf-color-text-secondary); border: 1px solid var(--kf-color-border-subtle); padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
+            </div>
+            <div style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+              الضيف: أحمد م. • 3 ليالٍ • إجمالي الحجز: 4,800 ج.م (العربون: 1,600 ج.م)
+            </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+              <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+              <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+            </div>
+            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full" style="font-size: 12px; padding: 4px;">عرض تفاصيل الحجز</button>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="card-box" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-weight: 700; font-size: 13px;">طلب حجز #KNF-88220</span>
+              <span style="font-size: 11px; background: var(--kf-color-surface-subtle); color: var(--kf-color-text-secondary); border: 1px solid var(--kf-color-border-subtle); padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
+            </div>
+            <div style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+              الضيفة: سارة خ. • ليلتان • إجمالي الحجز: 3,200 ج.م (العربون: 1,600 ج.م)
+            </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+              <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+              <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+            </div>
+            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full" style="font-size: 12px; padding: 4px;">عرض تفاصيل الحجز</button>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="card-box" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-weight: 700; font-size: 13px;">طلب حجز #KNF-88221</span>
+              <span style="font-size: 11px; background: var(--kf-color-surface-subtle); color: var(--kf-color-text-secondary); border: 1px solid var(--kf-color-border-subtle); padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
+            </div>
+            <div style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+              الضيف: عمر ن. • 4 ليالٍ • إجمالي الحجز: 6,400 ج.م (العربون: 1,600 ج.م)
+            </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+              <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+              <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+            </div>
+            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full" style="font-size: 12px; padding: 4px;">عرض تفاصيل الحجز</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 11: DESTRUCTIVE + PRIMARY PAIRING -->
+      <section class="section-block" id="sec-destructive-pairing">
+        <div class="section-header">
+          <h2 class="section-title">11. اقتران الزر الرئيسي بالتحذيري الثانوي <span class="en-tag" dir="ltr">(Destructive + Primary Pairing)</span></h2>
+          <p class="section-desc">
+            فحص التوازن والتنافس البصري بين الأسود النقي #000000 والحد الأحمر الدلالي (1.5px).
+          </p>
+        </div>
+
+        <div class="card-box">
+          <div class="card-title">أ. اقتران متناسب نسبي (1.2 : 1) <span class="en-tag" dir="ltr">(Proportional 1.2 : 1)</span></div>
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+            <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+          </div>
+
+          <div class="card-title">ب. اقتران متناصف 50/50 <span class="en-tag" dir="ltr">(Equal 50/50 Split)</span></div>
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1;">تأكيد المتابعة</button>
+            <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">تنفيذ الإجراء التحذيري</button>
+          </div>
+
+          <div class="card-title">ج. تراص رأسي كامل <span class="en-tag" dir="ltr">(Vertical Stack)</span></div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="kf-btn kf-btn-primary kf-btn-full">متابعة عملية التوثيق</button>
+            <button class="kf-btn kf-btn-danger-ghost kf-btn-full">تراجع عن الإجراء</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 12: PURE BLACK INTERACTION STATES -->
+      <section class="section-block" id="sec-black-states">
+        <div class="section-header">
+          <h2 class="section-title">12. حالات التفاعل للأسود النقي #000000 <span class="en-tag" dir="ltr">(Pure Black Interaction States)</span></h2>
+          <p class="section-desc">
+            التحقق من وضوح الحالات التفاعلية للزر الأسود النقي (#000000) ومدى امتثالها لإمكانية الوصول.
+          </p>
+        </div>
+
+        <div class="card-box">
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">الافتراضي (Idle / Default):</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full">طلب الحجز الآن</button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">الضغط اللمسي (Pressed / Active — scale 0.98 + brightness):</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full" style="transform: scale(0.98); filter: brightness(0.85);">طلب الحجز الآن</button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">التركيز اللمسي وإمكانية الوصول (Focus-visible Double Ring):</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full" style="box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #000000;">طلب الحجز الآن</button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">جاري المعالجة (Loading — aria-busy="true" + disabled):</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full is-loading" aria-busy="true" disabled>
+                <span class="kf-spinner"></span>
+                <span>جاري إرسال الطلب...</span>
+              </button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">غير متاح (Disabled — opacity 0.45):</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full is-disabled" disabled>طلب الحجز (غير متاح)</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 13: PURE BLACK ROLE COHERENCE -->
+      <section class="section-block" id="sec-black-roles">
+        <div class="section-header">
+          <h2 class="section-title">13. تماسك الأسود النقي عبر الأدوار <span class="en-tag" dir="ltr">(Pure Black Coherence Across Roles)</span></h2>
+          <p class="section-desc">
+            مقارنة مباشرة لوزن الأسود النقي #000000 بين سياق العميل (الضيافة والوضوح) وسياق المالك (الكثافة التشغيلية).
+          </p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <!-- Customer Role Box -->
+          <div class="card-box" style="margin-bottom: 0;">
+            <div style="font-weight: 700; font-size: 13px; margin-bottom: 4px;">سياق العميل (Customer Hospitality):</div>
+            <p style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+              الأسود النقي يوفر دعوة حاسمة وواضحة للإجراء، ولم يُرصد أي تعارض مادي في الهيمنة البصرية على أسطح حجز العميل المختبرة:
+            </p>
+            <div class="sticky-bar-mockup">
+              <div class="price-cluster">
+                <span class="price-val">1,600 ج.م</span>
+                <span class="price-sub">إجمالي الإقامة لليلتين</span>
+              </div>
+              <button class="kf-btn kf-btn-primary" style="min-width: 140px;">طلب الحجز</button>
+            </div>
+          </div>
+
+          <!-- Owner Role Box -->
+          <div class="card-box" style="margin-bottom: 0;">
+            <div style="font-weight: 700; font-size: 13px; margin-bottom: 4px;">سياق المالك (Owner Operational Control):</div>
+            <p style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+              الأسود النقي يعزز ثقة القرار في بيئة تشغيلية كثيفة:
+            </p>
+            <div style="display: flex; gap: 8px;">
+              <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+              <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 14: DESTRUCTIVE FOCUS STATES -->
+      <section class="section-block" id="sec-destructive-focus">
+        <div class="section-header">
+          <h2 class="section-title">14. حالات تركيز لوحة المفاتيح للإجراءات التحذيرية <span class="en-tag" dir="ltr">(Destructive Focus States)</span></h2>
+          <p class="section-desc">
+            توثيق إمكانية الوصول ووضوح حلقة التركيز المزدوجة ومؤشر السطح لكافة أشكال الإجراء التحذيري (بدون الاعتماد على اللون بمفرده).
+          </p>
+        </div>
+
+        <div class="card-box">
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Destructive Primary Focused -->
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 6px;">
+                إجراء تحذيري رئيسي في حالة تركيز <span class="en-tag" dir="ltr">(Destructive Primary — Focus-Visible)</span>:
+              </span>
+              <button class="kf-btn kf-btn-danger-primary kf-btn-full is-focused">تأكيد الإجراء الحذر</button>
+            </div>
+
+            <!-- Destructive Outline Focused -->
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 6px;">
+                إجراء تحذيري خطي في حالة تركيز <span class="en-tag" dir="ltr">(Destructive Outline — Focus-Visible)</span>:
+              </span>
+              <button class="kf-btn kf-btn-danger-outline kf-btn-full is-focused">رفض الطلب</button>
+            </div>
+
+            <!-- Destructive Ghost Focused -->
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 6px;">
+                إجراء تحذيري نصي/شفاف في حالة تركيز <span class="en-tag" dir="ltr">(Destructive Ghost — Focus-Visible)</span>:
+              </span>
+              <button class="kf-btn kf-btn-danger-ghost kf-btn-full is-focused">تراجع عن الإجراء</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    function setViewport(width, btn) {
+      const frame = document.getElementById('labFrame');
+      frame.style.maxWidth = width;
+      if (btn) {
+        btn.parentElement.querySelectorAll('.control-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+    }
+
+    function setScale(scale, btn) {
+      document.documentElement.style.setProperty('--kf-scale', scale);
+      if (btn) {
+        btn.parentElement.querySelectorAll('.control-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+    }
+
+    function setBlack(hex, btn) {
+      document.documentElement.style.setProperty('--kf-primary-black', hex);
+      if (btn) {
+        btn.parentElement.querySelectorAll('.control-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+    }
+
+    // URL search parameters support for reproducible screenshot capture
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const vp = params.get('viewport');
+      const sc = params.get('scale');
+      const bk = params.get('black');
+      const sec = params.get('section');
+      const hideHeader = params.get('header') === '0' || params.get('header') === 'false';
+
+      if (hideHeader) {
+        const header = document.querySelector('.lab-header');
+        const disclaimer = document.querySelector('.governance-disclaimer');
+        if (header) header.style.display = 'none';
+        if (disclaimer) disclaimer.style.display = 'none';
+        document.body.style.padding = '12px';
+      }
+
+      if (vp) {
+        setViewport(vp === 'full' ? '100%' : vp + 'px', null);
+        document.querySelectorAll('[id^="vp"]').forEach(b => b.classList.remove('active'));
+        if (vp === '360') document.getElementById('vp360')?.classList.add('active');
+        if (vp === '390') document.getElementById('vp390')?.classList.add('active');
+        if (vp === '430') document.getElementById('vp430')?.classList.add('active');
+        if (vp === 'full') document.getElementById('vpFull')?.classList.add('active');
+      }
+      if (sc) {
+        const scVal = parseFloat(sc);
+        setScale(scVal, null);
+        document.querySelectorAll('[id^="sc"]').forEach(b => b.classList.remove('active'));
+        if (scVal === 1.0) document.getElementById('sc100')?.classList.add('active');
+        if (scVal === 1.25) document.getElementById('sc125')?.classList.add('active');
+        if (scVal === 1.5) document.getElementById('sc150')?.classList.add('active');
+        if (scVal === 2.0) document.getElementById('sc200')?.classList.add('active');
+      }
+      if (bk) {
+        setBlack(bk, null);
+        document.querySelectorAll('[id^="bk"]').forEach(b => b.classList.remove('active'));
+        const bkLower = bk.toLowerCase();
+        if (bkLower === '#000000') document.getElementById('bkPreferred')?.classList.add('active');
+        if (bkLower === '#18181b') document.getElementById('bkFallback')?.classList.add('active');
+      }
+      if (sec) {
+        document.querySelectorAll('.section-block').forEach(s => {
+          if (s.id !== 'sec-' + sec) {
+            s.style.display = 'none';
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

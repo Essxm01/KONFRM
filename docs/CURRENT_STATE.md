@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-10-04  
 **Phase 4B merge checkpoint:** `4cad3a4b0f9901e5315c35e6712e3e4a35f4cba5` (PR #88)  
-**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`.  
+**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `SUBSTANTIVE_COMPLETE / INDEPENDENTLY_VERIFIED / PUBLICATION_PENDING`.  
 **Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation).
 
 ## Current status
@@ -12,12 +12,24 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
 - **Phase 4B (Cairo Typography Foundation):** `CLOSED / MERGED` (PR #88, merge checkpoint `4cad3a4b0f9901e5315c35e6712e3e4a35f4cba5`). Primary UI font family established as Cairo. Founder visual preference selected as **Profile B — Mobile Balanced Candidate**. Status: **`SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`** (System coherence verdict: `COHERENT_WITH_MINOR_FUTURE_COMPONENT_DEPENDENCIES`).
   - Profile B values: display 24/700/1.30, pageTitle 20/700/1.35, sectionTitle 17/700/1.40, cardTitle 15/700/1.40, body 14/500/1.50, bodyStrong 14/700/1.50, label 12/600/1.35, supporting 12/400/1.40, numeric 16/700/1.30, button 15/700/1.20.
   - Profile B is provisional design foundation, **NOT** promoted to final native Canon.
-  - Exact primary black: **`OPEN`** (Stable Black Primary strategy is Founder-selected provisional; `#0F172A` is pilot-only rendering value, NOT final button black).
+  - Exact primary black: **`#000000`** (**`SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`**; validated in Phase 4C; `#18181B` fallback comparator only; not promoted to final native Canon).
   - Exact blue: **`OPEN`** (Restrained blue interaction-accent role is governed direction; `#276EF1` is pilot candidate only).
   - Exact neutral palette: **`OPEN`**.
   - Known Profile B Web stress evidence: 5 / 24 overflow cases under extreme scaling (150% and 200%). Causal classification: **`MIXED`**. Profile-selection impact: **`MINOR`**.
   - Native Flutter typography acceptance: **`DEFERRED TO 4I`**.
-  - Next active design dependency: **`4C ACTION SYSTEM`**.
+- **Phase 4C (Action System):** `SUBSTANTIVE_COMPLETE / INDEPENDENTLY_VERIFIED / PUBLICATION_PENDING` (Stages 2, 3A, and 3B passed independent reviews with zero blockers, zero material findings, zero minor findings; publication PR pending merge).
+  - Action Strategy: **`CONTEXTUAL_HIERARCHY_HYBRID`** (`SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY`).
+  - Exact Mobile Primary Black: **`#000000`** (`SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`; `#18181B` fallback comparator only; not promoted to final native Canon).
+  - Primary button radius: **`6px`** (`PRIMARY_ONLY` provisional; full global shape system and secondary radius remain open).
+  - Button typography: Cairo Profile B **`15 / 700 / 1.20`** (`SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`).
+  - Neutral Secondary: **`Subtle Fill`** (default provisional secondary treatment); **`Conditional Neutral Outline`** (semantic/perceptual eligibility gated).
+  - Destructive: consequence-aware model (Destructive Primary restricted to explicit confirmation context; Destructive Secondary outline for subordinate pairing; Destructive low-emphasis/Ghost gated to genuinely low consequence).
+  - Primary uniqueness: per active decision point / independent decision unit.
+  - Sizing & touch targets: iOS 44pt / Android 48dp guidance (no universal raw-pixel target).
+  - Reflow: controlled 360px Web frame-width evidence.
+  - Native component and accessibility acceptance: **`DEFERRED TO 4I`**.
+  - Open variables preserved: Secondary Radius (`OPEN`), Exact Neutrals (`OPEN`), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Destructive Color (`OPEN`), Exact Native Focus Treatment (`OPEN`), Global Shape System (`OPEN`), Cancellation/Refund Policy (`OPEN / UNDECIDED`).
+  - NEXT DESIGN DEPENDENCY AFTER PHASE 4C PUBLICATION MERGE: **`4D — FORM & SELECTION PRIMITIVES`** (status: `NOT_STARTED`).
 
 The connected property vertical slice through Phase 3 remains live-verified on production. Phase 4 develops the design foundations through controlled empirical pilots before native mobile integration.
 
@@ -63,7 +75,7 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
 
 ## Next work
 
-**Phase 4C — Action System**
+**Phase 4D — Form & Selection Primitives**
 
-Phase 4B Typography Foundation is closed and merged (PR #88). The active design dependency ready to start is:
-- **Phase 4C — Action System** (Buttons, touch targets, hierarchy, states, and text-wrapping resilience building upon 6px radius, Stable Black strategy, and Cairo Profile B provisional typography).
+Phase 4C Action System substantive work is complete and independently verified (Stages 2, 3A, and 3B passed). Following Phase 4C publication merge, the next active design dependency per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md` will be:
+- **Phase 4D — Form & Selection Primitives** (text inputs, phone/email fields, search, select/pickers, checkbox/toggle where required, helper/error behavior, focus/keyboard behavior, and Arabic/RTL input details). Status: `NOT_STARTED`.

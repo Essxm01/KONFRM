@@ -2,55 +2,57 @@
 
 TASK_ID: PHASE_4C_ACTION_SYSTEM
 ROADMAP_PHASE: PHASE_4_UNIFIED_DESIGN_SYSTEM
-STATUS: READY_TO_START
-BASE_MAIN_SHA: 4cad3a4b0f9901e5315c35e6712e3e4a35f4cba5
+STATUS: READY_FOR_PUBLICATION
+SUBSTANTIVE_STATUS: COMPLETE_INDEPENDENT_PASS
+PUBLICATION_STATUS: PR_PENDING
+BASE_MAIN_SHA: 81586505b4f25494a0a946ffe1613dec2d49c6b5
 SCOPE: Phase 4C — Action System (Buttons, touch targets, action hierarchy, interaction states, and text wrapping across Customer and Owner surfaces).
 
 ## Execution Position Notice
-- `STATUS: READY_TO_START` indicates that Phase 4C is the next authorized design dependency.
-- **NO Phase 4C implementation has begun.** No design artifacts, code changes, or token promotions have been introduced in this task.
-- `PHASE_4C_IMPLEMENTATION_STARTED: NO`
+- `STATUS: READY_FOR_PUBLICATION` indicates that Phase 4C substantive work is complete, all stages have passed independent review, and the publication PR is prepared.
+- `SUBSTANTIVE_STATUS: COMPLETE_INDEPENDENT_PASS`
+- `PUBLICATION_STATUS: PR_PENDING` (PR opened against main; awaiting Bridge independent review and merge; do NOT claim CLOSED/MERGED before actual merge).
 
-## Platform Touch-Target and Interaction State Guidance
-- `IOS_TOUCH_TARGET_GUIDANCE: 44pt`
-- `ANDROID_TOUCH_TARGET_GUIDANCE: 48dp`
-- `UNIVERSAL_48PX_RULE: ABSENT` (no universal raw-pixel target; distinct platform units preserved)
-- `MANDATORY_MOBILE_HOVER_STATE: ABSENT` (hover is not a mobile touch requirement; evaluated only where platform/input modes support it)
+## Independent Closure Verification Evidence
+- **Stage 2 (System Coherence Validation):** `CLOSED_INDEPENDENT_PASS` (Review HEAD: `f33674c902a4d2c63fcb5fd0fa6414851be5e7d2` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
+- **Stage 3A (Action Contract Formalization):** `CLOSED_INDEPENDENT_PASS` (Review HEAD: `92eb0ce282b4dd2ba8b29cb804215f4cb3b59464` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
+- **Stage 3B (Targeted Shared Governance Synchronization):** `CLOSED_INDEPENDENT_PASS` (Review HEAD: `708ffb77bbd9dc3600dd4775be6f86da40b8e73f` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
+- **FINAL_SHARED_AUTHORITY_REVIEW_HEAD:** `708ffb77bbd9dc3600dd4775be6f86da40b8e73f`
+- **BLOCKERS:** NONE
+- **MATERIAL_FINDINGS:** NONE
+- **MINOR_FINDINGS:** NONE
+- **PRODUCTION_CHANGES:** NONE
+- **TOKEN_CHANGES:** NONE
+- **NATIVE_ACCEPTANCE:** DEFERRED_TO_4I
 
-## Upstream Completed Dependencies
-1. **Phase 4A Primitives (PR #86, CLOSED):**
-   - Primary button radius: 6px (Founder-selected provisional design foundation candidate).
-   - Primary color strategy: Stable Black Primary (Founder-selected provisional strategy).
-2. **Phase 4B Cairo Typography Foundation (PR #88, CLOSED / MERGED at `4cad3a4b0f9901e5315c35e6712e3e4a35f4cba5`):**
-   - Primary UI font family: Cairo (Founder selection established; no reopening).
-   - Founder visual selection: **Profile B — Mobile Balanced Candidate** (24/20/17/15/14/14/12/12/16/15).
-   - Status: `SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY` (System coherence: `COHERENT_WITH_MINOR_FUTURE_COMPONENT_DEPENDENCIES`).
-   - Known Web stress evidence: 5 / 24 overflow cases under extreme scaling (150% and 200%), causal classification `MIXED`, profile impact `MINOR`.
+## Phase 4C System-Validated Provisional Results
+- **Action Strategy:** Contextual / Hierarchy-Based Hybrid (`SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY`).
+- **Exact Mobile Primary Black:** `#000000` (`SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`; `#18181B` fallback comparator only; not promoted to final native Canon).
+- **Primary Button Radius:** `6px` (`PRIMARY_ONLY` provisional; secondary radius and global shape system remain open).
+- **Button Typography:** Cairo Profile B `15 / 700 / 1.20` (`SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`).
+- **Secondary Action Default:** Subtle Fill (provisional default); Conditional Neutral Outline (semantic/perceptual eligibility gated).
+- **Tertiary / Inline:** Ghost / text-like (Cairo Profile B preserved for button components; governed text role for inline text).
+- **Destructive Grammar:** Consequence dimension (Destructive Primary restricted to explicit confirmation context; Destructive Secondary outline for subordinate pairing; Destructive Ghost gated to genuinely low consequence).
+- **Primary Uniqueness:** Per active decision point / independent decision unit (independent cards may each contain a primary action without competing within the same hierarchy).
+- **Platform Touch Target Guidance:** iOS `44pt` / Android `48dp` (distinct platform guidance preserved; no universal raw native px rule).
+- **Reflow Contract:** System / accessibility requirement verified under controlled 360px Web frame-width simulation.
 
-## Explicit Open Decisions & Boundaries (DO NOT PREMATURELY RESOLVE)
-- **Exact Primary Black:** `OPEN` (Stable Black Primary is a strategy; `#0F172A` is a pilot rendering value only, NOT the final button black hex).
-- **Exact Blue:** `OPEN` (`#276EF1` is pilot candidate only; restrained interaction-accent role for links, selected states, and non-destructive focus).
-- **Exact Neutral Palette:** `OPEN`.
-- **Exact Focus Treatment:** `OPEN`.
-- **Secondary Action Treatment:** `OPEN` (to be evaluated in Phase 4C).
-- **Outline / Ghost Strategy:** `OPEN` (to be evaluated in Phase 4C only where justified).
-- **Destructive Action Treatment:** `OPEN` (to be evaluated in Phase 4C).
+## Explicit Open Decisions & Boundaries (Preserved Open)
+- **Secondary Radius:** `OPEN / FUTURE GOVERNED DESIGN DECISION` (6px in pilot was controlled comparison variable only).
+- **Exact Neutrals:** `OPEN` (`#F1F5F9`, `#CBD5E1` are pilot rendering values only).
+- **Exact Blue:** `OPEN` (`#276EF1` is implementation candidate only; restrained interaction-accent role).
+- **Exact Destructive Color:** `OPEN` (`#DC2626` is pilot rendering value only).
+- **Exact Native Focus Treatment:** `OPEN`.
 - **Full Global Shape System:** `OPEN`.
-- **Native Typography / Component Acceptance:** `DEFERRED TO 4I` (Native Flutter Prototype & Validation).
+- **Cancellation / Refund Policy:** `OPEN / UNDECIDED` (governed exclusively by Product and Financial Canon).
+- **Token-File Authoring:** `SEPARATELY GATED` (zero token JSON modified in Phase 4C).
+- **Native Component & Accessibility Acceptance:** `DEFERRED TO 4I`.
 
-## Phase 4C Scope (Governed Execution Scope when Started)
-When Phase 4C begins, it will address:
-- Primary action contract (sizing, platform-appropriate touch-target contracts preserving distinct iOS 44pt guidance / Android 48dp guidance; no universal raw-pixel target, label baseline, padding)
-- Secondary Action System
-- Outline/Ghost actions only where justified
-- Destructive actions
-- Icon actions
-- Interaction states: idle/default, pressed, focus / accessibility focus where platform-applicable, loading, disabled, selected where applicable (pointer/hover evaluated only where platform/input modes support it; no mandatory mobile hover state)
-- Action pairing and stacking rules (e.g. primary + secondary on mobile)
-- Narrow-width behavior (360px viewport stress)
-- Text wrapping and multiline action resilience under Cairo typography
-- Customer and Owner mobile contexts
-- Zero changes to production apps until design program reaches implementation phases
+## Next Design Dependency After Publication Merge
+- **NEXT_DEPENDENCY_AFTER_PUBLICATION_MERGE:** `PHASE_4D_FORM_SELECTION_PRIMITIVES`
+- **STATUS:** `NOT_STARTED`
+- **Scope per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md`:** text inputs, phone/email fields, search, select/pickers, checkbox/toggle where required, helper/error behavior, focus/keyboard behavior, and Arabic/RTL input details.
+- **Notice:** Do NOT switch the active task fully to 4D before the Phase 4C PR merges.
 
 ---
 

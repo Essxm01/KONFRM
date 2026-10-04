@@ -1,8 +1,9 @@
-# KONFRM Mobile Design Foundation — v1.1
+# KONFRM Mobile Design Foundation — v1.2
 
 **Status:** CANONICAL SPECIFICATION — DF2
 Independent platform/accessibility/design-system review and final Bridge verification completed. DF2 is canonical.
 **Amendment v1.1 (Founder brand-identity decision):** mobile brand identity is monochrome-first — Black/White; Summer Yellow removed from the core mobile brand architecture; blue demoted to a restrained interaction accent (candidate `#276EF1`). See §9.
+**Amendment v1.2 (Phase 4C Action System synchronization):** records independently reviewed SYSTEM-VALIDATED PROVISIONAL Action System mappings inside the canonical foundation without promoting exact provisional component values to final native Canon. Native component and accessibility acceptance remains strictly deferred to Phase 4I. The canonical document is authoritative about STATUS, SEMANTIC ROLES, and ARCHITECTURAL DIRECTION, not falsely about final native token acceptance.
 **Scope:** The design foundation governing future `mobile/customer_app`, `mobile/owner_app`, mobile design tokens, canonical mobile primitives, AI design Skills, visual QA and the controlled pilot.
 **Upstream authority (not reopened here):**
 
@@ -11,7 +12,15 @@ Independent platform/accessibility/design-system review and final Bridge verific
 - `docs/architecture/KONFRM_MOBILE_ARCHITECTURE_BOUNDARIES_V1.md` — architecture boundaries; `konfrm_design_system` is a **reserved** package boundary fed by this document.
 - `DESIGN_SYSTEM/GOVERNANCE.md` v2.1.3 — design authority model, enforcement, Founder visual rules.
 
-**This document defines the foundation layer: principles, semantic roles, classification of decisions, and validation requirements.** It deliberately does **not** finalize numeric token values, component dimensions, motion timings, dark mode, or icon-family choices. Every meaningful item is classified as **CANONICAL NOW**, **IMPLEMENTATION CANDIDATE**, or **DEFERRED / REQUIRES VALIDATION**.
+**This document defines the foundation layer: principles, semantic roles, classification of decisions, and validation requirements.** It deliberately does **not** finalize numeric token values, component dimensions, motion timings, dark mode, or icon-family choices. Governance and decision maturity are classified across two complementary dimensions:
+
+1. **DF2 Decision / Canonicality Classification:**
+   - **CANONICAL NOW:** Foundational principles, semantic role models, authority hierarchies, and approved non-negotiable rules.
+   - **IMPLEMENTATION CANDIDATE:** Directionally favored values or patterns awaiting formal validation on target surfaces.
+   - **DEFERRED / REQUIRES VALIDATION:** Decisions explicitly deferred to dedicated implementation or validation phases.
+
+2. **Evidence / Maturity Status:**
+   - **SYSTEM-VALIDATED PROVISIONAL:** Independently reviewed, controlled design evidence supports the decision (e.g., Phase 4C Action System results). This status is significantly stronger than an untested candidate, but it **does NOT equal CANONICAL NOW** final native tokens or components; it remains subject to the governing native acceptance gate (Phase 4I).
 
 ---
 
@@ -167,7 +176,8 @@ Rule: role semantics are CANONICAL NOW (as defined in this document); concrete n
 **Brand-color architecture — Founder amendment (CANONICAL NOW; supersedes the previous mobile blue/yellow framing):**
 
 - **Black / White is the primary KONFRM mobile brand identity**: confident, minimal, structured, clear. The Brand Mark / Wordmark identity is monochrome-first. Vitality comes from content — real property imagery, useful state change, interaction feedback, motion, information freshness, and confident hierarchy — not from multiple brand accent colors.
-- **Blue is no longer the dominant brand-identity color.** Blue remains only as a **restrained PRODUCT INTERACTION ACCENT**, appearing lightly and intentionally in actionable/interactive moments. Candidate: **`#276EF1`** — Founder-preferred directional candidate, **IMPLEMENTATION CANDIDATE**: it is not a final lower-level mobile token and must be validated in real component contexts (primary CTA, active navigation, selected state, focus treatment, link/action text, progress/loading, disabled/pressed relationships, contrast/accessibility on intended surfaces) before token canonicalization. Core screens must not feel "blue-branded".
+- **Mobile Primary Action provisional treatment is Stable Black (`#000000`)**: Status is **SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK** (evaluated in Phase 4C Stage 2 & 3A; fallback comparator `#18181B`). This is a provisional candidate, **not** final native token Canon (native acceptance deferred to Phase 4I). Existing Web `TOKENS/colors.json` (`#0059FF`) remains untouched.
+- **Blue is no longer the dominant brand-identity color, and is NOT the Primary CTA color.** Blue remains only as a **restrained PRODUCT INTERACTION ACCENT**, appearing lightly and intentionally in non-primary interactive moments. Candidate: **`#276EF1`** — Founder-preferred directional candidate, **IMPLEMENTATION CANDIDATE (OPEN)**: it is not a final lower-level mobile token and must be validated in appropriate non-primary component contexts (active navigation, selected state, links/action text where appropriate, focus treatment candidate, progress/loading where appropriate, disabled/pressed relationships, contrast/accessibility on intended surfaces) before token canonicalization. Core screens must not feel "blue-branded".
 - **Summer Yellow `#FFD700` is removed from the core mobile brand architecture.** It is no longer a mobile micro-signature, CTA accent, identity color, or default decorative accent, and it is not replaced by another secondary brand color. (Historical/web yellow references remain web-governance history and carry no mobile authority.)
 - The previous saturated web blue (`#0059FF`) likewise no longer governs the mobile primary brand/action identity. (Historical web usage is untouched by this amendment.)
 
@@ -283,20 +293,35 @@ Financial display rules (CANONICAL NOW):
 
 ## 15. Action Hierarchy
 
-CANONICAL action classes and rules:
+CANONICAL action classes, semantic meanings, and Mobile Phase 4C provisional mappings:
 
-- **PRIMARY** — the one decision-critical action of the current state, when a state has one (restrained interaction-accent treatment — §9).
-- **SECONDARY** — subordinate alternatives (neutral treatment).
-- **TERTIARY** — low-emphasis inline/text actions.
-- **CONTEXTUAL** — actions attached to the object they affect (row-level actions follow the row).
-- **DESTRUCTIVE** — destructive/consequence-heavy actions; never styled as primary completion; separated from confirmation actions.
+- **PRIMARY** — the one decision-critical valid action of the current state, when an active decision point has one.
+  - *Canonical Semantic Meaning:* Primary advances the user's primary business or lifecycle intent for an active decision point.
+  - *Mobile Phase 4C Provisional Mapping:* Stable Black (`#000000`), provisional 6px Primary-only radius (`PRIMARY_ONLY`), Cairo Profile B `15 / 700 / 1.20`.
+  - *Governance Status:* **SYSTEM-VALIDATED PROVISIONAL** (exact component values are provisional candidates, not CANONICAL NOW final native tokens; native component and accessibility acceptance is deferred to Phase 4I).
+- **SECONDARY** — subordinate alternatives or supporting actions.
+  - *Canonical Semantic Meaning:* Subordinate non-destructive alternative or supporting action.
+  - *Mobile Phase 4C Provisional Mapping:* Contextual / Hierarchy-Based Hybrid model. **Subtle Fill** is default provisional treatment; **Conditional Neutral Outline** is permitted strictly when Subtle Fill lacks sufficient boundary separation against container surfaces in actual context. Ghost is reserved for tertiary roles.
+  - *Governance Status:* **SYSTEM-VALIDATED PROVISIONAL STRATEGY** (exact neutral token and secondary radius remain **OPEN / FUTURE GOVERNED DESIGN DECISION**).
+- **TERTIARY** — low-emphasis auxiliary, detail-expansion, or navigation return actions.
+  - *Visual Treatment:* Ghost / text-like (transparent fill, zero border). Button-shaped components retain Cairo Profile B `15 / 700 / 1.20` (never shrunken to 13–14px). Must remain discoverable; not valid for decision-critical actions.
+- **CONTEXTUAL** — actions attached to the specific object, list row, or task they affect (e.g., row-level actions follow the row).
+  - *Classification:* **Attachment relationship**, not an arbitrary visual style. Treatment follows semantic hierarchy (Primary, Secondary, Tertiary, or Destructive) within that object's context.
+- **DESTRUCTIVE** — destructive, negative, removal, or consequence-bearing actions.
+  - *Consequence-Aware Semantics:* Destructive is a **semantic consequence dimension**, evaluated by Consequence Level, Hierarchy Rank, and Discoverability (never determined by paired vs unpaired layout alone):
+    - *Destructive Primary:* Permitted **only** within an explicit destructive confirmation context (dialog, sheet, modal, full-screen confirmation, or other platform-appropriate confirmation surface) where the confirmed destructive action is consciously verified and two-step confirmation is warranted per Product/UX authority.
+    - *Destructive Secondary:* Visible subordinate destructive treatment (**Destructive Outline**) for paired rejection/discard actions or standalone destructive actions requiring clear danger affordance without a full confirmation modal.
+    - *Destructive Tertiary / Ghost:* Permitted **only** for genuinely low-consequence, reversible, non-critical utilities where discoverability remains intact and Product Canon permits the capability.
+    - *High-Consequence Prohibition:* High-consequence or material destructive actions must **never** be visually weakened into Ghost merely because they are unpaired.
+    - *Confirmation Scope:* Confirmation is consequence-aware, not universal (routine destructive actions do not require two-step confirmation modals).
+    - *Product Truth:* Destructive actions cannot invent capabilities; cancellation and refund policies remain strictly **`OPEN / UNDECIDED`** under Product and Financial Canon.
 
 Rules:
 
-1. Only valid canonical-state actions are shown (UX-ACTION-01); disabled actions communicate *why* when user understanding requires it.
-2. One clear primary action per decision point; no duplicate prominent CTAs for the same action without reason.
-3. Action placement follows the object/task it affects.
-4. Destructive confirmation uses the approved dialog grammar (existing discard-dialog pattern is the reference intent).
+1. Only valid canonical-state actions are shown (`UX-ACTION-01`); disabled actions communicate *why* when user understanding requires it. Recovery actions may temporarily become decision-primary when a canonical prerequisite fails.
+2. **One clear primary action per active decision point:** Repeated independent decision units (such as separate Owner booking request cards in an operational list) may each contain their own Primary within the same viewport. Multiple Primaries must never compete for visual dominance within the same decision hierarchy.
+3. Action placement follows the object/task it affects (contextual attachment).
+4. Destructive confirmation uses the approved confirmation grammar according to context and consequence severity.
 5. Actions respect touch-target and state-grammar rules (§21, §16).
 
 ## 16. State Grammar
@@ -386,7 +411,7 @@ CANONICAL requirements (platform-appropriate mapping — Web WCAG numbers are no
 - **Focus:** keyboard/external-keyboard focus is visible and logical; focus follows §20 reduced-motion rules.
 - **Contrast:** text meets platform-appropriate contrast expectations in both default and scaled states; contrast is validated, not assumed from web values.
 - **Status not color-only:** §16 rule applies to every status surface.
-- **Touch targets:** controls meet **platform-appropriate accessible target sizing**; iOS and Android mappings may differ; decision-primary CTAs should be generous. No universal raw dimension is canonized in DF2 (existing `IMPLEMENTATION/mobile.md` 44/48/52–56 guidance is evidence feeding validation).
+- **Touch targets:** controls meet **platform-appropriate accessible target sizing**; iOS and Android mappings follow platform guidance (iOS guidance: **44pt × 44pt**; Android guidance: **48dp × 48dp**). Interactive target bounds are separated from visible component geometry; compact or inline controls expand their hit areas to meet guidance without artificially inflating visible padding. No universal raw pixel dimension (e.g., 44px or 48px) is canonized as a native mobile rule. (Phase 4C Web evidence represents a controlled 360px Web frame-width simulation; native Flutter component and accessibility acceptance is strictly **DEFERRED TO PHASE 4I** — Web simulation evidence does not constitute iOS, Android, or Flutter native platform acceptance).
 - **Reduced motion:** §20 rule 4.
 - **Keyboard/IME:** content-type-correct keyboards; §18 rules.
 - **Error identification:** field and form errors are text-identified and announced (§18).

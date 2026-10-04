@@ -122,18 +122,18 @@ To provide rigorous empirical evidence, three distinct structural systems are fo
   - Moderate internal container padding (`p-4`).
   - Uniform container corner radius (12px or 16px).
 - **Pros:** Strong containment; very clear where one module ends and another begins; familiar SaaS modular layout.
-- **Cons:** High risk of card soup; repetitive visual framing; eats horizontal space on 360px viewports; feels overly "technical/dashboard" for Customer travel discovery.
+- **Cons:** High risk of card soup; repetitive visual framing; eats horizontal space on 360px viewports; feels overly "technical/dashboard" for Customer travel discovery. (ELIMINATED_BY_HARD_GATE in Design Court evaluation; retained strictly as REJECTED_COMPARATOR).
 
 ### Candidate C: Role-Aware Hybrid (Recommended Baseline)
 - **Philosophy:** Asymmetric structural grammar tailored to role mental models, anchored by a shared foundation.
 - **Characteristics:**
   - **Customer:** Open / Editorial composition. Property detail facts, amenities, and policies are unboxed with subtle divider lines. Only multi-attribute decision units (such as Server Quote breakdown) use a clean single-surface container.
   - **Owner:** Grouped Operational Units. Related booking rows, property items, and wallet records share a single container with clean internal dividers (`Open Grouped Content`), preventing card soup while providing dense operational scanability.
-  - **Admin Boundary:** Crisp Desktop Operational Layout. Standard data tables, compact filters, and audit side-panels with restrained 8px structural radii and zero mobile-card styling.
+  - **Admin Boundary:** Crisp Desktop Operational Layout. Standard data tables, compact filters, and audit side-panels with restrained 8px structural radii (CONTROLLED_WEB_BOUNDARY_REFERENCE) and zero mobile-card styling.
 - **Shape System:**
-  - Action CTA: 6px (Phase 4C locked).
-  - Form Fields: 8px (Phase 4D locked).
-  - Structural Containers / Cards: 12px (Balanced candidate) or 16px (Legacy candidate).
+  - Action CTA: 6px (PROVISIONAL_PRIMARY_ONLY; Phase 4C).
+  - Form Fields: 8px (PROVISIONAL_FIELD_SHAPED_ONLY; Phase 4D).
+  - Structural Containers / Cards: 12px (COURT_RECOMMENDED_PILOT_CANDIDATE) vs 0px (Candidate A).
   - Open Content: 0px (divided inline).
 
 ---
@@ -151,6 +151,6 @@ Web tokens specify: `4px, 8px, 12px, 16px, 24px, 32px, 40px, 48px`.
 | **24px (xl)** | Section gap / Page vertical rhythm / Major group separation | High (standard separation between distinct sections) | **ESSENTIAL** |
 | **32px (2xl)**| Major boundary: hero to body, footer separator, sticky bar clearance | Moderate-High (ensures breathing room before major shifts) | **ESSENTIAL** |
 | **40px (3xl)**| Extended boundary / Empty state vertical breathing room | Low-Moderate (rarely needed; often redundant with 32px or 48px) | **CANDIDATE (Evaluate consolidation)** |
-| **48px (4xl)**| Large mobile touch target height / Screen bottom navigation clearance | High for heights/clearance; low as pure whitespace gap | **RETAIN AS SIZING / CLEARANCE** |
+| **48px (4xl)**| Touch clearance (~44pt iOS / ~48dp Android; native acceptance deferred to 4I) / Bottom nav clearance | High for heights/clearance; low as pure whitespace gap | **RETAIN AS SIZING / CLEARANCE** |
 
-**Conclusion:** The 8pt-derived family with 4px micro-steps and 12px density-bridge is coherent, mathematically sound, and proven in real product screens. No arbitrary odd-pixel values (11px, 13px, 17px, 21px) are permitted.
+**Conclusion:** The 8pt-derived family with 4px micro-steps and 12px density-bridge is evaluated as a SYSTEM_EVALUATED_STRUCTURAL_CANDIDATE in real product screens. No new spacing value should be introduced without demonstrated semantic need and governed design-system approval.

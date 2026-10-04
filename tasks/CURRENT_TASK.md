@@ -2,15 +2,17 @@
 
 TASK_ID: PHASE_4D_FORM_SELECTION_PRIMITIVES
 ROADMAP_PHASE: PHASE_4_UNIFIED_DESIGN_SYSTEM
-STATUS: READY_TO_START
-EXECUTION_STARTED: NO
-BASE_MAIN_SHA: 95e3789ae824cdc6ca0a6608f1752f3137ac5ac5
+STATUS: ACTIVE
+EXECUTION_STARTED: YES
+BASE_MAIN_SHA: 3520ca0dd28c013a52a2b0cc15670eab1b974442
+STAGE: GOVERNED_DISCOVERY_VISUAL_EVIDENCE_SYSTEM_EVALUATION
 SCOPE: Phase 4D — Form & Selection Primitives (text inputs, phone/email fields, search, select/pickers, checkbox/toggle where required, helper/error behavior, focus/keyboard behavior, and Arabic/RTL input details).
 
 ## Execution Position Notice
-- `STATUS: READY_TO_START` indicates that Phase 4D is the next authorized design dependency following the verified closure and merge of Phase 4C (PR #90).
-- `EXECUTION_STARTED: NO`
-- No Phase 4D implementation has begun. No design artifacts, code changes, or token promotions have been introduced in this task.
+- `STATUS: ACTIVE` indicates that Phase 4D execution is currently underway on branch `design/form-selection-pilot-01`.
+- `EXECUTION_STARTED: YES`
+- `STAGE: GOVERNED_DISCOVERY_VISUAL_EVIDENCE_SYSTEM_EVALUATION`
+- Controlled discovery, pilot implementation, and system evaluation are active under Phase 4D scope.
 
 ## Authoritative Phase 4D Scope
 Per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md`:

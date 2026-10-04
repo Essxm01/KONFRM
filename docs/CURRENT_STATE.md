@@ -29,7 +29,7 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
   - Reflow: controlled 360px Web frame-width evidence.
   - Native component and accessibility acceptance: **`DEFERRED TO 4I`**.
   - Open variables preserved: Secondary Radius (`OPEN`), Exact Neutrals (`OPEN`), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Destructive Color (`OPEN`), Exact Native Focus Treatment (`OPEN`), Global Shape System (`OPEN`), Cancellation/Refund Policy (`OPEN / UNDECIDED`), Token-File Authoring (`SEPARATELY GATED`).
-  - NEXT DESIGN DEPENDENCY: **`4D — FORM & SELECTION PRIMITIVES`** (status: `READY_TO_START`; `EXECUTION_STARTED: NO`).
+  - CURRENT DESIGN EXECUTION: **`4D — FORM & SELECTION PRIMITIVES`** (status: `ACTIVE — CONTROLLED PILOT / EVIDENCE`; `EXECUTION_STARTED: YES`).
 
 The connected property vertical slice through Phase 3 remains live-verified on production. Phase 4 develops the design foundations through controlled empirical pilots before native mobile integration.
 
@@ -79,5 +79,5 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
 
 Phase 4C Action System is closed and merged (PR #90, merge checkpoint `95e3789ae824cdc6ca0a6608f1752f3137ac5ac5`). The next active design dependency per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md` is:
 - **Phase 4D — Form & Selection Primitives** (text inputs, phone/email fields, search, select/pickers, checkbox/toggle where required, helper/error behavior, focus/keyboard behavior, and Arabic/RTL input details).
-  - **Status:** `READY_TO_START`
-  - **Execution Started:** `NO`
+  - **Status:** `ACTIVE — CONTROLLED PILOT / EVIDENCE`
+  - **Execution Started:** `YES`

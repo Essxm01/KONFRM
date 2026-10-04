@@ -12,6 +12,7 @@ KONFRM / كونفرم is a three-role vacation-rental product: Customer discover
 - Active task contract: `tasks/CURRENT_TASK.md`
 - Context router: `docs/CONTEXT_ROUTER.md`
 - Brain sync protocol: `docs/BRAIN_SYNC_PROTOCOL.md`
+- Project continuity bootstrap: `KONFRM_PROJECT_CONTINUITY_BOOTSTRAP.md`
 
 ## Mandatory context refresh before every execution task
 
@@ -31,9 +32,11 @@ For substantial or cross-system work, also review `docs/codex/KONFRM_FOUNDER_OPE
 
 Before editing, establish the objective, governing authorities, affected systems, non-negotiable rules, open decisions, evidence to verify, and explicit non-goals. Historical material, old code, mocks, constants, and prior behavior never silently override that current context.
 
+For a completely new AI account, machine recovery, strategic handoff, or loss of prior chat context, read `KONFRM_PROJECT_CONTINUITY_BOOTSTRAP.md` before using the normal fresh-session recovery sequence below.
+
 Use this recovery prompt in a fresh session:
 
-> Onboard yourself to this repository. Read AGENTS.md, docs/INDEX.md, docs/CURRENT_STATE.md, tasks/CURRENT_TASK.md, and docs/codex/KONFRM_MASTER_RULES.md. Follow docs/CONTEXT_ROUTER.md to selectively inspect only the code and additional documentation relevant to the active task. Do not modify anything until you understand the current task and affected architecture.
+> Onboard yourself to this repository. If prior account/session continuity is unavailable, read KONFRM_PROJECT_CONTINUITY_BOOTSTRAP.md first. Then read AGENTS.md, docs/INDEX.md, docs/CURRENT_STATE.md, tasks/CURRENT_TASK.md, docs/codex/KONFRM_MASTER_RULES.md, and KONFRM_EXECUTION_DEPENDENCY_ORDER.md. Follow docs/CONTEXT_ROUTER.md to selectively inspect only the code and additional documentation relevant to the active task. Establish branch/HEAD and origin/main before trusting dynamic state. Do not modify anything until you understand the current task and affected architecture.
 
 ## Branch-aware preflight
 

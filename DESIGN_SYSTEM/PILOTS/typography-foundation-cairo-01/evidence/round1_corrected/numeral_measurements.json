@@ -1,0 +1,164 @@
+[
+  {
+    "string": "1111",
+    "weight": 500,
+    "normalWidth": 35.78,
+    "tabularWidth": 35.78,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "8888",
+    "weight": 500,
+    "normalWidth": 35.78,
+    "tabularWidth": 35.78,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "1234",
+    "weight": 500,
+    "normalWidth": 35.78,
+    "tabularWidth": 35.78,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "5678",
+    "weight": 500,
+    "normalWidth": 35.78,
+    "tabularWidth": 35.78,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "1,600",
+    "weight": 500,
+    "normalWidth": 39.44,
+    "tabularWidth": 39.44,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "4,800",
+    "weight": 500,
+    "normalWidth": 39.44,
+    "tabularWidth": 39.44,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "1111",
+    "weight": 600,
+    "normalWidth": 35.78,
+    "tabularWidth": 35.78,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "8888",
+    "weight": 600,
+    "normalWidth": 35.78,
+    "tabularWidth": 35.78,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "1234",
+    "weight": 600,
+    "normalWidth": 35.78,
+    "tabularWidth": 35.78,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "5678",
+    "weight": 600,
+    "normalWidth": 35.78,
+    "tabularWidth": 35.78,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "1,600",
+    "weight": 600,
+    "normalWidth": 39.5,
+    "tabularWidth": 39.5,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "4,800",
+    "weight": 600,
+    "normalWidth": 39.5,
+    "tabularWidth": 39.5,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "1111",
+    "weight": 700,
+    "normalWidth": 35.59,
+    "tabularWidth": 35.59,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "8888",
+    "weight": 700,
+    "normalWidth": 35.59,
+    "tabularWidth": 35.59,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "1234",
+    "weight": 700,
+    "normalWidth": 35.59,
+    "tabularWidth": 35.59,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "5678",
+    "weight": 700,
+    "normalWidth": 35.59,
+    "tabularWidth": 35.59,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "1,600",
+    "weight": 700,
+    "normalWidth": 39.58,
+    "tabularWidth": 39.58,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  },
+  {
+    "string": "4,800",
+    "weight": 700,
+    "normalWidth": 39.58,
+    "tabularWidth": 39.58,
+    "delta": 0,
+    "fontFamily": "KONFRM Typography Pilot Cairo",
+    "fontSize": "16px"
+  }
+]

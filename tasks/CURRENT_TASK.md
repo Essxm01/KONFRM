@@ -46,7 +46,8 @@ Phase 4D carries forward upstream design authority without reopening validated d
 - **Exact Neutrals:** `OPEN` (pilot rendering values only).
 - **Exact Blue:** `OPEN` (`#276EF1` is implementation candidate only; restrained interaction-accent role).
 - **Exact Native Focus Treatment:** `OPEN`.
-- **Structural / Navigation Systems:** Phase 4E scope; do **NOT** let Phase 4D casually resolve Phase 4E Structural-System decisions.
+- **Structural System:** Phase 4E scope. Phase 4D must not casually resolve spacing systems, content insets, section/card/row structure, borders/dividers, surface hierarchy, global shape roles, or elevation.
+- **Navigation & Overlay System:** Phase 4F scope. Phase 4D must not casually resolve bottom navigation, app bars, nested navigation, global RTL back semantics, dialog/sheet container grammar, sticky-action architecture, or safe-area/navigation behavior. While Phase 4D legitimately defines the input and selection primitive behavior of fields (including select/picker field semantics), any overlay container, sheet, dialog, navigation pattern, or global overlay grammar belongs strictly to Phase 4F.
 - **Cancellation & Refund Policy:** `OPEN / UNDECIDED` (governed exclusively by Product and Financial Canon).
 - **Token-File Authoring:** `SEPARATELY GATED`.
 

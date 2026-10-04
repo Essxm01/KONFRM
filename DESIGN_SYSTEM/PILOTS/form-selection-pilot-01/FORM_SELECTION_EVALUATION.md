@@ -6,20 +6,22 @@
 **Base Main Checkpoint:** `3520ca0dd28c013a52a2b0cc15670eab1b974442`  
 **Interactive Pilot:** `DESIGN_SYSTEM/PILOTS/form-selection-pilot-01/index.html`  
 **Evidence Artifacts:** `DESIGN_SYSTEM/PILOTS/form-selection-pilot-01/evidence/` (12 artifacts)  
+**Simulation Framing:** Controlled Web frame-width simulations (iPhone-like and compact Android-like width references; native mobile acceptance deferred to Phase 4I)  
 
 ---
 
 ## Executive Summary
 
-Phase 4D establishes the foundation for form inputs and selection primitives in the KONFRM design system, bridging upstream typography (Cairo Profile B) and action semantics (Contextual / Hierarchy Hybrid, provisional `#000000` Primary, 6px Primary button radius) into daily interactive data entry across Customer, Owner, and Admin workflows.
+Phase 4D evaluates form inputs and selection primitive semantics for the KONFRM mobile design foundation, connecting upstream typography (Cairo Profile B) and action semantics (Contextual / Hierarchy Hybrid, provisional `#000000` Primary, 6px Primary button radius) into interactive data entry across Customer and Owner mobile workflows (Admin remains Web operational).
 
-Based on real product inspection across `customer-app/` and `owner-app/`, controlled empirical rendering across three candidate visual families, three radius options, two focus modalities, three viewports (360px, 390px, 430px), and three text scaling levels (100%, 150%, 200%), this evaluation delivers a decisive system recommendation:
+Based on real product inspection across `customer-app/` and `owner-app/`, controlled empirical rendering across candidate visual families, three radius options, two focus modalities, three controlled Web frame widths (360px, 390px, 430px), and three text scaling levels (100%, 150%, 200%), this evaluation delivers a decisive system recommendation:
 
-1. **Overall Field Visual Strategy:** **Candidate C (Hybrid / Contextual)** is recommended. It uses crisp 1px neutral outlines (`#E4E4E7` pilot) on pure white backgrounds as the universal baseline, while introducing modular container grouping for tightly paired fields (e.g., date ranges, steppers, price/currency pairs) to eliminate "box soup" in dense Owner flows without introducing "surface soup".
-2. **Input Radius:** **8px** is recommended as a `SYSTEM-VALIDATED PROVISIONAL CANDIDATE`. It provides optimal mobile ergonomics and visual comfort for taller 48px input containers while harmonizing with 6px Primary Buttons without copying button geometry blindly. 6px is retained as an alternative for Founder aesthetic preference.
-3. **Focus Treatment:** **Restrained Interaction Accent (`#276EF1` candidate with 2px soft halo)** is recommended. Pure black (`#000000`) focus borders were empirically proven to compete visually with the solid black Primary Action CTA. Exact native focus token remains `OPEN`.
-4. **Label / Helper / Error Hierarchy:** Explicit top labels (Cairo Profile B 12/600/1.35), user-consequence helper text (12/400/1.40), and text-associated error messages (12/600/1.35 with semantic alert icon and `role="alert"`). Floating labels are rejected due to Arabic script truncation risks.
-5. **Strict Boundary Preservation:** Phase 4E (Structural System) and Phase 4F (Navigation & Overlay System) boundaries are strictly maintained. Picker overlays are explicitly designated `PILOT COMPOSITION ONLY / PHASE 4F AUTHORITY DEFERRED`.
+1. **Recommended Field Visual Strategy:** **Outline-Led Field Baseline (Crisp 1px Neutral Outline on Pure White)**. Standalone fields utilize a crisp 1px neutral outline (`#E4E4E7` pilot reference) on a pure white background (`#FFFFFF`), ensuring clear figure-ground separation on light-first surfaces and avoiding low-contrast "surface soup" when embedded inside cards. Any multi-field grouped containers or module dividers demonstrated in the pilot are strictly **PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED**.
+2. **Input Radius Recommendation (8PX_RECOMMENDATION_RETAINED):** **8px** is retained as the system-recommended candidate based purely on visual criteria: it introduces gentle visual softness to larger 48px input containers compared to 6px, avoids the generic bubbly roundness of 10px, and harmonizes with the 6px Primary Button without copying button geometry blindly. **6px** is preserved as an explicit Founder aesthetic alternative if exact geometric alignment is preferred. Radius is evaluated strictly on visual aesthetics and not conflated with accessible touch-target bounds.
+3. **Focus Treatment:** **Semantic Restrained Interaction-Accent Emphasis**. Restrained interaction-accent focus is empirically superior to pure black focus because pure black competes visually with the provisional `#000000` Primary action button. The specific values used in the pilot (`#276EF1`, 2px ring, 2px halo) are **Web pilot rendering reference only**; exact native focus treatment remains `OPEN / Phase 4I validation`.
+4. **Label / Helper / Error Hierarchy:** Explicit top labels (Cairo Profile B 12/600/1.35), contextual helper text (12/400/1.40), and text-associated error indicators (explicit copy and semantic alert icon). Floating labels are rejected due to Arabic descender clipping and translation expansion risks. Pilot error styling (`#DC2626`, alert icon) is a rendering reference, not final universal Canon.
+5. **Selection Controls:** Checkbox is evidenced in Owner notification settings. Toggle has zero current product evidence and is classified as deferred future capability; no switch migration is manufactured.
+6. **Strict Boundary Preservation:** Phase 4E (Structural System) and Phase 4F (Navigation & Overlay System) boundaries are strictly maintained. Picker overlays are designated `PILOT COMPOSITION ONLY / PHASE 4F AUTHORITY DEFERRED`.
 
 ---
 
@@ -38,19 +40,20 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
 - **Primary Button Radius:** `6px` (`PRIMARY_ONLY` provisional).
   - *Governing Boundary:* Primary Button radius does **NOT** define input radius.
 - **Brand Direction:** Light-first surfaces, monochrome-first identity, restrained interaction accent candidate `#276EF1`, zero yellow/amber boxed UI by default.
+- **Application Scope:** Customer and Owner mobile products. Admin remains Web operational.
 
 ### B. Preserved Open Variables
-- **Input Radius:** `OPEN` (evaluated empirically in this report).
+- **Input Radius:** `OPEN` (empirically evaluated in this report).
 - **Exact Neutrals:** `OPEN` (pilot rendering values only).
 - **Exact Blue:** `OPEN` (`#276EF1` is implementation candidate only).
-- **Exact Focus Treatment:** `OPEN`.
+- **Exact Focus Treatment:** `OPEN` (native treatment deferred).
 - **Exact Destructive/Error Red:** `OPEN` (`#DC2626` is pilot rendering value only).
 - **Global Shape System:** `OPEN`.
 - **Native Acceptance:** `DEFERRED TO 4I`.
 
 ### C. Downstream Boundaries
-- **Phase 4E (Structural System):** Spacing scale, content insets, sections, cards/rows, structural dividers, surface hierarchy, and elevation belong to 4E.
-- **Phase 4F (Navigation & Overlay System):** Bottom navigation, app bars, dialogs, bottom sheets, and global overlay grammar belong to 4F. Picker triggers belong to 4D; picker overlay presentation shown in pilot is `PILOT COMPOSITION ONLY / PHASE 4F AUTHORITY DEFERRED`.
+- **Phase 4E (Structural System):** Spacing scale, content insets, sections, cards/rows, structural dividers, surface hierarchy, and elevation belong to 4E. Multi-field grouped containers in the pilot are composition references only.
+- **Phase 4F (Navigation & Overlay System):** Bottom navigation, app bars, dialogs, bottom sheets, and global overlay grammar belong to 4F. Picker triggers belong to 4D; picker overlay presentations shown in the pilot are `PILOT COMPOSITION ONLY / PHASE 4F AUTHORITY DEFERRED`.
 
 ---
 
@@ -65,7 +68,7 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
 - **Search & Refinement (Screen 03 & Screen 04):**
   - Screen 03 Coastal Search Bar: full-width trigger surface opening search sheet.
   - Screen 04 Search & Refine:
-    - Search query text input with icon and clear action.
+    - Search query text input with leading icon and clear action.
     - Destination multi-picker trigger with count badge.
     - Date range triggers (Check-in / Check-out).
     - Guest and bedroom steppers (`-` / `+`).
@@ -84,7 +87,7 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
   - Property Title: text input (`اسم الوحدة *`).
   - Property Type: 2x2 grid of selectable card buttons with icons and check indicators.
   - Description: multiline textarea (`وصف الوحدة (اختياري)`, 3–4 rows).
-  - Region: dropdown select (`select` element with Egyptian coastal regions).
+  - Region: dropdown select trigger for coastal regions.
   - Resort name & Address: text inputs.
   - Steppers: Bedrooms, Bathrooms, Maximum Guests.
   - Price per night: numeric input with Western Arabic numerals (0–9) and currency suffix `ج.م`.
@@ -98,16 +101,16 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
 
 | Primitive Type | Real Product Evidence | Data / Format Constraints | RTL / Bidi Requirement | Status / Classification |
 |---|---|---|---|---|
-| **Text Input** | Customer Auth 10 (Full Name), Owner Wizard (Title, Address) | Single-line UTF-8 string | Native RTL text-align right | CANONICAL PRIMITIVE |
-| **Phone Input** | Customer Auth 08, Owner Login / Registration | Egyptian mobile (11 digits, `01XXXXXXXXX`) | LTR-isolated numeric run with `+20` prefix | CANONICAL PRIMITIVE |
-| **Email Input** | Customer Auth 08, Owner Profile | Standard email format (`name@domain.com`) | LTR-isolated text-align left | CANONICAL PRIMITIVE |
-| **Search Input** | Customer Search Refine 04, Explore | Query string | RTL text with leading search icon & trailing clear | CANONICAL PRIMITIVE |
-| **Numeric / Currency Input** | Owner Wizard (Price per night, Area), Search Price | Digits 0–9, optional thousand separator | Western Arabic numerals (0–9), unit suffix `ج.م` | CANONICAL PRIMITIVE |
-| **Multiline Input (Textarea)**| Owner Wizard (Description), Disputes, Messages | Multi-line text (3–5 lines) | RTL text, vertical expansion, fixed label | CANONICAL PRIMITIVE |
-| **Select / Picker Trigger** | Customer Destinations, Dates; Owner Region | Key-value choice or range selection | RTL trigger with trailing chevron / icon | CANONICAL PRIMITIVE (Overlay 4F Deferred) |
-| **Stepper Control** | Customer Search 04 (Guests), Owner Wizard | Integer counters (min 0/1, max 20/50) | LTR button cluster (`-` / `+`) with RTL labels | CANONICAL PRIMITIVE |
-| **Checkbox** | Owner Profile (`ProfileView.tsx` notification settings) | Boolean preference | RTL label with trailing/leading check box | EVIDENCED IN OWNER SETTINGS / FUTURE GENERAL CONTRACT |
-| **Toggle / Switch** | None (checkbox used currently in React) | Boolean preference with instant effect | RTL label with trailing toggle switch | CANDIDATE INTERACTION PRIMITIVE / NO SEPARATE CAPABILITY INVENTED |
+| **Text Input** | Customer Auth 10 (Full Name), Owner Wizard (Title, Address) | Single-line UTF-8 string | Native RTL text-align right | EVIDENCED REQUIRED PRIMITIVE |
+| **Phone Input** | Customer Auth 08, Owner Login / Registration | Egyptian mobile (11 digits, `01XXXXXXXXX`) | LTR-isolated numeric run with `+20` prefix | EVIDENCED REQUIRED PRIMITIVE |
+| **Email Input** | Customer Auth 08, Owner Profile | Standard email format (`name@domain.com`) | LTR-isolated text-align left | EVIDENCED REQUIRED PRIMITIVE |
+| **Search Input** | Customer Search Refine 04, Explore | Query string | RTL text with leading search icon & trailing clear | SYSTEM CANDIDATE |
+| **Numeric / Currency Input** | Owner Wizard (Price per night, Area), Search Price | Digits 0–9, optional thousand separator | Western Arabic numerals (0–9), unit suffix `ج.م` | EVIDENCED REQUIRED PRIMITIVE |
+| **Multiline Input (Textarea)**| Owner Wizard (Description), Disputes, Messages | Multi-line text (3–5 lines) | RTL text, vertical expansion, fixed label | EVIDENCED REQUIRED PRIMITIVE |
+| **Select / Picker Trigger** | Customer Destinations, Dates; Owner Region | Key-value choice or range selection | RTL trigger with trailing chevron / icon | SYSTEM CANDIDATE (Overlay 4F Deferred) |
+| **Stepper Control** | Customer Search 04 (Guests), Owner Wizard | Integer counters (min 0/1, max 20/50) | LTR button cluster (`-` / `+`) with RTL labels | SYSTEM CANDIDATE |
+| **Checkbox** | Owner Profile (`ProfileView.tsx` notification settings) | Boolean preference | RTL label with trailing/leading check box | PRODUCT-EVIDENCED CONTROL (Owner Settings) |
+| **Toggle / Switch** | None (checkbox used currently in React) | Boolean preference with instant effect | RTL label with trailing toggle switch | DEFERRED / NO CURRENT PRODUCT EVIDENCE |
 
 ---
 
@@ -115,42 +118,37 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
 
 ### Step 1: OBSERVE
 - **Context:** Mobile form data entry across Customer (hospitality, discovery, high trust) and Owner (dense operations, repeated listing inputs, rapid verification).
-- **Core Problem:** Previous web implementations suffered from inconsistent styling, arbitrary border radii (varying between 12px, 16px, and 24px), ad-hoc focus rings, and potential visual competition with Phase 4C black Primary buttons.
+- **Core Problem:** Previous web implementations had inconsistent styling, arbitrary border radii, ad-hoc focus rings, and potential visual competition with Phase 4C black Primary buttons.
 - **Key Questions:**
-  1. What is the optimal field visual strategy (Outline vs Fill vs Hybrid)?
-  2. What input radius balances mobile ergonomics without blindly copying 6px button radius?
-  3. What focus treatment ensures WCAG compliance without competing with `#000000` Primary CTAs?
+  1. What is the optimal field visual strategy (Outline-Led vs Fill-Led)?
+  2. What input radius balances visual softness and architectural precision without copying button radius blindly?
+  3. What focus treatment ensures clear visibility without competing with `#000000` Primary CTAs?
   4. How should RTL Bidi isolation be standardized for Egyptian phone numbers, emails, and currency?
 
-### Step 2: HYPOTHESIZE (Three Candidate Visual Families)
-- **Hypothesis A (Outline-Led):** Universal 1px neutral outline (`#E4E4E7`) on pure white background for all fields. High architectural precision, crisp figure/ground contrast.
-- **Hypothesis B (Subtle-Surface / Fill-Led):** Tinted neutral background (`#F4F4F5`) with borderless or hairline default state. Transitions to white on focus. Softer, low initial contrast.
-- **Hypothesis C (Hybrid / Contextual - Recommended):** Crisp 1px neutral outline on pure white for standalone inputs; structured container grouping with internal dividers for related multi-field modules (dates, price/currency, steppers). Eliminates both "box soup" and "surface soup".
+### Step 2: HYPOTHESIZE (Candidate Visual Families)
+- **Hypothesis A (Outline-Led Baseline):** Universal 1px neutral outline (`#E4E4E7` pilot reference) on pure white background for all fields. High architectural precision, crisp figure/ground contrast.
+- **Hypothesis B (Subtle-Surface / Fill-Led):** Tinted neutral background (`#F4F4F5` pilot reference) with borderless default state. Transitions to white on focus. Softer initial appearance.
+- **Hypothesis C (Compositional Hybrid in Pilot):** Uses the Outline-Led baseline for individual fields, but groups related fields inside container boxes with internal dividers in the pilot. (Note: Grouped container boxes are evaluated as composition evidence; structural container rules belong to Phase 4E).
 
 ### Step 3: ARGUE FOR
-- **For Hypothesis A:**
-  - Maximum clarity on light-first surfaces.
-  - Completely eliminates ambiguity regarding clickable/tappable boundaries.
+- **For Hypothesis A (Outline-Led Baseline):**
+  - Maximum edge clarity on light-first surfaces.
+  - Eliminates ambiguity regarding interactive boundaries.
   - Matches the geometric, architectural identity of KONFRM.
-  - Works consistently whether fields are placed directly on page backgrounds or inside cards.
-- **For Hypothesis B:**
-  - Reduces perceived visual noise on complex screens by eliminating bounding lines.
-  - Follows popular consumer mobile patterns (iOS grouped forms, Material 3 filled inputs).
-  - Creates a distinct visual "bedding" for inputs that distinguishes them from flat text.
-- **For Hypothesis C:**
-  - Solves the primary weakness of Hypothesis A (too many repetitive bordered boxes in dense Owner forms) without introducing the weakness of Hypothesis B (muddy gray rectangles inside white cards).
-  - Unifies paired data (arrival + departure, phone code + number, price + currency) into single visual units.
-  - Adapts naturally to role psychology: clean and spacious for Customers, dense and structured for Owners.
+  - Works consistently whether fields are placed directly on page backgrounds or inside cards, avoiding "surface soup".
+- **For Hypothesis B (Fill-Led):**
+  - Softens the page by eliminating bounding lines on an empty canvas.
+  - Follows consumer mobile patterns where inputs sit on plain white canvas backgrounds.
 
 ### Step 4: ARGUE AGAINST
 - **Against Hypothesis A:**
-  - In screens with many consecutive fields (Owner Property Wizard), a sea of independent rectangular borders creates "box soup" and visual fatigue.
+  - Multiple consecutive bordered boxes on a dense page can feel repetitive if not spaced thoughtfully.
 - **Against Hypothesis B:**
-  - Fails when nested inside cards or sheets: white card + gray input fill + light gray background produces low-contrast "surface soup".
-  - When an error occurs, adding a red border to a filled gray box creates an awkward hybrid appearance that looks like an afterthought.
-  - Carries a generic, consumer-SaaS aesthetic that dilutes KONFRM's premium real-estate identity.
-- **Against Hypothesis C:**
-  - Requires clear component composition guidelines to ensure developers do not arbitrarily mix grouped and standalone styles.
+  - Fails when nested inside cards or sheets: white card + gray input fill + light page background creates low-contrast, muddy layering ("surface soup").
+  - When an error occurs, adding a red border to a filled gray box creates an awkward hybrid look.
+  - Carries a generic consumer-SaaS aesthetic that dilutes KONFRM's architectural brand identity.
+- **Against Treating "Hybrid" as a 4D Primitive:**
+  - The "hybrid" aspect observed in the pilot relies on multi-field container grouping and internal dividers, which are structural layout concerns belonging to Phase 4E. At the 4D primitive field level, the actual field treatment is an Outline-Led baseline.
 
 ### Step 5: RESEARCH & CLAIM HYGIENE
 - **Empirical Claim Hygiene Evaluation:**
@@ -159,7 +157,7 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
   - *Stimulus/Population:* Laboratory visual discrimination tasks using abstract 2D geometric shapes.
   - *Inference for KONFRM:* Closed 1px neutral outlines provide faster recognition of interactive touch boundaries on mobile screens than borderless low-contrast fills.
   - *Limitations / Transfer Risk:* Generic visual shape identification does not directly prove that outlined fields improve data completion rates in bilingual Arabic rental apps.
-  - *Validation Requirement:* Empirical prototype rendering across Customer Auth and Owner Wizard to confirm readability, cognitive clarity, and touch confidence.
+  - *Validation Requirement:* Empirical prototype rendering across Customer Auth and Owner Wizard to confirm readability, cognitive clarity, and visual comfort.
 
 ### Step 6: ROLE LENS ANALYSIS
 - **Customer Role Lens:**
@@ -167,33 +165,34 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
   - *Evaluation:* Customer forms are concise (Phone/Email auth, Search filters). Outline-led standalone fields on white cards feel airy, modern, and uncluttered. High clarity during error correction reduces drop-off.
 - **Owner Role Lens:**
   - *Psychological Need:* Operational speed, high scanability, high data confidence, efficient repeated data entry.
-  - *Evaluation:* Owner property wizards contain 10+ data points per step. Grouped field containers (Hybrid family) keep the screen visually calm while packing essential listing data into scannable modules.
+  - *Evaluation:* Owner property wizards contain multiple data points. Crisp outline fields provide unambiguous structure, supporting rapid scanning and verification.
 
 ### Step 7: BRAND CONGRUENCE
 - **Alignment with KONFRM Core Brand:**
   - KONFRM is monochrome-first, structured, architectural, and precise.
   - Cairo Profile B (`15/700/1.20` button, `12/600/1.35` label) requires crisp geometric grounding.
-  - Candidate C (Hybrid) reinforces the architectural grid of KONFRM without introducing decorative gradients, glassmorphism, or muddy gray backgrounds.
+  - Outline-led fields reinforce the architectural grid of KONFRM without introducing decorative gradients, glassmorphism, or muddy gray backgrounds.
   - Preserves the strict rule: zero yellow/amber boxed UI by default.
 
 ### Step 8: PLATFORM & ACCESSIBILITY CHECK
-- **WCAG 2.2 AA Conformance:**
-  - *Contrast:* Label text (`#09090B`) on white exceeds 13:1 (passes AAA). Helper text (`#71717A`) exceeds 4.5:1 (passes AA). Default border (`#E4E4E7`) provides 1.3:1 non-text boundary against white, supplemented by input text and label. Focus ring (`#276EF1`) provides 4.8:1 contrast against white background.
-  - *Error Association:* Error state couples red border (`#DC2626`) with an alert circle icon, dedicated error copy, `aria-invalid="true"`, and `role="alert"` / `aria-describedby`. Zero color-only error conveyance.
-  - *Touch Targets:* iOS 44pt and Android 48dp guidelines are met. Input containers have 48px minimum height. Stepper buttons have 34px visible frame with generous 44pt touch padding.
+- **Accessibility Inspection in Controlled Pilot:**
+  - *Contrast Check:* Label text (`#09090B`) and helper text (`#71717A`) provide clear contrast against white surfaces in pilot rendering. Default border (`#E4E4E7`) provides visible boundary demarcation. Focus ring provides distinct edge highlight.
+  - *Error Association:* Error state couples red border (`#DC2626` pilot reference) with an alert icon, dedicated error copy, `aria-invalid="true"`, and `role="alert"` / `aria-describedby`. Zero color-only error conveyance.
+  - *Touch Target Guidance:* Platform guidance is differentiated: iOS guidance is 44pt; Android guidance is 48dp. Controlled Web pixel values (e.g. 48px field height, 34px stepper buttons) represent visible geometry only. Target bounds must be governed per platform guidelines; visible geometry is not identical to interactive hit bounds.
 - **Arabic RTL & Bidi Integrity:**
   - Explicit `dir="ltr"` on phone container and input isolates Egyptian numeric string (`010 4989 2908`) from the RTL flow, preventing cursor jumping and misplaced country code pills.
   - Explicit `dir="ltr"` on email input keeps domain syntax (`@example.com`) left-aligned without punctuation disruption.
   - Currency format uses Western Arabic numerals (`2,800`) with trailing currency unit (`ج.م`).
 
 ### Step 9: ALTERNATIVES EVALUATION (Radius & Focus)
-- **Input Radius Alternatives:**
-  - *6px:* Matches Phase 4C Primary Button radius. Highly architectural and disciplined, but feels slightly sharp on 48px tall containers compared to 40px buttons.
-  - *8px (Recommended):* The perceptual sweet spot. Softens the larger touch container slightly while maintaining geometric harmony with 6px buttons.
-  - *10px:* Begins to look like a generic consumer pill, clashing with the disciplined 6px button.
+- **Input Radius Comparative Visual Review (6px vs 8px vs 10px):**
+  - *Explicit Visual Inspection:* All three radius candidates were inspected on the Owner Property Wizard (`input_radius_6px_owner.png`, `input_radius_8px_owner.png`, `input_radius_10px_owner.png`).
+  - *6px (Exact Button Match):* Extremely crisp and architectural. Matches the 6px Primary Button below with exact geometric continuity. In dense operational forms, 6px feels disciplined and serious, but on larger fields and textareas it may feel slightly severe or austere.
+  - *8px (System Recommended — 8PX_RECOMMENDATION_RETAINED):* Introduces a gentle softening curve that relieves the slight austerity of 6px on large containers while remaining disciplined. Visually, 8px harmonizes naturally with the 6px Primary Button without copying it blindly, balancing Customer hospitality warmth with Owner operational rigor. Does not claim touch ergonomics.
+  - *10px:* Corners visually detach from the 6px button. The roundness becomes noticeable as a distinct consumer-style curve, clashing with the disciplined button geometry.
 - **Focus Ring Alternatives:**
-  - *Restrained Accent Blue (`#276EF1` + 2px halo - Recommended):* Provides immediate, unambiguous feedback indicating active text focus. Does not compete with black buttons.
-  - *Pure Black (`#000000` 2px ring):* Strong contrast, but visually competes directly with the `#000000` Primary CTA, creating cognitive confusion about which element is the primary page trigger.
+  - *Restrained Interaction Accent (Pilot `#276EF1` 2px ring + halo - Recommended):* Provides immediate, unambiguous feedback indicating active text focus. Does not compete with black buttons.
+  - *Pure Black (`#000000` 2px ring):* Visually competes directly with the `#000000` Primary CTA button, creating cognitive confusion about what is primary on the page.
 
 ### Step 10: PROTOTYPE & VISUAL TEST
 - Controlled visual evidence captured across 12 artifacts (`DESIGN_SYSTEM/PILOTS/form-selection-pilot-01/evidence/`):
@@ -201,71 +200,73 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
   - Customer Search & Refine verified in `customer_search_hybrid_390.png`.
   - Owner Wizard verified in `owner_property_hybrid_390.png`.
   - Complete state matrix verified in `state_matrix_hybrid_390.png`.
-  - Narrow-width 360px reflow verified in `stress_reflow_360_width.png` with zero horizontal overflow.
+  - Narrow-width reflow verified in `stress_reflow_360_width.png` (360px controlled Web frame reference) with zero horizontal overflow.
   - High text scaling (200%) verified in `stress_text_scale_200.png` with clean multi-line wrapping and robust Bidi preservation.
 
 ### Step 11: DECISION
-- Adopt **Candidate C (Hybrid / Contextual)** as the system-recommended field visual strategy.
-- Adopt **8px** as the provisional input radius candidate (`SYSTEM-VALIDATED PROVISIONAL CANDIDATE`), offering 6px as a Founder aesthetic alternative.
-- Adopt **Restrained Interaction Accent (`#276EF1` candidate + halo)** as the focus model; preserve exact native focus token as `OPEN`.
+- Adopt **Outline-Led Field Baseline (Crisp 1px Neutral Outline on Pure White)** as the system-recommended field visual strategy. Any multi-field grouping shown in the pilot is `PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED`.
+- Retain **8px** as the provisional input radius candidate (`8PX_RECOMMENDATION_RETAINED`), offering 6px as a Founder aesthetic alternative.
+- Adopt **Semantic Restrained Interaction-Accent Emphasis** as the focus model; exact native focus tokens remain `OPEN`.
 - Adopt top-aligned explicit labels (Cairo 12/600/1.35) and text-associated error indicators.
 - Classify Select/Picker overlay grammar as `PILOT COMPOSITION ONLY / PHASE 4F AUTHORITY DEFERRED`.
-- Classify Checkbox as `OWNER PREFERENCE SETTINGS EVIDENCED / FUTURE GENERAL CONTRACT`.
+- Classify Checkbox as `PRODUCT-EVIDENCED CONTROL (Owner Settings)`.
+- Classify Toggle as `DEFERRED / NO CURRENT PRODUCT EVIDENCE`.
 
 ### Step 12: CONFIDENCE & STATUS
 - **Overall Confidence:** **HIGH**
 - **Recommended Field Strategy Status:** `SYSTEM_RECOMMENDATION`
-- **Input Radius Status:** `SYSTEM-VALIDATED PROVISIONAL CANDIDATE` (Founder visual preference between 8px and 6px may be selected).
-- **Focus Treatment Status:** `SYSTEM_RECOMMENDATION` (semantic model; exact native token remains `OPEN`).
+- **Input Radius Status:** `SYSTEM-VALIDATED PROVISIONAL CANDIDATE` (Founder visual preference between 8px and 6px available).
+- **Focus Treatment Status:** `SYSTEM_RECOMMENDATION` (Semantic model; exact native token remains `OPEN`).
 
 ---
 
 ## 4. Expected High-Value Decision Pack
 
 ### Question 1: Recommended Overall Field Visual Strategy
-- **Recommendation:** **Candidate C (Hybrid / Contextual)**
-- **Rationale:** It establishes a clean 1px neutral outline (`#E4E4E7`) on pure white as the universal baseline for standalone fields (preventing muddy gray boxes inside cards), while permitting structured container grouping for paired inputs (dates, price/currency, steppers) in dense Owner workflows to prevent "box soup".
+- **Recommendation:** **Outline-Led Field Baseline (Crisp 1px Neutral Outline on Pure White Background)**
+- **Rationale:** It establishes a crisp 1px neutral outline (`#E4E4E7` pilot reference) on pure white as the universal baseline for standalone fields, ensuring clear edge definition on light surfaces and preventing muddy gray fills inside cards. Any multi-field grouped containers or module dividers demonstrated in the pilot are strictly **PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED**.
 - **Status:** `SYSTEM_RECOMMENDATION`
 
-### Question 2: Recommended Input Radius
+### Question 2: Recommended Input Radius (8PX_RECOMMENDATION_RETAINED)
 - **Recommendation:** **8px**
-- **Alternative:** **6px** (exact match with Primary Button)
-- **Rationale:** 8px provides the most comfortable, balanced visual curve for 48px mobile touch targets without drifting into bubbly consumer SaaS territory. It harmonizes naturally with 6px Primary buttons.
+- **Alternative:** **6px** (exact geometric match with Primary Button)
+- **Rationale:** 8px provides the most visually balanced curve for taller 48px input containers without drifting into consumer roundness (10px). It pairs harmoniously with 6px Primary buttons while avoiding rigid geometry copying. Radius is justified solely by visual and architectural balance, not touch target ergonomics.
 - **Status:** `SYSTEM-VALIDATED PROVISIONAL CANDIDATE` / `FOUNDER_VISUAL_SELECTION_REQUIRED` (if Founder prefers exact 6px geometric alignment).
 
 ### Question 3: Recommended Focus Treatment
-- **Recommendation:** **Restrained Interaction Accent Blue (`#276EF1` candidate 2px ring + 2px soft halo `rgba(39, 110, 241, 0.15)`)**
-- **Rationale:** A pure black focus ring competes visually with the `#000000` Primary CTA button. The restrained blue accent provides crisp focus feedback without adding decorative noise.
+- **Recommendation:** **Semantic Restrained Interaction-Accent Emphasis**
+- **Pilot Reference:** 2px ring + 2px soft halo in candidate blue (`#276EF1`) is a **Web pilot rendering reference only**.
+- **Rationale:** Pure black focus rings visually compete with the provisional `#000000` Primary CTA button. The restrained accent provides clear focus feedback without creating action confusion.
 - **Status:** `SYSTEM_RECOMMENDATION` (Semantic direction; exact native token remains `OPEN`).
 
 ### Question 4: Recommended Label / Helper / Error Hierarchy
 - **Label:** Cairo Profile B `12 / 600 / 1.35` in `#09090B`, placed strictly above the input. Floating labels are rejected due to Arabic descender clipping and translation expansion risks.
 - **Helper Text:** Cairo Profile B `12 / 400 / 1.40` in `#71717A`. Explains user context or format examples.
-- **Error Feedback:** Cairo Profile B `12 / 600 / 1.35` in `#DC2626` (pilot red) + alert icon (`<circle cx="12" cy="12" r="10"/>...`) + `role="alert"` + `aria-describedby`. Error border applied to field container.
+- **Error Feedback:** Explicit text message + semantic alert icon + `role="alert"` + `aria-describedby`. Error border applied to field container. Pilot styling (`#DC2626`, alert icon, 12/600 typography) is a **Web pilot rendering reference only**, not final Canon.
 
 ### Question 5: Recommended Search Field Treatment
-- Leading search icon (visual start / right side in RTL layout).
+- Leading search icon at visual start (right side in RTL layout).
 - Clear action button (`×`) appearing dynamically at visual end (left side in RTL) when text is populated.
 - Trailing action / submit remains separate.
-- Bidi isolation ensures mixed Arabic and English searches do not scramble query text.
+- Bidi isolation ensures mixed Arabic and English searches do not scramble query text. Full search IA deferred to screen workflows.
 
 ### Question 6: Recommended Select / Picker Field Treatment
-- 4D defines the field trigger contract: explicit label, 1px border container, selected value display (or placeholder), and trailing disclosure chevron (`ChevronDown`).
+- Phase 4D defines the field trigger contract: explicit label, 1px border container, selected value display (or placeholder), and trailing disclosure chevron (`ChevronDown`).
 - Any selection sheet, modal, or dropdown list demonstrated in the pilot is explicitly marked:
   `PILOT COMPOSITION ONLY / PHASE 4F AUTHORITY DEFERRED`.
 
 ### Question 7: Checkbox and Toggle Status
-- **Checkbox:** Canonical product evidence exists solely in `owner-app/src/components/profile/ProfileView.tsx` (notification settings). Zero evidence exists in `customer-app`. Classified as: `OWNER PREFERENCE SETTINGS EVIDENCED / FUTURE GENERAL CONTRACT`.
-- **Toggle / Switch:** Zero product evidence in current code (raw checkboxes used). Evaluated as a candidate alternative for immediate-effect preference switches, but no fake settings or consent flows are manufactured.
+- **Checkbox:** Product-evidenced solely in `owner-app/src/components/profile/ProfileView.tsx` (notification settings). Zero evidence exists in `customer-app`. Classified as: `PRODUCT-EVIDENCED CONTROL (Owner Settings) / FUTURE GENERAL CONTRACT`.
+- **Toggle / Switch:** Zero product evidence in current code (raw checkboxes used). Classified as: `DEFERRED / FUTURE BOUNDED CONTROL / NO CURRENT CANONICAL PRODUCT EVIDENCE`. It does not influence current system adoption; no switch migration is manufactured.
 
 ### Question 8: Customer vs. Owner Composition Differences
 - **Customer Role:** Emphasizes hospitality, spacious breathing room, lower density, and immediate trust. Uses standalone outlined fields with generous vertical rhythm.
-- **Owner Role:** Emphasizes operational density, high scanability, and rapid repeated entry. Uses grouped modules, compact steppers, and currency-suffixed numeric fields.
+- **Owner Role:** Emphasizes operational density, high scanability, and rapid repeated entry. Uses compact steppers, currency-suffixed numeric fields, and structured data entry.
 
 ### Question 9: What Remains OPEN (Preserved Boundaries)
 - Exact Neutrals (`OPEN`).
 - Exact Blue Token (`OPEN`, candidate `#276EF1`).
-- Exact Destructive / Error Red Token (`OPEN`, pilot `#DC2626`).
+- Exact Destructive / Error Red Token (`OPEN`, pilot rendering `#DC2626`).
 - Exact Native Focus Token (`OPEN`).
 - Global Shape System (`OPEN`).
 - Structural Spacing & Elevation (`PHASE 4E`).
@@ -273,7 +274,7 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
 - Native Mobile Flutter Acceptance (`PHASE 4I`).
 
 ### Question 10: Founder Decisions Budget
-- **Total Founder Decisions Requested:** **1** (or **0** if Founder approves the system recommendation directly).
+- **Total Founder Decisions Requested:** **1** (or **0** if Founder adopts the system recommendation directly).
 - **Decision:**
   - *Option 1 (System Recommended):* Confirm **8px** input radius as provisional mobile candidate.
   - *Option 2:* Confirm **6px** input radius to match Primary Button radius exactly.

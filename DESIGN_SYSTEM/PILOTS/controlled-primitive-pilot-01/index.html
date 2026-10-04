@@ -10,6 +10,14 @@
        STRICT DOM MEASUREMENT • PRODUCT TRUTH • NEUTRAL HYPOTHESES
        GOVERNANCE: DESIGN PILOT — NOT PRODUCTION UI — NOT CANON
        ========================================================================== */
+    @font-face {
+      font-family: "KONFRM Pilot Cairo";
+      src: url("./fonts/Cairo-VariableFont.ttf") format("truetype");
+      font-weight: 200 1000;
+      font-style: normal;
+      font-display: block;
+    }
+
     :root {
       /* Canonical Brand Foundation */
       --kf-brand-black: #0F172A; /* Pilot Value */
@@ -33,7 +41,7 @@
       --pilot-focus-color: #0F172A;
 
       /* Typography */
-      --kf-font-family: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", Tahoma, sans-serif;
+      --kf-font-family: "KONFRM Pilot Cairo", sans-serif;
 
       /* Controlled Radius Pilot Values (Circular Arc Border Radius) */
       --radius-low: 6px;
@@ -478,6 +486,12 @@
     <div class="pilot-meta" style="text-align: left; direction: ltr;">
       Branch: <code>design/controlled-primitive-pilot-01</code><br>
       Status: Final Evidence-Integrity Patch
+    </div>
+    <div class="diagnostic-bar" id="font-diagnostic" style="width: 100%; margin-top: 10px; padding-top: 8px; border-top: 1px solid #334155; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-family: monospace; font-size: 11px; direction: ltr; text-align: left;">
+      <span id="font-status-badge" style="background: #EAB308; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold;">FONT_ASSET_STATUS: LOADING...</span>
+      <span style="color: #CBD5E1;">FONT_FAMILY: <strong style="color: #F8FAFC;">KONFRM Pilot Cairo</strong></span>
+      <span style="color: #CBD5E1;">FONT_WEIGHT: <strong style="color: #F8FAFC;">700</strong></span>
+      <span style="color: #CBD5E1;">SHA-256: <code style="color: #93C5FD;">667c987182391c91f4e57a2f455b1794fb5e3ee6ca4ef3383e86bb690fa9c964</code></span>
     </div>
   </div>
 
@@ -1115,9 +1129,39 @@
     });
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    populateScaleMetrics();
-  });
+  async function initIndexFonts() {
+    const statusBadge = document.getElementById('font-status-badge');
+    try {
+      await document.fonts.load('700 15px "KONFRM Pilot Cairo"', 'إرسال طلب الحجز');
+      await document.fonts.ready;
+
+      const isLoaded = document.fonts.check('700 15px "KONFRM Pilot Cairo"');
+      if (!isLoaded) {
+        throw new Error('document.fonts.check returned false for "KONFRM Pilot Cairo"');
+      }
+
+      if (statusBadge) {
+        statusBadge.textContent = 'FONT_ASSET_STATUS: READY';
+        statusBadge.style.background = '#16A34A';
+        statusBadge.style.color = '#FFFFFF';
+      }
+
+      populateScaleMetrics();
+    } catch (err) {
+      console.error('Font load failure:', err);
+      if (statusBadge) {
+        statusBadge.textContent = 'FONT_ASSET_STATUS: ERROR (' + err.message + ')';
+        statusBadge.style.background = '#DC2626';
+        statusBadge.style.color = '#FFFFFF';
+      }
+      const tbody = document.getElementById('scale-metrics-tbody');
+      if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="6" style="color:#DC2626;font-weight:bold;text-align:center;padding:20px;">FONT_ASSET_STATUS: ERROR — Pinned font failed to load. Measurement generation aborted.</td></tr>';
+      }
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', initIndexFonts);
 </script>
 
 </body>

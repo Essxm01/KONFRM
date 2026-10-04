@@ -111,21 +111,21 @@ CANON_LANGUAGE_TENSION: PRESENT — REQUIRES GOVERNED INTERPRETATION
 
 Using the dedicated deterministic test harness ([`width-stress.html`](./width-stress.html)), layout metrics were queried directly from the browser DOM via `Range.getClientRects()`, `getBoundingClientRect()`, and `getComputedStyle()` at three standard frame widths (360px, 390px, 430px):
 
-### 5.1 Measured Live DOM Metrics Table
+### 5.1 Measured Live DOM Metrics Table (Pinned Repository Font: "KONFRM Pilot Cairo" 700)
 
 | Case | Radius | Frame.w | Win.w | btn.w | btn.h | label.w | Lines (Range) | pad.h | font | l.height | Overflow |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Short** ("إرسال طلب الحجز") | 6px | 360px | 702px | 324.0px | 48.0px | 107.2px | **1 LINE** | 20px | 15px | 18px | **NO** |
-| **Short** ("إرسال طلب الحجز") | 12px | 360px | 702px | 324.0px | 48.0px | 107.2px | **1 LINE** | 20px | 15px | 18px | **NO** |
-| **Short** ("إرسال طلب الحجز") | 22px | 360px | 702px | 324.0px | 48.0px | 107.2px | **1 LINE** | 20px | 15px | 18px | **NO** |
-| **Medium** ("إرسال طلب الحجز (3 ليالٍ)") | 6px | 360px | 702px | 324.0px | 48.0px | 159.0px | **1 LINE** | 20px | 15px | 18px | **NO** |
-| **Medium** ("إرسال طلب الحجز (3 ليالٍ)") | 12px | 360px | 702px | 324.0px | 48.0px | 159.0px | **1 LINE** | 20px | 15px | 18px | **NO** |
-| **Medium** ("إرسال طلب الحجز (3 ليالٍ)") | 22px | 360px | 702px | 324.0px | 48.0px | 159.0px | **1 LINE** | 20px | 15px | 18px | **NO** |
-| **Long** ("إرسال طلب حجز الفيلا بعد مراجعة التفاصيل") | 6px | 360px | 702px | 324.0px | 62.0px | 256.5px | **2 LINES** | 20px | 15px | 18px | **NO** |
-| **Long** ("إرسال طلب حجز الفيلا بعد مراجعة التفاصيل") | 12px | 360px | 702px | 324.0px | 62.0px | 256.5px | **2 LINES** | 20px | 15px | 18px | **NO** |
-| **Long** ("إرسال طلب حجز الفيلا بعد مراجعة التفاصيل") | 22px | 360px | 702px | 324.0px | 62.0px | 256.5px | **2 LINES** | 20px | 15px | 18px | **NO** |
-| **All Cases** | 6 / 12 / 22 | 390px | 702px | 354.0px | 48.0px | — | **Identical** | 20px | 15px | 18px | **NO** |
-| **All Cases** | 6 / 12 / 22 | 430px | 702px | 394.0px | 48.0px | — | **Identical** | 20px | 15px | 18px | **NO** |
+| **Short** ("إرسال طلب الحجز") | 6px | 360px | 762px | 324.0px | 48.0px | 109.2px | **1 LINE** | 20px | 15px (700) | 18px | **NO** |
+| **Short** ("إرسال طلب الحجز") | 12px | 360px | 762px | 324.0px | 48.0px | 109.2px | **1 LINE** | 20px | 15px (700) | 18px | **NO** |
+| **Short** ("إرسال طلب الحجز") | 22px | 360px | 762px | 324.0px | 48.0px | 109.2px | **1 LINE** | 20px | 15px (700) | 18px | **NO** |
+| **Medium** ("إرسال طلب الحجز (3 ليالٍ)") | 6px | 360px | 762px | 324.0px | 48.0px | 159.3px | **1 LINE** | 20px | 15px (700) | 18px | **NO** |
+| **Medium** ("إرسال طلب الحجز (3 ليالٍ)") | 12px | 360px | 762px | 324.0px | 48.0px | 159.3px | **1 LINE** | 20px | 15px (700) | 18px | **NO** |
+| **Medium** ("إرسال طلب الحجز (3 ليالٍ)") | 22px | 360px | 762px | 324.0px | 48.0px | 159.3px | **1 LINE** | 20px | 15px (700) | 18px | **NO** |
+| **Long** ("إرسال طلب حجز الفيلا بعد مراجعة التفاصيل") | 6px | 360px | 762px | 324.0px | 62.0px | 257.5px | **2 LINES** | 20px | 15px (700) | 18px | **NO** |
+| **Long** ("إرسال طلب حجز الفيلا بعد مراجعة التفاصيل") | 12px | 360px | 762px | 324.0px | 62.0px | 257.5px | **2 LINES** | 20px | 15px (700) | 18px | **NO** |
+| **Long** ("إرسال طلب حجز الفيلا بعد مراجعة التفاصيل") | 22px | 360px | 762px | 324.0px | 62.0px | 257.5px | **2 LINES** | 20px | 15px (700) | 18px | **NO** |
+| **All Cases (Short / Med / Long)** | 6 / 12 / 22 | 390px | 762px | 354.0px | 48.0px | 109.2 / 159.3 / 280.3px | **1 LINE (All)** | 20px | 15px (700) | 18px | **NO** |
+| **All Cases (Short / Med / Long)** | 6 / 12 / 22 | 430px | 762px | 394.0px | 48.0px | 109.2 / 159.3 / 280.3px | **1 LINE (All)** | 20px | 15px (700) | 18px | **NO** |
 
 ### 5.2 Key Empirical Takeaway
 In rectangular containers where horizontal padding (20px) is applied, corner curvature (6px vs. 12px vs. 22px) does **not** alter text wrapping or line count. Text wrapping occurs when label width exceeds available container width (`btn.w - 2 * padding - iconWidth - gap`). Under 360px frame width, Short and Medium labels fit on 1 line across all three radii, while the Long stress label wraps to 2 lines identically across all three radii.
@@ -138,10 +138,10 @@ Line counts were measured directly on the label range using `Range.getClientRect
 
 | Scale Level | Computed Font Size | Container Height | Label Width | Label Lines (Range) | Horizontal Overflow |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **100% (Baseline)** | **15px** | **48.0px** | **107.2px** | **1 LINE** | **NO OVERFLOW** |
-| **125%** | **18.75px** | **48.5px** | **134.0px** | **1 LINE** | **NO OVERFLOW** |
-| **150%** | **22.5px** | **53.0px** | **160.8px** | **1 LINE** | **NO OVERFLOW** |
-| **200% (A11y Max)** | **30px** | **62.0px** | **214.5px** | **1 LINE** | **NO OVERFLOW** |
+| **100% (Baseline)** | **15px** | **48.0px** | **109.2px** | **1 LINE** | **NO OVERFLOW** |
+| **125%** | **18.75px** | **48.5px** | **136.5px** | **1 LINE** | **NO OVERFLOW** |
+| **150%** | **22.5px** | **53.0px** | **163.8px** | **1 LINE** | **NO OVERFLOW** |
+| **200% (A11y Max)** | **30px** | **62.0px** | **218.3px** | **1 LINE** | **NO OVERFLOW** |
 
 - **Empirical Clarification:** The label `إرسال طلب الحجز` does **not** wrap onto multiple lines at 150% or 200% within the tested container width.
 - **Container Expansion Mechanism:** Container height expands from 48px to 62px purely because font-size and line-height scale upward, preserving comfortable vertical padding around the single-line text without clipping descenders or diacritics.
@@ -204,15 +204,23 @@ Using the licensed repository asset (`customer-app/public/welcome-hero.jpg` — 
 
 ## 10. Reproducible WCAG 2.2 AA Contrast Calculations
 
-Relative luminance formula: $L = 0.2126 R + 0.7152 G + 0.0722 B$ (after sRGB gamma linearization). Contrast ratio: $CR = (L_1 + 0.05) / (L_2 + 0.05)$.
+Programmatic calculation method according to WCAG 2.2 §1.4.3 / IEC 61966-2-1:
+1. **Component Linearization:** For $C \in \{R, G, B\}$ normalized to $[0, 1]$:
+   $$\text{if } C \le 0.04045 \implies C_{\text{linear}} = \frac{C}{12.92}, \quad \text{else } C_{\text{linear}} = \left(\frac{C + 0.055}{1.055}\right)^{2.4}$$
+2. **Relative Luminance:**
+   $$L = 0.2126 R_{\text{linear}} + 0.7152 G_{\text{linear}} + 0.0722 B_{\text{linear}}$$
+3. **Contrast Ratio:**
+   $$CR = \frac{L_1 + 0.05}{L_2 + 0.05} \quad (\text{where } L_1 \ge L_2)$$
 
-| Color Pair | Foreground Hex | Background Hex | Relative Luminance ($L_1 : L_2$) | Exact Contrast Ratio | WCAG 2.2 AA Status | Margin over 4.5:1 Floor |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Black CTA on White** | `#FFFFFF` | `#0F172A` | $1.0000 : 0.0088$ | **17.85:1** | **PASS (AAA)** | $+13.35$ |
-| **Blue CTA on White** | `#FFFFFF` | `#276EF1` | $1.0000 : 0.1791$ | **4.58:1** | **PASS (AA Normal)** | $+0.08$ *(Razor-thin)* |
-| **Cobalt CTA on White** | `#FFFFFF` | `#1D4ED8` | $1.0000 : 0.1068$ | **6.70:1** | **PASS (AA Normal)** | $+2.20$ *(Robust)* |
-| **Legacy Web Blue on White** | `#FFFFFF` | `#0059FF` | $1.0000 : 0.1441$ | **5.42:1** | **PASS (AA Normal)** | $+0.92$ |
-| **Disabled CTA Control** | `#94A3B8` | `#E2E8F0` | $0.3670 : 0.7529$ | **2.08:1** | **EXEMPT** (Inactive) | N/A (Standard inactive exemption) |
+| Color Pair | Foreground Hex | Background Hex | Relative Luminance ($L_1 : L_2$) | Exact Computed Ratio | Rounded Presentation | WCAG 2.2 AA Status | Margin over 4.5:1 Floor |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Black CTA on White** | `#FFFFFF` | `#0F172A` | $1.000000 : 0.008815$ | $17.852535:1$ | **17.85:1** | **PASS (AAA)** | $+13.35$ |
+| **Blue CTA on White** | `#FFFFFF` | `#276EF1` | $1.000000 : 0.179341$ | $4.578341:1$ | **4.58:1** | **PASS (AA Normal)** | $+0.08$ *(Razor-thin)* |
+| **Cobalt CTA on White** | `#FFFFFF` | `#1D4ED8` | $1.000000 : 0.106679$ | $6.701618:1$ | **6.70:1** | **PASS (AA Normal)** | $+2.20$ *(Robust)* |
+| **Legacy Web Blue on White** | `#FFFFFF` | `#0059FF` | $1.000000 : 0.143648$ | $5.422221:1$ | **5.42:1** | **PASS (AA Normal)** | $+0.92$ |
+| **Disabled CTA Control** | `#94A3B8` | `#E2E8F0` | $0.801732 : 0.359510$ | $2.079883:1$ | **2.08:1** | **EXEMPT** (Inactive) | N/A (Standard inactive exemption) |
+
+- **Disabled State Rule:** Inactive user interface components are explicitly exempt under WCAG 2.2 §1.4.3. The disabled pair (`#94A3B8` on `#E2E8F0`) yields a programmatic contrast of 2.08:1, presented strictly for audit completeness without converting it into a pass/fail blocker.
 
 - **APCA Status:** APCA scores (Lc 102, Lc 68, Lc 79) are supplemental experimental research metrics only, not an official regulatory standard. Formal compliance rests strictly on WCAG 2.2 AA.
 
@@ -305,11 +313,11 @@ EVIDENCE NARROWED TO:
 
 > [!IMPORTANT]
 > ### GOVERNANCE RECORD: FOUNDER SELECTION STAGE COMPLETE
-> **Radius Selection:** `6px`  
-> **Primary Strategy Selection:** `Strategy A — Stable Black Primary`  
-> **Selection Status:** `FOUNDER-SELECTED PROVISIONAL DESIGN FOUNDATION CANDIDATE`  
-> **Evidence Validation Status:** `CLOSED`  
-> **Canon Promotion Status:** `NONE` (Values remain provisional implementation candidates; Design Canon is not modified)  
+> **Radius Selection:** `6px`
+> **Primary Strategy Selection:** `Strategy A — Stable Black Primary`
+> **Selection Status:** `FOUNDER-SELECTED PROVISIONAL DESIGN FOUNDATION CANDIDATE`
+> **Evidence Validation Status:** `CLOSED`
+> **Canon Promotion Status:** `NONE` (Values remain provisional implementation candidates; Design Canon is not modified)
 
 Following the completion of technical and visual evidence validation for Controlled Primitive Pilot 01, the Founder has conducted the visual selection stage.
 
@@ -391,3 +399,37 @@ The Founder selection establishes the structural strategy (Stable Black) and geo
 - **No Retrospective Rewriting:** The pilot documentation is not rewritten to suggest that 6px or Stable Black were objectively proven winners over alternative candidates.
 - **Decision Basis:** The selection represents an explicit Founder product-governance choice. Future native Flutter / iOS / Android physical hardware validation remains mandatory before canonical promotion.
 
+
+
+---
+
+## 16. Final Reproducibility Closure
+
+> [!IMPORTANT]
+> ### EVIDENCE REPRODUCIBILITY STATUS: PINNED & CLOSED
+> **Typography Authority:** Pinned repository-local Pilot font (`fonts/Cairo-VariableFont.ttf`)
+> **Font Load Status:** `READY` (Fail-closed Font Loading API enforcement)
+> **Current Authoritative Evidence Directory:** `evidence/final_reproducible/`
+> **Pre-Font-Pin Historical Evidence Directory:** `evidence/round2_1/` (Preserved for audit traceability)
+> **Superseded Evidence Directory:** `evidence/round1_superseded/`
+
+### 1. Pinned Font Provenance
+- **Font Source:** Official Google Fonts repository (`google/fonts`, upstream `ofl/cairo/Cairo[slnt,wght].ttf`)
+- **Local File Path:** `DESIGN_SYSTEM/PILOTS/controlled-primitive-pilot-01/fonts/Cairo-VariableFont.ttf`
+- **Font License:** SIL Open Font License, Version 1.1 ([`OFL.txt`](./fonts/OFL.txt))
+- **Font Provenance Record:** [`FONT_PROVENANCE.md`](./fonts/FONT_PROVENANCE.md)
+- **Font Asset SHA-256:** `667c987182391c91f4e57a2f455b1794fb5e3ee6ca4ef3383e86bb690fa9c964`
+- **Network Dependency:** `NONE` (Fully repository-local; zero external HTTP/CDN requests)
+- **Fail-Closed Gate:** Enforced via `await document.fonts.load('700 15px "KONFRM Pilot Cairo"', 'إرسال طلب الحجز')` and `document.fonts.check(...)`. Both harnesses halt and display `FONT_ASSET_STATUS: ERROR` if the font is unavailable.
+
+### 2. Governance Boundary Affirmation
+- Pinning Cairo for Pilot 01 reproducibility does **not** promote Cairo to a new mobile Canon token or declare native Flutter typography implementation.
+- Exact mobile typography tokens, dynamic scaling contracts, and native platform fonts remain governed separately under future typography and platform specifications.
+
+### 3. Founder Decision Consistency Check
+- The rerun of all width stress simulations (360px, 390px, 430px) under the pinned Cairo font confirms that all three candidate radii (6px, 12px, 22px) continue to behave **100% identically** in text fitting, line wrapping, button dimensions, and label clearance.
+- The rerun introduces zero comparative divergence or functional defects between candidates.
+- Consequently, **Founder selection remains intact and does not require revalidation**:
+  - **Radius Candidate:** `6px`
+  - **Primary Color Strategy:** `Strategy A — Stable Black Primary`
+  - **Status:** `FOUNDER-SELECTED PROVISIONAL DESIGN FOUNDATION CANDIDATE`

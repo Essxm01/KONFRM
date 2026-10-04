@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONFRM — Deterministic Web Frame-Width Simulation</title>
+  <style>
+    :root {
+      --kf-brand-black: #0F172A;
+      --kf-surface-canvas: #F8FAFC;
+      --kf-surface-card: #FFFFFF;
+      --kf-border-default: #CBD5E1;
+      --kf-border-subtle: #E2E8F0;
+      --kf-text-primary: #0F172A;
+      --kf-text-secondary: #475569;
+      --kf-text-muted: #64748B;
+      --radius-low: 6px;
+      --radius-moderate: 12px;
+      --radius-high: 22px;
+      --btn-min-height: 48px;
+      --btn-padding-v: 12px;
+      --btn-padding-h: 20px;
+      --btn-font-size: 15px;
+      --btn-font-weight: 700;
+      --btn-line-height: 1.2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    @font-face {
+      font-family: "KONFRM Pilot Cairo";
+      src: url("./fonts/Cairo-VariableFont.ttf") format("truetype");
+      font-weight: 200 1000;
+      font-style: normal;
+      font-display: block;
+    }
+
+    body {
+      font-family: "KONFRM Pilot Cairo", sans-serif;
+      background-color: var(--kf-surface-canvas);
+      color: var(--kf-text-primary);
+      line-height: 1.4;
+      padding: 16px;
+      direction: rtl;
+      text-align: right;
+    }
+
+    .governance-header {
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #1E293B;
+    }
+    .badge {
+      display: inline-block;
+      background: #DC2626;
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .title {
+      font-size: 16px;
+      font-weight: 800;
+    }
+    .diagnostic-bar {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #334155;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      font-family: monospace;
+      font-size: 11px;
+      direction: ltr;
+      text-align: left;
+    }
+    .badge-status {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .badge-status.loading {
+      background: #EAB308;
+      color: #000000;
+    }
+    .badge-status.ready {
+      background: #16A34A;
+      color: #FFFFFF;
+    }
+    .badge-status.error {
+      background: #DC2626;
+      color: #FFFFFF;
+    }
+    .diag-item {
+      color: #CBD5E1;
+    }
+    .diag-item strong {
+      color: #F8FAFC;
+    }
+    .diag-item code {
+      color: #93C5FD;
+    }
+
+    /* Simulation Layout Container */
+    .harness-viewport-frame {
+      background: #FFFFFF;
+      border: 2px solid #0F172A;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 0 auto 24px auto;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+      position: relative;
+    }
+    .frame-badge {
+      position: absolute;
+      top: -12px;
+      right: 16px;
+      background: #0F172A;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-family: monospace;
+      direction: ltr;
+    }
+
+    .stress-group {
+      margin-bottom: 16px;
+      border-bottom: 1px dashed var(--kf-border-subtle);
+      padding-bottom: 14px;
+    }
+    .stress-group:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .stress-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--kf-text-secondary);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Standard Button Primitive */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+      font-weight: var(--btn-font-weight);
+      font-size: var(--btn-font-size);
+      line-height: var(--btn-line-height);
+      border: 1px solid #0F172A;
+      min-height: var(--btn-min-height);
+      padding: var(--btn-padding-v) var(--btn-padding-h);
+      width: 100%;
+      user-select: none;
+      outline: none;
+      box-sizing: border-box;
+      background-color: #0F172A;
+      color: #FFFFFF;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .btn:last-child {
+      margin-bottom: 0;
+    }
+
+    .radius-low { border-radius: var(--radius-low); }
+    .radius-moderate { border-radius: var(--radius-moderate); }
+    .radius-high { border-radius: var(--radius-high); }
+
+    .btn-label {
+      display: inline-block;
+    }
+
+    /* Live DOM Measurement Table */
+    .metrics-card {
+      background: #FFFFFF;
+      border: 1px solid var(--kf-border-default);
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+    .metrics-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 4px;
+    }
+    .metrics-desc {
+      font-size: 11px;
+      color: #64748B;
+      margin-bottom: 12px;
+    }
+    .dom-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      direction: ltr;
+      text-align: left;
+    }
+    .dom-table th, .dom-table td {
+      border: 1px solid #CBD5E1;
+      padding: 4px 6px;
+    }
+    .dom-table th {
+      background: #F1F5F9;
+      color: #1E293B;
+      font-weight: 700;
+    }
+    .dom-table tr:nth-child(even) {
+      background: #F8FAFC;
+    }
+    .tag-ok {
+      background: #DCFCE7;
+      color: #166534;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+    .tag-wrap {
+      background: #FEF3C7;
+      color: #92400E;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="governance-header">
+    <span class="badge">DESIGN PILOT • DETERMINISTIC WEB FRAME-WIDTH SIMULATION</span>
+    <div class="title">KONFRM Deterministic Web Frame-Width Simulation (Live DOM Metrics)</div>
+    <div class="meta-line" id="harness-meta">Measuring frame width and window.innerWidth...</div>
+    <div class="diagnostic-bar" id="font-diagnostic">
+      <span id="font-status-badge" class="badge-status loading">FONT_ASSET_STATUS: LOADING...</span>
+      <span class="diag-item">FONT_FAMILY: <strong>KONFRM Pilot Cairo</strong></span>
+      <span class="diag-item">FONT_WEIGHT: <strong>700</strong></span>
+      <span class="diag-item">SHA-256: <code>667c987182391c91f4e57a2f455b1794fb5e3ee6ca4ef3383e86bb690fa9c964</code></span>
+    </div>
+  </div>
+
+  <!-- TARGET FRAME -->
+  <div id="target-frame" class="harness-viewport-frame" style="width: 360px;">
+    <div id="frame-badge" class="frame-badge">TEST FRAME WIDTH: 360px</div>
+
+    <!-- CASE 1: SHORT LABEL -->
+    <div class="stress-group">
+      <div class="stress-label">
+        <span>1. نص قياسي قصير (Short Label)</span>
+        <span style="direction: ltr; font-family: monospace;">"إرسال طلب الحجز"</span>
+      </div>
+      <div>
+        <button id="btn-short-6" class="btn radius-low" data-case="Short" data-radius="6px">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button id="btn-short-12" class="btn radius-moderate" data-case="Short" data-radius="12px">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button id="btn-short-22" class="btn radius-high" data-case="Short" data-radius="22px">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- CASE 2: MEDIUM LABEL -->
+    <div class="stress-group">
+      <div class="stress-label">
+        <span>2. نص متوسط مع مدة (Medium Label)</span>
+        <span style="direction: ltr; font-family: monospace;">"إرسال طلب الحجز (3 ليالٍ)"</span>
+      </div>
+      <div>
+        <button id="btn-med-6" class="btn radius-low" data-case="Medium" data-radius="6px">
+          <span class="btn-label">إرسال طلب الحجز (3 ليالٍ)</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button id="btn-med-12" class="btn radius-moderate" data-case="Medium" data-radius="12px">
+          <span class="btn-label">إرسال طلب الحجز (3 ليالٍ)</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button id="btn-med-22" class="btn radius-high" data-case="Medium" data-radius="22px">
+          <span class="btn-label">إرسال طلب الحجز (3 ليالٍ)</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- CASE 3: LONG LABEL (STRICT PRODUCT TRUTH — NO PAYMENT MENTION) -->
+    <div class="stress-group">
+      <div class="stress-label">
+        <span>3. نص طويل منضبط بدون ادعاء دفع (Long Label)</span>
+        <span style="direction: ltr; font-family: monospace;">"إرسال طلب حجز الفيلا بعد مراجعة التفاصيل"</span>
+      </div>
+      <div>
+        <button id="btn-long-6" class="btn radius-low" data-case="Long" data-radius="6px">
+          <span class="btn-label">إرسال طلب حجز الفيلا بعد مراجعة التفاصيل</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button id="btn-long-12" class="btn radius-moderate" data-case="Long" data-radius="12px">
+          <span class="btn-label">إرسال طلب حجز الفيلا بعد مراجعة التفاصيل</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button id="btn-long-22" class="btn radius-high" data-case="Long" data-radius="22px">
+          <span class="btn-label">إرسال طلب حجز الفيلا بعد مراجعة التفاصيل</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE DOM METRICS TABLE INJECTED BY JAVASCRIPT -->
+  <div class="metrics-card">
+    <div class="metrics-title">سجل القياسات الموضوعية الحية من DOM (Live Measured Layout Metrics)</div>
+    <div class="metrics-desc">
+      تم حساب عدد الأسطر برمجياً عبر Range.getClientRects() لوسم النص الفعلي .btn-label وتجميع صفوف الارتفاع (بدون الاعتماد على ارتفاع الزر):
+    </div>
+
+    <table class="dom-table">
+      <thead>
+        <tr>
+          <th>Case</th>
+          <th>Radius</th>
+          <th>Frame.w</th>
+          <th>Win.w</th>
+          <th>btn.w</th>
+          <th>btn.h</th>
+          <th>label.w</th>
+          <th>Lines</th>
+          <th>pad.h</th>
+          <th>font</th>
+          <th>l.height</th>
+          <th>Overflow</th>
+        </tr>
+      </thead>
+      <tbody id="metrics-tbody">
+        <!-- Dynamically populated -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function getLabelMetrics(btn) {
+      const labelEl = btn.querySelector('.btn-label');
+      if (!labelEl) return { lines: 1, labelWidth: 0 };
+      const range = document.createRange();
+      range.selectNodeContents(labelEl);
+      const rects = Array.from(range.getClientRects()).filter(r => r.width > 0 && r.height > 0);
+      const labelBBox = labelEl.getBoundingClientRect();
+
+      if (rects.length <= 1) {
+        return { lines: 1, labelWidth: Math.round(labelBBox.width * 10) / 10 };
+      }
+
+      // Group/deduplicate rects by vertical top position
+      const lineRows = [];
+      rects.forEach(r => {
+        const existing = lineRows.find(row => Math.abs(row.top - r.top) < 4);
+        if (!existing) {
+          lineRows.push({ top: r.top, bottom: r.bottom });
+        }
+      });
+
+      return {
+        lines: Math.max(1, lineRows.length),
+        labelWidth: Math.round(labelBBox.width * 10) / 10
+      };
+    }
+
+    function runMetrics() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramW = urlParams.get('w');
+      const targetFrame = document.getElementById('target-frame');
+      const frameBadge = document.getElementById('frame-badge');
+      const harnessMeta = document.getElementById('harness-meta');
+
+      let activeWidth = 360;
+      if (paramW && ['360', '390', '430'].includes(paramW)) {
+        activeWidth = parseInt(paramW, 10);
+      }
+
+      targetFrame.style.width = activeWidth + 'px';
+      frameBadge.textContent = 'TEST FRAME WIDTH: ' + activeWidth + 'px';
+      harnessMeta.textContent = `Test Frame Width: ${activeWidth}px | Browser window.innerWidth: ${window.innerWidth}px | Measured at: ${new Date().toISOString()}`;
+
+      const buttons = document.querySelectorAll('button[data-case]');
+      const tbody = document.getElementById('metrics-tbody');
+      tbody.innerHTML = '';
+
+      buttons.forEach(btn => {
+        const rect = btn.getBoundingClientRect();
+        const cs = window.getComputedStyle(btn);
+        const lm = getLabelMetrics(btn);
+        const hasOverflow = btn.scrollWidth > btn.clientWidth;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${btn.getAttribute('data-case')}</strong></td>
+          <td>${btn.getAttribute('data-radius')} (${cs.borderRadius})</td>
+          <td>${activeWidth}px</td>
+          <td>${window.innerWidth}px</td>
+          <td>${Math.round(rect.width * 10) / 10}px</td>
+          <td>${Math.round(rect.height * 10) / 10}px</td>
+          <td>${lm.labelWidth}px</td>
+          <td>${lm.lines > 1 ? '<span class="tag-wrap">' + lm.lines + ' LINES</span>' : '<span class="tag-ok">1 LINE</span>'}</td>
+          <td>${cs.paddingLeft}</td>
+          <td>${cs.fontSize} (${cs.fontWeight})</td>
+          <td>${cs.lineHeight}</td>
+          <td>${hasOverflow ? '<span class="tag-wrap">YES</span>' : '<span class="tag-ok">NO</span>'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function initFontAndMetrics() {
+      const statusBadge = document.getElementById('font-status-badge');
+      try {
+        await document.fonts.load('700 15px "KONFRM Pilot Cairo"', 'إرسال طلب الحجز');
+        await document.fonts.ready;
+
+        const isLoaded = document.fonts.check('700 15px "KONFRM Pilot Cairo"');
+        if (!isLoaded) {
+          throw new Error('document.fonts.check returned false for "KONFRM Pilot Cairo"');
+        }
+
+        if (statusBadge) {
+          statusBadge.textContent = 'FONT_ASSET_STATUS: READY';
+          statusBadge.className = 'badge-status ready';
+        }
+
+        runMetrics();
+      } catch (err) {
+        console.error('Font load failure:', err);
+        if (statusBadge) {
+          statusBadge.textContent = 'FONT_ASSET_STATUS: ERROR (' + err.message + ')';
+          statusBadge.className = 'badge-status error';
+        }
+        const tbody = document.getElementById('metrics-tbody');
+        if (tbody) {
+          tbody.innerHTML = '<tr><td colspan="12" style="color:#DC2626;font-weight:bold;text-align:center;padding:20px;">FONT_ASSET_STATUS: ERROR — Pinned font failed to load. Measurement generation aborted.</td></tr>';
+        }
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initFontAndMetrics);
+  </script>
+</body>
+</html>

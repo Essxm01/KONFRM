@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONFRM — Controlled Primitive Pilot 01 (FINAL EVIDENCE-INTEGRITY PATCH)</title>
+  <style>
+    /* ==========================================================================
+       KONFRM CONTROLLED PRIMITIVE PILOT 01 — FINAL EVIDENCE-INTEGRITY PATCH
+       STRICT DOM MEASUREMENT • PRODUCT TRUTH • NEUTRAL HYPOTHESES
+       GOVERNANCE: DESIGN PILOT — NOT PRODUCTION UI — NOT CANON
+       ========================================================================== */
+    @font-face {
+      font-family: "KONFRM Pilot Cairo";
+      src: url("./fonts/Cairo-VariableFont.ttf") format("truetype");
+      font-weight: 200 1000;
+      font-style: normal;
+      font-display: block;
+    }
+
+    :root {
+      /* Canonical Brand Foundation */
+      --kf-brand-black: #0F172A; /* Pilot Value */
+      --kf-brand-white: #FFFFFF;
+      --kf-surface-canvas: #F8FAFC;
+      --kf-surface-card: #FFFFFF;
+      --kf-surface-subtle: #F1F5F9;
+      --kf-border-default: #CBD5E1;
+      --kf-border-subtle: #E2E8F0;
+      --kf-text-primary: #0F172A;
+      --kf-text-secondary: #475569;
+      --kf-text-muted: #64748B;
+      --kf-text-inverse: #FFFFFF;
+
+      /* Interaction Accent Candidates */
+      --kf-accent-df2-candidate: #276EF1; /* DF2 Candidate */
+      --kf-accent-cobalt-candidate: #1D4ED8; /* High-Contrast Cobalt Candidate */
+      --kf-accent-legacy: #0059FF; /* Legacy Web Token */
+
+      --pilot-accent: var(--kf-accent-df2-candidate);
+      --pilot-focus-color: #0F172A;
+
+      /* Typography */
+      --kf-font-family: "KONFRM Pilot Cairo", sans-serif;
+
+      /* Controlled Radius Pilot Values (Circular Arc Border Radius) */
+      --radius-low: 6px;
+      --radius-moderate: 12px;
+      --radius-high: 22px;
+
+      /* Standardized Primitive Implementation Values (Identical Across All Tests) */
+      --btn-min-height: 48px;
+      --btn-padding-v: 12px;
+      --btn-padding-h: 20px;
+      --btn-font-size: 15px;
+      --btn-font-weight: 700;
+      --btn-line-height: 1.2;
+    }
+
+    /* Accessibility: Reduced Motion (Complete Removal of Transform & Spin) */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation: none !important;
+        transform: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+      .btn:active:not(:disabled) {
+        transform: none !important;
+      }
+      .spinner {
+        animation: none !important;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--kf-font-family);
+      background-color: var(--kf-surface-canvas);
+      color: var(--kf-text-primary);
+      line-height: 1.5;
+      padding: 24px 16px;
+      direction: rtl;
+      text-align: right;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Governance Banner */
+    .pilot-banner {
+      background-color: #0F172A;
+      color: #FFFFFF;
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border: 1px solid #1E293B;
+    }
+    .pilot-badge {
+      display: inline-block;
+      background-color: #DC2626;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    .pilot-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+    .pilot-meta {
+      font-size: 12px;
+      color: #94A3B8;
+    }
+
+    .container {
+      max-width: 1320px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 19px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: var(--kf-text-primary);
+    }
+    .section-subtitle {
+      font-size: 13px;
+      color: var(--kf-text-secondary);
+      margin-bottom: 20px;
+    }
+
+    /* Governance Alert Boxes */
+    .alert-box {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #1E3A8A;
+      margin-bottom: 20px;
+    }
+    .alert-destructive-notice {
+      background: #FFF1F2;
+      border: 1px solid #FECDD3;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #9F1239;
+      margin-bottom: 20px;
+    }
+
+    /* Board Cards */
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .board-card {
+      background: var(--kf-surface-card);
+      border: 1px solid var(--kf-border-default);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      display: flex;
+      flex-direction: column;
+    }
+    .board-card-header {
+      border-bottom: 1px solid var(--kf-border-subtle);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    .board-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--kf-text-primary);
+      margin-bottom: 4px;
+    }
+    .board-card-desc {
+      font-size: 12px;
+      color: var(--kf-text-muted);
+    }
+
+    /* Standard Button Primitives */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+      font-weight: var(--btn-font-weight);
+      font-size: var(--btn-font-size, 15px);
+      line-height: var(--btn-line-height);
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.15s ease, transform 0.1s ease, filter 0.15s ease;
+      min-height: var(--btn-min-height);
+      padding: var(--btn-padding-v) var(--btn-padding-h);
+      width: 100%;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .btn:active:not(:disabled) {
+      transform: scale(0.985);
+      filter: brightness(0.88);
+    }
+    .btn:focus-visible, .btn.state-focused {
+      outline: 2px solid var(--pilot-focus-color) !important;
+      outline-offset: 2px !important;
+    }
+
+    /* Radius Families */
+    .radius-low { border-radius: var(--radius-low); }
+    .radius-moderate { border-radius: var(--radius-moderate); }
+    .radius-high { border-radius: var(--radius-high); }
+
+    .btn-label {
+      display: inline-block;
+    }
+
+    /* Action Color Styles */
+    .btn-solid-black {
+      background-color: #0F172A;
+      color: #FFFFFF;
+      border-color: #0F172A;
+    }
+    .btn-solid-black:hover:not(:disabled) {
+      background-color: #1E293B;
+    }
+
+    .btn-solid-blue {
+      background-color: var(--pilot-accent);
+      color: #FFFFFF;
+      border-color: var(--pilot-accent);
+    }
+    .btn-solid-blue:hover:not(:disabled) {
+      filter: brightness(0.94);
+    }
+
+    .btn-neutral-secondary {
+      background-color: #F1F5F9;
+      color: #0F172A;
+      border-color: #CBD5E1;
+    }
+    .btn-neutral-secondary:hover:not(:disabled) {
+      background-color: #E2E8F0;
+    }
+
+    .btn-destructive-subtle {
+      background-color: #FFF1F2;
+      color: #BE123C;
+      border-color: #FECDD3;
+    }
+
+    /* Text Action & Link */
+    .btn-text-action {
+      background: transparent;
+      border: none;
+      min-height: var(--btn-min-height);
+      padding: 8px 14px;
+      color: var(--pilot-accent);
+      font-size: 14px;
+      font-weight: 700;
+      width: auto;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .btn-text-action:hover:not(:disabled) {
+      background-color: rgba(39, 110, 241, 0.08);
+    }
+
+    .inline-link {
+      color: var(--pilot-accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline;
+    }
+
+    /* Disabled State */
+    .btn:disabled, .btn.state-disabled {
+      background-color: #E2E8F0 !important;
+      color: #94A3B8 !important;
+      border-color: #E2E8F0 !important;
+      cursor: not-allowed !important;
+      transform: none !important;
+      filter: none !important;
+      outline: none !important;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Tables & Measurement Blocks */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 12px;
+    }
+    .data-table th, .data-table td {
+      padding: 8px 12px;
+      border: 1px solid var(--kf-border-default);
+      text-align: right;
+    }
+    .data-table th {
+      background: #F8FAFC;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .dom-metrics-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-top: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      direction: ltr;
+      text-align: left;
+    }
+    .dom-metrics-table th, .dom-metrics-table td {
+      border: 1px solid #CBD5E1;
+      padding: 5px 8px;
+    }
+    .dom-metrics-table th {
+      background: #F1F5F9;
+      color: #1E293B;
+      font-weight: 700;
+    }
+    .dom-metrics-table tr:nth-child(even) {
+      background: #F8FAFC;
+    }
+
+    .badge-wcag {
+      display: inline-block;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .badge-pass { background: #DCFCE7; color: #166534; }
+    .badge-exempt { background: #F1F5F9; color: #475569; }
+
+    /* Real Image Comparison Board */
+    .image-comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+      margin-top: 16px;
+    }
+    .image-card {
+      background: #FFFFFF;
+      border: 1px solid var(--kf-border-default);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .image-crop-box {
+      height: 180px;
+      position: relative;
+      background: #E2E8F0;
+      overflow: hidden;
+    }
+    .image-crop-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .image-crop-tag {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(15, 23, 42, 0.82);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+    }
+    .image-card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Text Scaling Simulation Boxes */
+    .scale-box {
+      background: #FFFFFF;
+      border: 1px solid var(--kf-border-default);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .scale-box.scale-100 { --btn-font-size: 15px; }
+    .scale-box.scale-125 { --btn-font-size: 18.75px; }
+    .scale-box.scale-150 { --btn-font-size: 22.5px; }
+    .scale-box.scale-200 { --btn-font-size: 30px; }
+
+    .scale-box .btn {
+      font-size: var(--btn-font-size);
+      min-height: var(--btn-min-height);
+      height: auto;
+      padding: var(--btn-padding-v) var(--btn-padding-h);
+    }
+
+    /* Selection Chip */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid #CBD5E1;
+      background: #FFFFFF;
+      color: #475569;
+    }
+    .chip.is-selected {
+      background: #EFF6FF;
+      border-color: var(--pilot-accent);
+      color: var(--pilot-accent);
+      font-weight: 700;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- GOVERNANCE BANNER -->
+  <div class="pilot-banner">
+    <div>
+      <span class="pilot-badge">DESIGN PILOT — NOT PRODUCTION UI — NOT CANON</span>
+      <div class="pilot-title">KONFRM Controlled Primitive Pilot 01 — رقعة سلامة الأدلة النهائية (Final Evidence-Integrity Patch)</div>
+      <div class="pilot-meta">قياس Range.getClientRects() الحقيقي للأسطر • محاكاة أبعاد الإطار بدقة • تصحيح نصوص المنتج واستبعاد الدفع • فصل الخيار (ج) بتحكم صارم</div>
+    </div>
+    <div class="pilot-meta" style="text-align: left; direction: ltr;">
+      Branch: <code>design/controlled-primitive-pilot-01</code><br>
+      Status: Final Evidence-Integrity Patch
+    </div>
+    <div class="diagnostic-bar" id="font-diagnostic" style="width: 100%; margin-top: 10px; padding-top: 8px; border-top: 1px solid #334155; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-family: monospace; font-size: 11px; direction: ltr; text-align: left;">
+      <span id="font-status-badge" style="background: #EAB308; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold;">FONT_ASSET_STATUS: LOADING...</span>
+      <span style="color: #CBD5E1;">FONT_FAMILY: <strong style="color: #F8FAFC;">KONFRM Pilot Cairo</strong></span>
+      <span style="color: #CBD5E1;">FONT_WEIGHT: <strong style="color: #F8FAFC;">700</strong></span>
+      <span style="color: #CBD5E1;">SHA-256: <code style="color: #93C5FD;">667c987182391c91f4e57a2f455b1794fb5e3ee6ca4ef3383e86bb690fa9c964</code></span>
+    </div>
+  </div>
+
+  <!-- GOVERNANCE NOTICE: CANON LANGUAGE TENSION SCAN -->
+  <div class="alert-box">
+    <strong>ملاحظة الحوكمة — فحص التعارض النصي بين DF2 §9 و DF2 §15:</strong><br>
+    <code>CANON_LANGUAGE_TENSION: PRESENT — REQUIRES GOVERNED INTERPRETATION</code><br>
+    تحدد المادة §9 في وثيقة Mobile Design Foundation أن الهوية البصرية الأساسية للهاتف هي "أبيض/أسود أولاً" (Monochrome-First)، وأن الشاشات الرئيسية يجب ألا تبدو ذات علامة تجارية زرقاء (Must not feel blue-branded)، وتُبقي لون التفاعل الأزرق كمرشح تنفيذي (#276EF1) قيد التحقق الميداني. وفي المقابل، تصف المادة §15 الإجراء الأساسي (PRIMARY) بعبارة "restrained interaction-accent treatment — §9". هذا التوتر اللفظي بين مرجعية اللون الأزرق للإجراء الأساسي وبين إلزامية الواجهات أحادية اللون المفتوحة لا يحسمه الكاتب ذاتياً، ويُرفع كتوتر مرجعي صريح للمؤسس لحسمه رسمياً.
+  </div>
+
+  <!-- SECTION 1: DETERMINISTIC WEB FRAME-WIDTH SIMULATION -->
+  <div class="section-title">1. محاكاة عرض إطار الويب المنضبط (DETERMINISTIC WEB FRAME-WIDTH SIMULATION)</div>
+  <div class="section-subtitle">
+    تثبيت كامل المتغيرات: min-height: 48px, padding: 12px 20px, font-size: 15px, font-weight: 700. اختبار الأقواس الدائرية (6px, 12px, 22px).
+    (رابط أداة محاكاة الإطار المنفصلة: <a href="width-stress.html?w=360" target="_blank" class="inline-link">width-stress.html</a>).
+  </div>
+
+  <div class="board-grid">
+    <!-- Family A: Low -->
+    <div class="board-card">
+      <div class="board-card-header">
+        <div class="board-card-title">العائلة (أ): نصف قطر منخفض (Low Radius: 6px)</div>
+        <div class="board-card-desc">HYPOTHESIS: 6px visually echoes KONFRM's angular mark more closely. (Pilot Value Only)</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn btn-solid-black radius-low">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button class="btn btn-solid-black radius-low">
+          <span class="btn-label">إرسال طلب الحجز (3 ليالٍ)</span>
+        </button>
+        <button class="btn btn-solid-black radius-low">
+          <span class="btn-label">إرسال طلب حجز الفيلا بعد مراجعة التفاصيل</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Family B: Moderate -->
+    <div class="board-card">
+      <div class="board-card-header">
+        <div class="board-card-title">العائلة (ب): نصف قطر معتدل (Moderate Radius: 12px)</div>
+        <div class="board-card-desc">HYPOTHESIS: 12px represents an intermediate rounded treatment. (Standard CSS Arc, Not Squircle)</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn btn-solid-black radius-moderate">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button class="btn btn-solid-black radius-moderate">
+          <span class="btn-label">إرسال طلب الحجز (3 ليالٍ)</span>
+        </button>
+        <button class="btn btn-solid-black radius-moderate">
+          <span class="btn-label">إرسال طلب حجز الفيلا بعد مراجعة التفاصيل</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Family C: High -->
+    <div class="board-card">
+      <div class="board-card-header">
+        <div class="board-card-title">العائلة (ج): نصف قطر مرتفع (High Radius: 22px)</div>
+        <div class="board-card-desc">HYPOTHESIS: 22px produces a visibly softer rounded treatment. (Pilot Value Only)</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn btn-solid-black radius-high">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button class="btn btn-solid-black radius-high">
+          <span class="btn-label">إرسال طلب الحجز (3 ليالٍ)</span>
+        </button>
+        <button class="btn btn-solid-black radius-high">
+          <span class="btn-label">إرسال طلب حجز الفيلا بعد مراجعة التفاصيل</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: WEB TEXT-SCALING STRESS SIMULATION -->
+  <div class="section-title">2. محاكاة التكبير النصي للويب (WEB TEXT-SCALING STRESS SIMULATION)</div>
+  <div class="section-subtitle">
+    محاكاة متدرجة لحجم خط الزر الفعلي (15px، 18.75px، 22.5px، 30px) مع السماح بالنمو الرأسي للحاوية (min-height: 48px).
+    قياس عدد الأسطر يعتمد حصرياً على Range.getClientRects() لوسم النص الداخلي (.btn-label).
+  </div>
+
+  <div class="board-grid">
+    <!-- 100% -->
+    <div class="scale-box scale-100">
+      <div style="font-weight: 700; color: #64748B; font-size: 12px;">مستوى التكبير: 100% (المستهدف: 15px)</div>
+      <button class="btn btn-solid-black radius-moderate" id="btn-scale-100">
+        <span class="btn-label">إرسال طلب الحجز</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div id="scale-info-100" style="font-size: 11px; color: #64748B; font-family: monospace; direction: ltr;">measuring...</div>
+    </div>
+
+    <!-- 125% -->
+    <div class="scale-box scale-125">
+      <div style="font-weight: 700; color: #64748B; font-size: 12px;">مستوى التكبير: 125% (المستهدف: 18.75px)</div>
+      <button class="btn btn-solid-black radius-moderate" id="btn-scale-125">
+        <span class="btn-label">إرسال طلب الحجز</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div id="scale-info-125" style="font-size: 11px; color: #64748B; font-family: monospace; direction: ltr;">measuring...</div>
+    </div>
+
+    <!-- 150% -->
+    <div class="scale-box scale-150">
+      <div style="font-weight: 700; color: #64748B; font-size: 12px;">مستوى التكبير: 150% (المستهدف: 22.5px)</div>
+      <button class="btn btn-solid-black radius-moderate" id="btn-scale-150">
+        <span class="btn-label">إرسال طلب الحجز</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div id="scale-info-150" style="font-size: 11px; color: #64748B; font-family: monospace; direction: ltr;">measuring...</div>
+    </div>
+
+    <!-- 200% -->
+    <div class="scale-box scale-200">
+      <div style="font-weight: 700; color: #64748B; font-size: 12px;">مستوى التكبير: 200% (المستهدف: 30px)</div>
+      <button class="btn btn-solid-black radius-moderate" id="btn-scale-200">
+        <span class="btn-label">إرسال طلب الحجز</span>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div id="scale-info-200" style="font-size: 11px; color: #64748B; font-family: monospace; direction: ltr;">measuring...</div>
+    </div>
+  </div>
+
+  <!-- LIVE DOM TABLE FOR TEXT SCALING -->
+  <div class="board-card" style="margin-bottom: 32px;">
+    <div class="board-card-title">سجل القياس الموضوعي الحقيقي لتكبير الخط عبر DOM (Computed Metrics)</div>
+    <div class="board-card-desc">تم القياس البرمجي لـ Range.getClientRects() للتحقق من أسطر النص الحقيقية ونمو الحاوية:</div>
+    <table class="dom-metrics-table">
+      <thead>
+        <tr>
+          <th>Scale Level</th>
+          <th>Computed Font Size</th>
+          <th>Container Height</th>
+          <th>Label Width</th>
+          <th>Label Lines (Range)</th>
+          <th>Horizontal Overflow</th>
+        </tr>
+      </thead>
+      <tbody id="scale-metrics-tbody">
+        <!-- Dynamically injected -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 3: CONTROLLED ACCENT STRATEGY (EXACT IDENTICAL ACTION & WRAPPER) -->
+  <div class="section-title">3. تجربة استراتيجيات لون التفاعل المنضبطة (Controlled Accent Strategies A / B / C)</div>
+  <div class="section-subtitle">
+    مقارنة دقيقة ومحايدة تماماً: استخدام نفس الإجراء ("إرسال طلب الحجز")، ونفس الحجم، ونفس الحشو، ونفس العناصر المجاورة عبر الخيارات الثلاثة لعزل متغير اللون فقط.
+  </div>
+
+  <div class="board-grid">
+    <!-- Option A -->
+    <div class="board-card">
+      <div class="board-card-header">
+        <div class="board-card-title">الخيار (أ): الزر الأساسي بالأسود الثابت</div>
+        <div class="board-card-desc">Stable Black Primary • Blue for Supporting Cues Only</div>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <button class="btn btn-solid-black radius-moderate">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+      </div>
+      <div style="font-size: 12px; color: #475569; display: flex; flex-direction: column; gap: 8px;">
+        <div><strong>مظهر التفاعل المساعد:</strong></div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <span class="chip is-selected">محدد بالأزرق ✓</span>
+          <span class="chip">خيار عادي</span>
+        </div>
+        <div>رابط نصي: <a class="inline-link">شروط وسياسات الإقامة</a></div>
+      </div>
+    </div>
+
+    <!-- Option B -->
+    <div class="board-card">
+      <div class="board-card-header">
+        <div class="board-card-title">الخيار (ب): الزر الأساسي بالأزرق الثابت</div>
+        <div class="board-card-desc">Stable Blue Primary • Black Brand Anchor</div>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <button class="btn btn-solid-blue radius-moderate">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+      </div>
+      <div style="font-size: 12px; color: #475569; display: flex; flex-direction: column; gap: 8px;">
+        <div><strong>مظهر التفاعل المساعد:</strong></div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <span class="chip is-selected">محدد بالأزرق ✓</span>
+          <span class="chip">خيار عادي</span>
+        </div>
+        <div>رابط نصي: <a class="inline-link">شروط وسياسات الإقامة</a></div>
+      </div>
+    </div>
+
+    <!-- Option C -->
+    <div class="board-card">
+      <div class="board-card-header">
+        <div class="board-card-title">الخيار (ج): النظام السياقي المنضبط (نفس الإجراء)</div>
+        <div class="board-card-desc">Contextual Strategy • Controlled Action Sample (Black for State-Changing)</div>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <!-- Identical action, label, dimensions, wrapper, and neighboring elements -->
+        <button class="btn btn-solid-black radius-moderate">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+      </div>
+      <div style="font-size: 12px; color: #475569; display: flex; flex-direction: column; gap: 8px;">
+        <div><strong>مظهر التفاعل المساعد:</strong></div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <span class="chip is-selected">محدد بالأزرق ✓</span>
+          <span class="chip">خيار عادي</span>
+        </div>
+        <div>رابط نصي: <a class="inline-link">شروط وسياسات الإقامة</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEPARATE CONTEXTUAL DEMO CARD (OUTSIDE THE A/B/C CONTROLLED COLOR TEST) -->
+  <div class="board-card" style="margin-bottom: 32px; background: #F8FAFC; border: 1px dashed #CBD5E1;">
+    <div class="board-card-title" style="color: #475569; font-size: 13px;">
+      CONTEXTUAL STRATEGY EXAMPLE — NOT PART OF THE CONTROLLED A/B/C COLOR TEST
+    </div>
+    <div class="board-card-desc">
+      توضيح مستقل لكيفية تعامل الخيار (ج) مع تنوع المراحل (إجراء تنقل تدفقي مقابل إجراء تغيير حالة معتمد بنفس المقاييس الهندسية 48px):
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 12px;">
+      <div>
+        <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px;">إجراء تنقل تدفقي (Flow Action — أزرق تفاعلي):</div>
+        <button class="btn btn-solid-blue radius-moderate">
+          <span class="btn-label">متابعة لاختيار الضيوف</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+      </div>
+      <div>
+        <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px;">إجراء تغيير حالة أساسي (State-Changing — أسود كامل):</div>
+        <button class="btn btn-solid-black radius-moderate">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DESTRUCTIVE NOTICE -->
+  <div class="alert-destructive-notice">
+    <strong>تنبيه حوكمة صارم — الإجراءات التدميرية:</strong><br>
+    <code>DESTRUCTIVE SEMANTICS ARE OUTSIDE THE A/B/C PRIMARY-COLOR EXPERIMENT.</code><br>
+    الإجراءات التدميرية (مثل رفض الطلب من قبل المالك أو إلغاء الإجراءات) تخضع لقواعد الحذر والتدمير الخاصة في DF2 §15 ولا تُدرج ضمن مفاضلة الأسود مقابل الأزرق للأزرار الأساسية. كما أن مصفوفة إلغاء المستأجر لم تُحسم بعد ومستبعدة تماماً من أمثلة هذا الاختبار.
+  </div>
+
+  <!-- REWRITTEN ACTION CLASSIFICATION TABLE (STRICT PRODUCT TRUTH) -->
+  <div class="board-card" style="margin-bottom: 32px;">
+    <div class="board-card-title">جدول تصنيف الإجراءات المصحح للخيار (ج) (Corrected Action Classification Table)</div>
+    <div class="board-card-desc">
+      تصنيف دقيق يلتزم بحقيقة دورة حياة الحجز: الحجز هو <strong>طلب</strong> (Request) ولا يقتطع أموالاً ولا يحجب التقويم عند إرساله.
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>تصنيف الإجراء (Interaction Consequence)</th>
+          <th>أمثلة الإجراءات المؤكدة</th>
+          <th>لون الخيار (ج)</th>
+          <th>الأثر الحقيقي في النظام (System Consequence)</th>
+          <th>القابلية للتراجع</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>تدفق / تنقل (Flow / Navigational)</strong></td>
+          <td>"متابعة"، "عرض التفاصيل"، "تطبيق التصفية"، "اختيار الضيوف"</td>
+          <td>أزرق تفاعلي (#276EF1)</td>
+          <td>تنقل بين واجهات التطبيق واختيار التفضيلات؛ لا يحدث أي تعديل في سجلات الحجز الخلفية.</td>
+          <td>قابلة للتراجع بالكامل وفورياً</td>
+        </tr>
+        <tr>
+          <td><strong>إجراء تغيير حالة أساسي (State-Changing Primary)</strong></td>
+          <td>
+            • "إرسال طلب الحجز" (مستأجر)<br>
+            • "الموافقة على الطلب" (مالك)
+          </td>
+          <td>أسود كامل (#0F172A)</td>
+          <td>
+            <strong>إرسال طلب الحجز:</strong> ينشئ ويقدم طلب حجز لمراجعة المالك (حالة PENDING_OWNER_APPROVAL). لا يسحب مبالغ، ولا يحجب التقويم أثناء انتظار الموافقة.<br>
+            <strong>موافقة المالك:</strong> ينقل الطلب إلى حالة APPROVED_PENDING_PAYMENT التي تبدأ حجب التواريخ، ولا يحدث الدفع إلا بعد هذه الموافقة.
+          </td>
+          <td>تغيير دورة حياة معتمد يتطلب مسار مراجعة رسمي</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 4: REAL IMAGE CONTEXT EVALUATION (STRICT SCOPE) -->
+  <div class="section-title">4. فحص العلاقة اللونية بجوار صورة الكتالوج الحقيقية (Real Image Context)</div>
+  <div class="section-subtitle">
+    سياق محدد بدقة: في هذا الأصل والتنسيق المختبر (welcome-hero.jpg)، يُلاحظ التباين اللوني بين الزرين والصورة دون تعميم على كافة الصور.
+  </div>
+
+  <div class="image-comparison-grid" style="margin-bottom: 32px;">
+    <!-- Image Card 1: Black CTA -->
+    <div class="image-card">
+      <div class="image-crop-box">
+        <img src="../../../customer-app/public/welcome-hero.jpg" alt="فيلا ساحلية حقيقية">
+        <span class="image-crop-tag">صورة الكتالوج: welcome-hero.jpg</span>
+      </div>
+      <div class="image-card-body">
+        <div style="font-weight: 800; font-size: 15px;">فيلا الساحل الشمالي — أمواج</div>
+        <div style="font-size: 12px; color: #64748B;">سعر الليلة: 1,600&nbsp;ج.م</div>
+        <button class="btn btn-solid-black radius-moderate">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div style="font-size: 11px; color: #64748B;">
+          <strong>ملاحظة بصرية محددة:</strong> في هذا الأصل والتنسيق المختبر، يخلق الزر الأسود علاقة لونية متباينة بشكل صريح عن درجات المسبح والحجر.
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Card 2: Blue CTA -->
+    <div class="image-card">
+      <div class="image-crop-box">
+        <img src="../../../customer-app/public/welcome-hero.jpg" alt="فيلا ساحلية حقيقية">
+        <span class="image-crop-tag">صورة الكتالوج: welcome-hero.jpg</span>
+      </div>
+      <div class="image-card-body">
+        <div style="font-weight: 800; font-size: 15px;">فيلا الساحل الشمالي — أمواج</div>
+        <div style="font-size: 12px; color: #64748B;">سعر الليلة: 1,600&nbsp;ج.م</div>
+        <button class="btn btn-solid-blue radius-moderate">
+          <span class="btn-label">إرسال طلب الحجز</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div style="font-size: 11px; color: #64748B;">
+          <strong>ملاحظة بصرية محددة:</strong> في هذا الأصل والتنسيق المختبر، يشترك الزر الأزرق في عائلة لونية قريبة من ألوان مياه المسبح والسماء.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: ROLE-LENS NEUTRAL CONTEXT CHECK -->
+  <div class="section-title">5. فحص سياق الأدوار المحايد (Role-Context Neutral Validation)</div>
+  <div class="section-subtitle">
+    التحقق من تماسك النظام الأولي عبر دور المستأجر (Customer) ودور المالك (Owner) بنفس الأبعاد والخط دون افتراض تطابق معالجتهما.
+  </div>
+
+  <div class="board-grid" style="margin-bottom: 32px;">
+    <!-- Customer Role -->
+    <div class="board-card">
+      <div class="board-card-header">
+        <div class="board-card-title">دور المستأجر (Customer Role Context)</div>
+        <div class="board-card-desc">الإجراء الأساسي: "إرسال طلب الحجز"</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px;">الاستراتيجية (أ) — أسود:</div>
+          <button class="btn btn-solid-black radius-moderate">
+            <span class="btn-label">إرسال طلب الحجز</span>
+          </button>
+        </div>
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px;">الاستراتيجية (ب) — أزرق:</div>
+          <button class="btn btn-solid-blue radius-moderate">
+            <span class="btn-label">إرسال طلب الحجز</span>
+          </button>
+        </div>
+        <div style="font-size: 11px; color: #64748B; margin-top: 6px;">
+          الملاحظة: كلا الخيارين يعمل بتماسك داخل هذا النموذج الأولي؛ القرار النهائي بين الرسوخ البصري والوضوح اللوني للتفاعل مفتوح للمؤسس.
+        </div>
+      </div>
+    </div>
+
+    <!-- Owner Role -->
+    <div class="board-card">
+      <div class="board-card-header">
+        <div class="board-card-title">دور المالك (Owner Role Context)</div>
+        <div class="board-card-desc">الإجراء الأساسي: "الموافقة على الطلب"</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px;">الاستراتيجية (أ) — أسود:</div>
+          <button class="btn btn-solid-black radius-moderate">
+            <span class="btn-label">الموافقة على الطلب</span>
+          </button>
+        </div>
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px;">الاستراتيجية (ب) — أزرق:</div>
+          <button class="btn btn-solid-blue radius-moderate">
+            <span class="btn-label">الموافقة على الطلب</span>
+          </button>
+        </div>
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px;">إجراء الرفض (Destructive / Caution — مستقل بصرياً):</div>
+          <button class="btn btn-destructive-subtle radius-moderate">
+            <span class="btn-label">رفض الطلب</span>
+          </button>
+        </div>
+        <div style="font-size: 11px; color: #64748B; margin-top: 6px;">
+          الملاحظة: زر الموافقة متميز بوضوح عن زر الرفض؛ لم يتم دمج الرفض في ألوان الإجراءات الأساسية.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: ACCESSIBILITY, CONTRAST & STATE ACCURACY -->
+  <div class="section-title">6. تدقيق التباين والحالات وإمكانية الوصول (WCAG Contrast & State Matrix)</div>
+  <div class="section-subtitle">
+    القيم الرياضية الدقيقة للتباين، ومؤشر التركيز الصريح، والمحاكاة التوضيحية لحالة التحميل.
+  </div>
+
+  <div class="board-card" style="margin-bottom: 24px;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>تركيبة الألوان المختبرة</th>
+          <th>النص</th>
+          <th>الخلفية</th>
+          <th>نسبة التباين المحسوبة</th>
+          <th>معيار WCAG 2.2 AA (نص عادي: 4.5:1)</th>
+          <th>المرونة الميدانية</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>الزر الأساسي (الأسود على الأبيض)</td>
+          <td>#FFFFFF</td>
+          <td>#0F172A</td>
+          <td><strong>17.85:1</strong></td>
+          <td><span class="badge-wcag badge-pass">PASS (AAA)</span></td>
+          <td>هامش أمان واسع (+13.35)</td>
+        </tr>
+        <tr>
+          <td>الزر الأساسي (الأزرق المرشح #276EF1)</td>
+          <td>#FFFFFF</td>
+          <td>#276EF1</td>
+          <td><strong>4.58:1</strong></td>
+          <td><span class="badge-wcag badge-pass">PASS (AA Normal)</span></td>
+          <td>يجتاز حد النص العادي بهامش ضئيل جداً (+0.08)</td>
+        </tr>
+        <tr>
+          <td>الزر الأساسي (أزرق كوبالت #1D4ED8)</td>
+          <td>#FFFFFF</td>
+          <td>#1D4ED8</td>
+          <td><strong>6.70:1</strong></td>
+          <td><span class="badge-wcag badge-pass">PASS (AA+)</span></td>
+          <td>هامش أمان متين (+2.20)</td>
+        </tr>
+        <tr>
+          <td>الزر المعطل (Disabled State)</td>
+          <td>#94A3B8</td>
+          <td>#E2E8F0</td>
+          <td><strong>2.08:1</strong></td>
+          <td><span class="badge-wcag badge-exempt">EXEMPT (عنصر غير نشط)</span></td>
+          <td>معفى من المعيار نظامياً؛ يؤكد تعطل الزر</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size: 11px; color: #64748B; margin-top: 8px;">
+      * معايير APCA التكميلية (Lc 102 للأسود، Lc 68 للمرشح، Lc 79 للكوبالت) تُعامل كأبحاث تجريبية تكميلية فقط وليست معياراً تشريعياً ملزماً لكونفرم.
+    </div>
+  </div>
+
+  <!-- CORRECTED STATE MATRIX & SIMULATION LOADING TOGGLE -->
+  <div class="board-card" style="margin-bottom: 32px;">
+    <div class="board-card-title">مصفوفة الحالات المصححة ومحاكاة التحميل التوضيحية</div>
+    <div class="board-card-desc">
+      إطار تركيز داكن بتباين 17.85:1، ومفتاح محاكاة توضيحي لسلوك aria-busy ومنطقة الإعلان المباشر:
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 14px;">
+      <div>
+        <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 6px;">حالة افتراضية (Default)</div>
+        <button class="btn btn-solid-black radius-moderate">
+          <span class="btn-label">إرسال طلب الحجز</span>
+        </button>
+      </div>
+      <div>
+        <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 6px;">حالة مضغوطة (Pressed: 0.985)</div>
+        <button class="btn btn-solid-black radius-moderate" style="transform: scale(0.985); filter: brightness(0.88);">
+          <span class="btn-label">إرسال طلب الحجز</span>
+        </button>
+      </div>
+      <div>
+        <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 6px;">حالة تركيز صريحة (Focus Ring)</div>
+        <button class="btn btn-solid-black radius-moderate state-focused">
+          <span class="btn-label">إرسال طلب الحجز</span>
+        </button>
+      </div>
+      <div>
+        <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 6px;">عينة ثابتة (STATIC SAMPLE)</div>
+        <button class="btn btn-solid-black radius-moderate" aria-busy="true" style="cursor: wait;">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn-label">جاري عرض حالة التحميل...</span>
+        </button>
+      </div>
+      <div>
+        <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 6px;">معطلة (Disabled)</div>
+        <button class="btn radius-moderate state-disabled" disabled>
+          <span class="btn-label">إرسال طلب الحجز</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- SIMULATION LOADING TOGGLE (STRICT SIMULATION COPY) -->
+    <div style="margin-top: 20px; padding-top: 14px; border-top: 1px dashed #E2E8F0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+      <div>
+        <strong>محاكاة حالة التحميل (تجربة إمكانية وصول):</strong>
+        <span style="font-size: 12px; color: #64748B;">انقر للتبديل وتجربة سلوك قارئ الشاشة التوضيحي</span>
+      </div>
+      <button id="toggle-loading-btn" class="btn btn-solid-black radius-moderate" style="width: auto; padding: 8px 18px; min-height: 40px;" onclick="toggleLoadingState()">
+        <span id="interactive-spinner" class="spinner" style="display: none;" aria-hidden="true"></span>
+        <span id="interactive-btn-text" class="btn-label">بدء محاكاة التحميل</span>
+      </button>
+      <div id="loading-live-region" role="status" aria-live="polite" class="sr-only"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: RTL ARABIC ISOLATION & MONEY FORMATTING -->
+  <div class="section-title">7. التحقق من العزل الاتجاهي وتنسيق العملة (RTL Bidirectional Isolation)</div>
+  <div class="section-subtitle">
+    التحقق من حماية النصوص المختلطة (المعرفات، الأرقام اللاتينية، التواريخ) باستخدام bdi والمسافات غير القابلة للكسر.
+  </div>
+
+  <div class="board-card" style="margin-bottom: 40px;">
+    <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+      <div>
+        <strong>معرف الحجز المحمي اتجاهياً:</strong>
+        <span style="background: #F1F5F9; padding: 2px 8px; border-radius: 4px; font-weight: 700; direction: ltr; display: inline-block;"><bdi>#KNF-88219</bdi></span>
+        <span style="color: #64748B; font-size: 12px;">(محمي من انقلاب الهاشتاج والنقاط داخل السياق العربي)</span>
+      </div>
+      <div>
+        <strong>تنسيق المبلغ المالي مع المسافة غير القابلة للكسر:</strong>
+        <span style="font-weight: 800; color: #0F172A;">1,600&nbsp;ج.م</span>
+        <span style="color: #64748B; font-size: 12px;">(مضمون عدم انفصال الرمز عن الرقم)</span>
+      </div>
+      <div>
+        <strong>نطاق التواريخ مع الأرقام الغربية 0–9 وعزل bdi:</strong>
+        <span><bdi>15–18 أكتوبر 2026</bdi></span>
+        <span style="color: #64748B; font-size: 12px;">(استقرار الشرطة بين اليومين)</span>
+      </div>
+      <div>
+        <strong>اتجاه سهم التقدم في RTL:</strong>
+        <span>أيقونة الانتقال للأمام تشير لليسار (←):</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><path d="m15 18-6-6 6-6"/></svg>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Strictly simulation copy for loading toggle
+  let isLoading = false;
+  function toggleLoadingState() {
+    isLoading = !isLoading;
+    const btn = document.getElementById('toggle-loading-btn');
+    const spinner = document.getElementById('interactive-spinner');
+    const text = document.getElementById('interactive-btn-text');
+    const liveRegion = document.getElementById('loading-live-region');
+
+    if (isLoading) {
+      btn.setAttribute('aria-busy', 'true');
+      btn.style.cursor = 'wait';
+      spinner.style.display = 'inline-block';
+      text.textContent = 'جاري عرض حالة التحميل...';
+      liveRegion.textContent = 'جاري عرض محاكاة حالة التحميل (تجربة إمكانية الوصول).';
+    } else {
+      btn.removeAttribute('aria-busy');
+      btn.style.cursor = 'pointer';
+      spinner.style.display = 'none';
+      text.textContent = 'بدء محاكاة التحميل';
+      liveRegion.textContent = 'انتهت محاكاة حالة التحميل.';
+    }
+  }
+
+  // Exact Range.getClientRects() Line Measurement (Zero container height heuristics)
+  function getLabelMetrics(btn) {
+    const labelEl = btn.querySelector('.btn-label');
+    if (!labelEl) return { lines: 1, labelWidth: 0 };
+    const range = document.createRange();
+    range.selectNodeContents(labelEl);
+    const clientRects = Array.from(range.getClientRects()).filter(r => r.width > 0 && r.height > 0);
+    const labelBBox = labelEl.getBoundingClientRect();
+
+    if (clientRects.length <= 1) {
+      return { lines: 1, labelWidth: Math.round(labelBBox.width * 10) / 10 };
+    }
+
+    const lineRows = [];
+    clientRects.forEach(r => {
+      const existing = lineRows.find(row => Math.abs(row.top - r.top) < 4);
+      if (!existing) {
+        lineRows.push({ top: r.top, bottom: r.bottom });
+      }
+    });
+
+    return {
+      lines: Math.max(1, lineRows.length),
+      labelWidth: Math.round(labelBBox.width * 10) / 10
+    };
+  }
+
+  // Populate dynamic DOM metrics for Text Scaling
+  function populateScaleMetrics() {
+    const tbody = document.getElementById('scale-metrics-tbody');
+    tbody.innerHTML = '';
+    const levels = ['100', '125', '150', '200'];
+
+    levels.forEach(lvl => {
+      const btn = document.getElementById('btn-scale-' + lvl);
+      const cs = window.getComputedStyle(btn);
+      const rect = btn.getBoundingClientRect();
+      const lm = getLabelMetrics(btn);
+      const info = document.getElementById('scale-info-' + lvl);
+
+      const hasOverflow = btn.scrollWidth > btn.clientWidth;
+
+      info.textContent = `font=${cs.fontSize} | container.h=${Math.round(rect.height * 10)/10}px | label.w=${lm.labelWidth}px | lines=${lm.lines}`;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${lvl}%</strong></td>
+        <td>${cs.fontSize}</td>
+        <td>${Math.round(rect.height * 10)/10}px</td>
+        <td>${lm.labelWidth}px</td>
+        <td>${lm.lines > 1 ? '<span style="background:#FEF3C7;color:#92400E;padding:1px 4px;border-radius:3px;font-weight:bold;">' + lm.lines + ' LINES</span>' : '<span style="background:#DCFCE7;color:#166534;padding:1px 4px;border-radius:3px;font-weight:bold;">1 LINE</span>'}</td>
+        <td>${hasOverflow ? '<span style="background:#FEE2E2;color:#991B1B;padding:1px 4px;border-radius:3px;font-weight:bold;">OVERFLOW</span>' : '<span style="background:#DCFCE7;color:#166534;padding:1px 4px;border-radius:3px;font-weight:bold;">NO OVERFLOW</span>'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function initIndexFonts() {
+    const statusBadge = document.getElementById('font-status-badge');
+    try {
+      await document.fonts.load('700 15px "KONFRM Pilot Cairo"', 'إرسال طلب الحجز');
+      await document.fonts.ready;
+
+      const isLoaded = document.fonts.check('700 15px "KONFRM Pilot Cairo"');
+      if (!isLoaded) {
+        throw new Error('document.fonts.check returned false for "KONFRM Pilot Cairo"');
+      }
+
+      if (statusBadge) {
+        statusBadge.textContent = 'FONT_ASSET_STATUS: READY';
+        statusBadge.style.background = '#16A34A';
+        statusBadge.style.color = '#FFFFFF';
+      }
+
+      populateScaleMetrics();
+    } catch (err) {
+      console.error('Font load failure:', err);
+      if (statusBadge) {
+        statusBadge.textContent = 'FONT_ASSET_STATUS: ERROR (' + err.message + ')';
+        statusBadge.style.background = '#DC2626';
+        statusBadge.style.color = '#FFFFFF';
+      }
+      const tbody = document.getElementById('scale-metrics-tbody');
+      if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="6" style="color:#DC2626;font-weight:bold;text-align:center;padding:20px;">FONT_ASSET_STATUS: ERROR — Pinned font failed to load. Measurement generation aborted.</td></tr>';
+      }
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', initIndexFonts);
+</script>
+
+</body>
+</html>

@@ -16,9 +16,9 @@ Phase 4D evaluates form inputs and selection primitive semantics for the KONFRM 
 
 Based on real product inspection across `customer-app/` and `owner-app/`, controlled empirical rendering across candidate visual families, three radius options, two focus modalities, three controlled Web frame widths (360px, 390px, 430px), and three text scaling levels (100%, 150%, 200%), this evaluation delivers a decisive system recommendation:
 
-1. **Recommended Field Visual Strategy:** **Outline-Led Field Baseline (Crisp 1px Neutral Outline on Pure White)**. Standalone fields utilize a crisp 1px neutral outline (`#E4E4E7` pilot reference) on a pure white background (`#FFFFFF`), ensuring clear figure-ground separation on light-first surfaces and avoiding low-contrast "surface soup" when embedded inside cards. Any multi-field grouped containers or module dividers demonstrated in the pilot are strictly **PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED**.
+1. **Recommended Field Visual Strategy:** **Outline-Led Field Baseline (Crisp 1px Neutral Outline on Pure White)**. Standalone fields utilize a crisp 1px neutral outline (`#8E8E93` pilot reference, achieving 3.26:1 contrast against pure white `#FFFFFF` under Web component-boundary baseline) on a pure white background (`#FFFFFF`), ensuring clear figure-ground separation on light-first surfaces and avoiding low-contrast "surface soup" when embedded inside cards. Any multi-field grouped containers or module dividers demonstrated in the pilot are strictly **PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED**.
 2. **Input Radius Founder Decision:** **8px Mobile Field Radius** (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`). The Founder explicitly approved the system recommendation: 8px applies strictly to mobile field-shaped Form & Selection primitives (text input, phone container, email container, numeric container, search container, multiline textarea, select/picker trigger). Primary Button retains 6px (`PRIMARY_ONLY`), establishing deliberate semantic differentiation between Action (6px) and Data Entry (8px). 6px is recorded as an evaluated alternative, NOT selected for fields; 10px is recorded as an evaluated alternative, NOT selected. Radius is evaluated strictly on visual aesthetics and not conflated with accessible touch-target bounds.
-3. **Focus Treatment:** **Semantic Restrained Interaction-Accent Emphasis**. Restrained interaction-accent focus is empirically superior to pure black focus because pure black competes visually with the provisional `#000000` Primary action button. The specific values used in the pilot (`#276EF1`, 2px ring, 2px halo) are **Web pilot rendering reference only**; exact native focus treatment remains `OPEN / Phase 4I validation`.
+3. **Focus Treatment:** **Semantic Restrained Interaction-Accent Emphasis**. Restrained interaction-accent focus is empirically superior to pure black focus because pure black competes visually with the provisional `#000000` Primary action button. The specific rendering reference used in the pilot (candidate `#276EF1`, 1px accent field border + 3px outer halo) is **Web pilot rendering reference only**; exact native focus treatment remains `OPEN / Phase 4I validation`.
 4. **Label / Helper / Error Hierarchy:** Explicit top labels (Cairo Profile B 12/600/1.35), contextual helper text (12/400/1.40), and text-associated error indicators (explicit copy and semantic alert icon). Floating labels are rejected due to Arabic descender clipping and translation expansion risks. Pilot error styling (`#DC2626`, alert icon) is a rendering reference, not final universal Canon.
 5. **Selection Controls:** Checkbox is evidenced in Owner notification settings. Toggle has zero current product evidence and is classified as deferred future capability; no switch migration is manufactured.
 6. **Strict Boundary Preservation:** Phase 4E (Structural System) and Phase 4F (Navigation & Overlay System) boundaries are strictly maintained. Picker overlays are designated `PILOT COMPOSITION ONLY / PHASE 4F AUTHORITY DEFERRED`.
@@ -126,7 +126,7 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
   4. How should RTL Bidi isolation be standardized for Egyptian phone numbers, emails, and currency?
 
 ### Step 2: HYPOTHESIZE (Candidate Visual Families)
-- **Hypothesis A (Outline-Led Baseline):** Universal 1px neutral outline (`#E4E4E7` pilot reference) on pure white background for all fields. High architectural precision, crisp figure/ground contrast.
+- **Hypothesis A (Outline-Led Baseline):** Universal 1px neutral outline (`#8E8E93` pilot reference, achieving 3.26:1 contrast against pure white `#FFFFFF`) on pure white background for all fields. High architectural precision, crisp figure/ground contrast without visual box soup.
 - **Hypothesis B (Subtle-Surface / Fill-Led):** Tinted neutral background (`#F4F4F5` pilot reference) with borderless default state. Transitions to white on focus. Softer initial appearance.
 - **Hypothesis C (Compositional Hybrid in Pilot):** Uses the Outline-Led baseline for individual fields, but groups related fields inside container boxes with internal dividers in the pilot. (Note: Grouped container boxes are evaluated as composition evidence; structural container rules belong to Phase 4E).
 
@@ -176,7 +176,7 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
 
 ### Step 8: PLATFORM & ACCESSIBILITY CHECK
 - **Accessibility Inspection in Controlled Pilot:**
-  - *Contrast Check:* Label text (`#09090B`) and helper text (`#71717A`) provide clear contrast against white surfaces in pilot rendering. Default border (`#E4E4E7`) provides visible boundary demarcation. Focus ring provides distinct edge highlight.
+  - *Contrast Check:* Label text (`#09090B`) and helper text (`#71717A`) provide clear contrast against white surfaces in pilot rendering. Default border candidate (`#8E8E93`) achieves 3.26:1 contrast against white (`#FFFFFF`) and 3.12:1 against canvas (`#F8FAFC`), satisfying the Web component-boundary non-text contrast baseline (>= 3.0:1) while remaining visually calm and refined. Focus state provides distinct 1px accent border + 3px outer halo highlight.
   - *Error Association:* Error state couples red border (`#DC2626` pilot reference) with an alert icon, dedicated error copy, `aria-invalid="true"`, and `role="alert"` / `aria-describedby`. Zero color-only error conveyance.
   - *Touch Target Guidance:* Platform guidance is differentiated: iOS guidance is 44pt; Android guidance is 48dp. Controlled Web pixel values (e.g. 48px field height, 34px stepper buttons) represent visible geometry only. Target bounds must be governed per platform guidelines; visible geometry is not identical to interactive hit bounds.
 - **Arabic RTL & Bidi Integrity:**
@@ -191,8 +191,8 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
   - *8px (System Recommended — 8PX_RECOMMENDATION_RETAINED):* Introduces a gentle softening curve that relieves the slight austerity of 6px on large containers while remaining disciplined. Visually, 8px harmonizes naturally with the 6px Primary Button without copying it blindly, balancing Customer hospitality warmth with Owner operational rigor. Does not claim touch ergonomics.
   - *10px:* Corners visually detach from the 6px button. The roundness becomes noticeable as a distinct consumer-style curve, clashing with the disciplined button geometry.
 - **Focus Ring Alternatives:**
-  - *Restrained Interaction Accent (Pilot `#276EF1` 2px ring + halo - Recommended):* Provides immediate, unambiguous feedback indicating active text focus. Does not compete with black buttons.
-  - *Pure Black (`#000000` 2px ring):* Visually competes directly with the `#000000` Primary CTA button, creating cognitive confusion about what is primary on the page.
+  - *Restrained Interaction Accent (Pilot `#276EF1` 1px accent field border + 3px outer halo - Recommended):* Provides immediate, unambiguous feedback indicating active text focus. Does not compete with black buttons.
+  - *Pure Black (`#000000` 1px field border + 3px halo):* Visually competes directly with the `#000000` Primary CTA button, creating cognitive confusion about what is primary on the page.
 
 ### Step 10: PROTOTYPE & VISUAL TEST
 - Controlled visual evidence captured across 12 artifacts (`DESIGN_SYSTEM/PILOTS/form-selection-pilot-01/evidence/`):
@@ -201,7 +201,7 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
   - Owner Wizard verified in `owner_property_hybrid_390.png`.
   - Complete state matrix verified in `state_matrix_hybrid_390.png`.
   - Narrow-width reflow verified in `stress_reflow_360_width.png` (360px controlled Web frame reference) with zero horizontal overflow.
-  - High text scaling (200%) verified in `stress_text_scale_200.png` with clean multi-line wrapping and robust Bidi preservation.
+  - High text scaling (true 200%, `zoom: 2.0`) verified in `stress_text_scale_200.png` with clean multi-line wrapping, dynamic container expansion, product-neutral error text wrapping, and robust Bidi preservation without clipping.
 
 ### Step 11: DECISION & FOUNDER SELECTION
 - **Field Strategy:** Adopt **Outline-Led Field Baseline (Crisp 1px Neutral Outline on Pure White)** as the provisional field visual strategy (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). Any multi-field grouping shown in the pilot is `PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED`.
@@ -230,7 +230,7 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
 
 ### Question 1: Recommended Overall Field Visual Strategy
 - **Recommendation:** **Outline-Led Field Baseline (Crisp 1px Neutral Outline on Pure White Background)**
-- **Rationale:** It establishes a crisp 1px neutral outline (`#E4E4E7` pilot reference) on pure white as the universal baseline for standalone fields, ensuring clear edge definition on light surfaces and preventing muddy gray fills inside cards. Any multi-field grouped containers or module dividers demonstrated in the pilot are strictly **PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED**.
+- **Rationale:** It establishes a crisp 1px neutral outline (`#8E8E93` pilot reference, achieving 3.26:1 contrast against pure white `#FFFFFF` under Web component-boundary baseline) on pure white as the universal baseline for standalone fields, ensuring clear edge definition on light surfaces and preventing muddy gray fills inside cards. Any multi-field grouped containers or module dividers demonstrated in the pilot are strictly **PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED**.
 - **Status:** `SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`
 
 ### Question 2: Input Radius Founder Decision
@@ -245,7 +245,7 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
 
 ### Question 3: Recommended Focus Treatment
 - **Recommendation:** **Semantic Restrained Interaction-Accent Emphasis**
-- **Pilot Reference:** 2px ring + 2px soft halo in candidate blue (`#276EF1`) is a **Web pilot rendering reference only**.
+- **Pilot Reference:** 1px accent field border + 3px outer halo in candidate blue (`#276EF1`) is a **Web pilot rendering reference only**.
 - **Rationale:** Pure black focus rings visually compete with the provisional `#000000` Primary CTA button. The restrained accent provides clear focus feedback without creating action confusion.
 - **Status:** `SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION` (Semantic direction; exact native token remains `OPEN`).
 

@@ -36,7 +36,7 @@ Governed by Phase 4D discovery and controlled visual evaluation across Customer 
   - Numeric/financial inputs use Western Arabic digits (`0–9`).
   - Customer-facing monetary display retains canonical `1,600 ج.م` format with tabular numeral intent.
   - Search: search affordance at visual start (RTL right) and clear action (`×`) at visual end (RTL left) when content exists.
-- **Focus Semantic Direction:** **Semantic Restrained Interaction-Accent Emphasis** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). Obvious focus feedback without competing visually with the Stable Black Primary action button. Web pilot values (`#276EF1`, 2px ring, 2px halo) are rendering references only; exact native focus treatment remains `OPEN / DEFERRED TO PHASE 4I`.
+- **Focus Semantic Direction:** **Semantic Restrained Interaction-Accent Emphasis** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). Obvious focus feedback without competing visually with the Stable Black Primary action button. Web pilot values (`#276EF1`, 1px accent field border + 3px outer halo) are rendering references only; exact native focus treatment remains `OPEN / DEFERRED TO PHASE 4I`.
 - **Select / Picker Primitive Boundary:**
   - Phase 4D owns: field label, placeholder / empty value, selected value presentation, trigger affordance, disabled/error state, field semantics, and RTL alignment.
   - Phase 4D does **not** define: bottom-sheet containers, dialog containers, overlay architecture, or container navigation (Phase 4F scope). Pilot overlays are `PILOT COMPOSITION ONLY / PHASE 4F AUTHORITY DEFERRED`.

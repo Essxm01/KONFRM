@@ -32,7 +32,7 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
 - **Phase 4D (Form & Selection Primitives):** `SUBSTANTIVE_COMPLETE / FOUNDER_DECISION_RECORDED / GOVERNANCE_SYNCHRONIZED / PUBLICATION_PENDING` (Branch `design/form-selection-pilot-01`, publication PR pending; not claimed CLOSED or MERGED until PR merge). Governed Customer + Owner evidence inspection and controlled visual pilot complete.
   - Field Strategy: **`OUTLINE_LED`** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; white surface, thin neutral outline, explicit top label, separate helper/error, no floating labels).
   - Mobile Field Radius: **`8px`** (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`; applies strictly to mobile field-shaped controls; does not alter 6px Primary Button radius `PRIMARY_ONLY`).
-  - Focus Direction: **`RESTRAINED_INTERACTION_ACCENT`** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot `#276EF1`, 2px ring, 2px halo are rendering references only).
+  - Focus Direction: **`RESTRAINED_INTERACTION_ACCENT`** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot `#276EF1`, 1px accent field border + 3px outer halo are rendering references only).
   - Selection Controls: Checkbox is **`OWNER_PRODUCT_EVIDENCED`** (notification preferences); Toggle is **`DEFERRED_NO_CURRENT_PRODUCT_EVIDENCE`** (zero product evidence; no switch migration).
   - Sizing & Touch Targets: iOS 44pt / Android 48dp guidance (no universal raw-pixel mobile rule).
   - Open variables preserved: Exact Neutrals (`OPEN`), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Native Focus Treatment (`OPEN`), Exact Native Stroke Width (`OPEN`), Global Shape System (`OPEN`), Native Acceptance (`DEFERRED TO 4I`).

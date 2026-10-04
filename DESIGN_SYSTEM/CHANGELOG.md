@@ -7,10 +7,10 @@
 - Governed Customer + Owner product evidence inspection completed across `customer-app/` and `owner-app/` (Admin remains Web operational).
 - Controlled Web visual evaluation completed across field visual strategies, radius options (6px, 8px, 10px), focus modalities, viewports, scaling, and RTL/Bidi states.
 - Recorded Founder approval of system recommendation: 8px Mobile Field Radius (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`). Applies strictly to mobile field-shaped Form & Selection controls; does not alter 6px Primary Button radius (`PRIMARY_ONLY`), secondary buttons, checkboxes, toggles, cards, sheets, or global shape.
-- Recorded Outline-led field baseline as system-validated provisional direction (white surface, thin neutral outline, clear boundary, no floating-label dependency).
+- Recorded Outline-led field baseline as system-validated provisional direction (white surface, thin neutral outline [pilot reference `#8E8E93`, achieving 3.26:1 contrast against `#FFFFFF`], clear boundary, no floating-label dependency).
 - Formalized explicit label / helper / error hierarchy inheriting Cairo Profile B (`label` 12/600/1.35, `supporting` 12/400/1.40); floating labels not selected due to Arabic legibility and translation expansion.
 - Formalized RTL / Bidi field rules: semantic start/end alignment, LTR isolation for phone/email, Western Arabic numerals (0–9), canonical money format `1,600 ج.م`, and search start/end affordances.
-- Recorded semantic restrained interaction-accent focus direction (provides obvious focus without competing with Stable Black Primary CTA; pilot `#276EF1`, 2px ring, 2px halo remain Web pilot rendering references only).
+- Recorded semantic restrained interaction-accent focus direction (provides obvious focus without competing with Stable Black Primary CTA; pilot `#276EF1`, 1px accent field border + 3px outer halo remain Web pilot rendering references only).
 - Defined Select / Picker boundary: Phase 4D owns field trigger, label, placeholder, selected value, and field semantics; bottom sheets, dialogs, and overlay container architecture remain strictly Phase 4F.
 - Classified Checkbox as Owner product-evidenced (notification preferences); Toggle classified as deferred with zero current product evidence (no manufactured switch migration).
 - Sizing and touch targets follow platform-appropriate guidance (iOS: 44pt; Android: 48dp); no universal raw-pixel mobile rule; visible geometry separated from interactive touch target bounds.

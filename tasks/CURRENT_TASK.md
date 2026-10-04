@@ -9,6 +9,13 @@ SCOPE: Phase 4C — Action System (Buttons, touch targets, action hierarchy, int
 ## Execution Position Notice
 - `STATUS: READY_TO_START` indicates that Phase 4C is the next authorized design dependency.
 - **NO Phase 4C implementation has begun.** No design artifacts, code changes, or token promotions have been introduced in this task.
+- `PHASE_4C_IMPLEMENTATION_STARTED: NO`
+
+## Platform Touch-Target and Interaction State Guidance
+- `IOS_TOUCH_TARGET_GUIDANCE: 44pt`
+- `ANDROID_TOUCH_TARGET_GUIDANCE: 48dp`
+- `UNIVERSAL_48PX_RULE: ABSENT` (no universal raw-pixel target; distinct platform units preserved)
+- `MANDATORY_MOBILE_HOVER_STATE: ABSENT` (hover is not a mobile touch requirement; evaluated only where platform/input modes support it)
 
 ## Upstream Completed Dependencies
 1. **Phase 4A Primitives (PR #86, CLOSED):**
@@ -33,12 +40,12 @@ SCOPE: Phase 4C — Action System (Buttons, touch targets, action hierarchy, int
 
 ## Phase 4C Scope (Governed Execution Scope when Started)
 When Phase 4C begins, it will address:
-- Primary action contract (sizing, touch targets >= 48px, label baseline, padding)
+- Primary action contract (sizing, platform-appropriate touch-target contracts preserving distinct iOS 44pt guidance / Android 48dp guidance; no universal raw-pixel target, label baseline, padding)
 - Secondary Action System
 - Outline/Ghost actions only where justified
 - Destructive actions
 - Icon actions
-- Interaction states: idle, hover, pressed, focus, loading, disabled
+- Interaction states: idle/default, pressed, focus / accessibility focus where platform-applicable, loading, disabled, selected where applicable (pointer/hover evaluated only where platform/input modes support it; no mandatory mobile hover state)
 - Action pairing and stacking rules (e.g. primary + secondary on mobile)
 - Narrow-width behavior (360px viewport stress)
 - Text wrapping and multiline action resilience under Cairo typography

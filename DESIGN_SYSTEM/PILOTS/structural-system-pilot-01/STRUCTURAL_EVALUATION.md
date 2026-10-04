@@ -102,12 +102,18 @@ During empirical pilot implementation and headless screenshot capture, three def
 3. **Defect 3: Metric KPI Over-Rounding on Desktop Admin:**
    - *Cause:* Admin desktop tables were inheriting 16px mobile card radii.
    - *Fix:* Restricted Admin container radii to 8px (`CONTROLLED_WEB_BOUNDARY_REFERENCE`), maintaining crisp desktop operational rigor and proving mobile card language does not contaminate desktop.
+4. **Defect 4: Customer Radius Viewport Target Alignment:**
+   - *Cause:* Initial 390×844 Customer screenshot ended before the price quote container whose radius changed, producing identical top-page views across 10px, 12px, and 16px.
+   - *Fix:* Added deterministic scrolled capture targeting (`CUSTOMER_RADIUS_TARGET: BOOKING / PRICE QUOTE STRUCTURAL CONTAINER` via `scroll=quote`). All three radius candidates are now fully and distinctively visible alongside 8px inputs and 6px CTA button, with unique blob SHAs.
+5. **Defect 5: Amber/Yellow Pending Badge & Escrow Wording:**
+   - *Cause:* Pilot CSS used `#D97706` / `#FFFBEB` amber fills on pending badges (violating the ban on yellow/amber/orange boxed UI), and wallet copy used incomplete check-in release and unapproved escrow phrasing.
+   - *Fix:* Replaced pending badge fill with compliant restrained soft-blue (`var(--accent-blue-soft)` / `var(--accent-blue)`), and updated Owner wallet copy to state truthful 24-hour delay ("يتاح بعد 24 ساعة من تسجيل الدخول") with state language ("عربون معلّق").
 
 ---
 
 ## 4. Bounded Structural Radius Evaluation & Closure
 
-To close the implementation-level container radius without burdening the Founder, a controlled evidence check evaluated Candidate C across radius values (`10px`, `12px`, `16px`) using the same viewport (390×844), typography (Cairo Profile B), page insets (16px), and content:
+To close the implementation-level container radius without burdening the Founder, a controlled evidence check evaluated Candidate C across radius values (`10px`, `12px`, `16px`) using the same viewport (390×844), typography (Cairo Profile B), page insets (16px), and content (`CUSTOMER_RADIUS_TARGET: BOOKING / PRICE QUOTE STRUCTURAL CONTAINER`):
 
 | Radius Candidate | Customer Decision Unit | Owner Grouped Unit | Visual System Coherence | Verdict |
 |---|---|---|---|---|

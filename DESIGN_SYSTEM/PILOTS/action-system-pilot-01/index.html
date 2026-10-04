@@ -23,14 +23,12 @@
       /* Primary Button Radius (Locked Provisional 6px) */
       --kf-radius-primary: 6px;
 
-      /* Color Authorities: Strategy = Stable Black (Exact hex is OPEN) */
-      --kf-black-candidate-a: #0F172A; /* Pilot-only Slate Black */
-      --kf-black-candidate-b: #000000; /* Pitch Black */
-      --kf-black-candidate-c: #111827; /* Charcoal Black */
-      --kf-black-candidate-d: #18181B; /* Zinc Neutral Black */
+      /* Color Authorities: Stable Black Strategy (Stage 2 Founder Preference) */
+      --kf-black-candidate-preferred: #000000; /* Founder Preferred Exact Black Candidate */
+      --kf-black-candidate-fallback: #18181B;  /* Fallback Comparator */
 
-      /* Active Primary Black (Default to Pilot-only candidate A) */
-      --kf-primary-black: var(--kf-black-candidate-a);
+      /* Active Primary Black (Default: Founder Preferred Candidate #000000) */
+      --kf-primary-black: var(--kf-black-candidate-preferred);
 
       /* Exact Blue: OPEN (Pilot candidate #276EF1) */
       --kf-accent-blue: #276EF1;
@@ -473,7 +471,7 @@
   <header class="lab-header">
     <h1 class="lab-title">KONFRM Action System Pilot 01 — معمل الأزرار والإجراءات</h1>
     <p class="lab-subtitle">
-      Phase 4C Controlled Visual Evidence & Discovery | Cairo Profile B (15 / 700 / 1.20) + 6px Primary Radius + Stable Black Strategy
+      Phase 4C Stage 2 System Coherence | Cairo Profile B (15 / 700 / 1.20) + 6px Primary Radius + Preferred Black #000000 + Contextual Hybrid Grammar
     </p>
 
     <!-- Controls Panel -->
@@ -496,13 +494,11 @@
         <button class="control-btn" id="sc200" onclick="setScale(2.0, this)">200%</button>
       </div>
 
-      <!-- Stable Black Candidate Switcher -->
+      <!-- Stable Black Candidate Switcher (Stage 2: Preferred #000000 vs Fallback #18181B) -->
       <div class="control-group">
         <span class="control-label">درجة الأسود:</span>
-        <button class="control-btn active" id="bkA" onclick="setBlack('#0F172A', this)">#0F172A (حالي)</button>
-        <button class="control-btn" id="bkB" onclick="setBlack('#000000', this)">#000000 (داكن نقي)</button>
-        <button class="control-btn" id="bkC" onclick="setBlack('#111827', this)">#111827 (فحمي)</button>
-        <button class="control-btn" id="bkD" onclick="setBlack('#18181B', this)">#18181B (زنك)</button>
+        <button class="control-btn active" id="bkPreferred" onclick="setBlack('#000000', this)">#000000 (المفضل للمؤسس)</button>
+        <button class="control-btn" id="bkFallback" onclick="setBlack('#18181B', this)">#18181B (احتياطي للمقارنة)</button>
       </div>
     </div>
   </header>
@@ -688,11 +684,13 @@
         </div>
       </section>
 
-      <!-- SECTION 6: COMPOSED CUSTOMER CONTEXT -->
-      <section class="section-block" id="sec-customer">
+      <!-- SECTION 6: HYBRID ACTION HIERARCHY — CUSTOMER COMPOSED CONTEXT -->
+      <section class="section-block" id="sec-customer-hybrid">
         <div class="section-header">
-          <h2 class="section-title">6. سياقات العميل الواقعية <span class="en-tag" dir="ltr">(Customer Composed Contexts)</span></h2>
-          <p class="section-desc">عرض الأزرار داخل شريط الحجز الثابت وشاشة مراجعة الحجز لتجربة حقيقية.</p>
+          <h2 class="section-title">6. سياق العميل: تسلسل الإجراءات الهجين <span class="en-tag" dir="ltr">(Customer Hybrid Context)</span></h2>
+          <p class="section-desc">
+            تطبيق التسلسل الهجين المعتمد: الزر الرئيسي الأسود (#000000) + ثانوي هادئ (Subtle Fill) + ثالثي شفاف (Ghost) + إطار مشروط (Conditional Outline).
+          </p>
         </div>
 
         <!-- Sticky Bar Context -->
@@ -715,21 +713,45 @@
           </p>
           <div style="display: flex; flex-direction: column; gap: 8px;">
             <button class="kf-btn kf-btn-primary kf-btn-full">إرسال طلب الحجز إلى المالك</button>
-            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full">الرجوع لتعديل تفاصيل الإقامة</button>
+            <button class="kf-btn kf-btn-secondary-fill kf-btn-full">تعديل التواريخ والضيوف</button>
+            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full">الرجوع لتفاصيل الوحدة</button>
+          </div>
+        </div>
+
+        <!-- Conditional Outline Demonstration -->
+        <div class="card-box" style="background: #F8FAFC; border: 1px dashed var(--kf-color-border-strong);">
+          <div class="card-title">ج. إجراء مشروط على خلفية بطاقة رمادية <span class="en-tag" dir="ltr">(Conditional Neutral Outline)</span></div>
+          <p style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+            يُستخدم الإطار المحايد (Neutral Outline) هنا لأن التعبئة الرمادية الناعمة لا توفر تبايناً كافياً مع خلفية الحاوية.
+          </p>
+          <button class="kf-btn kf-btn-secondary-outline kf-btn-full">حفظ الوحدة في قائمة المفضلة</button>
+        </div>
+
+        <!-- Customer States -->
+        <div class="card-box">
+          <div class="card-title">د. حالات الزر الرئيسي للعميل <span class="en-tag" dir="ltr">(Customer Action States)</span></div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="kf-btn kf-btn-primary kf-btn-full is-loading" aria-busy="true">
+              <span class="kf-spinner"></span>
+              <span>جاري إرسال الطلب إلى المالك...</span>
+            </button>
+            <button class="kf-btn kf-btn-primary kf-btn-full is-disabled" disabled>طلب الحجز (غير متاح حالياً)</button>
           </div>
         </div>
       </section>
 
-      <!-- SECTION 7: COMPOSED OWNER CONTEXT -->
-      <section class="section-block" id="sec-owner">
+      <!-- SECTION 7: HYBRID ACTION HIERARCHY — OWNER COMPOSED CONTEXT -->
+      <section class="section-block" id="sec-owner-hybrid">
         <div class="section-header">
-          <h2 class="section-title">7. سياقات المالك التشغيلية <span class="en-tag" dir="ltr">(Owner Operational Contexts)</span></h2>
-          <p class="section-desc">شاشات عالية الكثافة: اتخاذ القرار على طلب الحجز وتعديل بيانات العقار.</p>
+          <h2 class="section-title">7. سياق المالك التشغيلي: تسلسل الإجراءات الهجين <span class="en-tag" dir="ltr">(Owner Hybrid Context)</span></h2>
+          <p class="section-desc">
+            تطبيق التسلسل الهجين: رئيسي أسود (#000000) + ثانوي حذر محدد بخط (Destructive Outline) + ثانوي محايد هادئ (Subtle Fill) + ثالثي شفاف (Ghost).
+          </p>
         </div>
 
         <!-- Owner Decision Card -->
         <div class="card-box">
-          <div class="card-title">بطاقة قرار المالك على طلب جديد <span class="en-tag" dir="ltr">(Owner Decision Card)</span></div>
+          <div class="card-title">أ. بطاقة قرار المالك على طلب جديد <span class="en-tag" dir="ltr">(Owner Decision Card)</span></div>
           <div style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 12px; line-height: 1.6;">
             طلب حجز #KNF-88219 • الضيف: أحمد م. • 3 ليالٍ (14 - 17 أكتوبر)<br>
             قيمة الحجز: 4,800 ج.م (العربون: 1,600 ج.م)
@@ -743,68 +765,236 @@
 
         <!-- Owner Edit Property -->
         <div class="card-box">
-          <div class="card-title">تعديل تسعير الوحدة <span class="en-tag" dir="ltr">(Unit Pricing Management)</span></div>
-          <div style="display: flex; gap: 10px;">
+          <div class="card-title">ب. إدارة تسعير الوحدة والعمليات <span class="en-tag" dir="ltr">(Unit Pricing Management)</span></div>
+          <div style="display: flex; gap: 10px; margin-bottom: 12px;">
             <button class="kf-btn kf-btn-primary" style="flex: 1;">حفظ التغييرات</button>
-            <button class="kf-btn kf-btn-secondary-fill" style="flex: 1;">إلغاء</button>
+            <button class="kf-btn kf-btn-secondary-fill" style="flex: 1;">إلغاء التعديل</button>
           </div>
+          <button class="kf-btn kf-btn-secondary-outline kf-btn-full" style="font-size: 13px;">تصدير كشف الحساب المالي (PDF)</button>
         </div>
       </section>
 
-      <!-- SECTION 8: NARROW VIEWPORT & TEXT-SCALING STRESS -->
-      <section class="section-block" id="sec-stress">
+      <!-- SECTION 8: 360PX STRESS & REFLOW CONTRACT -->
+      <section class="section-block" id="sec-reflow-stress">
         <div class="section-header">
-          <h2 class="section-title">8. اختبار الإجهاد وعقد تدفق المجموعات <span class="en-tag" dir="ltr">(Stress Testing & Reflow Contract)</span></h2>
+          <h2 class="section-title">8. فحص الإجهاد وعقد تدفق المجموعات <span class="en-tag" dir="ltr">(360px Stress & Reflow Contract)</span></h2>
           <p class="section-desc">
-            فحص التفاف النصوص وتفكك التوزيع الأفقي عند ضيق المساحة وتكبير النص.<br>
-            <strong>عقد تدفق وترتيب الإجراءات (Action Group Reflow Contract — متطلب نظامي/إمكانية وصول):</strong><br>
-            تلتزم مجموعات الإجراءات بالتحول من التوزيع الأفقي إلى التراص الرأسي (Reflow / Stacking) عندما يعجز الترتيب الأفقي عن الحفاظ على: (1) نصوص كاملة مقروءة، (2) أهداف لمسية صالحة، (3) تباعد مناسب، (4) منع تقطيع الكلمات، (5) منع الاقتطاع أو التداخل، و(6) وضوح التسلسل الهرمي. (شاشة 360px مع تكبير 150%/200% تمثل محفزاً مرصوداً في الأدلة وليست خوارزمية حصرية مفردة).
+            فحص استجابة المجموعات تحت ضيق الشاشة (360px) والتكبير (200%). يوضح المعمل حالة الانكسار عند التوزيع الأفقي وحالة الحل عند تفعيل عقد التدفق الرأسي.
           </p>
         </div>
 
         <div class="card-box">
-          <div class="card-title">نص عربي مركب مع التفاف <span class="en-tag" dir="ltr">(Multi-line Wrap)</span></div>
-          <button class="kf-btn kf-btn-primary kf-btn-full" style="text-align: center; margin-bottom: 12px;">
-            تأكيد الموافقة على شروط الحجز وسياسة الإلغاء والمتابعة إلى الدفع
-          </button>
-          <div style="display: flex; gap: 8px;">
-            <button class="kf-btn kf-btn-secondary-outline" style="flex: 1; text-align: center;">
-              الرجوع للخلف وتعديل البيانات
-            </button>
-            <button class="kf-btn kf-btn-secondary-fill" style="flex: 1; text-align: center;">
-              حفظ المسودة لوقت لاحق
-            </button>
+          <div class="card-title">أ. التوزيع الأفقي عند مقياس 100% <span class="en-tag" dir="ltr">(Standard Horizontal Pairing — 100%)</span></div>
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+            <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+          </div>
+
+          <div class="card-title">ب. حالة الانكسار عند تكبير 200% بدون تدفق <span class="en-tag" dir="ltr">(Horizontal Breakdown Mode — 200%)</span></div>
+          <p style="font-size: 11px; color: var(--kf-color-danger); margin-bottom: 6px;">تفتت الكلمات وتقطيع الحروف بسبب ضيق العرض المتاح لكل زر (~140px):</p>
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1; font-size: 18px; padding: 8px 4px;">الموافقة على الطلب</button>
+            <button class="kf-btn kf-btn-danger-outline" style="flex: 1; font-size: 18px; padding: 8px 4px;">رفض الطلب</button>
+          </div>
+
+          <div class="card-title">ج. الحل المعتمد: عقد التدفق الرأسي عند تكبير 200% <span class="en-tag" dir="ltr">(Reflow Contract Applied)</span></div>
+          <p style="font-size: 11px; color: #166534; margin-bottom: 6px;">تراص رأسي كامل يحافظ على اكتمال الكلمات وسلامة الهدف اللمسي:</p>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="kf-btn kf-btn-primary kf-btn-full" style="font-size: 18px;">الموافقة على طلب الحجز وتأكيد الميعاد</button>
+            <button class="kf-btn kf-btn-danger-outline kf-btn-full" style="font-size: 18px;">رفض طلب الحجز وإشعار الضيف</button>
           </div>
         </div>
       </section>
 
-      <!-- SECTION 9: EXACT BLACK HEX SENSITIVITY ANALYSIS -->
-      <section class="section-block" id="sec-black">
+      <!-- SECTION 9: BLACK SENSITIVITY COMPARISON (STAGE 2: PREFERRED VS FALLBACK ONLY) -->
+      <section class="section-block" id="sec-black-comparison">
         <div class="section-header">
-          <h2 class="section-title">9. مقارنة درجات الأسود <span class="en-tag" dir="ltr">(Stable Black Candidates)</span></h2>
-          <p class="section-desc">مقارنة بصرية بين البدائل الأربعة لاستراتيجية الأسود المستقر. قرار درجة اللون يبقى مفتوحاً للمؤسس.</p>
+          <h2 class="section-title">9. مقارنة الأسود المفضل والاحتياطي <span class="en-tag" dir="ltr">(Founder Preferred vs Fallback)</span></h2>
+          <p class="section-desc">
+            مقارنة حصرية بين المرشح المفضل للمؤسس (#000000) والبديل الاحتياطي الوحيد (#18181B). تم استبعاد #0F172A و #111827 رسمياً من المقارنة النشطة بقرار المؤسس.
+          </p>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
-          <div class="card-box" style="border-top: 3px solid #0F172A; text-align: center; padding: 12px;">
-            <div style="font-weight: 700; font-size: 12px;">المرشح A</div>
-            <div style="font-size: 11px; color: var(--kf-color-text-secondary); margin-bottom: 8px;">#0F172A (حالي)</div>
-            <button class="kf-btn kf-btn-full" style="background: #0F172A; color: #fff; min-height: 40px; padding: 8px; font-size: 13px;">تأكيد</button>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+          <div class="card-box" style="border-top: 3px solid #000000; text-align: center; padding: 14px;">
+            <div style="font-weight: 700; font-size: 13px;">المرشح المفضل للمؤسس</div>
+            <div style="font-size: 11px; color: var(--kf-color-text-secondary); margin-bottom: 8px;">#000000 (داكن نقي)</div>
+            <button class="kf-btn kf-btn-full" style="background: #000000; color: #fff; min-height: 44px; padding: 8px; font-size: 14px;">تأكيد الإجراء</button>
+            <span style="font-size: 10px; color: #166534; display: block; margin-top: 6px; font-weight: 600;">الحالة: مختار ومفضل مؤقتاً</span>
           </div>
-          <div class="card-box" style="border-top: 3px solid #000000; text-align: center; padding: 12px;">
-            <div style="font-weight: 700; font-size: 12px;">المرشح B</div>
-            <div style="font-size: 11px; color: var(--kf-color-text-secondary); margin-bottom: 8px;">#000000 (نقي)</div>
-            <button class="kf-btn kf-btn-full" style="background: #000000; color: #fff; min-height: 40px; padding: 8px; font-size: 13px;">تأكيد</button>
+
+          <div class="card-box" style="border-top: 3px solid #18181B; text-align: center; padding: 14px;">
+            <div style="font-weight: 700; font-size: 13px;">البديل الاحتياطي للمقارنة</div>
+            <div style="font-size: 11px; color: var(--kf-color-text-secondary); margin-bottom: 8px;">#18181B (زنك محايد)</div>
+            <button class="kf-btn kf-btn-full" style="background: #18181B; color: #fff; min-height: 44px; padding: 8px; font-size: 14px;">تأكيد الإجراء</button>
+            <span style="font-size: 10px; color: var(--kf-color-text-muted); display: block; margin-top: 6px;">احتياطي عند الحاجة المادية فقط</span>
           </div>
-          <div class="card-box" style="border-top: 3px solid #111827; text-align: center; padding: 12px;">
-            <div style="font-weight: 700; font-size: 12px;">المرشح C</div>
-            <div style="font-size: 11px; color: var(--kf-color-text-secondary); margin-bottom: 8px;">#111827 (فحمي)</div>
-            <button class="kf-btn kf-btn-full" style="background: #111827; color: #fff; min-height: 40px; padding: 8px; font-size: 13px;">تأكيد</button>
+        </div>
+      </section>
+
+      <!-- SECTION 10: REPEATED-PRIMARY DENSITY CHECK -->
+      <section class="section-block" id="sec-repeated-density">
+        <div class="section-header">
+          <h2 class="section-title">10. فحص كثافة تكرار الزر الرئيسي #000000 <span class="en-tag" dir="ltr">(Repeated-Primary Density Check)</span></h2>
+          <p class="section-desc">
+            اختبار الكثافة التشغيلية في قائمة المالك: هل يسبب تكرار الزر الأسود #000000 في بطاقات متتالية إجهاداً بصرياً (Visual Fatigue) أو ثقلاً مفرطاً؟
+          </p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Card 1 -->
+          <div class="card-box" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-weight: 700; font-size: 13px;">طلب حجز #KNF-88219</span>
+              <span style="font-size: 11px; background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
+            </div>
+            <div style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+              الضيف: أحمد م. • 3 ليالٍ • إجمالي الحجز: 4,800 ج.م (العربون: 1,600 ج.م)
+            </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+              <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+              <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+            </div>
+            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full" style="font-size: 12px; padding: 4px;">عرض تفاصيل الحجز</button>
           </div>
-          <div class="card-box" style="border-top: 3px solid #18181B; text-align: center; padding: 12px;">
-            <div style="font-weight: 700; font-size: 12px;">المرشح D</div>
-            <div style="font-size: 11px; color: var(--kf-color-text-secondary); margin-bottom: 8px;">#18181B (زنك)</div>
-            <button class="kf-btn kf-btn-full" style="background: #18181B; color: #fff; min-height: 40px; padding: 8px; font-size: 13px;">تأكيد</button>
+
+          <!-- Card 2 -->
+          <div class="card-box" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-weight: 700; font-size: 13px;">طلب حجز #KNF-88220</span>
+              <span style="font-size: 11px; background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
+            </div>
+            <div style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+              الضيفة: سارة خ. • ليلتان • إجمالي الحجز: 3,200 ج.م (العربون: 1,600 ج.م)
+            </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+              <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+              <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+            </div>
+            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full" style="font-size: 12px; padding: 4px;">عرض تفاصيل الحجز</button>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="card-box" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-weight: 700; font-size: 13px;">طلب حجز #KNF-88221</span>
+              <span style="font-size: 11px; background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
+            </div>
+            <div style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+              الضيف: عمر ن. • 4 ليالٍ • إجمالي الحجز: 6,400 ج.م (العربون: 1,600 ج.م)
+            </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+              <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+              <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+            </div>
+            <button class="kf-btn kf-btn-secondary-ghost kf-btn-full" style="font-size: 12px; padding: 4px;">عرض تفاصيل الحجز</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 11: DESTRUCTIVE + PRIMARY PAIRING -->
+      <section class="section-block" id="sec-destructive-pairing">
+        <div class="section-header">
+          <h2 class="section-title">11. اقتران الزر الرئيسي بالتحذيري الثانوي <span class="en-tag" dir="ltr">(Destructive + Primary Pairing)</span></h2>
+          <p class="section-desc">
+            فحص التوازن والتنافس البصري بين الأسود النقي #000000 والحد الأحمر الدلالي (1.5px).
+          </p>
+        </div>
+
+        <div class="card-box">
+          <div class="card-title">أ. اقتران متناسب نسبي (1.2 : 1) <span class="en-tag" dir="ltr">(Proportional 1.2 : 1)</span></div>
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+            <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+          </div>
+
+          <div class="card-title">ب. اقتران متناصف 50/50 <span class="en-tag" dir="ltr">(Equal 50/50 Split)</span></div>
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="kf-btn kf-btn-primary" style="flex: 1;">تأكيد الدفع</button>
+            <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">إلغاء الحجز</button>
+          </div>
+
+          <div class="card-title">ج. تراص رأسي كامل <span class="en-tag" dir="ltr">(Vertical Stack)</span></div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="kf-btn kf-btn-primary kf-btn-full">متابعة عملية التوثيق</button>
+            <button class="kf-btn kf-btn-danger-ghost kf-btn-full">إلغاء الطلب والتراجع</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 12: PURE BLACK INTERACTION STATES -->
+      <section class="section-block" id="sec-black-states">
+        <div class="section-header">
+          <h2 class="section-title">12. حالات التفاعل للأسود النقي #000000 <span class="en-tag" dir="ltr">(Pure Black Interaction States)</span></h2>
+          <p class="section-desc">
+            التحقق من وضوح الحالات التفاعلية للزر الأسود النقي (#000000) ومدى امتثالها لإمكانية الوصول.
+          </p>
+        </div>
+
+        <div class="card-box">
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">الافتراضي (Idle / Default):</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full">طلب الحجز الآن</button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">الضغط اللمسي (Pressed / Active — scale 0.98 + brightness):</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full" style="transform: scale(0.98); filter: brightness(0.85);">طلب الحجز الآن</button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">التركيز اللمسي وإمكانية الوصول (Focus-visible Double Ring):</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full" style="box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #000000;">طلب الحجز الآن</button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">جاري المعالجة (Loading — aria-busy="true"):</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full is-loading" aria-busy="true">
+                <span class="kf-spinner"></span>
+                <span>جاري إرسال الطلب...</span>
+              </button>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">غير متاح (Disabled — opacity 0.45):</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full is-disabled" disabled>طلب الحجز (غير متاح)</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 13: PURE BLACK ROLE COHERENCE -->
+      <section class="section-block" id="sec-black-roles">
+        <div class="section-header">
+          <h2 class="section-title">13. تماسك الأسود النقي عبر الأدوار <span class="en-tag" dir="ltr">(Pure Black Coherence Across Roles)</span></h2>
+          <p class="section-desc">
+            مقارنة مباشرة لوزن الأسود النقي #000000 بين سياق العميل (الضيافة والوضوح) وسياق المالك (الكثافة التشغيلية).
+          </p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <!-- Customer Role Box -->
+          <div class="card-box" style="margin-bottom: 0;">
+            <div style="font-weight: 700; font-size: 13px; margin-bottom: 4px;">سياق العميل (Customer Hospitality):</div>
+            <p style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+              الأسود النقي يوفر دعوة حاسمة وواضحة للإجراء بدون منافسة بصرية مع صور العقار:
+            </p>
+            <div class="sticky-bar-mockup">
+              <div class="price-cluster">
+                <span class="price-val">1,600 ج.م</span>
+                <span class="price-sub">إجمالي الإقامة لليلتين</span>
+              </div>
+              <button class="kf-btn kf-btn-primary" style="min-width: 140px;">طلب الحجز</button>
+            </div>
+          </div>
+
+          <!-- Owner Role Box -->
+          <div class="card-box" style="margin-bottom: 0;">
+            <div style="font-weight: 700; font-size: 13px; margin-bottom: 4px;">سياق المالك (Owner Operational Control):</div>
+            <p style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
+              الأسود النقي يعزز ثقة القرار في بيئة تشغيلية كثيفة:
+            </p>
+            <div style="display: flex; gap: 8px;">
+              <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
+              <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+            </div>
           </div>
         </div>
       </section>
@@ -876,10 +1066,8 @@
         setBlack(bk, null);
         document.querySelectorAll('[id^="bk"]').forEach(b => b.classList.remove('active'));
         const bkLower = bk.toLowerCase();
-        if (bkLower === '#0f172a') document.getElementById('bkA')?.classList.add('active');
-        if (bkLower === '#000000') document.getElementById('bkB')?.classList.add('active');
-        if (bkLower === '#111827') document.getElementById('bkC')?.classList.add('active');
-        if (bkLower === '#18181b') document.getElementById('bkD')?.classList.add('active');
+        if (bkLower === '#000000') document.getElementById('bkPreferred')?.classList.add('active');
+        if (bkLower === '#18181b') document.getElementById('bkFallback')?.classList.add('active');
       }
       if (sec) {
         document.querySelectorAll('.section-block').forEach(s => {

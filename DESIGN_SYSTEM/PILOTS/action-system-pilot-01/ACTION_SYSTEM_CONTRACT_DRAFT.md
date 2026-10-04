@@ -46,10 +46,30 @@ The KONFRM Action System defines distinct semantic action roles. Visual presenta
 ---
 
 ### 2.1 The Destructive Consequence Dimension
-Destructive is not a separate ad-hoc visual style, but a **semantic consequence dimension** applied to an eligible hierarchy role:
-- **Destructive Primary (Rank 1D):** Affirmative confirmation inside an explicit destructive confirmation context.
-- **Destructive Secondary (Rank 3D):** Destructive Outline when paired with a non-destructive Primary or alternative.
-- **Destructive Tertiary / Ghost (Rank 4D):** Low-weight utility discard/removal, permitted **only** where Product semantics, low consequence, and discoverability clearly warrant a minimal text-only presentation.
+Destructive is not a separate ad-hoc cosmetic style, but a **semantic consequence dimension** evaluated through three interrelated criteria: **Consequence Level**, **Hierarchy Rank**, and **Discoverability** (never determined by paired vs unpaired layout alone):
+
+1. **Consequence Level & Severity:**
+   - Destructive actions carry inherent risk (loss of data, removal of items, rejection of workflow entities).
+   - High-consequence or material destructive actions must **never** be styled as low-emphasis Ghost merely because they are unpaired or standalone. Consequence severity dictates whether an action requires prominent visible treatment or an explicit confirmation context.
+   - Confirmation is **consequence-aware, not universal**: not every destructive action requires an explicit confirmation modal. Routine or low-consequence actions do not require two-step friction. Confirmation is reserved for actions where consequence severity, irreversibility, or Product/UX authority mandates explicit verification.
+   - **Product Truth & Policy Protection:** Destructive actions may be rendered only where server-side Product Canon explicitly permits the lifecycle transition. Zero invented cancellation or deposit refund capabilities (`CANCELLATION_REFUND_POLICY: OPEN / UNDECIDED`).
+
+2. **Hierarchy Roles in the Destructive Dimension:**
+   - **Destructive Primary (Rank 1D):** Affirmative confirmation of an intentional destructive action within an explicit destructive confirmation context.
+   - **Destructive Secondary (Rank 3D):** Standard visible destructive treatment (**Destructive Outline**). Used for negative/rejection actions paired with an affirmative Primary, or standalone destructive operations where consequence does not warrant a full modal confirmation but requires unmistakable visible perimeter and consequence affordance.
+   - **Destructive Tertiary / Ghost (Rank 4D):** Low-emphasis text-only treatment, strictly governed by the **Low-Consequence Eligibility Gate**.
+
+3. **Mandatory Low-Consequence Eligibility Gate for Destructive Ghost:**
+   An action may be rendered as Destructive Tertiary / Ghost **if and only if ALL of the following conditions are simultaneously met**:
+   - *Limited/Local Consequence:* The consequence is strictly local, minor, or transient (e.g., clearing a local draft filter, removing an optional draft tag).
+   - *Non-Critical:* The action is not decision-critical to business or operational workflows.
+   - *Reversible / Non-Harmful:* The action is not irreversible and causes zero material harm.
+   - *Straightforward Recovery:* Reversal or re-entry is trivial and immediately available.
+   - *Consequence Clarity:* Ghost treatment will not obscure or trivialize the action's actual consequence.
+   - *Sufficient Discoverability:* The action remains clearly discoverable and identifiable without button chrome.
+   - *Product Canon Alignment:* Product authority explicitly permits the capability.
+
+   **Strict Invariant:** If any of the above conditions is not met, Destructive Ghost is **forbidden**. The component must use Destructive Secondary (Destructive Outline) or route the user into an explicit destructive confirmation context when consequence warrants confirmation.
 
 ---
 
@@ -77,26 +97,29 @@ Destructive is not a separate ad-hoc visual style, but a **semantic consequence 
 - **Open Boundaries:** The exact neutral token for Subtle Fill remains `OPEN` (pilot `#F1F5F9` is a non-canonical rendering value). Border radius is `OPEN` (does not automatically inherit Primary 6px).
 
 #### Role 4: Destructive Secondary
-- **Semantic Definition:** A negative, rejection, or discard action presented alongside an affirmative Primary action (e.g., Owner "Reject Request" paired with "Accept Request").
+- **Semantic Definition:** A negative, rejection, or discard action presented alongside an affirmative Primary action (e.g., Owner "Reject Request" paired with "Accept Request"), or a standalone destructive action requiring clear visible affordance without full confirmation context.
 - **Provisional Treatment:** **Destructive Outline** (subtle red perimeter, transparent background, red text).
 - **Hierarchy Function:** Signals consequence and danger without seizing visual dominance from the Primary action. The user's eye lands on the Primary first, but clearly distinguishes the danger perimeter of the secondary action.
 - **Product Truth Protection:** A Destructive Secondary cannot invent product capability. Rejection or cancellation controls may be rendered only where server-side lifecycle rules allow that transition. Exact destructive color remains `OPEN` (pilot `#DC2626` is a candidate rendering value).
 
 #### Role 5: Destructive Primary
-- **Semantic Definition:** The affirmative confirmation of an intentional destructive operation.
-- **Strict Context-Gated Rules (Not Container-Gated):**
+- **Semantic Definition:** The affirmative confirmation of an intentional destructive operation within an explicit destructive confirmation context.
+- **Consequence-Aware Confirmation Rules (Not Universal, Not Container-Gated):**
   1. *Explicit Confirmation Context:* Allowed **only** within an explicit destructive confirmation context where:
+     - The destructive consequence warrants two-step confirmation per Product/UX authority;
      - The destructive consequence is clearly stated;
      - The destructive action is the action being consciously confirmed (e.g., "Confirm Property Removal");
      - A safe exit/cancel path is clear and accessible;
      - Product Canon actually permits that action.
-  2. *Presentation Form:* The presentation may be a dialog, sheet, modal, full-screen confirmation, or other platform-appropriate confirmation surface, according to context.
-  3. *Forbidden on Top-Level Surfaces:* Never use Destructive Primary on top-level browsing, dashboard cards, or list items merely because a destructive action exists there. Never invent cancellation/refund rules.
+  2. *Not Universal:* Not every destructive action requires an explicit confirmation modal. Routine or low-consequence actions do not require two-step confirmation.
+  3. *Presentation Form:* The presentation may be a dialog, sheet, modal, full-screen confirmation, or other platform-appropriate confirmation surface, according to context.
+  4. *Forbidden on Top-Level Surfaces:* Never use Destructive Primary on top-level browsing, dashboard cards, or list items merely because a destructive action exists there. Never invent cancellation/refund rules.
 
 #### Role 6: Tertiary / Ghost / Text-Like
 - **Semantic Definition:** Low-emphasis, auxiliary, or repetitive actions (e.g., "View Breakdown", "Show Terms", "Back").
 - **Visual Expression:** Zero border, transparent fill, text label with an interactive touch target.
 - **Typography Invariant:** Button-shaped / tappable Button components use Cairo Profile B (`15 / 700 / 1.20`). Typography is **never** silently reduced to 13–14px merely because the hierarchy is tertiary. (True inline text-links/actions are governed separately by applicable text roles).
+- **Destructive Ghost Gating:** Destructive actions may use Ghost treatment **only** if all 7 criteria of the Low-Consequence Eligibility Gate (§2.1) are met. An unpaired destructive action must **never** automatically default to Ghost. High-consequence or material destructive actions must never be visually weakened into Ghost.
 - **Eligibility & Restrictions:**
   - *Eligible:* Where an action is supporting, informational, or occurs repeatedly in a list without warranting container chrome.
   - *Forbidden:* Never use Ghost for decision-critical actions, where action discoverability would be compromised, or where a user cannot perceptually identify the tappable area.
@@ -119,39 +142,63 @@ Destructive is not a separate ad-hoc visual style, but a **semantic consequence 
 
 ## 3. Action Selection Decision Tree
 
-To ensure deterministic decision-making across all features and agents, apply this exact sequential logic:
+To ensure deterministic, consequence-aware decision-making across all features and agents, apply this exact sequential logic:
 
 ```
 [Evaluate Action]
        │
        ▼
-Is this the single essential, valid next step for this active decision unit?
-       ├─► YES ──► Is it inside an explicit destructive confirmation context?
-       │                 ├─► YES ──► DESTRUCTIVE PRIMARY (Confirmation Context Only)
-       │                 └─► NO  ──► DECISION PRIMARY (Stable Black #000000, 6px Radius)
+FIRST: Is this action destructive or consequence-bearing (removal, discard, rejection)?
        │
-       └─► NO (Supporting / Alternative / Auxiliary Action)
+       ├─► YES (Destructive Consequence Dimension)
+       │     │
+       │     ▼
+       │   A. Is the user currently inside an explicit destructive confirmation context for this action?
+       │        ├─► YES ──► DESTRUCTIVE PRIMARY (Confirmation Context Only; subject to Product Canon)
+       │        │
+       │        └─► NO (Top-level, card, inline, or unconfirmed surface)
+       │              │
+       │              ▼
+       │            B. Is this genuinely a LOW-CONSEQUENCE destructive utility?
+       │               (Requires ALL 7 conditions: local impact, non-critical, reversible/harmless,
+       │                straightforward recovery, consequence not obscured, discoverability intact,
+       │                Product Canon permits)
+       │                 ├─► YES ──► DESTRUCTIVE TERTIARY / GHOST (Low-emphasis utility)
+       │                 │
+       │                 └─► NO (Do NOT use Ghost! Consequence must remain prominently visible)
+       │                       │
+       │                       ├─► Does consequence warrant deliberate 2-step confirmation per UX/Product?
+       │                       │     └─► YES ──► ROUTE TO EXPLICIT DESTRUCTIVE CONFIRMATION CONTEXT
+       │                       │
+       │                       └─► Otherwise (Standard destructive action or paired rejection)
+       │                             └─► DESTRUCTIVE SECONDARY (Destructive Outline)
+       │
+       └─► NO (Neutral / Affirmative Action Hierarchy)
              │
              ▼
-       Is the action destructive or consequence-heavy (reject, remove, discard)?
-             ├─► YES ──► Paired with Primary or prominent alternative?
-             │                 ├─► YES ──► DESTRUCTIVE SECONDARY (Destructive Outline)
-             │                 └─► NO (Low-weight utility) ──► DESTRUCTIVE TERTIARY / GHOST
+           Is this the single essential, valid next step for this active decision unit?
+             ├─► YES ──► DECISION PRIMARY (Stable Black #000000, 6px Radius)
              │
-             └─► NO (Neutral / Affirmative Alternative)
+             └─► NO (Supporting / Alternative / Auxiliary Action)
                    │
                    ▼
-             Is the action low-weight, auxiliary, detail-viewing, or navigation return?
-                   ├─► YES ──► TERTIARY / GHOST (15 / 700 / 1.20)
+                 Is the action low-weight, auxiliary, detail-viewing, or navigation return?
+                   ├─► YES ──► TERTIARY / GHOST (Cairo 15 / 700 / 1.20)
                    │
                    └─► NO (Substantive Supporting Action)
                          │
                          ▼
-                   Does Subtle Fill lack sufficient boundary separation against
-                   the surrounding container surface in this actual context?
+                       Does Subtle Fill lack sufficient boundary separation against
+                       the surrounding container surface in this actual context?
                          ├─► YES ──► CONDITIONAL NEUTRAL OUTLINE
                          └─► NO  ──► NEUTRAL SECONDARY (Subtle Fill Default)
 ```
+
+### 3.1 Decision Tree Principles & Invariants
+1. **Consequence Precedes Layout:** Consequence level, hierarchy, and discoverability govern destructive styling—never paired vs. unpaired layout alone. Unpaired destructive actions do **not** default to Ghost.
+2. **High-Consequence Ghost Prohibition:** High-consequence or material destructive actions must **never** be visually weakened into Ghost.
+3. **Consequence-Aware Confirmation:** Confirmation is consequence-aware, not universal. Routine or low-consequence destructive actions do not require two-step confirmation modals. Confirmation is reserved for irreversible or severe operations.
+4. **Product Truth Preservation:** Zero invented cancellation, refund, or rejection capabilities. Every action must map to valid canonical server state.
 
 ---
 
@@ -193,7 +240,7 @@ Action ordering is governed by **semantic slots**, rather than premature univers
 1. **Semantic Slot Authority:** Action hierarchy and semantic slot assignments are authoritative. Physical arrangement is resolved by the relevant component family and platform-adaptive presentation.
 2. **Consistency by Screen Family:** Within an equivalent component or screen family (e.g., sticky action bars, dialog footers, list cards), slot placement must remain strictly consistent.
 3. **Composition-Specific Pattern — Sticky Action Bar:**
-   - In the Customer sticky bottom bar pattern evaluated in Stage 2, `CONTEXT_INFORMATION_SLOT` sits at the logical start (Right in RTL), and `PRIMARY_ACTION_SLOT` sits at the logical end (Left in RTL). This reflects the evaluation scan: Context (Right) → Confirmation (Left). This is a **composition-specific pattern**, not a universal global ordering rule for all controls.
+   - In the Customer sticky bottom bar pattern evaluated in Stage 2, `CONTEXT_INFORMATION_SLOT` sits at the logical start (Right in RTL), and `PRIMARY_ACTION_SLOT` sits at the logical end (Left in RTL). This reflects the evaluation scan: Context (Right) → Decision Primary (Left). This is a **composition-specific pattern**, not a universal global ordering rule for all controls.
 4. **Leading Icons in RTL:**
    - Icons accompanying labels are positioned on the **RTL-leading side (Right)** of the text label (document order first).
    - Trailing affordance icons (e.g., chevron) point toward logical forward (Left in RTL).
@@ -218,7 +265,7 @@ Action groups must reflow from a horizontal arrangement to a vertical/stacked ar
 6. *Clear visual hierarchy*.
 
 ### 6.2 Evidence Grounding & Anti-Overconstraint
-- **Validated Web Evidence:** At `360px` viewport under `200%` text scaling (`30px` button text), horizontal side-by-side buttons experience severe layout breakdown: text splinters into cramped vertical lines and button height balloons awkwardly. Vertical stacking (`100% width`) cleanly accommodates `30px` text with complete Arabic words and clear hierarchy (`hybrid_action_360_stress_reflow.png`).
+- **Validated Web Evidence:** In the controlled 360px Web frame-width simulation under `200%` text scaling (`30px` button text vs `100%` baseline `15px`), horizontal side-by-side buttons experience severe layout breakdown: text splinters into cramped vertical lines and button height balloons awkwardly. Vertical stacking (`100% width`) cleanly accommodates `30px` text with complete Arabic words and clear hierarchy (`hybrid_action_360_stress_reflow.png`). This evidence reflects a controlled 360px Web frame-width simulation, not a native device viewport proof.
 - **Governance Boundary (No Universal Numeric Breakpoints):**
   - There is **no universal `150%` or `200%` scaling breakpoint token**.
   - There is **no universal `360px` hardcoded media query**.
@@ -279,20 +326,30 @@ Every button implementation must provide comprehensive state coverage. States mu
 KONFRM is a three-role platform. The Action Contract provides a shared semantic foundation, but composition density and layout reflect distinct user mental models.
 
 ### 10.1 Customer Lens (Hospitality & Clarity)
-- **Primary Goal:** Booking request confidence, travel choice reassurance, low cognitive friction.
-- **Composition Grammar:**
-  - One prominent sticky Decision Primary ("Review Request", "Confirm Booking").
-  - Generous comfortable touch heights for sticky primary.
-  - Clear visual calm: secondary actions remain quiet (Subtle Fill or Ghost).
-  - Financial transparency: Price summary cluster always accompanies the sticky CTA.
+- **Primary Goals:**
+  - Booking-request confidence.
+  - Travel-choice reassurance.
+  - Clear next valid action.
+  - Low cognitive friction and ambiguity.
+  - Hospitality and experiential calm.
+- **Composition Principles:**
+  - **Prominent Decision Primary:** Dedicated, high-contrast Decision Primary where the active decision point has one (e.g., "Review Booking Request", "Submit Booking Request").
+  - **Lifecycle Accuracy:** Button labels must accurately describe the user's valid current action without implying premature lifecycle transitions. Never use labels such as "Confirm Booking", "Booking Confirmed", or "Finalize Booking" that imply direct booking confirmation unless canonical server-authoritative state at that point genuinely permits such a transition.
+  - **Context-Dependent Financial Summary:** For Customer booking-decision compositions where price/quote information is decision-relevant and canonically available, the applicable financial/context summary should remain visually associated with the Decision Primary. This is **not** a universal rule for every Customer sticky CTA (do not require price summary beside authentication CTAs, profile/account CTAs, recovery actions, unrelated navigation CTAs, or any surface where financial context is not decision-relevant). Missing data must never be rendered as zero, financial truth remains server-authoritative, and the Action System never invents price/quote availability.
+  - **Subordinate Action Restraint:** Secondary actions remain quiet (Subtle Fill as default, Ghost for tertiary) to preserve visual calm.
+  - **Composition Specificity:** Sticky action bars and booking summary layouts are composition-specific patterns, not universal mandates for all Customer surfaces.
 
 ### 10.2 Owner Lens (Operational Efficiency & Density)
-- **Primary Goal:** Operational scanability, clear action priority, rapid decision-making, zero accidental execution.
+- **Primary Goals:**
+  - Operational scanability.
+  - Clear action priority.
+  - Rapid decision-making.
+  - Zero accidental execution.
 - **Composition Grammar:**
   - High useful density: tight list cards with distinct action pairings ("Accept" Black vs "Reject" Outline).
   - Clear differentiation between affirmative approval and destructive rejection.
   - Detail inspection ("عرض تفاصيل الحجز") recedes to Ghost to preserve operational focus.
-  - Accidental click protection: Destructive actions require explicit touch confirmation or separated placement.
+  - Accidental click protection: Destructive actions require consequence clarity, sufficient separation, and explicit touch confirmation when consequence warrants confirmation per Product/UX authority (routine/low-consequence actions do not require two-step confirmation).
 
 ### 10.3 Invariant: "Owner is NOT a Recolored Customer"
 The visual identity (Black `#000000`, neutral surfaces) is shared across roles. However, Owner UI prioritizes operational throughput and compact card density, while Customer UI prioritizes experiential calm and sequential flow.
@@ -308,7 +365,7 @@ The following tokens remain strictly **provisional or open**. No implementer may
 | **Primary Black** | `#000000` | **SYSTEM-VALIDATED PROVISIONAL** | Locked provisional for Mobile Action System. Evaluated in Stage 2. |
 | **Fallback Black** | `#18181B` | **FALLBACK COMPARATOR ONLY** | Validated fallback comparator; not currently needed. |
 | **Primary Button Radius** | `6px` | **PROVISIONAL (PRIMARY_ONLY)** | Applies strictly to Primary Black buttons. Does not govern secondary or global shapes. |
-| **Secondary Button Radius** | Unspecified | **OPEN** | Secondary radius is unconstrained. Must be formally governed in Phase 4I. |
+| **Secondary Button Radius** | Unspecified | **OPEN** | Secondary radius is unconstrained. Timing: Future governed design decision. |
 | **Exact Neutral Palette** | Unspecified | **OPEN** | Pilot rendering values are non-canonical. Neutral token family remains open. |
 | **Exact Interaction Blue** | `#276EF1` (candidate) | **OPEN (PILOT CANDIDATE)** | Candidate for links, focus rings, active selection. Forbidden on Primary button backgrounds. |
 | **Exact Destructive Color** | Unspecified | **OPEN** | Pilot rendering value is non-canonical. Final semantic danger token remains open. |

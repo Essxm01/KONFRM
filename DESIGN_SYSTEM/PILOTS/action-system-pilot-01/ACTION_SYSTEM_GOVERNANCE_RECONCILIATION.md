@@ -47,7 +47,7 @@ The objective is **not** to force the live Web prototype to inherit mobile value
 - **Resolution Strategy:**
   - *Preserve Web Authority:* Do NOT overwrite `brand.primary: #0059FF` in `colors.json`. Doing so would cause immediate visual regression across live web applications (`customer-app`, `owner-app`, `admin-app`).
   - *Platform Scoping:* In `buttons.md`, scope `brand.primary: #0059FF` explicitly to `PLATFORM: WEB_LEGACY`.
-  - *Future Mobile Mapping:* In future mobile governance, map the mobile action primary to `#000000`. Concrete token file authoring is **deferred** until explicitly authorized by a dedicated token/native implementation gate.
+  - *Future Mobile Mapping:* In future mobile governance, map the mobile action primary to `#000000`. Concrete token file authoring is **deferred** until explicitly authorized by a dedicated future governed design/token gate.
   - *Relation:* `CLARIFY_SCOPE` for web; `SUPERSEDE` for future mobile architecture.
 
 ### Item 2 & 3: `buttons.md` — Mobile Minimum 44px & 48px Preferred Area
@@ -120,7 +120,7 @@ The objective is **not** to force the live Web prototype to inherit mobile value
 - **Governance Safeguard & Stage 3B Boundary:**
   - **Zero token files are modified in Stage 3A.**
   - **Stage 3B is TARGETED AUTHORITY / GOVERNANCE SYNCHRONIZATION only.** It does NOT authorize creating concrete mobile token JSON files.
-  - Concrete token authoring is deferred until a dedicated token/native implementation gate is authorized.
+  - Concrete token authoring is deferred until explicitly authorized by a dedicated future governed design/token gate per project dependency order.
 
 ---
 
@@ -138,16 +138,24 @@ Stage 3A is strictly limited to drafting the contract and the reconciliation pla
 ## 5. Next Steps for Governed Integration (Stage 3B & Beyond)
 
 Upon independent review and approval of this Stage 3A reconciliation draft:
-1. **Stage 3B (Targeted Governance Documentation Synchronization):**
+
+1. **Stage 3B — Targeted Governance Documentation Synchronization:**
    - Update `DESIGN_SYSTEM/COMPONENTS/buttons.md` with platform scoping and the 7-role Action Contract.
    - Update `DESIGN_SYSTEM/EXPERIENCE/ACTION_HIERARCHY.md` with the Contextual Hybrid model.
    - Reconcile DF2 §15 text with Founder Stable Black decision.
-   - *Boundary:* No concrete mobile token files created in Stage 3B.
-2. **Future Token & Native Implementation Gate (Phase 4I):**
-   - Author mobile token package (`tokens/mobile/`) when explicitly authorized.
-   - Implement canonical Flutter action primitives (`KonfrmButton`, `KonfrmIconButton`) in the reserved `konfrm_design_system` package.
-   - Perform native accessibility audit (TalkBack / VoiceOver, dynamic text scaling, haptic feedback).
-   - Formally promote validated provisional tokens to mobile Canon upon Founder approval.
+   - *Boundary:* Stage 3B is strictly documentation synchronization; no concrete mobile token files are created in Stage 3B.
+
+2. **Future Governed Design / Token Gate:**
+   - Exact open design and token decisions (e.g., Secondary Button Radius, exact neutral palette, exact interaction blue, exact destructive color) may be resolved when explicitly authorized by the project dependency order.
+   - Concrete mobile token-file creation (`tokens/mobile/`) requires explicit authorization under an approved token gate.
+   - Stage 3B does NOT create token files.
+   - Do not assert a mandatory phase number for open token decisions unless authoritative dependency order explicitly specifies it.
+
+3. **Phase 4I — Native Mobile Implementation & Acceptance:**
+   - Flutter component implementation and validation as governed by the authoritative roadmap (`konfrm_design_system` package primitives).
+   - Platform accessibility validation (TalkBack / VoiceOver, dynamic text scaling, haptic feedback).
+   - Platform-adaptive interaction behavior and touch-target verification.
+   - Final native platform acceptance of relevant action primitives.
 
 ---
 

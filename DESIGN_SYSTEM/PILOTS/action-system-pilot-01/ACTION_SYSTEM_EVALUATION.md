@@ -1,27 +1,26 @@
 # KONFRM Action System Pilot 01 — تقرير استكشاف وتقييم نظام الأزرار
 ## Phase 4C: Action System Evaluation & System Coherence Report
 ### Stage 1: Governed Discovery & Visual Evidence — COMPLETED (ARCHIVED)
-### Stage 2: Founder-Selection System Coherence Validation — COMPLETED & REMEDIATED
-**Document Status:** `GOVERNANCE_CLEAN_READY_FOR_INDEPENDENT_REVIEW` (Stage 2 Remediation Completed; Phase 4C Remains Active)
+### Stage 2: System Coherence Validation — CLOSED / INDEPENDENTLY VERIFIED PASS
+### Stage 3A: Action Contract Formalization & Governance Reconciliation Draft — STARTED
+**Document Status:** `STAGE_2_CLOSED_PASS / STAGE_3A_ACTIVE` (Review HEAD: `f33674c902a4d2c63fcb5fd0fa6414851be5e7d2` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
 
 ---
 
 ### 1. Executive Summary & Purpose
 
-وثيقة التقييم هذه توثق مخرجات **المرحلة 4C (نظام الإجراءات والأزرار - Action System)** في مسار بناء نظام تصميم كونفرم (KONFRM Design System) بمرحلتيها الأولى والثانية بعد استكمال المعالجات الحوكمية المادية (Material Remediation):
+وثيقة التقييم هذه توثق مخرجات **المرحلة 4C (نظام الإجراءات والأزرار - Action System)** في مسار بناء نظام تصميم كونفرم (KONFRM Design System):
 
 1. **المرحلة الأولى (Stage 1 — Governed Discovery & Visual Evidence — COMPLETED / ARCHIVED):**
    إجراء استكشاف محكوم وتوفير حزمة أدلة بصرية متكاملة مكنت المؤسس (Founder) من اتخاذ قرارات حاسمة بشأن استراتيجية الأزرار الثانوية، التفاعل اللمسي، التدرج البصري، وحالات الأزرار في الهواتف الذكية. تم أرشفة لقطات هذه المرحلة رسمياً في المجلد الفرعي `evidence/archive/stage1-superseded/` لحفظ التسلسل التاريخي مع تجريدها من أي سلطة بصرية أو تعاقدية حالية.
-2. **المرحلة الثانية (Stage 2 — System Coherence Validation & Remediation — COMPLETED):**
-   التحقق النظامي من تماسك قرارات المؤسس للنموذج الهجين القائم على دلالة الإجراء والتسلسل الهرمي (Contextual / Hierarchy-Based Hybrid)، وللون الأسود الصريح المفضل (`#000000`) مع الاحتفاظ بالبديل المقارن الاحتياطي (`#18181B`). تمت معالجة كافة الملاحظات المادية المستقلة:
-   - إزالة إطار التنبيه الأصفر/الكهرماني واستبداله بإطار معملي محايد تماماً التزاماً بقاعدة المؤسس `UX-COLOR-01` (`FOUNDER_VISUAL_RULE`).
-   - توفير معالجة صريحة ومرئية لتركيز لوحة المفاتيح لكافة الأشكال التحذيرية (Destructive Focus States) ومراجعة كافة حالات التركيز.
-   - تصحيح عقد حالة التحميل ومنع التفعيل المزدوج عبر دمج سمة `disabled` الصريحة لمنع نقرات الفأرة ومفاتيح لوحة المفاتيح، مع بقاء `aria-busy="true"` وتميز بصري صريح عن حالة التعطيل العادية.
-   - تنقية حزمة الأدلة النشطة تماماً من أي تسريب لسياسات الإلغاء أو الاسترداد.
+2. **المرحلة الثانية (Stage 2 — System Coherence Validation — CLOSED / INDEPENDENT PASS):**
+   اجتازت المرحلة 2 التدقيق المستقل بنجاح كامل (`STAGE_2_VERDICT: PASS`) عند المراجعة المستقلة للـ HEAD: `f33674c902a4d2c63fcb5fd0fa6414851be5e7d2` (بدون أي ملاحظات مادية أو ثانوية أو معطلات). تم التحقق النظامي من تماسك قرارات المؤسس للنموذج الهجين القائم على دلالة الإجراء والتسلسل الهرمي (Contextual / Hierarchy-Based Hybrid)، وللون الأسود الصريح المفضل (`#000000`) مع الاحتفاظ بالبديل المقارن الاحتياطي (`#18181B`).
+3. **المرحلة 3أ (Stage 3A — Action Contract Formalization & Governance Reconciliation — STARTED):**
+   صياغة مسودة عقد نظام الإجراءات الموحد (`ACTION_SYSTEM_CONTRACT_DRAFT.md`) ومصفوفة التوفيق الحوكمي (`ACTION_SYSTEM_GOVERNANCE_RECONCILIATION.md`) لتحويل مخرجات المرحلة 2 إلى قواعد دلالية وهندسية محددة بدقة قبل الدمج في وثائق الحوكمة المعتمدة.
 
 > [!NOTE]
 > **إشعار استمرارية المرحلة 4C (Phase 4C Continuity Notice):**
-> إتمام المرحلتين 1 و 2 لا يعني إغلاق المرحلة 4C بالكامل. تظل المرحلة 4C نشطة ومفتوحة لاستكمال متطلبات الصياغة التعاقدية والحوكمة (`ACTION CONTRACT FORMALIZATION + GOVERNANCE INTEGRATION`)؛ كما أن جميع النتائج مصنفة كـ **مخرجات مؤقتة مثبتة نظامياً (System-Validated Provisional)** مع تأجيل الاعتماد الأصيل للمنصات إلى المرحلة 4I (`Native Acceptance: DEFERRED TO PHASE 4I`).
+> إغلاق المرحلة 2 لا يعني إغلاق المرحلة 4C بالكامل. تظل المرحلة 4C نشطة ومفتوحة لاستكمال متطلبات الصياغة التعاقدية والحوكمة (`ACTION CONTRACT FORMALIZATION + GOVERNANCE INTEGRATION`)؛ كما أن جميع النتائج مصنفة كـ **مخرجات مؤقتة مثبتة نظامياً (System-Validated Provisional)** مع تأجيل الاعتماد الأصيل للمنصات إلى المرحلة 4I (`Native Acceptance: DEFERRED TO PHASE 4I`).
 
 > [!IMPORTANT]
 > **إشعار حوكمة البيانات التجريبية (Synthetic Test Data Governance Disclaimer):**

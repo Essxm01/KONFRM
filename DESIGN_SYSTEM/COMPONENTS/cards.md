@@ -35,15 +35,15 @@ Do not use cards as the default visual separator. Prefer whitespace, typography,
 Avoid **card soup**: a card inside a card, a rounded box for every fact, or repeated bordered containers that make a decision screen feel like a dashboard.
 
 ### Structural Composition by Role (Phase 4E Hybrid Model)
-- **Customer (`OPEN_EDITORIAL_DEFAULT`):** Editorial, photography-led composition. Content flows continuously; property facts, descriptions, and amenities are unboxed with fine hairline dividers. Cards are restricted strictly to independent discovery objects (`PropertyCard`) or coherent financial decision units (booking quote breakdown).
-- **Owner (`OPERATIONAL_GROUPING_DEFAULT_WHEN_SEMANTIC`):** Connected operational records share a single outer container with internal 1px dividers (`OPEN_GROUPED_CONTENT`). Saves vertical space, eliminates card framing repetition, and maximizes operational triage density without generic metric-card sprawl.
+- **Customer (`OPEN_EDITORIAL_DEFAULT`):** Editorial, photography-led composition. Content flows continuously; property facts, descriptions, and amenities are unboxed with restrained dividers / subtle hairline-style separation (exact native stroke width remains `OPEN` / deferred to Phase 4I; 1px is controlled Web pilot rendering reference only). Cards are restricted strictly to independent discovery objects (`PropertyCard`) or coherent financial decision units (booking quote breakdown).
+- **Owner (`OPERATIONAL_GROUPING_DEFAULT_WHEN_SEMANTIC`):** Connected operational records share a single outer container with subtle internal dividers (`OPEN_GROUPED_CONTENT`; exact native stroke width remains `OPEN` / deferred to Phase 4I; 1px in pilot is controlled Web rendering reference). Saves vertical space, eliminates card framing repetition, and maximizes operational triage density without generic metric-card sprawl.
 - **Admin (`DESKTOP_WEB_PRESERVED`):** Desktop operational tables, FIFO queues, and dense inspector side-panels (`CONTROLLED_WEB_BOUNDARY_REFERENCE`). Mobile cards must not replace dense multi-column tabular workspaces.
 
 ### Structural Container Selection Logic
-1. **`OPEN_CONTENT` (0px radius, hairline divider):**
-   - Use when content belongs to one continuous reading or inspection task (e.g. Customer property facts, house rules, amenities list).
-2. **`OPEN_GROUPED_CONTENT` (Single outer container, 1px internal dividers):**
-   - Use when related homogeneous records or interactive rows form an operational collection (e.g. Owner booking queue, unit listings, earnings history).
+1. **`OPEN_CONTENT` (No enclosing container, restrained dividers):**
+   - Use when content belongs to one continuous reading or inspection task (e.g. Customer property facts, house rules, amenities list). Has **NO ENCLOSING STRUCTURAL CONTAINER**; relationships are defined by typography, whitespace, and optional subtle dividers. Does not possess or require a container radius token.
+2. **`OPEN_GROUPED_CONTENT` (Single outer container, subtle internal dividers):**
+   - Use when related homogeneous records or interactive rows form an operational collection (e.g. Owner booking queue, unit listings, earnings history). Exact native stroke width remains `OPEN` / deferred to Phase 4I.
 3. **`INTERACTIVE_CONTAINER / CARD` (Restricted Bounded Container):**
    - Use strictly when an entity is independently actionable, movable, or recognizable as a discrete decision unit (e.g. `PropertyCard`, actionable `BookingCard`, server quote financial breakdown).
    - *Never* use a card merely because content exists or to frame simple paragraphs.

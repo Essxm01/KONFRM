@@ -16,7 +16,7 @@
 *"What structural system should govern KONFRM Customer and Owner mobile surfaces while preserving Admin's desktop operational boundary?"*
 
 **Evaluating Options:**
-- **`OPTION_A` (Candidate A):** Open / Editorial Structure (Minimal containers; whitespace + typography + 1px hairline dividers carry grouping; 0px container radius).
+- **`OPTION_A` (Candidate A):** Open / Editorial Structure (Minimal containers; whitespace + typography + subtle internal dividers carry grouping; open content without enclosing containers).
 - **`OPTION_C` (Candidate C):** Role-Aware Hybrid Structure (Open composition for Customer property detail; connected `Open Grouped Content` for Owner operations; crisp desktop tables for Admin; 12px container radius evaluated as pilot candidate).
 - **`REJECTED_COMPARATOR` (Candidate B):** Contained / Modular Structure (Enclosed card modules for every section; 16px container radius; subtle shadows). Evaluated strictly as comparator; eliminated by Hard Gates.
 
@@ -134,16 +134,16 @@ frontend-design-wrapper:  NOT_CONSULTED
 ## 5. Deliberation Verdict & Advisory Recommendation
 
 - **COURT_OUTCOME:** **`NEEDS_FOUNDER_VISUAL_DECISION`**
-  *Rationale:* While Candidate C is overwhelmingly superior to Candidate B in preventing card soup, the choice between **Candidate C (Role-Aware Hybrid Structure)** and **Candidate A (Pure Open / Editorial Structure)** directly determines KONFRM's enduring visual personality, shape hierarchy, and containment character. This is an aesthetic and brand-level choice that requires Founder visual selection.
+  *Rationale:* While Candidate C strictly avoids card soup whereas Candidate B failed Hard Gates, the choice between **Candidate C (Role-Aware Hybrid Structure)** and **Candidate A (Pure Open / Editorial Structure)** directly determines KONFRM's enduring visual personality, shape hierarchy, and containment character. This is an aesthetic and brand-level choice that requires Founder visual selection.
 - **COURT_RECOMMENDATION:** **`OPTION_C` (Candidate C: Role-Aware Hybrid)**
   - Customer: Open editorial composition for facts/amenities + single-surface quote container.
-  - Owner: Connected operational units (`Open Grouped Content`) with 1px internal dividers.
+  - Owner: Connected operational units (`Open Grouped Content`) with subtle internal dividers [exact native stroke width `OPEN` / deferred to Phase 4I; 1px is controlled Web pilot rendering reference only].
   - Admin: Isolated desktop table workspace (`CONTROLLED_WEB_BOUNDARY_REFERENCE`).
   - Shape Role Reference: Primary Button 6px (`PROVISIONAL_PRIMARY_ONLY`) | Field Controls 8px (`PROVISIONAL_FIELD_SHAPED_ONLY`) | Structural Container 12px (`COURT_RECOMMENDED_PILOT_CANDIDATE`).
 - **CONSENSUS:** `STRONG_CONSENSUS` (for eliminating Candidate B via Hard Gates and recommending Candidate C as structural model; Candidate A retained as valid aesthetic alternative for Founder selection).
 - **CONFIDENCE:** `HIGH` (empirical evidence from 18 visual artifacts supports structural model distinction and elimination of Candidate B).
 - **MINORITY_OPINION:**
-  - *Defender Dissent:* Candidate A offers the purest expression of KONFRM minimalism by completely abolishing containers in favor of typographic proximity and hairline dividers. If the Founder prefers radical editorial simplicity over contained operational units, Candidate A remains technically viable and free of card soup.
+  - *Defender Dissent:* Candidate A offers the purest expression of KONFRM minimalism by completely abolishing containers in favor of typographic proximity and subtle internal dividers. If the Founder prefers radical editorial simplicity over contained operational units, Candidate A remains technically viable and free of card soup.
 
 ---
 
@@ -161,7 +161,7 @@ frontend-design-wrapper:  NOT_CONSULTED
 - **المزايا:** يقضي تمامًا على "حساء البطاقات"، يوفر كثافة قراءة مريحة وعالية للمالك لإدارة الحجوزات، ويحافظ على هدوء الضيافة للعميل.
 
 #### الخيار (A) — المفتوح / التحريري بالكامل (البديل المعماري):
-- **العميل والمالك:** إلغاء الصناديق والبطاقات بالكامل؛ الاعتماد على المسافات البيضاء والخطوط وفواصل رفيعة 1px للفصل بين العناصر (حواف 0px).
+- **العميل والمالك:** إلغاء الصناديق والبطاقات بالكامل؛ الاعتماد على المسافات البيضاء والخطوط وفواصل رفيعة للفصل بين العناصر (محتوى مفتوح بدون حاويات هيكلية).
 - **المزايا:** بساطة جذرية وأقصى درجات الهدوء البصري، لكنه يقلل من التأطير البصري للعمليات التشغيلية المكثفة في قوائم المالك.
 
 #### ملاحظة حول الخيار (B) (المقارن المرفوض):
@@ -197,5 +197,5 @@ frontend-design-wrapper:  NOT_CONSULTED
 - **Candidate B (Option B):** `ELIMINATED_BY_HARD_GATE` (`REJECTED_COMPARATOR`).
 
 ### Reversible Implementation Details Closed via Controlled Evidence:
-- **Structural Container Radius:** Evaluated via bounded comparison (10px vs 12px vs 16px). Recorded as `12px` (`SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`).
-- **Open / Deferred Items Preserved:** Exact neutrals remain `OPEN`; native touch acceptance remains `DEFERRED_TO_4I`; navigation and overlay geometry remain `DEFERRED_TO_4F`.
+- **Structural Container Radius:** Evaluated via bounded comparison across 6 screenshots (10px vs 12px vs 16px). Confirmed 10px is a valid close alternative, 12px is a balanced provisional system tie-breaker distinct from 6px buttons and 8px fields without generic rounded-SaaS bubbling, while 16px is materially rounder with higher generic-SaaS styling risk in repeated operational groups. Recorded as `12px` (`SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`; `NO_MATERIAL_FOUNDER_DECISION_REQUIRED: YES`).
+- **Open / Deferred Items Preserved:** Exact native stroke width remains `OPEN` / `DEFERRED_TO_4I`; exact neutrals remain `OPEN` (pilot hex references are `CONTROLLED_WEB_PILOT_RENDERING_REFERENCE` only); native touch acceptance remains `DEFERRED_TO_4I`; navigation and overlay geometry remain `DEFERRED_TO_4F`.

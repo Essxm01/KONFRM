@@ -31,19 +31,19 @@
 | 16 | `stress_text_scale_200.png` | Customer | C | 390×844 | 200% | Normal | True 200% text-scale stress test. Cairo Profile B scales to 2× size; words wrap gracefully onto multiple lines; zero text clipping or container overflow. | PASS |
 | 17 | `stress_long_arabic_390.png` | Customer | C | 390×844 | 100% | Stress | Extreme Arabic copy stress: 4-line property title, multi-line destination string, 37,000 ج.م nightly price, long description. Layout handles extreme copy smoothly. | PASS |
 | 18 | `stress_reflow_360_width.png` | Owner | C | 360×800 | 100% | Stress | Owner queue under 360px width with stress copy and multi-line metadata. Action buttons reflow without horizontal clipping or content trapping; controlled Web reflow preserved visible layout; native touch target acceptance (~44pt iOS / ~48dp Android) is not established by this Web evidence and is `DEFERRED_TO_4I`. | PASS |
-| 19 | `radius_comparison_10_customer_390.png` | Customer | C | 390×844 | 100% | Normal | Bounded radius comparison: Customer quote container at 10px radius. Demonstrates slightly boxy geometry with minimal visual contrast against 8px fields. | EVALUATED_COMPARATOR |
-| 20 | `radius_comparison_12_customer_390.png` | Customer | C | 390×844 | 100% | Normal | Bounded radius comparison: Customer quote container at 12px radius. Optimal balance of hospitality warmth and discrete financial containment. | PASS (Selected 12px) |
-| 21 | `radius_comparison_16_customer_390.png` | Customer | C | 390×844 | 100% | Normal | Bounded radius comparison: Customer quote container at 16px radius. Demonstrates overly rounded, generic consumer SaaS bubble appearance. | EVALUATED_COMPARATOR |
-| 22 | `radius_comparison_10_owner_390.png` | Owner | C | 390×844 | 100% | Normal | Bounded radius comparison: Owner grouped container at 10px radius. High density, but corners feel rigid on curved physical displays. | EVALUATED_COMPARATOR |
-| 23 | `radius_comparison_12_owner_390.png` | Owner | C | 390×844 | 100% | Normal | Bounded radius comparison: Owner grouped container at 12px radius. Optimal density; clean interior row margins; natural curvature within 16px page margins. | PASS (Selected 12px) |
-| 24 | `radius_comparison_16_owner_390.png` | Owner | C | 390×844 | 100% | Normal | Bounded radius comparison: Owner grouped container at 16px radius. Excessive corner encroachment on dense list rows; internal 1px dividers feel indented. | EVALUATED_COMPARATOR |
+| 19 | `radius_comparison_10_customer_390.png` | Customer | C | 390×844 | 100% | Normal | Bounded radius comparison: Customer quote container at 10px radius. Demonstrates valid close alternative with slightly crisper geometry. | EVALUATED_COMPARATOR |
+| 20 | `radius_comparison_12_customer_390.png` | Customer | C | 390×844 | 100% | Normal | Bounded radius comparison: Customer quote container at 12px radius. Balanced provisional system tie-breaker providing comfortable contour distinct from 6px buttons and 8px fields without generic rounded-SaaS bubbling. | PASS (Selected 12px Provisional) |
+| 21 | `radius_comparison_16_customer_390.png` | Customer | C | 390×844 | 100% | Normal | Bounded radius comparison: Customer quote container at 16px radius. Demonstrates materially rounder, generic consumer SaaS bubble appearance. | EVALUATED_COMPARATOR |
+| 22 | `radius_comparison_10_owner_390.png` | Owner | C | 390×844 | 100% | Normal | Bounded radius comparison: Owner grouped container at 10px radius. Valid close alternative; compact density with slightly sharper corner geometry. | EVALUATED_COMPARATOR |
+| 23 | `radius_comparison_12_owner_390.png` | Owner | C | 390×844 | 100% | Normal | Bounded radius comparison: Owner grouped container at 12px radius. Balanced provisional system tie-breaker; clean interior row margins; comfortable contour within 16px page margins. | PASS (Selected 12px Provisional) |
+| 24 | `radius_comparison_16_owner_390.png` | Owner | C | 390×844 | 100% | Normal | Bounded radius comparison: Owner grouped container at 16px radius. Materially rounder; higher corner encroachment on dense repeated list rows. | EVALUATED_COMPARATOR |
 
 ---
 
 ## Observed QA Findings & Verifications
 
 1. **Card Soup Check: PASSED.**
-   Candidate B is ELIMINATED_BY_HARD_GATE due to severe card soup. Candidate C replaces isolated stacked cards in Owner Queue and Property Facts with `Open Grouped Content` (one container, internal 1px dividers), eliminating card soup.
+   Candidate B is ELIMINATED_BY_HARD_GATE due to severe card soup. Candidate C replaces isolated stacked cards in Owner Queue and Property Facts with `Open Grouped Content` (one container, subtle internal dividers; exact native stroke width remains `OPEN` / deferred to Phase 4I), eliminating card soup.
 2. **Text Scaling & Reflow Check: PASSED.**
    Under 200% text scaling (`stress_text_scale_200.png`), all essential facts, prices, and booking information remain accessible and readable. No clipping or truncation observed in controlled Web evidence. Native touch target acceptance is DEFERRED_TO_4I.
 3. **Admin Desktop Boundary: PASSED.**
@@ -53,4 +53,4 @@
 5. **Exact Neutrals Open:**
    Pilot rendering reference values (`#FFFFFF`, `#E2E8F0`, `#F8FAFC`) are `CONTROLLED_WEB_PILOT_RENDERING_REFERENCE` only; exact neutral tokens remain `OPEN`.
 6. **Bounded Radius Evaluation (10px vs 12px vs 16px): PASSED.**
-   Empirical artifacts 19–24 demonstrate that 12px provides the optimal balance of role distinction (clearly distinct from 8px fields and 6px buttons) and scanable density without generic consumer SaaS bubbling (16px) or boxiness (10px). Closed as `SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`.
+   Empirical artifacts 19–24 demonstrate that 10px is a valid close alternative, 12px is a balanced provisional system tie-breaker providing comfortable contour distinct from 6px buttons and 8px fields without generic rounded-SaaS bubbling, while 16px is materially rounder with higher generic-SaaS styling risk in repeated operational groups. Reversible implementation detail; native acceptance deferred to Phase 4I (`NO_MATERIAL_FOUNDER_DECISION_REQUIRED: YES`). Closed as `SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`.

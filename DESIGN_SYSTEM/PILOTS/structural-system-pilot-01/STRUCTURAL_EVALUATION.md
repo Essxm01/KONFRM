@@ -26,7 +26,7 @@ The Web baseline 8pt-derived spacing scale was empirically tested across 360px, 
 ---
 
 ### B. Page Content Insets
-- **Customer Mobile:** 16px horizontal inset (`--struct-page-inset: 16px`). Allows maximum content width while preventing edge clipping on curved device corners.
+- **Customer Mobile:** 16px horizontal inset (`--struct-page-inset: 16px`). Allows maximum content width while maintaining comfortable reading margins and page layout rhythm (`PAGE_INSET != SAFE_AREA_INSET`).
 - **Owner Mobile:** 16px horizontal inset. Matches Customer for system-wide layout consistency, but uses tighter internal row padding (12px vs 16px) to achieve operational density.
 - **Admin Desktop Boundary:** 24px (`p-6`) desktop padding. Respects desktop wide-canvas ergonomics (`CONTROLLED_WEB_BOUNDARY_REFERENCE`).
 
@@ -43,10 +43,10 @@ To prevent arbitrary spacing drift, the rhythm hierarchy is codified into four u
 
 ### D. Open Grouped Content vs Cards
 One of the primary goals of Phase 4E is eliminating **Card Soup**. The evaluation establishes clear semantic criteria:
-- **Open Content (0px radius, divided by 1px rules):**
+- **Open Content (`OPEN_CONTENT`; no enclosing container, subtle internal dividers):**
   - Use when content belongs to a continuous narrative or single-task inspection (e.g., Customer Property Description, Amenities, Essential Facts).
   - Preserves hospitality breathing room and editorial lightness.
-- **Open Grouped Content (Single outer container, internal 1px dividers):**
+- **Open Grouped Content (`OPEN_GROUPED_CONTENT`; single outer container, subtle internal dividers [exact native stroke width `OPEN` / deferred to Phase 4I]):**
   - Use when multiple homogeneous operational records form a collection (e.g., Owner Booking Queue, Owner Properties Summary).
   - Eliminates repeated border/shadow noise and saves vertical space compared to stacked individual cards.
 - **Standalone Cards (Enclosed container):**
@@ -59,7 +59,7 @@ One of the primary goals of Phase 4E is eliminating **Card Soup**. The evaluatio
 - **`SHAPE_ACTION` (6px):** Action-oriented controls (Primary buttons; `PROVISIONAL_PRIMARY_ONLY`). Secondary button radius remains open.
 - **`SHAPE_INPUT` (8px):** Data entry containers (Text fields, search bars, pickers; `PROVISIONAL_FIELD_SHAPED_ONLY`).
 - **`SHAPE_CONTAINER` (12px):** Structural containers and cards radius evaluated and selected as `SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`. Controlled bounded evidence check (10px vs 12px vs 16px) confirmed 12px harmonizes visually with 8px inputs and 6px buttons without looking boxy (10px) or overly bubbly (16px). (Note: 6px → 8px → 12px is an `EXPERT_HEURISTIC / VISUAL_SYSTEM_REASONING`, not self-validating mathematical proof).
-- **`SHAPE_OPEN` (0px):** For inline divided content (Candidate A).
+- **Open Content (`OPEN_CONTENT`):** For open editorial or inline divided content; requires no enclosing structural container and no container radius token.
 - **`SHAPE_INDICATOR` (Status Badges / Chips):** Compact rectangular or softly rounded indicators. Exact Badge/Tag geometry remains `OPEN_OR_COMPONENT_GOVERNED`; pilot did not assert universal 9999px Canon.
 
 ---
@@ -83,10 +83,10 @@ One of the primary goals of Phase 4E is eliminating **Card Soup**. The evaluatio
 | **Customer Role Fit** | **High** — Exceptional hospitality feel, photography-forward, minimal visual clutter. | **Low** — Over-boxed, feels like a SaaS dashboard rather than vacation discovery. | **High** — Open editorial facts above, bounded financial quote below. |
 | **Owner Role Fit** | **Medium** — Harder to scan dense operational priorities without container grounding. | **Medium** — Clear module boundaries, but high card repetition produces noise. | **High** — Connected operational units (`Open Grouped Content`) maximize scanability and density. |
 | **Admin Boundary Fit** | Neutral | Neutral | **High** — Desktop table and audit workspace strictly isolated from mobile cards. |
-| **Card Soup Resistance** | **Superior** (0 cards created). | **Failed** (Card soup in every view). | **Superior** (Containers strictly justified by entity independence). |
+| **Card Soup Resistance** | **High** (0 cards created). | **Failed** (Card soup in every view). | **High** (Containers strictly justified by entity independence). |
 | **Arabic RTL Integrity** | High | High | High |
 | **200% Text Scaling** | High (controlled Web reflow) | Border crowding | High (controlled Web reflow) |
-| **System Coherence** | High | High | **Superior** (Cohesive semantic role model across all touchpoints). |
+| **System Coherence** | High | High | **High** (Cohesive semantic role model across all touchpoints). |
 
 ---
 
@@ -111,8 +111,8 @@ To close the implementation-level container radius without burdening the Founder
 
 | Radius Candidate | Customer Decision Unit | Owner Grouped Unit | Visual System Coherence | Verdict |
 |---|---|---|---|---|
-| **`10px`** | Slightly boxy for hospitality screen. | High operational density, but feels rigid. | Too close to 8px field control (only 2px difference); blurs line between data entry input and structural surface. | REJECTED |
-| **`12px`** | Soft, calm, reassuring financial summary. | Clean, compact interior spacing; corners curve naturally within 16px page margins. | Clearly distinct from 8px field controls and 6px action buttons without bubbly consumer excess. | **SELECTED (`SYSTEM-EVALUATED PROVISIONAL`)** |
-| **`16px`** | Bubbly SaaS dashboard appearance. | Excessive corner encroachment; internal 1px dividers feel awkwardly inset or clipped at extreme corners. | Encounters generic rounded-SaaS risk (`rounded-2xl` Tailwind default). | REJECTED |
+| **`10px`** | Slightly crisper geometry; close visual alternative. | High operational density; compact corner geometry. | Crisp contour; 10px vs 12px is a subtle visual difference. | **VALID CLOSE ALTERNATIVE** |
+| **`12px`** | Soft, calm, reassuring financial summary. | Clean, compact interior spacing; comfortable curve within 16px page margins. | Balanced geometry; distinct from 8px field controls and 6px action buttons without bubbly consumer excess. | **SELECTED PROVISIONAL SYSTEM TIE-BREAKER / BALANCED CANDIDATE** (`SYSTEM-EVALUATED PROVISIONAL`) |
+| **`16px`** | Noticeably rounder; drifts toward consumer SaaS bubble styling. | Materially rounder corners; higher corner encroachment on dense repeated list rows. | Encounters generic rounded-SaaS risk in repeated operational containers. | **REJECTED (MATERIALLY ROUNDER / GENERIC-SAAS RISK)** |
 
-*Conclusion:* `12px` performs best across all dimensions with zero material Founder-level tradeoff. Closed as `SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`.
+*Conclusion:* Bounded visual evidence confirms that 10px and 12px represent subtle variations, while 16px is materially rounder with higher generic-SaaS styling risk in repeated operational groups. 12px is selected as the provisional system tie-breaker and balanced candidate. This is a reversible implementation-level detail with native acceptance deferred to Phase 4I (`NO_MATERIAL_FOUNDER_DECISION_REQUIRED: YES`). Recorded as `SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`.

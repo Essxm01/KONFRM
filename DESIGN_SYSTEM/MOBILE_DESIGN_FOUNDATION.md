@@ -223,9 +223,8 @@ Rule: role semantics are CANONICAL NOW (as defined in this document); concrete n
 - Text never relies on truncation to hide decision-critical information; truncation rules follow §11.
 - Hierarchy is expressed primarily through the role model, not through ad-hoc sizes.
 
-**IMPLEMENTATION CANDIDATE:** exact mobile sizes, weights, line heights per role — validated against Arabic legibility, scaling, and real screens (§29).
-**CANDIDATE with validation:** Cairo as the mobile UI family (strong brand evidence; requires mobile rendering/performance validation before canonicalization — it must not be blindly copied as a bundled font decision).
-**DEFERRED:** display-font decisions; per-role letter-spacing values.
+**SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY:** Cairo Profile B typography scale and metrics (display 24/700/1.30, pageTitle 20/700/1.35, sectionTitle 17/700/1.40, cardTitle 15/700/1.40, body 14/500/1.50, bodyStrong 14/700/1.50, label 12/600/1.35, supporting 12/400/1.40, numeric 16/700/1.30, button 15/700/1.20). Validated in Phase 4B. Profile B is provisional design foundation, not promoted to final native Canon. Native Flutter typography acceptance is deferred to Phase 4I.
+**DEFERRED:** display-font decisions; per-role letter-spacing values; native mobile Flutter acceptance (Phase 4I).
 
 ## 11. Arabic / RTL / Bidi
 
@@ -272,28 +271,31 @@ Financial display rules (CANONICAL NOW):
 6. **Useful screen occupancy:** surfaces are occupied by useful information and purposeful structure. Empty filler space is waste; forced density is noise.
 
 ### Spacing Relational Hierarchy (CANONICAL NOW)
-Relationships govern hierarchy across all surfaces:
-- **Tier 1 (Micro / Intra-element):** 4px – 8px (e.g., Title to Subtitle, Price to Nightly suffix, icon-to-label offsets, status dot gaps).
-- **Tier 2 (Intra-group / Item):** 12px – 16px (e.g., Field to Field, Row to Row, compact list item gutters).
-- **Tier 3 (Section Separation):** 24px (e.g., Description section to Amenities section, distinct operational groups).
-- **Tier 4 (Major Landmark):** 32px (e.g., Hero gallery to Content body, Sticky bar clearance).
+Relationships govern spacing hierarchy across all surfaces:
+- **Tier 1 (Micro / Intra-element):** Relationships between intimately linked elements (e.g., Title to Subtitle, Price to Nightly suffix, icon-to-label offsets, status dot gaps).
+- **Tier 2 (Intra-group / Item):** Relationships between related items within a group (e.g., Field to Field, Row to Row, compact list item gutters).
+- **Tier 3 (Section Separation):** Separation between distinct semantic sections or operational groups (e.g., Description section to Amenities section).
+- **Tier 4 (Major Landmark):** Major structural boundaries and clearances (e.g., Hero gallery to Content body, Sticky bar clearance).
 
-### Mobile Evaluated Spacing Scale (SYSTEM-EVALUATED PROVISIONAL STRUCTURAL CANDIDATE)
-The 8pt-derived mobile spacing scale family evaluated in Phase 4E:
-- `4px (xs)` — Micro relationship (icon-to-label, status dot, badge internal inset).
-- `8px (sm)` — Tight intra-component relationship (button icon to text, chip gap, label to input).
-- `12px (md)` — Compact / Density bridge (dense Owner row padding, filter segments, compact gutters).
-- `16px (lg)` — Standard content inset / regular internal relationship (universal mobile horizontal margin `px-4`, standard container padding).
-- `24px (xl)` — Section separation (vertical rhythm between distinct semantic sections).
-- `32px (2xl)` — Major structural boundary (hero to body, major modal footers).
-- `40px / 48px` — Sizing clearance & platform touch guidance (~44pt iOS / ~48dp Android; native acceptance deferred to Phase 4I).
+**Canonical Relationship Invariant:**
+`TIER_1 < TIER_2 < TIER_3 < TIER_4`
 
-*Rule:* No new spacing value should be introduced without demonstrated semantic need and governed design-system approval. Spacing values remain provisional candidates, not final native token Canon. Token-file authoring remains separately governed.
+### Mobile Evaluated Spacing Scale (SYSTEM-EVALUATED PROVISIONAL NUMERIC MAPPING)
+The relational spacing family evaluated in Phase 4E:
+- `Tier 1 (Micro / Intra-element):` **4px** (xs, e.g. status dot, badge internal inset) / **8px** (sm, e.g. button icon to text, chip gap, label to input).
+- `Tier 2 (Intra-group / Item):` **12px** (md, e.g. dense Owner row padding, compact gutters) / **16px** (lg, e.g. standard container padding).
+- `Tier 3 (Section Separation):` **24px** (xl, vertical rhythm between distinct semantic sections).
+- `Tier 4 (Major Landmark):` **32px** (2xl, major structural boundary, hero to body).
+
+*Rule:* Formal Phase 4E relational spacing family is strictly `4 / 8 / 12 / 16 / 24 / 32 px`. Numeric values are SYSTEM-EVALUATED PROVISIONAL and not final native token Canon. Token-file authoring remains separately governed.
+*(Note: 40px / 48px sizing clearances observed in Web pilots are controlled Web sizing or clearance evidence, not part of the formal Phase 4E spacing scale. Sizing clearance and platform touch guidance [iOS ~44pt / Android ~48dp] are evaluated separately; native acceptance is deferred to Phase 4I. Never conflate CSS pixels with platform pt/dp).*
 
 ### Mobile Content Insets (SYSTEM-EVALUATED PROVISIONAL STRUCTURAL INSET)
-- **Customer Mobile:** 16px horizontal page inset (`--struct-page-inset: 16px`). Allows maximum content width while protecting against edge clipping on curved device boundaries.
+- **Customer Mobile:** 16px horizontal page inset (`--struct-page-inset: 16px`). Selected as provisional mobile page inset because controlled evidence showed useful content width, visual edge separation, and coherent layout rhythm across mobile viewports.
 - **Owner Mobile:** 16px horizontal page inset. Matches Customer for system-wide layout consistency, pairing with 12px vertical row padding for operational density.
 - **Admin Desktop Boundary:** 24px (`p-6`) desktop gutter. Preserves desktop wide-canvas ergonomics (`CONTROLLED_WEB_BOUNDARY_REFERENCE`).
+
+*Explicit Rule:* `PAGE_INSET != SAFE_AREA_INSET`. Page insets provide horizontal content margins; platform safe-area insets (notches, home indicators, system bars) are platform-controlled independently. Layouts must compose both correctly without claiming that 16px replaces or guarantees hardware safe-area accommodation.
 
 **Truly invariant only by platform requirement:** system safe-area insets themselves.
 
@@ -314,13 +316,13 @@ Founder approved **Option C: Role-Aware Hybrid Structural System**.
 - Photography and content hierarchy lead the presentation.
 - Proximity, typography, and whitespace carry grouping before adding containers.
 - Decision-critical content is visible early without artificial gating.
-- Open, unboxed presentation for property description, amenities, and essential facts; separated by restrained 1px hairline dividers.
+- Open, unboxed presentation for property description, amenities, and essential facts; separated by restrained dividers / subtle hairline-style separation (exact native stroke width remains OPEN / deferred to Phase 4I; 1px is controlled Web pilot rendering reference only).
 - Bounded containers are strictly reserved for independent entities (`PropertyCard` in explore search results) or coherent financial decision units (booking price quote breakdown).
 - Prohibits "card soup" and repetitive dashboard framing around hospitality content.
 
 #### B. Owner Structural Grammar: OPERATIONAL_GROUPING_DEFAULT_WHEN_SEMANTIC
 - Operational grouping is intentionally stronger than Customer.
-- Connected operational records share a single container with internal dividers (`OPEN_GROUPED_CONTENT`).
+- Connected operational records share a single container with subtle internal dividers (`OPEN_GROUPED_CONTENT`; exact native stroke width remains OPEN / deferred to Phase 4I; 1px in pilot is controlled Web rendering reference).
 - Preferred over stacked independent cards to maximize scanability, action priority, state certainty, and compact useful density.
 - Saves vertical screen real-estate and eliminates repetitive card border noise.
 - Contained operational units are used only where grouping improves comprehension; does not turn Owner into a generic metric-card dashboard.
@@ -340,14 +342,14 @@ Cards are restricted semantic containers. Allowed strictly for:
 Semantic shape roles precede raw values:
 - **`SHAPE_ACTION`:** Primary button radius is `6px` (`PROVISIONAL_PRIMARY_ONLY`; Phase 4C). Secondary button radius remains open.
 - **`SHAPE_INPUT`:** Form and selection controls radius is `8px` (`PROVISIONAL_FIELD_SHAPED_ONLY`; Phase 4D).
-- **`SHAPE_CONTAINER`:** Structural containers and cards radius evaluated as `12px` (`SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`). Balanced geometry harmonizes with 8px field geometry and 6px button geometry without generic rounded-SaaS bubbling.
-- **`SHAPE_OPEN`:** Open divided content uses `0px` radius (inline divided).
+- **`SHAPE_CONTAINER`:** Structural containers and cards radius evaluated as `12px` (`SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`). Controlled visual evidence across 6 Customer and Owner screenshots established that 10px is a valid close alternative, 12px is a balanced provisional system tie-breaker providing comfortable contour distinct from 6px buttons and 8px fields without generic rounded-SaaS bubbling, while 16px is materially rounder with higher generic-SaaS styling risk in repeated operational groups. Reversible implementation detail; native acceptance deferred to Phase 4I (`NO_MATERIAL_FOUNDER_DECISION_REQUIRED: YES`).
+- **`OPEN_CONTENT`:** Has **NO ENCLOSING STRUCTURAL CONTAINER**. Content relationships are structured via typography, whitespace, and optional subtle dividers. It does not possess or require a container radius token. (If a literal flat-edged contained element exists, its geometry is governed by that component).
 - **`SHAPE_INDICATOR`:** Status badges and chips. Exact geometry remains `OPEN_OR_COMPONENT_GOVERNED`.
 - **`SHAPE_OVERLAY`:** Dialogs, bottom sheets, and floating app bars. Geometry deferred to Phase 4F.
 *(Note: 6px → 8px → 12px is an EXPERT_HEURISTIC, not a self-validating mathematical proof).*
 
 #### F. Elevation & Surface Hierarchy
-- **Flat by Default:** Normal structural content is flat. Surfaces rely on spacing, background tone, and 1px dividers/borders before shadows.
+- **Flat by Default:** Normal structural content is flat. Surfaces rely on spacing, background tone, and subtle neutral boundaries/dividers before shadows (exact native stroke width remains OPEN / deferred to Phase 4I; 1px is controlled Web pilot rendering reference only).
 - **Canvas & Surface Reference:** Subtle neutral boundary on light-first canvas. Web pilot rendering reference values (`#FFFFFF` surface, `#E2E8F0` divider, `#F8FAFC` canvas) are `CONTROLLED_WEB_PILOT_RENDERING_REFERENCE` only; exact neutral tokens remain `OPEN`.
 - **Elevation Roles:** Shadows are reserved strictly for floating/overlay layers where physical layering occurs (app bar on scroll, sticky decision bar, modal sheets). Exact elevation tokens and overlay geometry are deferred to Phase 4F.
 - **Native Acceptance:** Physical mobile rendering and touch target acceptance are `DEFERRED_TO_4I`.
@@ -588,7 +590,7 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 4. Exact semantic color role values and the restrained interaction-accent value (`#276EF1`) validated in component contexts beyond the locked brand facts (§9); exact neutral/ink palette values (no UI-black invented in DF2).
 5. **Transport-independent design-token delivery**: the existing generated-token pipeline concept (`TOKENS/*.json` → generated consumer artifacts) is an implementation candidate for mobile, with all mobile values validated before canonicalization.
 6. Exact state-surface compositions (skeletons, empty/error art) per state grammar (§16).
-7. Cairo as the bundled mobile UI family — pending mobile rendering/performance validation.
+7. Native Flutter typography acceptance of Cairo Profile B — deferred to Phase 4I.
 8. Field/control exact native dimensions, neutral border hex, stroke width, and native focus treatments (§18, §21) — provisional 8px field radius, outline-led baseline, and restrained interaction-accent focus direction recorded in §18.
 
 ## 28. DEFERRED / OPEN

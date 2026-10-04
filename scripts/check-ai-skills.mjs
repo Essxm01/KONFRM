@@ -257,9 +257,20 @@ for (const skill of internalSkills) {
     if (/users will feel\b/i.test(cleanText)) {
       fail(`Forbidden categorical "users will feel" assertion in ${skill}/SKILL.md`);
     }
+
+    // Freshness & authority synchronization checks:
+    if (text.includes('DF2 v1.1')) {
+      fail(`Stale DF2 v1.1 authority reference in internal skill ${skill}/SKILL.md (current is DF2 v1.3)`);
+    }
+    if (skill === 'konfrm-design-reasoning' && /Exact primary CTA color treatment.*Unresolved Candidate/i.test(text)) {
+      fail(`Stale unresolved primary CTA status phrase in konfrm-design-reasoning/SKILL.md`);
+    }
+    if (skill === 'konfrm-mobile-design' && /Cairo is an implementation candidate/i.test(text)) {
+      fail(`Stale Cairo candidate phrasing in konfrm-mobile-design/SKILL.md (current is SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY)`);
+    }
   }
 }
-pass('Internal skill Canon vs Candidate discipline & research hygiene passed (0 false-canon phrases).');
+pass('Internal skill Canon vs Candidate discipline & research hygiene passed (0 false-canon phrases, current DF2 v1.3 authority verified).');
 
 // 6. UI/UX Pro Max Behavioral Runner Safety Verification
 const testScript = path.join(projectRoot, 'scripts', 'test-uiux-runner-safety.py');

@@ -160,7 +160,7 @@ Before reviewing, routing, or producing design work, enforce the decision status
 - **Exact Mobile Primary Black:** `#000000` (`SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`; `#18181B` fallback comparator only; not promoted to final native Canon).
 - **Primary Button Radius:** `6px` (`PRIMARY_ONLY` provisional; secondary button radius and global shape system remain open).
 - **Action Strategy:** Contextual Hierarchy Hybrid (`SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY`).
-- **Field Visual Strategy:** Outline-Led field baseline on white cards (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot candidate `#8E8E93` [~3.26:1 contrast] is rendering reference only).
+- **Field Visual Strategy:** Outline-Led field baseline with white field surface on light-first surfaces (structural grouping deferred to Phase 4E; `SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot candidate `#8E8E93` [~3.26:1 contrast] is rendering reference only).
 - **Mobile Field-Shaped Control Radius:** `8px` (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`; applies strictly to mobile field-shaped Form & Selection controls; deliberate semantic differentiation from 6px Primary CTA).
 - **Focus Semantic Direction:** Restrained Interaction-Accent Emphasis (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot rendering reference is 1px accent field border + 3px outer halo).
 

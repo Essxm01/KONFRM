@@ -22,7 +22,7 @@
 **KNOWN_CANON / PROVISIONAL CONTEXT:**
 - Monochrome-first brand direction (Black/White).
 - Primary Button provisional radius: 6px (`PRIMARY_ONLY` provisional candidate).
-- Field Strategy: Outline-Led baseline on white cards. Note: Border color `#8E8E93` (~3.26:1 contrast) is classified as `CONTROLLED_WEB_PILOT_RENDERING_REFERENCE_ONLY`; exact native Neutrals remain `OPEN`.
+- Field Strategy: Outline-Led baseline with white field surface on light-first surfaces (structural grouping deferred to Phase 4E). Note: Border color `#8E8E93` (~3.26:1 contrast) is classified as `CONTROLLED_WEB_PILOT_RENDERING_REFERENCE_ONLY`; exact native Neutrals remain `OPEN`.
 - Container Geometry: Input height of 48px is classified as `CONTROLLED_WEB_PILOT_GEOMETRY`; exact native field height remains `OPEN / DEFERRED TO 4I`.
 - Arabic-first RTL native layout with logical start/end and Western Arabic digits (`0–9`).
 - Founder Authority: Founder binding decision is 8px mobile field radius (published in Phase 4D, PR #92).
@@ -64,7 +64,7 @@
 - *Objection to 8px:* "Introducing 8px for fields creates two close radius tokens (6px vs 8px) that may look like an accidental inconsistency rather than deliberate design to casual observers."
 
 #### Challenger (Championing 8px Softened Candidate)
-- *Position:* "A 48px text box (pilot geometry) has 3× the visual area of a 44px button line. A 6px corner on a large input card feels austere and boxed-in. 8px provides optical softening proportionate to container mass."
+- *Position:* "A 48px text box (pilot geometry) has 3× the visual area of a 44px button line. A 6px corner on a large input container feels austere and boxed-in. 8px provides optical softening proportionate to container mass."
 - *Rebuttal to Defender:* "The differentiation is semantic, not accidental: buttons trigger state changes (sharp, decisive 6px), whereas inputs invite text entry (open, welcoming 8px)."
 
 ---
@@ -85,10 +85,13 @@
 ---
 
 ### Round 5 — Red Team (Visual QA Prosecutor)
-- **Stress Reflow & Scaling Check:** Inspected `input_radius_6px_owner.png` and `input_radius_8px_owner.png`.
-  - Border integrity: Verified 1px outline renders crisply on both.
-  - Text scale 200%: Cross-radius A/B equivalence at 200% text scaling was NOT tested in the pilot (controlled 200% stress evidence exists only for the selected 8px pilot candidate: `input_stress_owner.png` / `input_stress_customer.png`). At 100% scale, label reflow and error wrapping operate reliably under both radii.
-  - Button competition: Under 8px, the field does not visually compete with the 6px `#000000` Primary button; the visual hierarchy remains CTA-dominant.
+- **Baseline Radius Inspection (100% Scale):** Inspected `input_radius_6px_owner.png` and `input_radius_8px_owner.png` (controlled Web rendering at 100%).
+  - Geometry & contour: 6px matches button geometry exactly; 8px provides subtle optical softening proportionate to container mass.
+  - Border rendering: 1px outline renders crisply on both candidates without clipping or border aliasing.
+  - Visual hierarchy & CTA relationship: Under 8px, the field does not visually compete with the 6px `#000000` Primary button; CTA dominance is preserved.
+- **200% Text-Scale Stress Evidence:** Inspected `stress_text_scale_200.png`.
+  - True 200% text-scale stress is recorded in `stress_text_scale_200.png`, but this artifact evaluates system text reflow, not a 6px-vs-8px A/B radius comparison.
+  - `CROSS_RADIUS_200_PERCENT_EQUIVALENCE:` **NOT_TESTED** (cross-radius scaling equivalence was not tested in the pilot; no comparative error-wrapping or label-reflow claims between 6px and 8px at 200% are made).
 - **Red Team Verdict:** No fatal flaws in either candidate. Both options are structurally sound.
 
 ---
@@ -115,7 +118,7 @@
 - **WHY:**
   1. *Optical Proportion:* 8px softens taller controlled Web pilot input containers (48px pilot geometry) without drifting into bubbly consumer roundness (10px). Exact native field height remains OPEN / deferred to Phase 4I.
   2. *Deliberate Semantic Differentiation:* Action triggers remain crisp (6px `PRIMARY_ONLY`), while data entry is subtly softened (8px).
-  3. *Zero Boundary Clutter:* Retains high density and pairs harmoniously with Outline-Led white card surfaces.
+  3. *Zero Boundary Clutter:* Retains high density and pairs harmoniously with Outline-Led white field surfaces on light-first backgrounds (structural card/row grouping deferred to Phase 4E).
 - **MINORITY_OPINION:**
   - *Dissent:* Preserving single 6px global radius across buttons and inputs guarantees absolute mathematical minimalism.
   - *Condition for Reconsideration:* If future cross-platform testing in Phase 4I shows that sub-pixel rendering on low-DPI Android screens causes 8px and 6px to look unintentionally mismatched in tight inline groupings.

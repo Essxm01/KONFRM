@@ -11,7 +11,7 @@ Authoritative specifications for right-to-left (RTL) Arabic interface engineerin
 
 > [!IMPORTANT]
 > ### THE CANON SUBORDINATION RULE
-> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill is strictly subordinate to KONFRM Design Canon (DF2 v1.1, monochrome-first, high useful density, Arabic-first RTL, Western Arabic numerals as default, `#276EF1` candidate interaction role). External skills may inform craftsmanship, ergonomics, accessibility checks, and engineering patterns, but never dictate product taste, localization rules, or brand identity.**
+> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill is strictly subordinate to KONFRM Design Canon (DF2 v1.3, monochrome-first, high useful density, Arabic-first RTL, Western Arabic numerals as default, `#276EF1` candidate interaction role). External skills may inform craftsmanship, ergonomics, accessibility checks, and engineering patterns, but never dictate product taste, localization rules, or brand identity.**
 
 ---
 
@@ -42,8 +42,8 @@ Arabic is the primary native language of the KONFRM marketplace and product expe
 ## 3. Typography & Font Candidates
 
 - **Cairo Font Family Status:**
-  - Cairo is an **IMPLEMENTATION CANDIDATE** for the bundled mobile UI font family (§27.7), supported by strong Web evidence.
-  - It is NOT yet locked as canonical mobile font pending real device legibility, scaling, and rendering performance validation (§29.1).
+  - Cairo Profile B scale and metrics is the **SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY** foundation, supported by strong Web evidence and Phase 4B typography evaluation.
+  - Final native mobile acceptance remains deferred to real device legibility, scaling, and rendering performance validation in Phase 4I.
 - **Typographic Craft Considerations (Observational Guidance):**
   - Arabic script features distinct vertical ascenders and descenders. Tight Latin line-height defaults can cause diacritic or descender clipping. Ensure vertical line-heights are tested on device to provide comfortable reading breathing room.
   - Button text vertical optical centering should be verified visually on device, accounting for script baseline characteristics.

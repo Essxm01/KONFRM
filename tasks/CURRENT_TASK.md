@@ -1,62 +1,65 @@
-# Active Task — PHASE_4C_ACTION_SYSTEM
+# Active Task — PHASE_4D_FORM_SELECTION_PRIMITIVES
 
-TASK_ID: PHASE_4C_ACTION_SYSTEM
+TASK_ID: PHASE_4D_FORM_SELECTION_PRIMITIVES
 ROADMAP_PHASE: PHASE_4_UNIFIED_DESIGN_SYSTEM
-STATUS: READY_FOR_PUBLICATION
-SUBSTANTIVE_STATUS: COMPLETE_INDEPENDENT_PASS
-PUBLICATION_STATUS: PR_PENDING
-BASE_MAIN_SHA: 81586505b4f25494a0a946ffe1613dec2d49c6b5
-SCOPE: Phase 4C — Action System (Buttons, touch targets, action hierarchy, interaction states, and text wrapping across Customer and Owner surfaces).
+STATUS: READY_TO_START
+EXECUTION_STARTED: NO
+BASE_MAIN_SHA: 95e3789ae824cdc6ca0a6608f1752f3137ac5ac5
+SCOPE: Phase 4D — Form & Selection Primitives (text inputs, phone/email fields, search, select/pickers, checkbox/toggle where required, helper/error behavior, focus/keyboard behavior, and Arabic/RTL input details).
 
 ## Execution Position Notice
-- `STATUS: READY_FOR_PUBLICATION` indicates that Phase 4C substantive work is complete, all stages have passed independent review, and the publication PR is prepared.
-- `SUBSTANTIVE_STATUS: COMPLETE_INDEPENDENT_PASS`
-- `PUBLICATION_STATUS: PR_PENDING` (PR opened against main; awaiting Bridge independent review and merge; do NOT claim CLOSED/MERGED before actual merge).
+- `STATUS: READY_TO_START` indicates that Phase 4D is the next authorized design dependency following the verified closure and merge of Phase 4C (PR #90).
+- `EXECUTION_STARTED: NO`
+- No Phase 4D implementation has begun. No design artifacts, code changes, or token promotions have been introduced in this task.
 
-## Independent Closure Verification Evidence
-- **Stage 2 (System Coherence Validation):** `CLOSED_INDEPENDENT_PASS` (Review HEAD: `f33674c902a4d2c63fcb5fd0fa6414851be5e7d2` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
-- **Stage 3A (Action Contract Formalization):** `CLOSED_INDEPENDENT_PASS` (Review HEAD: `92eb0ce282b4dd2ba8b29cb804215f4cb3b59464` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
-- **Stage 3B (Targeted Shared Governance Synchronization):** `CLOSED_INDEPENDENT_PASS` (Review HEAD: `708ffb77bbd9dc3600dd4775be6f86da40b8e73f` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
-- **FINAL_SHARED_AUTHORITY_REVIEW_HEAD:** `708ffb77bbd9dc3600dd4775be6f86da40b8e73f`
-- **BLOCKERS:** NONE
-- **MATERIAL_FINDINGS:** NONE
-- **MINOR_FINDINGS:** NONE
-- **PRODUCTION_CHANGES:** NONE
-- **TOKEN_CHANGES:** NONE
-- **NATIVE_ACCEPTANCE:** DEFERRED_TO_4I
+## Authoritative Phase 4D Scope
+Per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md`:
+- text inputs
+- phone/email fields
+- search
+- select/pickers
+- checkbox/toggle where required
+- helper/error behavior
+- focus/keyboard behavior
+- Arabic/RTL input details
 
-## Phase 4C System-Validated Provisional Results
-- **Action Strategy:** Contextual / Hierarchy-Based Hybrid (`SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY`).
-- **Exact Mobile Primary Black:** `#000000` (`SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`; `#18181B` fallback comparator only; not promoted to final native Canon).
-- **Primary Button Radius:** `6px` (`PRIMARY_ONLY` provisional; secondary radius and global shape system remain open).
-- **Button Typography:** Cairo Profile B `15 / 700 / 1.20` (`SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`).
-- **Secondary Action Default:** Subtle Fill (provisional default); Conditional Neutral Outline (semantic/perceptual eligibility gated).
-- **Tertiary / Inline:** Ghost / text-like (Cairo Profile B preserved for button components; governed text role for inline text).
-- **Destructive Grammar:** Consequence dimension (Destructive Primary restricted to explicit confirmation context; Destructive Secondary outline for subordinate pairing; Destructive Ghost gated to genuinely low consequence).
-- **Primary Uniqueness:** Per active decision point / independent decision unit (independent cards may each contain a primary action without competing within the same hierarchy).
-- **Platform Touch Target Guidance:** iOS `44pt` / Android `48dp` (distinct platform guidance preserved; no universal raw native px rule).
-- **Reflow Contract:** System / accessibility requirement verified under controlled 360px Web frame-width simulation.
+## Upstream Closed Dependency — Phase 4C Action System
+- **PHASE_4C_STATUS:** `CLOSED / MERGED`
+- **PR:** `#90`
+- **MERGE_COMMIT:** `95e3789ae824cdc6ca0a6608f1752f3137ac5ac5`
+- **Stage 2:** `CLOSED_INDEPENDENT_PASS`
+- **Stage 3A:** `CLOSED_INDEPENDENT_PASS`
+- **Stage 3B:** `CLOSED_INDEPENDENT_PASS`
+- **Production Changes:** NONE
+- **Token Changes:** NONE
+- **Native Acceptance:** `DEFERRED_TO_4I`
 
-## Explicit Open Decisions & Boundaries (Preserved Open)
-- **Secondary Radius:** `OPEN / FUTURE GOVERNED DESIGN DECISION` (6px in pilot was controlled comparison variable only).
-- **Exact Neutrals:** `OPEN` (`#F1F5F9`, `#CBD5E1` are pilot rendering values only).
+## Inherited Upstream Foundations & Phase 4D Boundaries
+Phase 4D carries forward upstream design authority without reopening validated decisions:
+- **Typography:** Cairo Profile B (`15 / 700 / 1.20` for button controls, role typography per DF2 v1.2) — `SYSTEM-VALIDATED PROVISIONAL`.
+- **Action System:** Phase 4C `CLOSED / MERGED` (Contextual / Hierarchy-Based Hybrid action strategy).
+- **Exact Mobile Primary Black:** `#000000` — `SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK` (`#18181B` fallback comparator only).
+- **Primary Button Radius:** `6px` — `PRIMARY_ONLY` provisional.
+  - **Boundary:** Do **NOT** generalize 6px to inputs, pickers, checkboxes, cards, sheets, or global shape.
+- **Secondary Radius:** `OPEN / FUTURE GOVERNED DESIGN DECISION`.
+- **Global Shape System:** `OPEN`.
+- **Exact Neutrals:** `OPEN` (pilot rendering values only).
 - **Exact Blue:** `OPEN` (`#276EF1` is implementation candidate only; restrained interaction-accent role).
-- **Exact Destructive Color:** `OPEN` (`#DC2626` is pilot rendering value only).
 - **Exact Native Focus Treatment:** `OPEN`.
-- **Full Global Shape System:** `OPEN`.
-- **Cancellation / Refund Policy:** `OPEN / UNDECIDED` (governed exclusively by Product and Financial Canon).
-- **Token-File Authoring:** `SEPARATELY GATED` (zero token JSON modified in Phase 4C).
-- **Native Component & Accessibility Acceptance:** `DEFERRED TO 4I`.
-
-## Next Design Dependency After Publication Merge
-- **NEXT_DEPENDENCY_AFTER_PUBLICATION_MERGE:** `PHASE_4D_FORM_SELECTION_PRIMITIVES`
-- **STATUS:** `NOT_STARTED`
-- **Scope per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md`:** text inputs, phone/email fields, search, select/pickers, checkbox/toggle where required, helper/error behavior, focus/keyboard behavior, and Arabic/RTL input details.
-- **Notice:** Do NOT switch the active task fully to 4D before the Phase 4C PR merges.
+- **Structural System:** Phase 4E scope. Phase 4D must not casually resolve spacing systems, content insets, section/card/row structure, borders/dividers, surface hierarchy, global shape roles, or elevation.
+- **Navigation & Overlay System:** Phase 4F scope. Phase 4D must not casually resolve bottom navigation, app bars, nested navigation, global RTL back semantics, dialog/sheet container grammar, sticky-action architecture, or safe-area/navigation behavior. While Phase 4D legitimately defines the input and selection primitive behavior of fields (including select/picker field semantics), any overlay container, sheet, dialog, navigation pattern, or global overlay grammar belongs strictly to Phase 4F.
+- **Cancellation & Refund Policy:** `OPEN / UNDECIDED` (governed exclusively by Product and Financial Canon).
+- **Token-File Authoring:** `SEPARATELY GATED`.
 
 ---
 
 # Historical Reference (Preserved)
+
+## Completed Phase 4C Checkpoint
+- TASK_ID: PHASE_4C_ACTION_SYSTEM
+- MERGED_PR: #90
+- MERGE_COMMIT_SHA: 95e3789ae824cdc6ca0a6608f1752f3137ac5ac5
+- STATUS: CLOSED / MERGED
 
 ## Completed Phase 4B Checkpoint
 - TASK_ID: PHASE_4B_TYPOGRAPHY_FOUNDATION_CHECKPOINT

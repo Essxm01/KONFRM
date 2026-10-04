@@ -1,9 +1,9 @@
 # Current project state
 
 **Last updated:** 2026-10-04  
-**Phase 4B merge checkpoint:** `4cad3a4b0f9901e5315c35e6712e3e4a35f4cba5` (PR #88)  
-**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `SUBSTANTIVE_COMPLETE / INDEPENDENTLY_VERIFIED / PUBLICATION_PENDING`.  
-**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation).
+**Phase 4C merge checkpoint:** `95e3789ae824cdc6ca0a6608f1752f3137ac5ac5` (PR #90)  
+**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90).  
+**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System).
 
 ## Current status
 
@@ -17,7 +17,7 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
   - Exact neutral palette: **`OPEN`**.
   - Known Profile B Web stress evidence: 5 / 24 overflow cases under extreme scaling (150% and 200%). Causal classification: **`MIXED`**. Profile-selection impact: **`MINOR`**.
   - Native Flutter typography acceptance: **`DEFERRED TO 4I`**.
-- **Phase 4C (Action System):** `SUBSTANTIVE_COMPLETE / INDEPENDENTLY_VERIFIED / PUBLICATION_PENDING` (Stages 2, 3A, and 3B passed independent reviews with zero blockers, zero material findings, zero minor findings; publication PR pending merge).
+- **Phase 4C (Action System):** `CLOSED / MERGED` (PR #90, merge checkpoint `95e3789ae824cdc6ca0a6608f1752f3137ac5ac5`). Independent review: Stage 2 PASS, Stage 3A PASS, Stage 3B PASS (Blockers: NONE, Material findings: NONE, Minor findings: NONE). Design-System documentation/evidence publication only; no production-app, backend, database, or token JSON changes.
   - Action Strategy: **`CONTEXTUAL_HIERARCHY_HYBRID`** (`SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY`).
   - Exact Mobile Primary Black: **`#000000`** (`SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`; `#18181B` fallback comparator only; not promoted to final native Canon).
   - Primary button radius: **`6px`** (`PRIMARY_ONLY` provisional; full global shape system and secondary radius remain open).
@@ -28,8 +28,8 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
   - Sizing & touch targets: iOS 44pt / Android 48dp guidance (no universal raw-pixel target).
   - Reflow: controlled 360px Web frame-width evidence.
   - Native component and accessibility acceptance: **`DEFERRED TO 4I`**.
-  - Open variables preserved: Secondary Radius (`OPEN`), Exact Neutrals (`OPEN`), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Destructive Color (`OPEN`), Exact Native Focus Treatment (`OPEN`), Global Shape System (`OPEN`), Cancellation/Refund Policy (`OPEN / UNDECIDED`).
-  - NEXT DESIGN DEPENDENCY AFTER PHASE 4C PUBLICATION MERGE: **`4D — FORM & SELECTION PRIMITIVES`** (status: `NOT_STARTED`).
+  - Open variables preserved: Secondary Radius (`OPEN`), Exact Neutrals (`OPEN`), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Destructive Color (`OPEN`), Exact Native Focus Treatment (`OPEN`), Global Shape System (`OPEN`), Cancellation/Refund Policy (`OPEN / UNDECIDED`), Token-File Authoring (`SEPARATELY GATED`).
+  - NEXT DESIGN DEPENDENCY: **`4D — FORM & SELECTION PRIMITIVES`** (status: `READY_TO_START`; `EXECUTION_STARTED: NO`).
 
 The connected property vertical slice through Phase 3 remains live-verified on production. Phase 4 develops the design foundations through controlled empirical pilots before native mobile integration.
 
@@ -77,5 +77,7 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
 
 **Phase 4D — Form & Selection Primitives**
 
-Phase 4C Action System substantive work is complete and independently verified (Stages 2, 3A, and 3B passed). Following Phase 4C publication merge, the next active design dependency per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md` will be:
-- **Phase 4D — Form & Selection Primitives** (text inputs, phone/email fields, search, select/pickers, checkbox/toggle where required, helper/error behavior, focus/keyboard behavior, and Arabic/RTL input details). Status: `NOT_STARTED`.
+Phase 4C Action System is closed and merged (PR #90, merge checkpoint `95e3789ae824cdc6ca0a6608f1752f3137ac5ac5`). The next active design dependency per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md` is:
+- **Phase 4D — Form & Selection Primitives** (text inputs, phone/email fields, search, select/pickers, checkbox/toggle where required, helper/error behavior, focus/keyboard behavior, and Arabic/RTL input details).
+  - **Status:** `READY_TO_START`
+  - **Execution Started:** `NO`

@@ -1,5 +1,27 @@
 # KONFRM Design System Changelog
 
+## 2.1.8 — 2026-10-04
+
+### Phase 4D Form & Selection Primitives governance synchronization
+
+- Governed Customer + Owner product evidence inspection completed across `customer-app/` and `owner-app/` (Admin remains Web operational).
+- Controlled Web visual evaluation completed across field visual strategies, radius options (6px, 8px, 10px), focus modalities, viewports, scaling, and RTL/Bidi states.
+- Recorded Founder approval of system recommendation: 8px Mobile Field Radius (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`). Applies strictly to mobile field-shaped Form & Selection controls; does not alter 6px Primary Button radius (`PRIMARY_ONLY`), secondary buttons, checkboxes, toggles, cards, sheets, or global shape.
+- Recorded Outline-led field baseline as system-validated provisional direction (white surface, thin neutral outline [pilot reference `#8E8E93`, achieving 3.26:1 contrast against `#FFFFFF`], clear boundary, no floating-label dependency).
+- Formalized explicit label / helper / error hierarchy inheriting Cairo Profile B (`label` 12/600/1.35, `supporting` 12/400/1.40); floating labels not selected due to Arabic legibility and translation expansion.
+- Formalized RTL / Bidi field rules: semantic start/end alignment, LTR isolation for phone/email, Western Arabic numerals (0–9), canonical money format `1,600 ج.م`, and search start/end affordances.
+- Recorded semantic restrained interaction-accent focus direction (provides obvious focus without competing with Stable Black Primary CTA; pilot `#276EF1`, 1px accent field border + 3px outer halo remain Web pilot rendering references only).
+- Defined Select / Picker boundary: Phase 4D owns field trigger, label, placeholder, selected value, and field semantics; bottom sheets, dialogs, and overlay container architecture remain strictly Phase 4F.
+- Classified Checkbox as Owner product-evidenced (notification preferences); Toggle classified as deferred with zero current product evidence (no manufactured switch migration).
+- Sizing and touch targets follow platform-appropriate guidance (iOS: 44pt; Android: 48dp); no universal raw-pixel mobile rule; visible geometry separated from interactive touch target bounds.
+- Exact neutrals, exact blue, exact error red, exact focus ring/halo geometry, and native stroke width remain OPEN / implementation candidates.
+- Updated Mobile Design Foundation to DF2 v1.3 (`DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md`).
+- Synchronized component and experience authority (`DESIGN_SYSTEM/COMPONENTS/inputs.md`, `DESIGN_SYSTEM/COMPONENTS/forms.md`, `DESIGN_SYSTEM/EXPERIENCE/FORMS_AND_CONTROLS.md`).
+- No token JSON changes.
+- No runtime production changes.
+- No backend/database changes.
+- Native component and accessibility acceptance remains strictly deferred to Phase 4I.
+
 ## 2.1.7 — 2026-10-04
 
 ### Phase 4C Action System governance synchronization

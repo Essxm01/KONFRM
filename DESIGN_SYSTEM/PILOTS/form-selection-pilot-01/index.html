@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONFRM Phase 4D — Form & Selection Primitives Pilot</title>
+  <style>
+    @font-face {
+      font-family: 'Cairo';
+      src: url('./fonts/Cairo-VariableFont.ttf') format('truetype');
+      font-weight: 200 900;
+      font-style: normal;
+    }
+
+    :root {
+      /* Inherited Upstream Foundations */
+      --konfrm-font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      --konfrm-primary-black: #000000;
+      --konfrm-button-radius: 6px; /* Provisional 4A/4C PRIMARY_ONLY */
+      
+      /* Cairo Profile B Typography */
+      --typo-display: 700 24px/1.30 var(--konfrm-font-family);
+      --typo-page-title: 700 20px/1.35 var(--konfrm-font-family);
+      --typo-section-title: 700 17px/1.40 var(--konfrm-font-family);
+      --typo-card-title: 700 15px/1.40 var(--konfrm-font-family);
+      --typo-body: 500 14px/1.50 var(--konfrm-font-family);
+      --typo-body-strong: 700 14px/1.50 var(--konfrm-font-family);
+      --typo-label: 600 12px/1.35 var(--konfrm-font-family);
+      --typo-supporting: 400 12px/1.40 var(--konfrm-font-family);
+      --typo-numeric: 700 16px/1.30 var(--konfrm-font-family);
+      --typo-button: 700 15px/1.20 var(--konfrm-font-family);
+
+      /* Open Candidates / Pilot Rendering Values */
+      --candidate-blue: #276EF1;
+      --candidate-blue-halo: rgba(39, 110, 241, 0.15);
+      --candidate-error-red: #DC2626;
+      --candidate-error-halo: rgba(220, 38, 38, 0.15);
+      --candidate-error-bg: #FEF2F2;
+
+      /* Neutrals */
+      --text-primary: #09090B;
+      --text-secondary: #52525B;
+      --text-muted: #71717A;
+      --text-disabled: #A1A1AA;
+      --border-default: #8E8E93;
+      --border-subtle: #F4F4F5;
+      --surface-page: #F8FAFC;
+      --surface-card: #FFFFFF;
+      --surface-subtle: #F4F4F5;
+
+      /* Active Dynamic Variables */
+      --input-radius: 8px;
+      --focus-ring-color: var(--candidate-blue);
+      --focus-ring-halo: var(--candidate-blue-halo);
+      --text-scale: 100%;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--konfrm-font-family);
+      background-color: #0F172A;
+      color: #F8FAFC;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      direction: rtl;
+    }
+
+    /* Top Control Bar */
+    header.pilot-bar {
+      background: #1E293B;
+      border-bottom: 1px solid #334155;
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .pilot-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-phase {
+      background: #000;
+      color: #FFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid #475569;
+    }
+
+    .pilot-title h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #F8FAFC;
+    }
+
+    .pilot-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      background: #0F172A;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+    }
+
+    .control-group label {
+      color: #94A3B8;
+      font-weight: 600;
+    }
+
+    .control-group select, .control-group button {
+      background: #1E293B;
+      color: #F8FAFC;
+      border: 1px solid #475569;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-family: var(--konfrm-font-family);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      background: #1E293B;
+      padding: 8px 24px;
+      border-bottom: 1px solid #334155;
+      overflow-x: auto;
+    }
+
+    .nav-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #94A3B8;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--konfrm-font-family);
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .nav-tab:hover {
+      color: #F8FAFC;
+      background: #334155;
+    }
+
+    .nav-tab.active {
+      color: #FFFFFF;
+      background: #000000;
+      border-color: #475569;
+    }
+
+    /* Main Stage */
+    main.pilot-stage {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 32px;
+      background: #0F172A;
+    }
+
+    /* Device Simulator Container */
+    .device-frame {
+      background: #FFFFFF;
+      color: var(--text-primary);
+      border-radius: 28px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 10px #1E293B;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: width 0.2s ease;
+      margin: 0 auto;
+    }
+
+    .device-status-bar {
+      background: #FFFFFF;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #09090B;
+      border-bottom: 1px solid #F4F4F5;
+      user-select: none;
+    }
+
+    .device-content {
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-height: 520px;
+      overflow-y: visible;
+    }
+
+    /* Scaled Text Rules */
+    body[data-scale="150"] .device-content {
+      zoom: 1.5;
+    }
+    body[data-scale="200"] .device-content {
+      zoom: 2.0;
+    }
+
+    /* Candidate Styling Engine */
+    /* CANDIDATE A: OUTLINE-LED */
+    body[data-family="outline"] .konfrm-input-box,
+    body[data-family="outline"] .konfrm-select-box,
+    body[data-family="outline"] .konfrm-textarea-box {
+      background: #FFFFFF;
+      border: 1px solid var(--border-default);
+      border-radius: var(--input-radius);
+    }
+
+    /* CANDIDATE B: SUBTLE-SURFACE / FILL-LED */
+    body[data-family="fill"] .konfrm-input-box,
+    body[data-family="fill"] .konfrm-select-box,
+    body[data-family="fill"] .konfrm-textarea-box {
+      background: #F4F4F5;
+      border: 1px solid transparent;
+      border-radius: var(--input-radius);
+    }
+    body[data-family="fill"] .konfrm-input-box:focus-within,
+    body[data-family="fill"] .konfrm-select-box:focus-within,
+    body[data-family="fill"] .konfrm-textarea-box:focus-within {
+      background: #FFFFFF;
+      border-color: var(--focus-ring-color);
+    }
+
+    /* CANDIDATE C: HYBRID / CONTEXTUAL (Recommended) */
+    body[data-family="hybrid"] .konfrm-input-box,
+    body[data-family="hybrid"] .konfrm-select-box,
+    body[data-family="hybrid"] .konfrm-textarea-box {
+      background: #FFFFFF;
+      border: 1px solid var(--border-default);
+      border-radius: var(--input-radius);
+    }
+    body[data-family="hybrid"] .field-group-merged {
+      border: 1px solid var(--border-default);
+      border-radius: var(--input-radius);
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+    body[data-family="hybrid"] .field-group-merged .konfrm-input-box {
+      border: none;
+      border-radius: 0;
+      background: transparent;
+    }
+    body[data-family="hybrid"] .field-group-merged .field-divider {
+      height: 1px;
+      background: var(--border-default);
+    }
+
+    /* Focus States */
+    .konfrm-input-box:focus-within,
+    .konfrm-select-box:focus-within,
+    .konfrm-textarea-box:focus-within {
+      border-color: var(--focus-ring-color) !important;
+      box-shadow: 0 0 0 3px var(--focus-ring-halo);
+    }
+
+    /* Error States */
+    .has-error .konfrm-input-box,
+    .has-error .konfrm-select-box,
+    .has-error .konfrm-textarea-box {
+      border-color: var(--candidate-error-red) !important;
+    }
+    .has-error .konfrm-input-box:focus-within,
+    .has-error .konfrm-select-box:focus-within,
+    .has-error .konfrm-textarea-box:focus-within {
+      box-shadow: 0 0 0 3px var(--candidate-error-halo);
+    }
+
+    /* Disabled States */
+    .is-disabled .konfrm-input-box,
+    .is-disabled .konfrm-select-box,
+    .is-disabled .konfrm-textarea-box {
+      background: #F4F4F5 !important;
+      border-color: #E4E4E7 !important;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    .is-disabled input, .is-disabled textarea, .is-disabled select {
+      cursor: not-allowed;
+      color: var(--text-disabled) !important;
+    }
+
+    /* Field Anatomy */
+    .konfrm-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      text-align: right;
+    }
+
+    .konfrm-label {
+      font: var(--typo-label);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .konfrm-label .optional-tag {
+      font: var(--typo-supporting);
+      color: var(--text-muted);
+    }
+
+    .konfrm-input-box {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      position: relative;
+      transition: all 0.15s ease;
+    }
+
+    .konfrm-input-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      height: 100%;
+      min-height: 46px;
+      font: var(--typo-body);
+      color: var(--text-primary);
+      font-family: var(--konfrm-font-family);
+    }
+
+    .konfrm-input-box input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Phone Input Layout */
+    .phone-container {
+      display: flex;
+      align-items: center;
+      direction: ltr; /* LTR isolated container */
+      width: 100%;
+    }
+
+    .country-code-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 10px;
+      height: 46px;
+      border-right: 1px solid var(--border-default);
+      font: var(--typo-body-strong);
+      color: var(--text-primary);
+      user-select: none;
+      background: var(--surface-subtle);
+      border-radius: var(--input-radius) 0 0 var(--input-radius);
+    }
+
+    .phone-container input {
+      padding-left: 12px;
+      direction: ltr;
+      text-align: left;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* Email Input */
+    .email-container input {
+      direction: ltr;
+      text-align: left;
+    }
+
+    /* Search Input */
+    .search-input-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding-right: 36px;
+      padding-left: 36px;
+    }
+
+    .search-icon-start {
+      position: absolute;
+      right: 12px;
+      pointer-events: none;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+    }
+
+    .search-clear-end {
+      position: absolute;
+      left: 10px;
+      background: #E4E4E7;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #52525B;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    /* Select / Picker Trigger */
+    .konfrm-select-box {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .select-value-text {
+      font: var(--typo-body);
+      color: var(--text-primary);
+    }
+
+    .select-placeholder-text {
+      font: var(--typo-body);
+      color: var(--text-muted);
+    }
+
+    .select-chevron {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+    }
+
+    /* Multiline Textarea */
+    .konfrm-textarea-box {
+      padding: 10px 12px;
+      transition: all 0.15s ease;
+    }
+
+    .konfrm-textarea-box textarea {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      min-height: 84px;
+      resize: vertical;
+      font: var(--typo-body);
+      color: var(--text-primary);
+      font-family: var(--konfrm-font-family);
+    }
+
+    /* Numeric with Currency Suffix */
+    .numeric-unit-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .numeric-unit-box input {
+      direction: ltr;
+      text-align: right;
+      font: var(--typo-numeric);
+    }
+
+    .numeric-suffix {
+      font: var(--typo-body-strong);
+      color: var(--text-secondary);
+      padding-right: 8px;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    /* Stepper Component */
+    .stepper-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border: 1px solid var(--border-default);
+      border-radius: var(--input-radius);
+      background: #FFFFFF;
+    }
+
+    .stepper-label-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stepper-title {
+      font: var(--typo-body-strong);
+      color: var(--text-primary);
+    }
+
+    .stepper-sub {
+      font: var(--typo-supporting);
+      color: var(--text-muted);
+    }
+
+    .stepper-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      direction: ltr;
+    }
+
+    .stepper-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      border: 1px solid var(--border-default);
+      background: #FFFFFF;
+      color: var(--text-primary);
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .stepper-btn:hover {
+      background: #F4F4F5;
+    }
+
+    .stepper-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .stepper-val {
+      font: var(--typo-numeric);
+      color: var(--text-primary);
+      min-width: 24px;
+      text-align: center;
+    }
+
+    /* Helper & Error Feedback Messages */
+    .konfrm-feedback {
+      font: var(--typo-supporting);
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
+      min-height: 18px;
+    }
+
+    .konfrm-feedback.helper-text {
+      color: var(--text-muted);
+    }
+
+    .konfrm-feedback.error-text {
+      color: var(--candidate-error-red);
+      font-weight: 600;
+    }
+
+    .error-icon {
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Checkbox & Toggle */
+    .checkbox-row, .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-default);
+      border-radius: var(--input-radius);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-text, .toggle-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .checkbox-title, .toggle-title {
+      font: var(--typo-body-strong);
+      color: var(--text-primary);
+    }
+
+    .checkbox-sub, .toggle-sub {
+      font: var(--typo-supporting);
+      color: var(--text-muted);
+    }
+
+    .custom-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-default);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #FFFFFF;
+      transition: all 0.15s ease;
+    }
+
+    .custom-checkbox.checked {
+      background: var(--candidate-blue);
+      border-color: var(--candidate-blue);
+      color: #FFFFFF;
+    }
+
+    .custom-toggle {
+      width: 44px;
+      height: 26px;
+      background: #E4E4E7;
+      border-radius: 13px;
+      position: relative;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .custom-toggle.checked {
+      background: var(--candidate-blue);
+    }
+
+    .toggle-knob {
+      width: 22px;
+      height: 22px;
+      background: #FFFFFF;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      transition: transform 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .custom-toggle.checked .toggle-knob {
+      transform: translateX(-18px);
+    }
+
+    /* Primary & Secondary Buttons from 4C */
+    .btn-primary-4c {
+      background: var(--konfrm-primary-black);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--konfrm-button-radius);
+      font: var(--typo-button);
+      min-height: 48px;
+      padding: 0 20px;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.15s ease;
+    }
+    .btn-primary-4c:hover {
+      opacity: 0.9;
+    }
+
+    .btn-secondary-4c {
+      background: var(--surface-subtle);
+      color: var(--text-primary);
+      border: none;
+      border-radius: var(--konfrm-button-radius);
+      font: var(--typo-button);
+      min-height: 48px;
+      padding: 0 20px;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Screen Headers */
+    .screen-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .screen-header h2 {
+      font: var(--typo-page-title);
+      color: var(--text-primary);
+    }
+
+    .screen-header p {
+      font: var(--typo-body);
+      color: var(--text-secondary);
+    }
+
+    /* Chips Grid */
+    .chip-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .chip-btn {
+      padding: 10px;
+      border-radius: var(--input-radius);
+      border: 1px solid var(--border-default);
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font: var(--typo-body-strong);
+      color: var(--text-primary);
+      transition: all 0.15s ease;
+    }
+
+    .chip-btn.selected {
+      border-color: var(--candidate-blue);
+      background: rgba(39, 110, 241, 0.05);
+      color: var(--candidate-blue);
+    }
+
+    /* Notice Pill */
+    .deferred-notice {
+      background: #F1F5F9;
+      border: 1px dashed #94A3B8;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 11px;
+      color: #475569;
+      text-align: center;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body data-family="hybrid" data-radius="8" data-focus="accent" data-viewport="390" data-scale="100">
+
+  <!-- Control Header -->
+  <header class="pilot-bar">
+    <div class="pilot-title">
+      <span class="badge-phase">PHASE 4D</span>
+      <h1>منظومة حقول الإدخال والاختيار (Form & Selection Primitives Pilot)</h1>
+    </div>
+
+    <div class="pilot-controls">
+      <div class="control-group">
+        <label for="sel-family">عائلة الحقول:</label>
+        <select id="sel-family">
+          <option value="hybrid" selected>C. هجين سياقي (Hybrid / Contextual - مستحسن)</option>
+          <option value="outline">A. إطار محدد (Outline-Led)</option>
+          <option value="fill">B. سطح ناعم (Subtle Fill-Led)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="sel-radius">نصف القطر (Radius):</label>
+        <select id="sel-radius">
+          <option value="6">6px (تطابق زر 4C)</option>
+          <option value="8" selected>8px (توازن مريح - مستحسن)</option>
+          <option value="10">10px (انسيابي ناعم)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="sel-focus">تركيز المؤشر (Focus):</label>
+        <select id="sel-focus">
+          <option value="accent" selected>أزرق تفاعلي مع هالة (#276EF1 - مستحسن)</option>
+          <option value="black">أسود عالي التباين (#000000)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="sel-viewport">عرض الشاشة:</label>
+        <select id="sel-viewport">
+          <option value="360">360px (أندرويد مدمج)</option>
+          <option value="390" selected>390px (آيفون قياسي)</option>
+          <option value="430">430px (شاشة عريضة)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="sel-scale">حجم النص:</label>
+        <select id="sel-scale">
+          <option value="100" selected>100% (طبيعي)</option>
+          <option value="150">150% (تكبير مرتفع)</option>
+          <option value="200">200% (أقصى تكبير)</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Scenario Navigation Tabs -->
+  <nav class="nav-tabs" role="tablist">
+    <button class="nav-tab active" data-view="customer-auth" role="tab">1. مصادقة العميل (Customer Auth Screen 08/10)</button>
+    <button class="nav-tab" data-view="customer-search" role="tab">2. بحث وتصفية العميل (Search & Refine Screen 04)</button>
+    <button class="nav-tab" data-view="owner-property" role="tab">3. إضافة عقار المالك (Owner Property Wizard)</button>
+    <button class="nav-tab" data-view="state-matrix" role="tab">4. مصفوفة حالات الحقول الكاملة (State Matrix)</button>
+    <button class="nav-tab" data-view="stress-test" role="tab">5. اختبار الإجهاد والتكبير (Stress & Scale Reflow)</button>
+  </nav>
+
+  <!-- Interactive Device Stage -->
+  <main class="pilot-stage">
+    <div class="device-frame" id="device-container" style="width: 390px;">
+      
+      <!-- Device System Header -->
+      <div class="device-status-bar">
+        <span>9:41</span>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <span>5G</span>
+          <span>100%</span>
+        </div>
+      </div>
+
+      <!-- VIEW 1: CUSTOMER AUTH (SCREEN 08 / 10) -->
+      <section class="device-content" id="view-customer-auth">
+        <div class="screen-header">
+          <h2>تسجيل الدخول أو إنشاء حساب</h2>
+          <p>أدخل رقم هاتفك للمتابعة في كونفرم.</p>
+        </div>
+
+        <!-- Phone Input (LTR isolated) -->
+        <div class="konfrm-field">
+          <label class="konfrm-label" for="auth-phone">
+            <span>رقم الهاتف</span>
+          </label>
+          <div class="konfrm-input-box phone-container">
+            <div class="country-code-pill" aria-hidden="true">
+              <span>🇪🇬</span>
+              <span>+20</span>
+            </div>
+            <input 
+              id="auth-phone" 
+              type="tel" 
+              inputmode="numeric" 
+              dir="ltr" 
+              placeholder="010 1234 5678" 
+              value="010 4989 2908" 
+              aria-describedby="auth-phone-helper"
+            />
+          </div>
+          <div id="auth-phone-helper" class="konfrm-feedback helper-text">
+            <span>سنرسل لك رمز تأكيد عبر رسالة نصية قصيرة (SMS).</span>
+          </div>
+        </div>
+
+        <!-- Email Input (Alternative with error) -->
+        <div class="konfrm-field has-error">
+          <label class="konfrm-label" for="auth-email">
+            <span>البريد الإلكتروني</span>
+            <span class="optional-tag">اختياري</span>
+          </label>
+          <div class="konfrm-input-box email-container">
+            <input 
+              id="auth-email" 
+              type="email" 
+              dir="ltr" 
+              placeholder="name@example.com" 
+              value="invalid-email-address" 
+              aria-invalid="true" 
+              aria-describedby="auth-email-error"
+            />
+          </div>
+          <div id="auth-email-error" class="konfrm-feedback error-text" role="alert">
+            <svg class="error-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>صيغة البريد الإلكتروني غير صحيحة، يرجى كتابته بالشكل name@domain.com.</span>
+          </div>
+        </div>
+
+        <!-- Full Name Input (Screen 10) -->
+        <div class="konfrm-field">
+          <label class="konfrm-label" for="auth-fullname">
+            <span>الاسم الكامل</span>
+          </label>
+          <div class="konfrm-input-box">
+            <input 
+              id="auth-fullname" 
+              type="text" 
+              placeholder="مثال: أحمد محمود علي" 
+              value="عصام الدين محمد" 
+            />
+          </div>
+          <div class="konfrm-feedback helper-text">
+            <span>يظهر اسمك لمضيف الإقامة عند تأكيد الحجز.</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-primary-4c">متابعة</button>
+      </section>
+
+      <!-- VIEW 2: CUSTOMER SEARCH & REFINE (SCREEN 04) -->
+      <section class="device-content" id="view-customer-search" style="display: none;">
+        <div class="screen-header">
+          <h2>البحث وتصفية الإقامات</h2>
+          <p>حدد وجهتك وتواريخ إقامتك وخيارات التصفية.</p>
+        </div>
+
+        <!-- Search Input -->
+        <div class="konfrm-field">
+          <label class="konfrm-label" for="search-query">
+            <span>البحث بالاسم أو القرية</span>
+          </label>
+          <div class="konfrm-input-box search-input-box">
+            <span class="search-icon-start">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input 
+              id="search-query" 
+              type="search" 
+              placeholder="ابحث عن قرية أو شاطئ..." 
+              value="مارينا 5" 
+            />
+            <button type="button" class="search-clear-end" aria-label="مسح البحث">×</button>
+          </div>
+        </div>
+
+        <!-- Select / Picker Trigger: Destination (4D Field Contract) -->
+        <div class="konfrm-field">
+          <label class="konfrm-label" id="lbl-destination-trigger">
+            <span>الوجهة الجغرافية</span>
+          </label>
+          <div 
+            class="konfrm-select-box" 
+            role="button" 
+            tabindex="0" 
+            aria-labelledby="lbl-destination-trigger" 
+            aria-haspopup="dialog"
+          >
+            <span class="select-value-text">الساحل الشمالي (مارينا، العلمين)</span>
+            <span class="select-chevron">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+          </div>
+          <div class="deferred-notice">
+            [عقد الحقل مرحلة 4D / نافذة خيارات القائمة مؤجلة لمرحلة 4F]
+          </div>
+        </div>
+
+        <!-- Date Range Pickers (Arrival & Departure) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="konfrm-field">
+            <label class="konfrm-label" id="lbl-arrival">
+              <span>تاريخ الوصول</span>
+            </label>
+            <div class="konfrm-select-box" role="button" tabindex="0" aria-labelledby="lbl-arrival">
+              <span class="select-value-text">15 يوليو</span>
+              <span class="select-chevron">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="konfrm-field">
+            <label class="konfrm-label" id="lbl-departure">
+              <span>تاريخ المغادرة</span>
+            </label>
+            <div class="konfrm-select-box" role="button" tabindex="0" aria-labelledby="lbl-departure">
+              <span class="select-value-text">20 يوليو</span>
+              <span class="select-chevron">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guest Stepper -->
+        <div class="stepper-box">
+          <div class="stepper-label-group">
+            <span class="stepper-title">عدد الضيوف</span>
+            <span class="stepper-sub">الحد الأدنى ضيف واحد</span>
+          </div>
+          <div class="stepper-controls">
+            <button type="button" class="stepper-btn" aria-label="تقليل الضيوف">-</button>
+            <span class="stepper-val">4</span>
+            <button type="button" class="stepper-btn" aria-label="زيادة الضيوف">+</button>
+          </div>
+        </div>
+
+        <!-- Price Ceiling Field with Suffix -->
+        <div class="konfrm-field">
+          <label class="konfrm-label" for="search-maxprice">
+            <span>سقف السعر لليلة الواحدة</span>
+          </label>
+          <div class="konfrm-input-box numeric-unit-box">
+            <input 
+              id="search-maxprice" 
+              type="text" 
+              inputmode="numeric" 
+              value="3,500" 
+            />
+            <span class="numeric-suffix">ج.م / ليلة</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-primary-4c">تطبيق نتائج البحث (12 إقامة)</button>
+      </section>
+
+      <!-- VIEW 3: OWNER PROPERTY WIZARD -->
+      <section class="device-content" id="view-owner-property" style="display: none;">
+        <div class="screen-header">
+          <h2>البيانات الأساسية للوحدة</h2>
+          <p>أدخل تفاصيل ومواصفات العقار لطرحه للمستأجرين.</p>
+        </div>
+
+        <!-- Property Title Input -->
+        <div class="konfrm-field">
+          <label class="konfrm-label" for="prop-title">
+            <span>اسم الوحدة أو الإعلان *</span>
+          </label>
+          <div class="konfrm-input-box">
+            <input 
+              id="prop-title" 
+              type="text" 
+              placeholder="مثال: شاليه فاخر بإطلالة بحرية مباشرة" 
+              value="شاليه أرضي بحديقة خاصة - مارينا 5" 
+            />
+          </div>
+        </div>
+
+        <!-- Property Type Chips -->
+        <div class="konfrm-field">
+          <label class="konfrm-label">
+            <span>نوع الوحدة *</span>
+          </label>
+          <div class="chip-grid">
+            <div class="chip-btn selected" role="button" tabindex="0">
+              <span>شاليه 🏖️</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="chip-btn" role="button" tabindex="0">
+              <span>فيلا مستقلة 🏡</span>
+            </div>
+            <div class="chip-btn" role="button" tabindex="0">
+              <span>شقة مصيفية 🏢</span>
+            </div>
+            <div class="chip-btn" role="button" tabindex="0">
+              <span>دوبلكس 🏘️</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Region Select Trigger -->
+        <div class="konfrm-field">
+          <label class="konfrm-label" id="lbl-prop-region">
+            <span>المنطقة الجغرافية *</span>
+          </label>
+          <div class="konfrm-select-box" role="button" tabindex="0" aria-labelledby="lbl-prop-region">
+            <span class="select-value-text">الساحل الشمالي (العلمين، مارينا)</span>
+            <span class="select-chevron">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Price Per Night Input -->
+        <div class="konfrm-field">
+          <label class="konfrm-label" for="prop-price">
+            <span>سعر الليلة الواحدة *</span>
+          </label>
+          <div class="konfrm-input-box numeric-unit-box">
+            <input 
+              id="prop-price" 
+              type="text" 
+              inputmode="numeric" 
+              value="2,800" 
+            />
+            <span class="numeric-suffix">ج.م</span>
+          </div>
+          <div class="konfrm-feedback helper-text">
+            <span>يدفع المستأجر قيمة الليلة الأولى كعربون تأكيد حجز.</span>
+          </div>
+        </div>
+
+        <!-- Multiline Description -->
+        <div class="konfrm-field">
+          <label class="konfrm-label" for="prop-desc">
+            <span>وصف الإقامة</span>
+            <span class="optional-tag">اختياري</span>
+          </label>
+          <div class="konfrm-textarea-box">
+            <textarea 
+              id="prop-desc" 
+              rows="3" 
+              placeholder="اكتب وصفاً مفصلاً يبرز تجهيزات الوحدة وإطلالتها..."
+            >شاليه متميز، موقع هادئ قريب من حمام السباحة والبحر، مجهز بالكامل بتكييفات وأجهزة حديثة.</textarea>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <button type="button" class="btn-secondary-4c">حفظ كمسودة</button>
+          <button type="button" class="btn-primary-4c">التالي: المواصفات</button>
+        </div>
+      </section>
+
+      <!-- VIEW 4: STATE MATRIX COMPARISON -->
+      <section class="device-content" id="view-state-matrix" style="display: none;">
+        <div class="screen-header">
+          <h2>مصفوفة حالات الحقول الكاملة</h2>
+          <p>فحص سلوك جميع الحالات التفاعلية والتحذيرية.</p>
+        </div>
+
+        <!-- State: Default -->
+        <div class="konfrm-field">
+          <label class="konfrm-label">1. الحالة الافتراضية (Default / Empty)</label>
+          <div class="konfrm-input-box">
+            <input type="text" placeholder="أدخل البيانات المطلوبة..." />
+          </div>
+        </div>
+
+        <!-- State: Focused -->
+        <div class="konfrm-field">
+          <label class="konfrm-label">2. حالة التركيز والنشاط (Focused Active)</label>
+          <div class="konfrm-input-box" style="border-color: var(--focus-ring-color); box-shadow: 0 0 0 3px var(--focus-ring-halo);">
+            <input type="text" value="جاري الكتابة..." />
+          </div>
+        </div>
+
+        <!-- State: Filled -->
+        <div class="konfrm-field">
+          <label class="konfrm-label">3. حالة الحقل الممتلئ (Filled)</label>
+          <div class="konfrm-input-box">
+            <input type="text" value="قيمة مدخلة ومكتملة" />
+          </div>
+        </div>
+
+        <!-- State: Validation Error -->
+        <div class="konfrm-field has-error">
+          <label class="konfrm-label">4. خطأ التحقق (Validation Error + Semantic Icon)</label>
+          <div class="konfrm-input-box">
+            <input type="text" value="قيمة خاطئة" aria-invalid="true" />
+          </div>
+          <div class="konfrm-feedback error-text" role="alert">
+            <svg class="error-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>الحقل مطلوب ولا يمكن تركه فارغاً.</span>
+          </div>
+        </div>
+
+        <!-- State: Disabled with reason -->
+        <div class="konfrm-field is-disabled">
+          <label class="konfrm-label">5. حقل معطّل (Disabled with Explanation)</label>
+          <div class="konfrm-input-box">
+            <input type="text" value="01001234567" disabled />
+          </div>
+          <div class="konfrm-feedback helper-text">
+            <span>لا يمكن تعديل رقم الهاتف بعد اكتمال التحقق الأمني.</span>
+          </div>
+        </div>
+
+        <!-- State: Selection Checkbox (Owner Settings) -->
+        <div class="checkbox-row" role="checkbox" aria-checked="true" tabindex="0">
+          <div class="checkbox-text">
+            <span class="checkbox-title">تنبيهات الحجوزات الفورية</span>
+            <span class="checkbox-sub">إشعار فوري عند استلام طلب حجز جديد من مستأجر</span>
+          </div>
+          <div class="custom-checkbox checked">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+
+        <!-- State: Selection Toggle (Candidate Preference Control) -->
+        <div class="toggle-row" role="switch" aria-checked="true" tabindex="0">
+          <div class="toggle-text">
+            <span class="toggle-title">تفعيل الرسائل النصية (SMS)</span>
+            <span class="toggle-sub">استلام تحديثات الحساب المالية عبر الهاتف</span>
+          </div>
+          <div class="custom-toggle checked">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 5: STRESS & SCALE REFLOW -->
+      <section class="device-content scaled-text" id="view-stress-test" style="display: none;">
+        <div class="screen-header">
+          <h2>اختبار الإجهاد والتكبير واللغات</h2>
+          <p>فحص انكسار الأسطر، عزل Bidi، وتوافق خط Cairo تحت التكبير العالي.</p>
+        </div>
+
+        <!-- Long Label Stress -->
+        <div class="konfrm-field">
+          <label class="konfrm-label" for="stress-long-label">
+            <span>اسم العقار بالكامل كما هو مسجل في العقد الرسمي وسجلات القرية الساحلية *</span>
+          </label>
+          <div class="konfrm-input-box">
+            <input id="stress-long-label" type="text" value="شاليه مارينا ريزيدنس - المرحلة الخامسة" />
+          </div>
+        </div>
+
+        <!-- Mixed Bidi Run in Input -->
+        <div class="konfrm-field">
+          <label class="konfrm-label" for="stress-bidi">
+            <span>نص مختلط Bidi (عربي + إنجليزي + أرقام)</span>
+          </label>
+          <div class="konfrm-input-box">
+            <input id="stress-bidi" type="text" value="Chalet #402 قرية Stella Di Mare الساحل" />
+          </div>
+          <div class="konfrm-feedback helper-text">
+            <span>عزل اتجاه الأرقام اللاتينية والإنجليزية دون ارتباك المؤشر.</span>
+          </div>
+        </div>
+
+        <!-- Long Error Message Wrap Test -->
+        <div class="konfrm-field has-error">
+          <label class="konfrm-label">خطأ مطول متعدد الأسطر مع انكسار النص</label>
+          <div class="konfrm-input-box">
+            <input type="text" value="قيمة غير صالحة" aria-invalid="true" />
+          </div>
+          <div class="konfrm-feedback error-text" role="alert">
+            <svg class="error-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>تعذر حفظ القيمة المدخلة بهذه الصيغة. راجع الأرقام المدخلة وتأكد من عدم وجود رموز غير مدعومة، ثم حاول مرة أخرى.</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-primary-4c">زر الاختبار الرئيسي</button>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // Controller logic for pilot controls and routing
+    const body = document.body;
+    const device = document.getElementById('device-container');
+
+    const selFamily = document.getElementById('sel-family');
+    const selRadius = document.getElementById('sel-radius');
+    const selFocus = document.getElementById('sel-focus');
+    const selViewport = document.getElementById('sel-viewport');
+    const selScale = document.getElementById('sel-scale');
+
+    const tabs = document.querySelectorAll('.nav-tab');
+    const views = {
+      'customer-auth': document.getElementById('view-customer-auth'),
+      'customer-search': document.getElementById('view-customer-search'),
+      'owner-property': document.getElementById('view-owner-property'),
+      'state-matrix': document.getElementById('view-state-matrix'),
+      'stress-test': document.getElementById('view-stress-test')
+    };
+
+    function applyControls() {
+      // Family
+      body.setAttribute('data-family', selFamily.value);
+
+      // Radius
+      const r = selRadius.value + 'px';
+      document.documentElement.style.setProperty('--input-radius', r);
+      body.setAttribute('data-radius', selRadius.value);
+
+      // Focus
+      if (selFocus.value === 'black') {
+        document.documentElement.style.setProperty('--focus-ring-color', '#000000');
+        document.documentElement.style.setProperty('--focus-ring-halo', 'rgba(0, 0, 0, 0.15)');
+        body.setAttribute('data-focus', 'black');
+      } else {
+        document.documentElement.style.setProperty('--focus-ring-color', 'var(--candidate-blue)');
+        document.documentElement.style.setProperty('--focus-ring-halo', 'var(--candidate-blue-halo)');
+        body.setAttribute('data-focus', 'accent');
+      }
+
+      // Viewport width
+      const w = selViewport.value;
+      device.style.width = w + 'px';
+      body.setAttribute('data-viewport', w);
+
+      // Scale
+      const s = selScale.value;
+      document.documentElement.style.setProperty('--text-scale', s + '%');
+      body.setAttribute('data-scale', s);
+    }
+
+    function switchView(viewName) {
+      tabs.forEach(t => {
+        t.classList.toggle('active', t.getAttribute('data-view') === viewName);
+      });
+      Object.entries(views).forEach(([name, el]) => {
+        if (el) el.style.display = (name === viewName) ? 'flex' : 'none';
+      });
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const v = tab.getAttribute('data-view');
+        switchView(v);
+        updateUrl();
+      });
+    });
+
+    [selFamily, selRadius, selFocus, selViewport, selScale].forEach(ctl => {
+      ctl.addEventListener('change', () => {
+        applyControls();
+        updateUrl();
+      });
+    });
+
+    function updateUrl() {
+      const activeTab = document.querySelector('.nav-tab.active')?.getAttribute('data-view') || 'customer-auth';
+      const params = new URLSearchParams({
+        view: activeTab,
+        family: selFamily.value,
+        radius: selRadius.value,
+        focus: selFocus.value,
+        viewport: selViewport.value,
+        scale: selScale.value
+      });
+      history.replaceState(null, '', '?' + params.toString());
+    }
+
+    function initFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('family')) selFamily.value = params.get('family');
+      if (params.has('radius')) selRadius.value = params.get('radius');
+      if (params.has('focus')) selFocus.value = params.get('focus');
+      if (params.has('viewport')) selViewport.value = params.get('viewport');
+      if (params.has('scale')) selScale.value = params.get('scale');
+      if (params.has('view')) switchView(params.get('view'));
+      applyControls();
+    }
+
+    // Toggle interaction in pilot
+    document.querySelectorAll('.checkbox-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const box = row.querySelector('.custom-checkbox');
+        const isChecked = box.classList.toggle('checked');
+        row.setAttribute('aria-checked', isChecked ? 'true' : 'false');
+      });
+    });
+
+    document.querySelectorAll('.toggle-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const tog = row.querySelector('.custom-toggle');
+        const isChecked = tog.classList.toggle('checked');
+        row.setAttribute('aria-checked', isChecked ? 'true' : 'false');
+      });
+    });
+
+    document.querySelectorAll('.chip-btn').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.parentElement.querySelectorAll('.chip-btn').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+      });
+    });
+
+    initFromUrl();
+  </script>
+</body>
+</html>

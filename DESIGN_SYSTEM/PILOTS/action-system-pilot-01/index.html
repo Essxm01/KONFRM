@@ -79,19 +79,21 @@
       opacity: 0.85;
     }
 
-    /* Governance Top Disclaimer Banner */
+    /* Governance Top Disclaimer Banner (Neutral Lab Chrome — UX-COLOR-01 Compliant) */
     .governance-disclaimer {
-      background-color: #FEF3C7;
-      border: 1px solid #F59E0B;
-      color: #92400E;
-      padding: 12px 18px;
-      border-radius: 6px;
+      background-color: #FFFFFF;
+      border: 1px solid var(--kf-color-border-subtle);
+      color: var(--kf-color-text-secondary);
+      padding: 14px 18px;
+      border-radius: 8px;
       margin-bottom: 24px;
       font-size: 13px;
       line-height: 1.5;
     }
-    .governance-disclaimer strong {
-      color: #78350F;
+    .governance-disclaimer strong,
+    .governance-disclaimer .disclaimer-title {
+      color: var(--kf-color-text-primary);
+      font-weight: 700;
     }
 
     /* Lab Header */
@@ -235,7 +237,8 @@
       transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.08s ease, opacity 0.15s ease;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
-      outline: none;
+      outline: 2px solid transparent;
+      outline-offset: 2px;
       position: relative;
       white-space: normal;
       word-break: break-word;
@@ -270,7 +273,9 @@
       transform: scale(0.98);
       filter: brightness(0.90);
     }
-    .kf-btn-primary:focus-visible {
+    .kf-btn-primary:focus-visible,
+    .kf-btn-primary.is-focused {
+      outline: none;
       box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-primary-black);
     }
 
@@ -285,8 +290,11 @@
       transform: scale(0.98);
       background-color: var(--kf-color-surface-subtle);
     }
-    .kf-btn-secondary-outline:focus-visible {
+    .kf-btn-secondary-outline:focus-visible,
+    .kf-btn-secondary-outline.is-focused {
+      outline: none;
       box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-primary-black);
+      background-color: var(--kf-color-surface-subtle);
     }
 
     /* SECONDARY CANDIDATE 2: NEUTRAL SUBTLE FILL */
@@ -300,7 +308,9 @@
       transform: scale(0.98);
       background-color: #E2E8F0;
     }
-    .kf-btn-secondary-fill:focus-visible {
+    .kf-btn-secondary-fill:focus-visible,
+    .kf-btn-secondary-fill.is-focused {
+      outline: none;
       box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-primary-black);
     }
 
@@ -315,8 +325,11 @@
       transform: scale(0.98);
       background-color: var(--kf-color-surface-subtle);
     }
-    .kf-btn-secondary-ghost:focus-visible {
+    .kf-btn-secondary-ghost:focus-visible,
+    .kf-btn-secondary-ghost.is-focused {
+      outline: none;
       box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-primary-black);
+      background-color: var(--kf-color-surface-subtle);
     }
 
     /* DESTRUCTIVE ACTION (Primary & Outline & Ghost) */
@@ -330,7 +343,9 @@
       transform: scale(0.98);
       filter: brightness(0.90);
     }
-    .kf-btn-danger-primary:focus-visible {
+    .kf-btn-danger-primary:focus-visible,
+    .kf-btn-danger-primary.is-focused {
+      outline: none;
       box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-color-danger);
     }
 
@@ -344,6 +359,12 @@
       transform: scale(0.98);
       background-color: var(--kf-color-danger-subtle);
     }
+    .kf-btn-danger-outline:focus-visible,
+    .kf-btn-danger-outline.is-focused {
+      outline: none;
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-color-danger);
+      background-color: var(--kf-color-danger-subtle);
+    }
 
     .kf-btn-danger-ghost {
       background-color: transparent;
@@ -353,6 +374,12 @@
     }
     .kf-btn-danger-ghost:active {
       transform: scale(0.98);
+      background-color: var(--kf-color-danger-subtle);
+    }
+    .kf-btn-danger-ghost:focus-visible,
+    .kf-btn-danger-ghost.is-focused {
+      outline: none;
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-color-danger);
       background-color: var(--kf-color-danger-subtle);
     }
 
@@ -375,17 +402,27 @@
       transform: scale(0.96);
       background: var(--kf-color-surface-subtle);
     }
+    .kf-btn-icon:focus-visible,
+    .kf-btn-icon.is-focused {
+      outline: none;
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--kf-primary-black);
+      background: var(--kf-color-surface-subtle);
+    }
 
     /* STATES: LOADING & DISABLED */
-    .kf-btn.is-disabled, .kf-btn:disabled {
+    .kf-btn:disabled:not(.is-loading),
+    .kf-btn.is-disabled {
       opacity: 0.45;
       cursor: not-allowed;
       pointer-events: none;
       transform: none !important;
     }
-    .kf-btn.is-loading {
+    .kf-btn.is-loading,
+    .kf-btn.is-loading:disabled,
+    .kf-btn[aria-busy="true"]:disabled {
       cursor: wait;
       pointer-events: none;
+      opacity: 0.85; /* Visually distinct from disabled: maintains high text contrast and active feel */
     }
     .kf-spinner {
       width: 16px;
@@ -457,13 +494,13 @@
 </head>
 <body>
 
-  <!-- Synthetic Test Data Governance Disclaimer -->
+  <!-- Synthetic Test Data Governance Disclaimer (Neutral Lab Chrome — UX-COLOR-01 Compliant) -->
   <aside class="governance-disclaimer" aria-label="إشعار بيانات الاختبار">
-    <div style="font-weight: 700; margin-bottom: 2px;">
+    <div class="disclaimer-title" style="margin-bottom: 4px;">
       إشعار حوكمة البيانات التجريبية <span class="en-tag" dir="ltr">(Synthetic Test Data Governance Disclaimer)</span>:
     </div>
     <div>
-      جميع سيناريوهات الوحدات والأسعار والأزرار المعروضة في هذا المعمل هي بيانات تجريبية تركيبية مصممة خصيصاً لاختبار واعتماد نظام الأزرار <span class="en-tag" dir="ltr">(Phase 4C)</span>. لا تمثل سجلات حقيقية ولا تحتوي على أي تقييمات أو إشارات ترويجية مصطنعة.
+      محتوى تجريبي تركيبي واقعي <span class="en-tag" dir="ltr">(REALISTIC SYNTHETIC TEST CONTENT)</span> • لا يمثل بيانات إنتاجية حقيقية <span class="en-tag" dir="ltr">(NOT PRODUCTION DATA)</span> • خالٍ تماماً من التقييمات أو المراجعات أو إشارات الندرة المصطنعة <span class="en-tag" dir="ltr">(NO FAKE RATINGS / REVIEWS / SCARCITY)</span>. جميع السيناريوهات مخصصة حصراً لاختبار وهندسة نظام الأزرار <span class="en-tag" dir="ltr">(Phase 4C)</span>.
     </div>
   </aside>
 
@@ -522,7 +559,7 @@
             </div>
             <div>
               <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">جاري المعالجة <span class="en-tag" dir="ltr">(Loading — aria-busy)</span>:</span>
-              <button class="kf-btn kf-btn-primary kf-btn-full is-loading" aria-busy="true">
+              <button class="kf-btn kf-btn-primary kf-btn-full is-loading" aria-busy="true" disabled>
                 <span class="kf-spinner"></span>
                 <span>جاري إرسال الطلب...</span>
               </button>
@@ -731,7 +768,7 @@
         <div class="card-box">
           <div class="card-title">د. حالات الزر الرئيسي للعميل <span class="en-tag" dir="ltr">(Customer Action States)</span></div>
           <div style="display: flex; flex-direction: column; gap: 8px;">
-            <button class="kf-btn kf-btn-primary kf-btn-full is-loading" aria-busy="true">
+            <button class="kf-btn kf-btn-primary kf-btn-full is-loading" aria-busy="true" disabled>
               <span class="kf-spinner"></span>
               <span>جاري إرسال الطلب إلى المالك...</span>
             </button>
@@ -846,7 +883,7 @@
           <div class="card-box" style="margin-bottom: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <span style="font-weight: 700; font-size: 13px;">طلب حجز #KNF-88219</span>
-              <span style="font-size: 11px; background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
+              <span style="font-size: 11px; background: var(--kf-color-surface-subtle); color: var(--kf-color-text-secondary); border: 1px solid var(--kf-color-border-subtle); padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
             </div>
             <div style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
               الضيف: أحمد م. • 3 ليالٍ • إجمالي الحجز: 4,800 ج.م (العربون: 1,600 ج.م)
@@ -862,7 +899,7 @@
           <div class="card-box" style="margin-bottom: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <span style="font-weight: 700; font-size: 13px;">طلب حجز #KNF-88220</span>
-              <span style="font-size: 11px; background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
+              <span style="font-size: 11px; background: var(--kf-color-surface-subtle); color: var(--kf-color-text-secondary); border: 1px solid var(--kf-color-border-subtle); padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
             </div>
             <div style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
               الضيفة: سارة خ. • ليلتان • إجمالي الحجز: 3,200 ج.م (العربون: 1,600 ج.م)
@@ -878,7 +915,7 @@
           <div class="card-box" style="margin-bottom: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <span style="font-weight: 700; font-size: 13px;">طلب حجز #KNF-88221</span>
-              <span style="font-size: 11px; background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
+              <span style="font-size: 11px; background: var(--kf-color-surface-subtle); color: var(--kf-color-text-secondary); border: 1px solid var(--kf-color-border-subtle); padding: 2px 6px; border-radius: 4px; font-weight: 600;">قيد المراجعة</span>
             </div>
             <div style="font-size: 12px; color: var(--kf-color-text-secondary); margin-bottom: 10px;">
               الضيف: عمر ن. • 4 ليالٍ • إجمالي الحجز: 6,400 ج.م (العربون: 1,600 ج.م)
@@ -946,8 +983,8 @@
               <button class="kf-btn kf-btn-primary kf-btn-full" style="box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #000000;">طلب الحجز الآن</button>
             </div>
             <div>
-              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">جاري المعالجة (Loading — aria-busy="true"):</span>
-              <button class="kf-btn kf-btn-primary kf-btn-full is-loading" aria-busy="true">
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 4px;">جاري المعالجة (Loading — aria-busy="true" + disabled):</span>
+              <button class="kf-btn kf-btn-primary kf-btn-full is-loading" aria-busy="true" disabled>
                 <span class="kf-spinner"></span>
                 <span>جاري إرسال الطلب...</span>
               </button>
@@ -994,6 +1031,44 @@
             <div style="display: flex; gap: 8px;">
               <button class="kf-btn kf-btn-primary" style="flex: 1.2;">الموافقة على الطلب</button>
               <button class="kf-btn kf-btn-danger-outline" style="flex: 1;">رفض الطلب</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 14: DESTRUCTIVE FOCUS STATES -->
+      <section class="section-block" id="sec-destructive-focus">
+        <div class="section-header">
+          <h2 class="section-title">14. حالات تركيز لوحة المفاتيح للإجراءات التحذيرية <span class="en-tag" dir="ltr">(Destructive Focus States)</span></h2>
+          <p class="section-desc">
+            توثيق إمكانية الوصول ووضوح حلقة التركيز المزدوجة ومؤشر السطح لكافة أشكال الإجراء التحذيري (بدون الاعتماد على اللون بمفرده).
+          </p>
+        </div>
+
+        <div class="card-box">
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Destructive Primary Focused -->
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 6px;">
+                إجراء تحذيري رئيسي في حالة تركيز <span class="en-tag" dir="ltr">(Destructive Primary — Focus-Visible)</span>:
+              </span>
+              <button class="kf-btn kf-btn-danger-primary kf-btn-full is-focused">تأكيد الإجراء الحذر</button>
+            </div>
+
+            <!-- Destructive Outline Focused -->
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 6px;">
+                إجراء تحذيري خطي في حالة تركيز <span class="en-tag" dir="ltr">(Destructive Outline — Focus-Visible)</span>:
+              </span>
+              <button class="kf-btn kf-btn-danger-outline kf-btn-full is-focused">رفض الطلب</button>
+            </div>
+
+            <!-- Destructive Ghost Focused -->
+            <div>
+              <span style="font-size: 11px; color: var(--kf-color-text-secondary); display: block; margin-bottom: 6px;">
+                إجراء تحذيري نصي/شفاف في حالة تركيز <span class="en-tag" dir="ltr">(Destructive Ghost — Focus-Visible)</span>:
+              </span>
+              <button class="kf-btn kf-btn-danger-ghost kf-btn-full is-focused">تراجع عن الإجراء</button>
             </div>
           </div>
         </div>

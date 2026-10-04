@@ -1,26 +1,32 @@
-# Active Task — PHASE_4D_FORM_SELECTION_PRIMITIVES
+# Active Task — GOVERNANCE_DESIGN_COURT_V1
 
-TASK_ID: PHASE_4D_FORM_SELECTION_PRIMITIVES
-ROADMAP_PHASE: PHASE_4_UNIFIED_DESIGN_SYSTEM
-STATUS: READY_FOR_PUBLICATION
-SUBSTANTIVE_STATUS: COMPLETE
-FOUNDER_DECISION_STATUS: RECORDED
-GOVERNANCE_SYNC_STATUS: COMPLETE
-PUBLICATION_STATUS: PR_PENDING
-BASE_MAIN_SHA: 3520ca0dd28c013a52a2b0cc15670eab1b974442
-BRANCH: design/form-selection-pilot-01
-SCOPE: Phase 4D — Form & Selection Primitives (text inputs, phone/email fields, search, select/pickers, checkbox/toggle where required, helper/error behavior, focus/keyboard behavior, and Arabic/RTL input details).
+TASK_ID: GOVERNANCE_DESIGN_COURT_V1
+TASK_CLASS: CROSS_CUTTING_GOVERNANCE_INFRASTRUCTURE
+STATUS: ACTIVE
+FOUNDER_AUTHORIZATION: APPROVED (Design Court v1 architecture spec)
+BASE_MAIN_SHA: 0134f60984d5d52f3442ef49763bf6c75a564214
+BRANCH: governance/design-court-v1
+SCOPE: Design decision governance infrastructure only — add `konfrm-design-court` (8th internal governed skill; 14 governed skill directories), Router/Registry integration, deterministic policy + contract tests, thin discovery shims, and a historical non-mutating replay.
 
-## Execution Position Notice
-- `STATUS: READY_FOR_PUBLICATION` indicates that Phase 4D discovery, visual pilot, Founder decision recording, and shared governance synchronization are complete.
-- `SUBSTANTIVE_STATUS: COMPLETE`
-- `FOUNDER_DECISION_STATUS: RECORDED`
-- `GOVERNANCE_SYNC_STATUS: COMPLETE`
-- `PUBLICATION_STATUS: PR_PENDING`
-- Publication PR is prepared against `main`. Do NOT mark CLOSED or MERGED until PR is merged.
-- Next active design dependency after PR merge is **Phase 4E — Structural System** (`STATUS: NOT_STARTED`).
+## Boundaries
+- Does NOT alter roadmap dependency ordering.
+- Does NOT modify production apps, backend, database, API contracts, tokens, business/financial/booking/auth rules, or published Phase 4D decisions.
+- Design Court output is advisory governance evidence; it never constitutes Founder approval, Product Truth, or Canon promotion.
+- **PHASE_4E_STRUCTURAL_SYSTEM:** `NOT_STARTED` (`EXECUTION_STARTED: NO`). Do NOT begin 4E work in this task.
 
-## Phase 4D Core Decisions & Governance Results
+## Closure Gates
+- Court skill + support files, Router/Registry integration, `npm run ai:skills:check` (including Design Court contract test), `npm run design:check`, thin shims synchronized, PR created. Not CLOSED until the PR merges.
+
+---
+
+## Closed Upstream Dependency — Phase 4D Form & Selection Primitives
+- **PHASE_4D_STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#92`
+- **MERGE_COMMIT:** `0134f60984d5d52f3442ef49763bf6c75a564214`
+- **REVIEWED_HEAD:** `b3d7fb1b57ab8d4a8adb3e1941710ab68c6aefad`
+- **Web pilot outline reference:** `#8E8E93` (~3.26:1 against `#FFFFFF`; reference only).
+
+### Phase 4D Published Decisions (preserved)
 - **Field Visual Strategy:** **`OUTLINE_LED`** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). White surface, thin neutral outline, explicit persistent top label, separate helper/error, no floating-label dependency.
 - **Mobile Field Radius:** **`8px`** (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`).
   - *Exact Scope:* Applies strictly to mobile field-shaped Form & Selection primitives: text input, phone container, email container, numeric container, search container, multiline textarea, select/picker trigger when rendered as a field.
@@ -44,11 +50,11 @@ SCOPE: Phase 4D — Form & Selection Primitives (text inputs, phone/email fields
 - **Token Changes:** NONE
 - **Native Acceptance:** `DEFERRED_TO_4I`
 
-## Next Dependency After 4D Publication Merge
+## Next Roadmap Dependency (unchanged by Design Court)
 - **PHASE_4E_STRUCTURAL_SYSTEM**
   - **STATUS:** `NOT_STARTED`
   - **EXECUTION_STARTED:** `NO`
-  - Do NOT switch active task to Phase 4E until PR merges into `main`.
+  - Requires its own separately issued task instruction; not started by this governance task.
 
 ---
 

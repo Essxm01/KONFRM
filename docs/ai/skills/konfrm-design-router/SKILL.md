@@ -28,6 +28,7 @@ The Master Design Triage Layer for the KONFRM platform across all AI agents (Cod
 4. **External Skills as Debate Participants:** Treat external skills as competing advisory perspectives in a disciplined dialectic, rather than authoritative commands.
 5. **Pre-flight Conflict Resolution:** Detect potential conflicts between external advice and KONFRM Design Canon before work begins, ensuring Canon wins unconditionally.
 6. **Standardized Reporting Enforcement:** Mandate the appropriate reporting block upon task completion: `FULL` mode for unresolved visual/architectural decisions, or `COMPACT` mode for routine implementations and fixes.
+7. **Design Court Escalation:** Route only materially unresolved design decisions to `konfrm-design-court` (`FAST_PANEL` by default, `FULL_COURT` for system-level or cross-role decisions). Routine work never enters the Court (see §3).
 
 ---
 
@@ -87,6 +88,24 @@ visual QA / prototype validation (konfrm-visual-qa)
   - Obvious responsive overflow corrections
   - Implementation parity fixes with existing screens
   - Routine accessibility remediations where the standard requirement is already known
+
+### Design Court Escalation (`konfrm-design-court`)
+
+```
+Incoming design task → classify
+  ├── routine / known / already governed  → normal minimal skill path (COMPACT report); Court returns COURT_NOT_REQUIRED
+  ├── meaningful but resolvable by one reasoning pass → konfrm-design-reasoning (FULL report)
+  └── materially unresolved design decision → konfrm-design-court
+        ├── bounded choice (radius A vs B, icon/field/secondary treatment) → FAST_PANEL (default)
+        └── primitive system, navigation/screen/interaction architecture, cross-role conflict,
+            brand-language or token-family strategy, material Founder-vs-system tension → FULL_COURT
+```
+
+Court triggers: unresolved primitive choice; two or more credible visual directions; role conflict; brand-vs-UX tradeoff; major component/system choice; major screen decision; interaction-architecture ambiguity; Founder explicitly requests the Design Court.
+
+- Do NOT send every UI task through the Court. Typos, literal clipping, obvious RTL property bugs, known a11y fixes, parity fixes, backend behavior and routine code bugs never require it.
+- The Court orchestrates `konfrm-design-reasoning` and the specialist skills; it does not replace them.
+- Court output is advisory (`ADVISORY` / `CANDIDATE` / `VALIDATED_CANDIDATE`); it never replaces Founder authority or promotes Canon.
 
 ---
 
@@ -167,7 +186,14 @@ Used whenever `konfrm-design-reasoning` is invoked:
 - EVIDENCE_VS_CANON: [advisory external inputs vs authoritative canonical decisions]
 - VALIDATION_NEEDED: [recommended micro-validation method (prototype, test, survey), or NONE]
 - VISUAL_QA: [tested viewports or explicit NOT EXECUTED statement if simulation/routing only]
+- COURT_USED: [YES | NO]
+- COURT_MODE: [FAST_PANEL | FULL_COURT | N/A]
+- COURT_OUTCOME: [Design Court outcome, or N/A]
+- COURT_CONSENSUS: [consensus class, or N/A]
+- FOUNDER_DECISION_REQUIRED: [YES | NO]
 ```
+
+The `COURT_*` fields are populated only when `konfrm-design-court` ran; otherwise `COURT_USED: NO` and the remaining Court fields are `N/A`.
 
 ### Mode B: COMPACT REPORT (for routine fixes, literal bugs, typos, and known accessibility remediations)
 

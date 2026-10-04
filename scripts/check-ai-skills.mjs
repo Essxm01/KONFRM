@@ -183,6 +183,7 @@ const internalSkills = [
   'konfrm-product-ux',
   'konfrm-design-router',
   'konfrm-design-reasoning',
+  'konfrm-design-court',
 ];
 
 // Verify konfrm-design-reasoning exists and router references it
@@ -200,6 +201,11 @@ if (fs.existsSync(routerFile)) {
     fail('konfrm-design-router/SKILL.md does not reference konfrm-design-reasoning for visual decisions');
   } else {
     pass('konfrm-design-router integration with konfrm-design-reasoning verified.');
+  }
+  if (!routerText.includes('konfrm-design-court')) {
+    fail('konfrm-design-router/SKILL.md does not reference konfrm-design-court for escalation');
+  } else {
+    pass('konfrm-design-router integration with konfrm-design-court verified.');
   }
 }
 
@@ -315,6 +321,160 @@ for (const forbidden of forbiddenInstalledSkills) {
   }
 }
 pass('Sandbox and rejected skills excluded from agent discovery directories.');
+
+// 9. Design Court v1 Governance Policy Checks
+const courtDir = path.join(CANONICAL_DIR, 'konfrm-design-court');
+const courtSkillMd = path.join(courtDir, 'SKILL.md');
+
+// A. Design Court SKILL.md exists
+if (!fs.existsSync(courtSkillMd)) {
+  fail('Missing konfrm-design-court/SKILL.md in canonical skills');
+} else {
+  pass('konfrm-design-court SKILL.md verified present.');
+}
+
+// B. Required support files exist
+const requiredCourtFiles = [
+  'ROLES.md',
+  'DELIBERATION_PROTOCOL.md',
+  'PERSONA_PANEL.md',
+  'EVIDENCE_MODEL.md',
+  'VERDICT_TEMPLATE.md',
+  'TEST_CASES.md',
+];
+let missingCourtFiles = 0;
+for (const reqFile of requiredCourtFiles) {
+  if (!fs.existsSync(path.join(courtDir, reqFile))) {
+    fail(`Missing required Design Court support file: konfrm-design-court/${reqFile}`);
+    missingCourtFiles++;
+  }
+}
+if (missingCourtFiles === 0) {
+  pass('All 6 required Design Court support files verified present.');
+}
+
+if (fs.existsSync(courtSkillMd)) {
+  const courtText = fs.readFileSync(courtSkillMd, 'utf8');
+  const allCourtText = [
+    courtText,
+    ...requiredCourtFiles
+      .map(f => path.join(courtDir, f))
+      .filter(p => fs.existsSync(p))
+      .map(p => fs.readFileSync(p, 'utf8'))
+  ].join('\n');
+
+  // D. Court references konfrm-design-reasoning
+  if (!allCourtText.includes('konfrm-design-reasoning')) {
+    fail('Design Court does not reference konfrm-design-reasoning');
+  } else {
+    pass('Design Court integration with konfrm-design-reasoning verified.');
+  }
+
+  // E. Explicit Founder subordination
+  if (!allCourtText.includes('Founder / explicitly approved Product authority') || !allCourtText.includes('subordinate to the Founder')) {
+    fail('Design Court missing explicit Founder subordination');
+  } else {
+    pass('Design Court Founder subordination verified.');
+  }
+
+  // F. Synthetic personas are NOT user research
+  if (!allCourtText.includes('SYNTHETIC PERSONA OPINION != USER RESEARCH EVIDENCE') && !allCourtText.includes('synthetic personas are NOT user research')) {
+    fail('Design Court missing synthetic persona research guard');
+  } else {
+    pass('Design Court persona truth guard verified.');
+  }
+
+  // G. Hard Gates defined
+  if (!allCourtText.includes('BUSINESS_CANON') || !allCourtText.includes('PRODUCT_TRUTH')) {
+    fail('Design Court missing Hard Gates definition');
+  } else {
+    pass('Design Court Hard Gates definition verified.');
+  }
+
+  // H. Majority cannot override Hard Gate failure
+  if (!allCourtText.includes('majority cannot override') && !allCourtText.includes('Hard Gate failure overrides popularity')) {
+    fail('Design Court missing Hard Gate majority override ban');
+  } else {
+    pass('Design Court Hard Gate majority override ban verified.');
+  }
+
+  // I. DELIBERATION_TOPOLOGY defined
+  if (!allCourtText.includes('DELIBERATION_TOPOLOGY') || !allCourtText.includes('SINGLE_AGENT_STRUCTURED_PANEL') || !allCourtText.includes('TRUE_MULTI_AGENT')) {
+    fail('Design Court missing DELIBERATION_TOPOLOGY definition');
+  } else {
+    pass('Design Court deliberation topology truth verified.');
+  }
+
+  // J. Unavailable skill behavior & ban on fabricated votes
+  if (!allCourtText.includes('no fabricated position') || !allCourtText.includes('no fabricated vote')) {
+    fail('Design Court missing unavailable skill / fabricated vote prohibition');
+  } else {
+    pass('Design Court unavailable skill and fabricated vote ban verified.');
+  }
+
+  // K. MINORITY_OPINION defined
+  if (!allCourtText.includes('MINORITY_OPINION')) {
+    fail('Design Court missing MINORITY_OPINION definition');
+  } else {
+    pass('Design Court MINORITY_OPINION requirement verified.');
+  }
+
+  // L. NEEDS_VISUAL_EVIDENCE defined
+  if (!allCourtText.includes('NEEDS_VISUAL_EVIDENCE')) {
+    fail('Design Court missing NEEDS_VISUAL_EVIDENCE definition');
+  } else {
+    pass('Design Court NEEDS_VISUAL_EVIDENCE outcome verified.');
+  }
+
+  // M. Prevents itself from promoting decision directly to CANONICAL
+  if (!allCourtText.includes('DECISION_STATUS: CANONICAL') && !allCourtText.includes('prohibited from emitting a canonical decision status')) {
+    fail('Design Court missing canonical promotion prohibition');
+  } else {
+    pass('Design Court canonical promotion prohibition verified.');
+  }
+
+  // N. FAST_PANEL and FULL_COURT defined
+  if (!allCourtText.includes('FAST_PANEL') || !allCourtText.includes('FULL_COURT')) {
+    fail('Design Court missing FAST_PANEL or FULL_COURT mode definitions');
+  } else {
+    pass('Design Court modes (FAST_PANEL / FULL_COURT) verified.');
+  }
+
+  // O. COURT_NOT_REQUIRED defined
+  if (!allCourtText.includes('COURT_NOT_REQUIRED')) {
+    fail('Design Court missing COURT_NOT_REQUIRED route');
+  } else {
+    pass('Design Court COURT_NOT_REQUIRED route verified.');
+  }
+
+  // P. Anti-bias challenge included
+  if (!allCourtText.includes('IF OUR PREFERRED VERDICT IS WRONG, WHAT IS THE MOST PLAUSIBLE REASON?')) {
+    fail('Design Court missing anti-bias challenge question');
+  } else {
+    pass('Design Court anti-bias challenge verified.');
+  }
+
+  // Q. External-skill subordination preserved
+  if (!allCourtText.includes('subordinate to KONFRM Canon')) {
+    fail('Design Court missing external-skill subordination rule');
+  } else {
+    pass('Design Court external-skill subordination verified.');
+  }
+}
+
+// 10. Design Court Deterministic Contract Test Execution
+const courtTestScript = path.join(projectRoot, 'scripts', 'test-design-court-contract.mjs');
+if (fs.existsSync(courtTestScript)) {
+  try {
+    const nodeExe = process.execPath;
+    execSync(`"${nodeExe}" "${courtTestScript}"`, { stdio: 'pipe' });
+    pass('Design Court deterministic contract test executed and passed (8/8 scenarios).');
+  } catch (err) {
+    fail(`Design Court deterministic contract test FAILED: ${err.message}`);
+  }
+} else {
+  fail(`Missing Design Court contract test script: ${courtTestScript}`);
+}
 
 console.log('====================================================');
 if (failureCount > 0) {

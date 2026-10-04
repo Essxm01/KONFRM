@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONFRM Phase 4F — Navigation & Overlay System Pilot</title>
+  <style>
+    @font-face {
+      font-family: 'Cairo';
+      src: url('./fonts/Cairo-VariableFont.ttf') format('truetype');
+      font-weight: 200 900;
+      font-style: normal;
+    }
+
+    :root {
+      /* Typography — Cairo Profile B (4B System-Validated Provisional) */
+      --konfrm-font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      --scale-factor: 1;
+
+      /* Foundations */
+      --primary-black: #000000;
+      --button-primary-radius: 6px; /* Phase 4C PRIMARY_ONLY */
+      --field-radius: 8px;          /* Phase 4D Field-shaped controls */
+      --struct-container-radius: 12px; /* Phase 4E Structural container provisional */
+      --mobile-page-inset: 16px;    /* Phase 4E Page Inset provisional */
+      
+      /* Colors */
+      --accent-blue: #276EF1;       /* Restrained interaction accent candidate */
+      --accent-blue-soft: #EAF1FF;
+      --bg-canvas-light: #F8FAFC;
+      --bg-surface-white: #FFFFFF;
+      --bg-surface-subtle: #F1F5F9;
+      --text-main: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --border-subtle: #E2E8F0;
+      --border-field: #8E8E93;
+      --border-divider: #F1F5F9;
+      --status-success: #059669;
+      --status-success-bg: #ECFDF5;
+      --status-pending: var(--accent-blue);
+      --status-pending-bg: var(--accent-blue-soft);
+      --status-danger: #DC2626;
+      --status-danger-bg: #FEF2F2;
+
+      /* Phase 4F Overlay & Navigation Geometry Candidates */
+      --sheet-radius: 16px;
+      --dialog-radius: 12px;
+      --nav-height: 60px;
+      --app-bar-height: 56px;
+      --sticky-action-height: 72px;
+      --safe-area-bottom: 24px;
+      --safe-area-top: 44px;
+      --overlay-shadow: 0 -4px 24px rgba(15, 23, 42, 0.10);
+      --dialog-shadow: 0 12px 36px rgba(15, 23, 42, 0.16);
+    }
+
+    /* Scaling support for true 200% text scale tests */
+    body.scale-200 { --scale-factor: 2.0; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--konfrm-font-family);
+      background-color: #0B1120;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      direction: rtl;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Pilot Toolbar (hidden in ?embed=1) */
+    header.pilot-bar {
+      background: #1E293B;
+      border-bottom: 1px solid #334155;
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: #F8FAFC;
+    }
+
+    header.pilot-bar .title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header.pilot-bar h1 {
+      font-size: calc(16px * var(--scale-factor));
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    header.pilot-bar .badge {
+      background: #3B82F6;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 9999px;
+    }
+
+    .controls-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-label {
+      font-size: 12px;
+      color: #94A3B8;
+      font-weight: 600;
+    }
+
+    select, button.btn-ctrl {
+      background: #0F172A;
+      color: #F8FAFC;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-family: var(--konfrm-font-family);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    select:focus, button.btn-ctrl:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    /* Main Stage */
+    main.stage {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+
+    body.embedded header.pilot-bar {
+      display: none;
+    }
+
+    body.embedded main.stage {
+      padding: 0;
+      align-items: stretch;
+      justify-content: stretch;
+    }
+
+    /* Device Viewport Frame */
+    .viewport-frame {
+      background: var(--bg-canvas-light);
+      border-radius: 36px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border: 6px solid #1E293B;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: width 0.2s ease, height 0.2s ease;
+    }
+
+    body.embedded .viewport-frame {
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+      width: 100% !important;
+      height: 100vh !important;
+      min-height: 100vh;
+    }
+
+    /* Screen Container */
+    .screen-root {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 100%;
+      position: relative;
+      background: var(--bg-canvas-light);
+      overflow: hidden;
+    }
+
+    /* System Safe-Area Mock Chrome */
+    .system-status-bar {
+      height: var(--safe-area-top);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--bg-surface-white);
+      z-index: 100;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+      flex-shrink: 0;
+    }
+
+    .system-home-indicator-bar {
+      height: var(--safe-area-bottom);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--bg-surface-white);
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .home-pill {
+      width: 134px;
+      height: 5px;
+      background: #0F172A;
+      border-radius: 9999px;
+      opacity: 0.8;
+    }
+
+    /* Scrollable Content Body */
+    .screen-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px var(--mobile-page-inset);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* App Bar Variants */
+    .app-bar {
+      height: var(--app-bar-height);
+      background: var(--bg-surface-white);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--mobile-page-inset);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      flex-shrink: 0;
+    }
+
+    .app-bar.top-level {
+      justify-content: space-between;
+    }
+
+    .app-bar .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .app-bar .brand-mark {
+      width: 28px;
+      height: 28px;
+      background: #000000;
+      color: #FFFFFF;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 14px;
+      letter-spacing: -0.04em;
+    }
+
+    .app-bar .brand-text {
+      font-weight: 800;
+      font-size: calc(16px * var(--scale-factor));
+      letter-spacing: -0.02em;
+    }
+
+    .app-bar .account-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--field-radius);
+      background: var(--bg-surface-subtle);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: calc(14px * var(--scale-factor));
+    }
+
+    .app-bar .back-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--field-radius);
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .app-bar .bar-title {
+      font-size: calc(17px * var(--scale-factor));
+      font-weight: 700;
+      color: var(--text-main);
+      flex: 1;
+      text-align: right;
+      padding-right: 8px;
+    }
+
+    .app-bar .bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Customer Bottom Navigation Bar */
+    .bottom-nav {
+      height: var(--nav-height);
+      background: var(--bg-surface-white);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 4px 8px;
+      z-index: 95;
+      flex-shrink: 0;
+    }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      flex: 1;
+      height: 100%;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-tab.active {
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    .nav-tab .tab-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .nav-tab .tab-label {
+      font-size: calc(11px * var(--scale-factor));
+      line-height: 1.2;
+    }
+
+    /* Sticky Bottom Decision Surface */
+    .sticky-action-surface {
+      background: var(--bg-surface-white);
+      border-top: 1px solid var(--border-subtle);
+      padding: 12px var(--mobile-page-inset);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      z-index: 92;
+      flex-shrink: 0;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
+    }
+
+    .price-quote-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-number {
+      font-size: calc(18px * var(--scale-factor));
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .price-sub {
+      font-size: calc(12px * var(--scale-factor));
+      color: var(--text-muted);
+    }
+
+    .btn-primary-action {
+      background: var(--primary-black);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--button-primary-radius);
+      padding: 12px 24px;
+      font-family: var(--konfrm-font-family);
+      font-size: calc(15px * var(--scale-factor));
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .btn-secondary-destructive {
+      background: transparent;
+      color: var(--status-danger);
+      border: 1px solid var(--status-danger);
+      border-radius: var(--button-primary-radius);
+      padding: 12px 18px;
+      font-family: var(--konfrm-font-family);
+      font-size: calc(14px * var(--scale-factor));
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Bottom Sheet Modal System */
+    .sheet-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(2px);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .bottom-sheet {
+      background: var(--bg-surface-white);
+      border-top-left-radius: var(--sheet-radius);
+      border-top-right-radius: var(--sheet-radius);
+      box-shadow: var(--overlay-shadow);
+      display: flex;
+      flex-direction: column;
+      max-height: 85%;
+      overflow: hidden;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .sheet-handle-row {
+      display: flex;
+      justify-content: center;
+      padding: 8px 0 4px;
+    }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+
+    .sheet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px var(--mobile-page-inset);
+      border-bottom: 1px solid var(--border-divider);
+    }
+
+    .sheet-title {
+      font-size: calc(17px * var(--scale-factor));
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .sheet-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--field-radius);
+      background: var(--bg-surface-subtle);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .sheet-body {
+      padding: 16px var(--mobile-page-inset);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sheet-footer {
+      padding: 12px var(--mobile-page-inset);
+      border-top: 1px solid var(--border-divider);
+      display: flex;
+      gap: 12px;
+      background: var(--bg-surface-white);
+    }
+
+    /* Consequential Confirmation Dialog System */
+    .dialog-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(3px);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .confirmation-dialog {
+      background: var(--bg-surface-white);
+      border-radius: var(--dialog-radius);
+      box-shadow: var(--dialog-shadow);
+      border: 1px solid var(--border-subtle);
+      width: 100%;
+      max-width: 360px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 16px;
+    }
+
+    .dialog-title {
+      font-size: calc(17px * var(--scale-factor));
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.35;
+    }
+
+    .dialog-body-text {
+      font-size: calc(14px * var(--scale-factor));
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .dialog-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .btn-dialog-cancel {
+      background: var(--bg-surface-subtle);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--button-primary-radius);
+      padding: 10px 16px;
+      font-family: var(--konfrm-font-family);
+      font-size: calc(14px * var(--scale-factor));
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-dialog-confirm-danger {
+      background: var(--status-danger);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--button-primary-radius);
+      padding: 10px 16px;
+      font-family: var(--konfrm-font-family);
+      font-size: calc(14px * var(--scale-factor));
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Structural Containers (from 4E) */
+    .card-container {
+      background: var(--bg-surface-white);
+      border-radius: var(--struct-container-radius);
+      border: 1px solid var(--border-subtle);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .container-title {
+      font-size: calc(16px * var(--scale-factor));
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .row-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-divider);
+    }
+
+    .row-item:last-child {
+      border-bottom: none;
+    }
+
+    /* Candidate Specific Overrides */
+    /* Candidate A: Persistent-First (dual chrome collision in detail) */
+    .cand-a-dual-chrome .bottom-nav {
+      display: flex !important;
+    }
+
+    /* Candidate B: Immersive (aggressive hiding) */
+    .cand-b-immersive .app-bar {
+      border-bottom: none;
+    }
+
+    /* On-Screen Keyboard Mock */
+    .keyboard-mock {
+      height: 280px;
+      background: #D1D5DB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #4B5563;
+      font-size: 16px;
+      border-top: 1px solid #9CA3AF;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Interactive Pilot Control Header -->
+  <header class="pilot-bar">
+    <div class="title-group">
+      <h1>KONFRM Phase 4F — نظام التنقل والطبقات الإضافية</h1>
+      <span class="badge">PILOT 01</span>
+    </div>
+
+    <div class="controls-group">
+      <label class="control-label">النظام المرشح:</label>
+      <select id="sel-candidate" onchange="updateView()">
+        <option value="C">المرشح C: Role-Aware Contextual (الموصى به)</option>
+        <option value="A">المرشح A: Persistence-First (التنقل الدائم)</option>
+        <option value="B">المرشح B: Immersive-Hierarchical (العمق الكامل)</option>
+      </select>
+
+      <label class="control-label">الشاشة / التركيب:</label>
+      <select id="sel-screen" onchange="updateView()">
+        <optgroup label="العميل (Customer)">
+          <option value="cust-explore">1. استكشف — المستوى الأعلى (Explore Top-Level)</option>
+          <option value="cust-detail">2. تفاصيل الوحدة — المتداخل (Property Detail Nested)</option>
+          <option value="cust-sheet">3. ورقة تصفية البحث (Search Filter Bottom Sheet)</option>
+          <option value="cust-auth">4. المصادقة الكاملة (Auth V2 Full-Screen Route)</option>
+          <option value="cust-dialog">5. حوار إلغاء الحجز (Cancellation Consequence Dialog)</option>
+        </optgroup>
+        <optgroup label="المالك (Owner)">
+          <option value="owner-home">6. لوحة العمليات الأولى (Action-First Home — No Bottom Nav)</option>
+          <option value="owner-queue">7. قائمة طلبات الحجز (Bookings Operational Queue)</option>
+          <option value="owner-detail">8. تفاصيل الطلب والإجراء (Booking Decision Surface)</option>
+          <option value="owner-props">9. إدارة الوحدات والتقويم (Properties & Availability)</option>
+          <option value="owner-wallet">10. المحفظة والأرباح (Wallet & Payouts)</option>
+          <option value="owner-dialog">11. حوار رفض الطلب (Reject Consequence Dialog)</option>
+        </optgroup>
+        <optgroup label="لوحة الإدارة (Admin)">
+          <option value="admin-queue">12. مراجعة الوحدات المكتبية (Admin 1440 Desktop Boundary)</option>
+        </optgroup>
+      </select>
+
+      <label class="control-label">إطار العرض:</label>
+      <select id="sel-viewport" onchange="updateView()">
+        <option value="390">390 × 844 (iPhone 14/15 Baseline)</option>
+        <option value="360">360 × 800 (Android Compact)</option>
+        <option value="430">430 × 932 (Pro Max Large)</option>
+        <option value="1440">1440 × 900 (Admin Desktop)</option>
+      </select>
+
+      <label class="control-label">حجم النص:</label>
+      <select id="sel-scale" onchange="updateView()">
+        <option value="100">100% عادي</option>
+        <option value="200">200% تكبير إمكانية الوصول</option>
+      </select>
+
+      <label class="control-label">استدارة الشيت:</label>
+      <select id="sel-sheet-radius" onchange="updateView()">
+        <option value="16">16px (المتوازن الموصى به)</option>
+        <option value="12">12px (مطابق للحاويات 4E)</option>
+        <option value="20">20px (شديد الانحناء)</option>
+      </select>
+
+      <button class="btn-ctrl" onclick="toggleStress()">نصوص طويلة</button>
+      <button class="btn-ctrl" onclick="toggleKeyboard()">لوحة المفاتيح</button>
+    </div>
+  </header>
+
+  <!-- Presentation Stage -->
+  <main class="stage">
+    <div id="viewport-frame" class="viewport-frame" style="width: 390px; height: 844px;">
+      <div id="screen-mount" class="screen-root">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // State
+    const state = {
+      candidate: 'C',
+      screen: 'cust-explore',
+      viewport: 390,
+      scale: 100,
+      sheetRadius: 16,
+      dialogRadius: 12,
+      stress: false,
+      keyboard: false,
+      embed: false
+    };
+
+    function parseParams() {
+      const p = new URLSearchParams(window.location.search);
+      if (p.has('candidate')) state.candidate = p.get('candidate');
+      if (p.has('screen')) state.screen = p.get('screen');
+      if (p.has('viewport')) state.viewport = parseInt(p.get('viewport'), 10);
+      if (p.has('scale')) state.scale = parseInt(p.get('scale'), 10);
+      if (p.has('radius')) state.sheetRadius = parseInt(p.get('radius'), 10);
+      if (p.has('stress')) state.stress = p.get('stress') === '1';
+      if (p.has('keyboard')) state.keyboard = p.get('keyboard') === '1';
+      if (p.has('embed')) state.embed = p.get('embed') === '1';
+
+      if (state.embed) document.body.classList.add('embedded');
+      if (state.scale === 200) document.body.classList.add('scale-200');
+
+      document.getElementById('sel-candidate').value = state.candidate;
+      document.getElementById('sel-screen').value = state.screen;
+      document.getElementById('sel-viewport').value = state.viewport;
+      document.getElementById('sel-scale').value = state.scale;
+      document.getElementById('sel-sheet-radius').value = state.sheetRadius;
+    }
+
+    function updateView() {
+      state.candidate = document.getElementById('sel-candidate').value;
+      state.screen = document.getElementById('sel-screen').value;
+      state.viewport = parseInt(document.getElementById('sel-viewport').value, 10);
+      state.scale = parseInt(document.getElementById('sel-scale').value, 10);
+      state.sheetRadius = parseInt(document.getElementById('sel-sheet-radius').value, 10);
+
+      document.documentElement.style.setProperty('--sheet-radius', state.sheetRadius + 'px');
+      if (state.scale === 200) {
+        document.body.classList.add('scale-200');
+      } else {
+        document.body.classList.remove('scale-200');
+      }
+
+      const frame = document.getElementById('viewport-frame');
+      if (!state.embed) {
+        if (state.viewport === 1440) {
+          frame.style.width = '1000px';
+          frame.style.height = '680px';
+        } else {
+          frame.style.width = state.viewport + 'px';
+          frame.style.height = (state.viewport === 360 ? 800 : state.viewport === 430 ? 932 : 844) + 'px';
+        }
+      }
+
+      renderScreen();
+    }
+
+    function toggleStress() {
+      state.stress = !state.stress;
+      renderScreen();
+    }
+
+    function toggleKeyboard() {
+      state.keyboard = !state.keyboard;
+      renderScreen();
+    }
+
+    function renderScreen() {
+      const mount = document.getElementById('screen-mount');
+      let html = '';
+
+      // Text strings (stress-aware)
+      const t = {
+        propTitle: state.stress ? 'فيلا شاطئية واسعة مطلة على البحر مباشرة مع مسبح خاص وحديقة عائلية في الساحل الشمالي' : 'فيلا شاطئية بإطلالة بحرية',
+        unitId: state.stress ? 'رقم الحجز المرجعي: #KN-2026-9948271' : 'حجز #1048',
+        ownerName: state.stress ? 'المهندس عبد الرحمن بن محمد آل شريف (المالك المعتمد)' : 'عبد الرحمن الشريف',
+        guestName: state.stress ? 'سارة بنت عبد العزيز المنصوري' : 'سارة عبد العزيز'
+      };
+
+      // Header System Indicator Bar
+      const statusBar = `
+        <div class="system-status-bar">
+          <span>9:41</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span>5G</span>
+            <span>100%</span>
+          </div>
+        </div>
+      `;
+
+      // Home Indicator Bar
+      const homeIndicator = `
+        <div class="system-home-indicator-bar">
+          <div class="home-pill"></div>
+        </div>
+      `;
+
+      // Customer 4-Tab Bottom Nav
+      const customerBottomNav = (activeTab) => `
+        <nav class="bottom-nav" aria-label="التنقل الرئيسي">
+          <button class="nav-tab ${activeTab === 'EXPLORE' ? 'active' : ''}">
+            <span class="tab-icon">🧭</span>
+            <span class="tab-label">استكشف</span>
+          </button>
+          <button class="nav-tab ${activeTab === 'FAVORITES' ? 'active' : ''}">
+            <span class="tab-icon">♡</span>
+            <span class="tab-label">المفضلة</span>
+          </button>
+          <button class="nav-tab ${activeTab === 'BOOKINGS' ? 'active' : ''}">
+            <span class="tab-icon">📅</span>
+            <span class="tab-label">حجوزاتي</span>
+          </button>
+          <button class="nav-tab ${activeTab === 'ACCOUNT' ? 'active' : ''}">
+            <span class="tab-icon">👤</span>
+            <span class="tab-label">الحساب</span>
+          </button>
+        </nav>
+      `;
+
+      // SCREEN 1: Customer Explore (Top-Level)
+      if (state.screen === 'cust-explore') {
+        html = `
+          ${statusBar}
+          <header class="app-bar top-level">
+            <div class="brand-logo">
+              <div class="brand-mark">K</div>
+              <span class="brand-text">KONFRM</span>
+            </div>
+            <button class="account-btn" title="حسابي">👤</button>
+          </header>
+          <div class="screen-content">
+            <div style="padding: 12px 16px; background: #FFFFFF; border-radius: 8px; border: 1px solid var(--border-field); display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:14px; color:var(--text-secondary);">🔍 أين وجهتك القادمة في الساحل؟</span>
+              <span style="font-size:12px; color:var(--accent-blue); font-weight:700;">تصفية</span>
+            </div>
+            <div class="card-container">
+              <div style="height:160px; background:#E2E8F0; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#64748B; font-weight:700;">
+                صورة الوحدة الأساسية
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                  <h3 class="container-title">${t.propTitle}</h3>
+                  <p style="font-size:13px; color:var(--text-muted); margin-top:2px;">الساحل الشمالي • الكيلو 120</p>
+                </div>
+                <span style="font-size:16px; font-weight:700; color:var(--text-main);">1,600 ج.م / ليلة</span>
+              </div>
+            </div>
+          </div>
+          ${customerBottomNav('EXPLORE')}
+          ${homeIndicator}
+        `;
+      }
+
+      // SCREEN 2: Customer Property Detail (Nested)
+      else if (state.screen === 'cust-detail') {
+        const showDualChrome = (state.candidate === 'A'); // Candidate A defect demonstration
+        html = `
+          ${statusBar}
+          <header class="app-bar">
+            <button class="back-btn" title="رجوع">➔</button>
+            <span class="bar-title">تفاصيل الوحدة</span>
+            <div class="bar-actions">
+              <button class="account-btn" title="حفظ المفضلة">♡</button>
+              <button class="account-btn" title="مشاركة">↗</button>
+            </div>
+          </header>
+          <div class="screen-content" style="padding-bottom: 90px;">
+            <div style="height:220px; background:#CBD5E1; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:700; color:#475569;">
+              معرض الصور (1/12)
+            </div>
+            <div>
+              <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">${t.propTitle}</h2>
+              <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">سيدي عبد الرحمن • 4 غرف نوم • مسبح خاص</p>
+            </div>
+            <div class="card-container">
+              <h4 class="container-title">تفاصيل الحجز</h4>
+              <div class="row-item">
+                <span style="font-size:14px; color:var(--text-secondary);">تواريخ الإقامة</span>
+                <span style="font-size:14px; font-weight:700;">15 يول - 18 يول (3 ليالٍ)</span>
+              </div>
+              <div class="row-item">
+                <span style="font-size:14px; color:var(--text-secondary);">عدد الضيوف</span>
+                <span style="font-size:14px; font-weight:700;">4 بالغين</span>
+              </div>
+            </div>
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.6;">
+              استمتع بإقامة هادئة في أرقى قرى الساحل الشمالي مع إطلالة بحرية كاملة وتجهيزات متكاملة تلبي احتياجات العائلة.
+            </p>
+          </div>
+          <div class="sticky-action-surface">
+            <div class="price-quote-block">
+              <span class="price-number">4,800 ج.م</span>
+              <span class="price-sub">إجمالي 3 ليالٍ شامل الرسوم</span>
+            </div>
+            <button class="btn-primary-action">طلب الحجز</button>
+          </div>
+          ${showDualChrome ? customerBottomNav('EXPLORE') : ''}
+          ${homeIndicator}
+        `;
+      }
+
+      // SCREEN 3: Customer Search/Refine Bottom Sheet
+      else if (state.screen === 'cust-sheet') {
+        html = `
+          ${statusBar}
+          <!-- Underlying Explore View dimmed -->
+          <header class="app-bar top-level">
+            <div class="brand-logo"><div class="brand-mark">K</div><span class="brand-text">KONFRM</span></div>
+            <button class="account-btn">👤</button>
+          </header>
+          <div class="screen-content" style="opacity:0.3;">
+            <div class="card-container"><div style="height:120px; background:#CBD5E1;"></div></div>
+          </div>
+          ${customerBottomNav('EXPLORE')}
+          
+          <!-- Bottom Sheet Overlay -->
+          <div class="sheet-overlay">
+            <div class="bottom-sheet">
+              <div class="sheet-handle-row"><div class="sheet-handle"></div></div>
+              <div class="sheet-header">
+                <span class="sheet-title">تصفية نتائج البحث</span>
+                <button class="sheet-close-btn" title="إغلاق">✕</button>
+              </div>
+              <div class="sheet-body">
+                <div>
+                  <label style="font-size:13px; font-weight:700; color:var(--text-main); display:block; margin-bottom:8px;">المنطقة في الساحل</label>
+                  <div style="display:flex; gap:8px;">
+                    <span style="padding:6px 12px; background:var(--accent-blue-soft); color:var(--accent-blue); border-radius:6px; font-size:12px; font-weight:700;">الكل</span>
+                    <span style="padding:6px 12px; background:var(--bg-surface-subtle); border-radius:6px; font-size:12px;">سيدي عبد الرحمن</span>
+                    <span style="padding:6px 12px; background:var(--bg-surface-subtle); border-radius:6px; font-size:12px;">رأس الحكمة</span>
+                  </div>
+                </div>
+                <div>
+                  <label style="font-size:13px; font-weight:700; color:var(--text-main); display:block; margin-bottom:8px;">نطاق السعر لليلة (ج.م)</label>
+                  <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--text-secondary); margin-bottom:6px;">
+                    <span>1,000 ج.م</span>
+                    <span>10,000 ج.م</span>
+                  </div>
+                  <div style="height:6px; background:#E2E8F0; border-radius:3px; position:relative;">
+                    <div style="position:absolute; right:10%; left:30%; height:100%; background:var(--primary-black); border-radius:3px;"></div>
+                  </div>
+                </div>
+                <div>
+                  <label style="font-size:13px; font-weight:700; color:var(--text-main); display:block; margin-bottom:8px;">عدد الغرف</label>
+                  <div style="display:flex; gap:8px;">
+                    <span style="padding:6px 14px; border:1px solid var(--border-subtle); border-radius:6px; font-size:13px;">1</span>
+                    <span style="padding:6px 14px; border:1px solid var(--border-subtle); border-radius:6px; font-size:13px;">2</span>
+                    <span style="padding:6px 14px; background:var(--primary-black); color:#FFFFFF; border-radius:6px; font-size:13px; font-weight:700;">3+</span>
+                  </div>
+                </div>
+              </div>
+              ${state.keyboard ? '<div class="keyboard-mock">لوحة المفاتيح الافتراضية (Keyboard Active)</div>' : ''}
+              <div class="sheet-footer">
+                <button class="btn-primary-action" style="flex:1;">عرض 14 وحدة مطابقة</button>
+                <button class="btn-dialog-cancel">إعادة ضبط</button>
+              </div>
+            </div>
+            ${homeIndicator}
+          </div>
+        `;
+      }
+
+      // SCREEN 4: Customer Auth V2 (Full-Screen Sequential Route)
+      else if (state.screen === 'cust-auth') {
+        html = `
+          ${statusBar}
+          <header class="app-bar">
+            <button class="back-btn" title="رجوع إلى السياق السابق">➔</button>
+            <span class="bar-title">تسجيل الدخول / إنشاء حساب</span>
+            <span style="font-size:12px; color:var(--text-muted);">خطوة 1 من 3</span>
+          </header>
+          <div class="screen-content" style="padding-top:24px;">
+            <div style="padding:8px 12px; background:var(--accent-blue-soft); border-radius:8px; display:flex; align-items:center; gap:8px;">
+              <span style="color:var(--accent-blue); font-size:16px;">ℹ</span>
+              <span style="font-size:12px; color:var(--accent-blue); font-weight:600;">سنحفظ حجزك المحدد للمتابعة فور تسجيل الدخول</span>
+            </div>
+            <div style="margin-top:12px;">
+              <h2 style="font-size:22px; font-weight:700; color:var(--text-main);">أدخل رقم الهاتف</h2>
+              <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">سنرسل لك رمز تحقق سريعًا عبر رسالة نصية (OTP)</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px; margin-top:16px;">
+              <label style="font-size:13px; font-weight:700; color:var(--text-main);">رقم الهاتف المحمول</label>
+              <div style="display:flex; gap:8px; direction:ltr;">
+                <input type="text" value="+20 100 123 4567" style="flex:1; padding:12px; border:1px solid var(--border-field); border-radius:var(--field-radius); font-size:15px; font-family:var(--konfrm-font-family); font-weight:600;" readonly>
+              </div>
+              <span style="font-size:12px; color:var(--text-muted);">مثال: 01012345678</span>
+            </div>
+            <div style="margin-top:20px;">
+              <button class="btn-primary-action" style="width:100%;">إرسال رمز التحقق</button>
+            </div>
+          </div>
+          ${homeIndicator}
+        `;
+      }
+
+      // SCREEN 5: Customer Booking Cancellation Consequence Dialog
+      else if (state.screen === 'cust-dialog') {
+        html = `
+          ${statusBar}
+          <!-- Underlying Screen -->
+          <header class="app-bar">
+            <button class="back-btn">➔</button>
+            <span class="bar-title">حجوزاتي</span>
+          </header>
+          <div class="screen-content" style="opacity:0.25;">
+            <div class="card-container"><h3 class="container-title">${t.propTitle}</h3></div>
+          </div>
+          ${customerBottomNav('BOOKINGS')}
+
+          <!-- Centered Consequential Dialog -->
+          <div class="dialog-overlay">
+            <div class="confirmation-dialog">
+              <h3 class="dialog-title">هل أنت متأكد من إلغاء طلب الحجز؟</h3>
+              <p class="dialog-body-text">
+                سيتم إلغاء طلب الحجز رقم ${t.unitId} نهائيًا وإعادة فتح التواريخ للضيوف الآخرين. لن يتم خصم أي مبالغ.
+              </p>
+              <div class="dialog-actions">
+                <button class="btn-dialog-cancel">تراجع</button>
+                <button class="btn-dialog-confirm-danger">تأكيد الإلغاء</button>
+              </div>
+            </div>
+          </div>
+          ${homeIndicator}
+        `;
+      }
+
+      // SCREEN 6: Owner Action-First Home (Top-Level Operational Hub — NO BOTTOM NAV)
+      else if (state.screen === 'owner-home') {
+        html = `
+          ${statusBar}
+          <header class="app-bar top-level">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:36px; height:36px; border-radius:9999px; background:var(--primary-black); color:#FFFFFF; display:flex; align-items:center; justify-content:center; font-weight:700;">ع</div>
+              <div>
+                <h3 style="font-size:15px; font-weight:700; color:var(--text-main);">${t.ownerName}</h3>
+                <span style="font-size:11px; color:var(--status-success); font-weight:600;">● حساب موثق</span>
+              </div>
+            </div>
+            <button class="account-btn" title="الإشعارات">🔔</button>
+          </header>
+          <div class="screen-content">
+            <!-- Action Needed Banner -->
+            <div style="padding:14px; background:#FEF2F2; border:1px solid #FCA5A5; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:13px; font-weight:700; color:#991B1B;">لديك طلب حجز معلق بانتظار الرد</span>
+                <p style="font-size:11px; color:#B91C1C; margin-top:2px;">ينتهي وقت الرد خلال 4 ساعات</p>
+              </div>
+              <button style="padding:6px 12px; background:#DC2626; color:#FFF; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">مراجعة الطلب</button>
+            </div>
+
+            <!-- Quick Operational Domains Grid (Replaces Bottom Nav) -->
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+              <div style="background:#FFF; padding:12px; border-radius:12px; border:1px solid var(--border-subtle); text-align:center;">
+                <span style="font-size:20px; display:block; margin-bottom:4px;">📋</span>
+                <span style="font-size:12px; font-weight:700;">الطلبات (3)</span>
+              </div>
+              <div style="background:#FFF; padding:12px; border-radius:12px; border:1px solid var(--border-subtle); text-align:center;">
+                <span style="font-size:20px; display:block; margin-bottom:4px;">🏡</span>
+                <span style="font-size:12px; font-weight:700;">الوحدات (2)</span>
+              </div>
+              <div style="background:#FFF; padding:12px; border-radius:12px; border:1px solid var(--border-subtle); text-align:center;">
+                <span style="font-size:20px; display:block; margin-bottom:4px;">💰</span>
+                <span style="font-size:12px; font-weight:700;">المحفظة</span>
+              </div>
+            </div>
+
+            <!-- Operational Activity Group -->
+            <div class="card-container">
+              <h4 class="container-title">الحجوزات القادمة المؤكدة</h4>
+              <div class="row-item">
+                <div>
+                  <span style="font-size:14px; font-weight:700; display:block;">فيلا الياسمين 4</span>
+                  <span style="font-size:12px; color:var(--text-muted);">الضيف: سارة عبد العزيز • 18-22 يول</span>
+                </div>
+                <span style="font-size:12px; font-weight:700; color:var(--status-success); background:var(--status-success-bg); padding:3px 8px; border-radius:4px;">مؤكد</span>
+              </div>
+            </div>
+          </div>
+          ${homeIndicator}
+        `;
+      }
+
+      // SCREEN 7: Owner Bookings Operational Queue
+      else if (state.screen === 'owner-queue') {
+        html = `
+          ${statusBar}
+          <header class="app-bar">
+            <button class="back-btn" title="رجوع إلى لوحة التحكم">➔</button>
+            <span class="bar-title">طلبات الحجز والعمليات</span>
+            <div class="bar-actions">
+              <span style="font-size:12px; color:var(--text-muted);">إجمالي: 4</span>
+            </div>
+          </header>
+          <div class="screen-content">
+            <div class="card-container" style="border-right: 4px solid var(--status-pending);">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                  <span style="font-size:11px; font-weight:700; color:var(--accent-blue); background:var(--accent-blue-soft); padding:2px 6px; border-radius:4px;">معلق بانتظار موافقتك</span>
+                  <h4 class="container-title" style="margin-top:4px;">طلب جديد: فيلا الشاطئ</h4>
+                  <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">الضيف: ${t.guestName}</p>
+                </div>
+                <span style="font-size:15px; font-weight:700;">3,600 ج.م</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-secondary); background:var(--bg-surface-subtle); padding:6px 10px; border-radius:6px;">
+                📅 20 يول - 23 يول (3 ليالٍ) • 4 أفراد
+              </div>
+              <button class="btn-primary-action" style="padding:8px 14px; font-size:13px; align-self:flex-start;">معاينة واتخاذ قرار</button>
+            </div>
+          </div>
+          ${homeIndicator}
+        `;
+      }
+
+      // SCREEN 8: Owner Booking Detail & Decision Surface
+      else if (state.screen === 'owner-detail') {
+        html = `
+          ${statusBar}
+          <header class="app-bar">
+            <button class="back-btn" title="رجوع لقائمة الطلبات">➔</button>
+            <span class="bar-title">تفاصيل الطلب #${t.unitId}</span>
+          </header>
+          <div class="screen-content" style="padding-bottom: 90px;">
+            <div class="card-container">
+              <h4 class="container-title">بيانات الضيف والإقامة</h4>
+              <div class="row-item">
+                <span style="font-size:13px; color:var(--text-secondary);">اسم الضيف</span>
+                <span style="font-size:13px; font-weight:700;">${t.guestName}</span>
+              </div>
+              <div class="row-item">
+                <span style="font-size:13px; color:var(--text-secondary);">الفترة المحددة</span>
+                <span style="font-size:13px; font-weight:700;">20 يول 2026 - 23 يول 2026</span>
+              </div>
+              <div class="row-item">
+                <span style="font-size:13px; color:var(--text-secondary);">صافي مستحقات المالك</span>
+                <span style="font-size:14px; font-weight:700; color:var(--status-success);">3,240 ج.م</span>
+              </div>
+            </div>
+          </div>
+          <div class="sticky-action-surface" style="justify-content:flex-end;">
+            <button class="btn-secondary-destructive">رفض الطلب</button>
+            <button class="btn-primary-action">قبول الطلب</button>
+          </div>
+          ${homeIndicator}
+        `;
+      }
+
+      // SCREEN 9: Owner Properties & Availability Hub
+      else if (state.screen === 'owner-props') {
+        html = `
+          ${statusBar}
+          <header class="app-bar">
+            <button class="back-btn" title="رجوع">➔</button>
+            <span class="bar-title">إدارة الوحدات والتقويم</span>
+            <button class="btn-primary-action" style="padding:6px 12px; font-size:12px;">+ إضافة وحدة</button>
+          </header>
+          <div class="screen-content">
+            <div class="card-container">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h4 class="container-title">شاليه اللاجون الفاخر</h4>
+                <span style="font-size:12px; font-weight:700; color:var(--status-success);">جاهز للتأجير</span>
+              </div>
+              <div style="display:flex; gap:8px; margin-top:8px;">
+                <button class="btn-dialog-cancel" style="padding:6px 12px; font-size:12px;">تعديل البيانات</button>
+                <button class="btn-dialog-cancel" style="padding:6px 12px; font-size:12px;">التقويم والأسعار</button>
+              </div>
+            </div>
+          </div>
+          ${homeIndicator}
+        `;
+      }
+
+      // SCREEN 10: Owner Wallet & Payout Context
+      else if (state.screen === 'owner-wallet') {
+        html = `
+          ${statusBar}
+          <header class="app-bar">
+            <button class="back-btn" title="رجوع">➔</button>
+            <span class="bar-title">المحفظة والأرباح</span>
+          </header>
+          <div class="screen-content">
+            <div class="card-container" style="background:#0F172A; color:#FFF;">
+              <span style="font-size:12px; color:#94A3B8;">الرصيد المتاح للتحويل</span>
+              <h2 style="font-size:26px; font-weight:700; color:#FFF; margin:4px 0;">18,500 ج.م</h2>
+              <span style="font-size:11px; color:#A7F3D0;">● لا توجد مبالغ معلقة قيد التسوية</span>
+            </div>
+            <button class="btn-primary-action" style="width:100%;">طلب تحويل الأرباح إلى الحساب البنكي</button>
+          </div>
+          ${homeIndicator}
+        `;
+      }
+
+      // SCREEN 11: Owner Reject Booking Consequence Dialog
+      else if (state.screen === 'owner-dialog') {
+        html = `
+          ${statusBar}
+          <header class="app-bar">
+            <button class="back-btn">➔</button>
+            <span class="bar-title">تفاصيل الطلب #${t.unitId}</span>
+          </header>
+          <div class="screen-content" style="opacity:0.25;">
+            <div class="card-container"><h3 class="container-title">${t.propTitle}</h3></div>
+          </div>
+          <div class="dialog-overlay">
+            <div class="confirmation-dialog">
+              <h3 class="dialog-title">هل أنت متأكد من رفض طلب الحجز؟</h3>
+              <p class="dialog-body-text">
+                سيتم إخطار الضيف ${t.guestName} برفض الطلب، ولن يتم حجز التواريخ. لن يؤثر هذا الإجراء سلبًا على تصنيفك إذا تم خلال المهلة المحددة.
+              </p>
+              <div class="dialog-actions">
+                <button class="btn-dialog-cancel">تراجع</button>
+                <button class="btn-dialog-confirm-danger">تأكيد رفض الطلب</button>
+              </div>
+            </div>
+          </div>
+          ${homeIndicator}
+        `;
+      }
+
+      // SCREEN 12: Admin Review Queue (Desktop Boundary 1440px)
+      else if (state.screen === 'admin-queue') {
+        html = `
+          <div style="background:#0F172A; color:#FFF; padding:12px 24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155;">
+            <div style="display:flex; align-items:center; gap:16px;">
+              <span style="font-weight:900; letter-spacing:-0.03em;">KONFRM ADMIN</span>
+              <nav style="display:flex; gap:16px; font-size:13px; font-weight:600;">
+                <span style="color:#FFF; border-bottom:2px solid #38BDF8; padding-bottom:4px;">الوحدات قيد المراجعة</span>
+                <span style="color:#94A3B8;">توثيق الملاك</span>
+                <span style="color:#94A3B8;">تسويات الأرباح</span>
+              </nav>
+            </div>
+            <span style="font-size:12px; color:#94A3B8;">جلسة المشرف: admin-review-ops</span>
+          </div>
+          <div style="padding:24px; display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h2 style="font-size:20px; font-weight:700;">قائمة الوحدات الجديدة بانتظار الاعتماد (FIFO)</h2>
+              <span style="font-size:13px; color:var(--text-muted);">3 وحدات معلقة</span>
+            </div>
+            <table style="width:100%; border-collapse:collapse; background:#FFF; border-radius:8px; overflow:hidden; border:1px solid var(--border-subtle); font-size:13px;">
+              <thead>
+                <tr style="background:var(--bg-surface-subtle); text-align:right; border-bottom:1px solid var(--border-subtle);">
+                  <th style="padding:10px 16px;">كود الوحدة</th>
+                  <th style="padding:10px 16px;">اسم العقار</th>
+                  <th style="padding:10px 16px;">المالك</th>
+                  <th style="padding:10px 16px;">الموقع</th>
+                  <th style="padding:10px 16px;">تاريخ التقديم</th>
+                  <th style="padding:10px 16px; text-align:center;">الإجراء</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid var(--border-divider);">
+                  <td style="padding:12px 16px; font-weight:700;">#PROP-8821</td>
+                  <td style="padding:12px 16px;">فيلا الشاطئ الأبيض</td>
+                  <td style="padding:12px 16px;">عبد الرحمن الشريف</td>
+                  <td style="padding:12px 16px;">سيدي عبد الرحمن</td>
+                  <td style="padding:12px 16px;">04-10-2026</td>
+                  <td style="padding:12px 16px; text-align:center;">
+                    <button style="padding:6px 14px; background:var(--primary-black); color:#FFF; border:none; border-radius:4px; font-weight:700; cursor:pointer;">بدء المراجعة</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      mount.innerHTML = html;
+    }
+
+    // Initialize
+    parseParams();
+    updateView();
+  </script>
+</body>
+</html>

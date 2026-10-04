@@ -1,48 +1,59 @@
-# Active Task — PHASE_4B_TYPOGRAPHY_FOUNDATION_CHECKPOINT
+# Active Task — PHASE_4C_ACTION_SYSTEM
 
-TASK_ID: PHASE_4B_TYPOGRAPHY_FOUNDATION_CHECKPOINT
+TASK_ID: PHASE_4C_ACTION_SYSTEM
 ROADMAP_PHASE: PHASE_4_UNIFIED_DESIGN_SYSTEM
-STATUS: CHECKPOINT_IN_PROGRESS
-BASE_MAIN_SHA: a988a62702c64c2586c2c9437c9026658bbd6edf
-SCOPE: Phase 4B — Cairo Mobile Typography Foundation Repository Checkpoint & PR.
+STATUS: READY_TO_START
+BASE_MAIN_SHA: 4cad3a4b0f9901e5315c35e6712e3e4a35f4cba5
+SCOPE: Phase 4C — Action System (Buttons, touch targets, action hierarchy, interaction states, and text wrapping across Customer and Owner surfaces).
 
-## Phase 4B Authoritative Status
-- **Phase 4B Cairo Typography Foundation:** CLOSED / APPROVED.
-- **Primary UI Font Family:** CAIRO (Founder family selection established; no reopening).
-- **Founder Visual Selection:** PROFILE B (Mobile Balanced Candidate).
-- **Typography Status:** `SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`.
-  - display: 24 / 700 / 1.30
-  - pageTitle: 20 / 700 / 1.35
-  - sectionTitle: 17 / 700 / 1.40
-  - cardTitle: 15 / 700 / 1.40
-  - body: 14 / 500 / 1.50
-  - bodyStrong: 14 / 700 / 1.50
-  - label: 12 / 600 / 1.35
-  - supporting: 12 / 400 / 1.40
-  - numeric: 16 / 700 / 1.30
-  - button: 15 / 700 / 1.20
-- **System Coherence Verdict:** `COHERENT_WITH_MINOR_FUTURE_COMPONENT_DEPENDENCIES`.
-- **Canon Promotion:** NONE (Provisional foundation only; not promoted to final native Canon).
-- **Color Governance:**
-  - Stable Black Primary: Founder-selected provisional strategy.
-  - Exact primary black: `OPEN` (`#0F172A` is pilot-only rendering value, NOT final button black).
-  - Exact blue: `OPEN` (`#276EF1` is pilot candidate only).
-  - Exact neutral palette: `OPEN`.
-- **Stress & Overflow Evidence:**
-  - Known Web stress: 5 / 24 overflow cases under extreme scaling (150% and 200%).
-  - Causal classification: `MIXED` (primarily component/layout constraint limitations).
-  - Profile-selection impact: `MINOR`.
-- **Native Acceptance:** DEFERRED TO PHASE 4I (Native Flutter Prototype & Validation).
-- **Scope Boundaries:** Zero changes to production apps (`customer-app/`, `owner-app/`, `admin-app/`), `backend/`, or database schema.
+## Execution Position Notice
+- `STATUS: READY_TO_START` indicates that Phase 4C is the next authorized design dependency.
+- **NO Phase 4C implementation has begun.** No design artifacts, code changes, or token promotions have been introduced in this task.
 
-## Next Task
-Phase 4B repository checkpoint is currently being completed. After merge of Phase 4B PR:
-- **NEXT TASK:** Phase 4C — Action System
-  - Focus: Buttons, touch targets, action hierarchy, loading/disabled states, text-wrapping resilience.
-  - Dependencies: 6px radius (Phase 4A), Stable Black strategy (Phase 4A), Cairo Profile B provisional typography (Phase 4B).
-  - Do NOT start Phase 4C in this PR.
+## Upstream Completed Dependencies
+1. **Phase 4A Primitives (PR #86, CLOSED):**
+   - Primary button radius: 6px (Founder-selected provisional design foundation candidate).
+   - Primary color strategy: Stable Black Primary (Founder-selected provisional strategy).
+2. **Phase 4B Cairo Typography Foundation (PR #88, CLOSED / MERGED at `4cad3a4b0f9901e5315c35e6712e3e4a35f4cba5`):**
+   - Primary UI font family: Cairo (Founder selection established; no reopening).
+   - Founder visual selection: **Profile B — Mobile Balanced Candidate** (24/20/17/15/14/14/12/12/16/15).
+   - Status: `SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY` (System coherence: `COHERENT_WITH_MINOR_FUTURE_COMPONENT_DEPENDENCIES`).
+   - Known Web stress evidence: 5 / 24 overflow cases under extreme scaling (150% and 200%), causal classification `MIXED`, profile impact `MINOR`.
 
-The historical Phase 5 roadmap below is preserved as evidence.
+## Explicit Open Decisions & Boundaries (DO NOT PREMATURELY RESOLVE)
+- **Exact Primary Black:** `OPEN` (Stable Black Primary is a strategy; `#0F172A` is a pilot rendering value only, NOT the final button black hex).
+- **Exact Blue:** `OPEN` (`#276EF1` is pilot candidate only; restrained interaction-accent role for links, selected states, and non-destructive focus).
+- **Exact Neutral Palette:** `OPEN`.
+- **Exact Focus Treatment:** `OPEN`.
+- **Secondary Action Treatment:** `OPEN` (to be evaluated in Phase 4C).
+- **Outline / Ghost Strategy:** `OPEN` (to be evaluated in Phase 4C only where justified).
+- **Destructive Action Treatment:** `OPEN` (to be evaluated in Phase 4C).
+- **Full Global Shape System:** `OPEN`.
+- **Native Typography / Component Acceptance:** `DEFERRED TO 4I` (Native Flutter Prototype & Validation).
+
+## Phase 4C Scope (Governed Execution Scope when Started)
+When Phase 4C begins, it will address:
+- Primary action contract (sizing, touch targets >= 48px, label baseline, padding)
+- Secondary Action System
+- Outline/Ghost actions only where justified
+- Destructive actions
+- Icon actions
+- Interaction states: idle, hover, pressed, focus, loading, disabled
+- Action pairing and stacking rules (e.g. primary + secondary on mobile)
+- Narrow-width behavior (360px viewport stress)
+- Text wrapping and multiline action resilience under Cairo typography
+- Customer and Owner mobile contexts
+- Zero changes to production apps until design program reaches implementation phases
+
+---
+
+# Historical Reference (Preserved)
+
+## Completed Phase 4B Checkpoint
+- TASK_ID: PHASE_4B_TYPOGRAPHY_FOUNDATION_CHECKPOINT
+- MERGED_PR: #88
+- MERGE_COMMIT_SHA: 4cad3a4b0f9901e5315c35e6712e3e4a35f4cba5
+- STATUS: CLOSED / MERGED
 
 # Phase 5 — Customer App Roadmap Tracking
 

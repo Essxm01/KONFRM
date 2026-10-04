@@ -1,18 +1,18 @@
 # Current project state
 
 **Last updated:** 2026-10-04  
-**Authoritative main:** `a988a62702c64c2586c2c9437c9026658bbd6edf`  
-**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED`.  
-**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); Phase 4B Cairo Typography Foundation checkpoint in progress.
+**Phase 4B merge checkpoint:** `4cad3a4b0f9901e5315c35e6712e3e4a35f4cba5` (PR #88)  
+**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`.  
+**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation).
 
 ## Current status
 
 KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Program**:
 - **Phase 4A (Controlled Primitive Pilot 01):** `CLOSED`. Primary button radius selected at 6px. Primary color strategy selected as Stable Black. Status: Founder-Selected Provisional Design Foundation Candidate.
-- **Phase 4B (Cairo Typography Foundation):** `CLOSED`. Primary UI font family established as Cairo. Founder visual preference selected as **Profile B** (Mobile Balanced Candidate). Status: **`SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`** (System coherence verdict: `COHERENT_WITH_MINOR_FUTURE_COMPONENT_DEPENDENCIES`).
+- **Phase 4B (Cairo Typography Foundation):** `CLOSED / MERGED` (PR #88, merge checkpoint `4cad3a4b0f9901e5315c35e6712e3e4a35f4cba5`). Primary UI font family established as Cairo. Founder visual preference selected as **Profile B — Mobile Balanced Candidate**. Status: **`SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`** (System coherence verdict: `COHERENT_WITH_MINOR_FUTURE_COMPONENT_DEPENDENCIES`).
   - Profile B values: display 24/700/1.30, pageTitle 20/700/1.35, sectionTitle 17/700/1.40, cardTitle 15/700/1.40, body 14/500/1.50, bodyStrong 14/700/1.50, label 12/600/1.35, supporting 12/400/1.40, numeric 16/700/1.30, button 15/700/1.20.
   - Profile B is provisional design foundation, **NOT** promoted to final native Canon.
-  - Exact primary black: **`OPEN`** (Stable Black Primary strategy is Founder-selected provisional; `#0F172A` is pilot-only rendering value).
+  - Exact primary black: **`OPEN`** (Stable Black Primary strategy is Founder-selected provisional; `#0F172A` is pilot-only rendering value, NOT final button black).
   - Exact blue: **`OPEN`** (Restrained blue interaction-accent role is governed direction; `#276EF1` is pilot candidate only).
   - Exact neutral palette: **`OPEN`**.
   - Known Profile B Web stress evidence: 5 / 24 overflow cases under extreme scaling (150% and 200%). Causal classification: **`MIXED`**. Profile-selection impact: **`MINOR`**.
@@ -65,5 +65,5 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
 
 **Phase 4C — Action System**
 
-Phase 4B Typography Foundation is closed and undergoing repository checkpointing. Following merge of PR for Phase 4B, the next active design program step is:
+Phase 4B Typography Foundation is closed and merged (PR #88). The active design dependency ready to start is:
 - **Phase 4C — Action System** (Buttons, touch targets, hierarchy, states, and text-wrapping resilience building upon 6px radius, Stable Black strategy, and Cairo Profile B provisional typography).

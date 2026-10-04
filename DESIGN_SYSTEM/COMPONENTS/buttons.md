@@ -69,7 +69,7 @@ On standard light surfaces, Subtle Fill remains the **default provisional second
 
 ### 3.4 Destructive Consequence Dimension
 Destructive is not an ad-hoc visual style, but a **semantic consequence dimension** evaluated by **Consequence Level**, **Hierarchy Rank**, and **Discoverability**:
-1. **Destructive Primary:** Permitted **only** within an explicit destructive confirmation context (dialog, sheet, modal, or full-screen confirmation) where the destructive consequence is clearly stated, two-step confirmation is warranted per Product/UX authority, and Product Canon permits the action.
+1. **Destructive Primary:** Permitted **only** within an explicit destructive confirmation context (dialog, sheet, modal, full-screen confirmation, or other platform-appropriate confirmation surface) where the destructive consequence is clearly stated, two-step confirmation is warranted per Product/UX authority, and Product Canon permits the action.
 2. **Destructive Secondary:** Standard visible destructive treatment (**Destructive Outline**) for paired rejection/discard actions or standalone destructive actions requiring clear danger affordance without a full confirmation modal.
 3. **Destructive Tertiary / Ghost (Low-Consequence Gate):** Permitted **only** when all of the following conditions are met:
    - Consequence is strictly local, minor, or transient;

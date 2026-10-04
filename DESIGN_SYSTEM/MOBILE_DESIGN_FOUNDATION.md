@@ -12,7 +12,15 @@ Independent platform/accessibility/design-system review and final Bridge verific
 - `docs/architecture/KONFRM_MOBILE_ARCHITECTURE_BOUNDARIES_V1.md` — architecture boundaries; `konfrm_design_system` is a **reserved** package boundary fed by this document.
 - `DESIGN_SYSTEM/GOVERNANCE.md` v2.1.3 — design authority model, enforcement, Founder visual rules.
 
-**This document defines the foundation layer: principles, semantic roles, classification of decisions, and validation requirements.** It deliberately does **not** finalize numeric token values, component dimensions, motion timings, dark mode, or icon-family choices. Every meaningful item is classified as **CANONICAL NOW**, **IMPLEMENTATION CANDIDATE**, or **DEFERRED / REQUIRES VALIDATION**.
+**This document defines the foundation layer: principles, semantic roles, classification of decisions, and validation requirements.** It deliberately does **not** finalize numeric token values, component dimensions, motion timings, dark mode, or icon-family choices. Governance and decision maturity are classified across two complementary dimensions:
+
+1. **DF2 Decision / Canonicality Classification:**
+   - **CANONICAL NOW:** Foundational principles, semantic role models, authority hierarchies, and approved non-negotiable rules.
+   - **IMPLEMENTATION CANDIDATE:** Directionally favored values or patterns awaiting formal validation on target surfaces.
+   - **DEFERRED / REQUIRES VALIDATION:** Decisions explicitly deferred to dedicated implementation or validation phases.
+
+2. **Evidence / Maturity Status:**
+   - **SYSTEM-VALIDATED PROVISIONAL:** Independently reviewed, controlled design evidence supports the decision (e.g., Phase 4C Action System results). This status is significantly stronger than an untested candidate, but it **does NOT equal CANONICAL NOW** final native tokens or components; it remains subject to the governing native acceptance gate (Phase 4I).
 
 ---
 
@@ -301,7 +309,7 @@ CANONICAL action classes, semantic meanings, and Mobile Phase 4C provisional map
   - *Classification:* **Attachment relationship**, not an arbitrary visual style. Treatment follows semantic hierarchy (Primary, Secondary, Tertiary, or Destructive) within that object's context.
 - **DESTRUCTIVE** — destructive, negative, removal, or consequence-bearing actions.
   - *Consequence-Aware Semantics:* Destructive is a **semantic consequence dimension**, evaluated by Consequence Level, Hierarchy Rank, and Discoverability (never determined by paired vs unpaired layout alone):
-    - *Destructive Primary:* Permitted **only** within an explicit destructive confirmation context (dialog, sheet, modal, full-screen) where the confirmed destructive action is consciously verified and two-step confirmation is warranted per Product/UX authority.
+    - *Destructive Primary:* Permitted **only** within an explicit destructive confirmation context (dialog, sheet, modal, full-screen confirmation, or other platform-appropriate confirmation surface) where the confirmed destructive action is consciously verified and two-step confirmation is warranted per Product/UX authority.
     - *Destructive Secondary:* Visible subordinate destructive treatment (**Destructive Outline**) for paired rejection/discard actions or standalone destructive actions requiring clear danger affordance without a full confirmation modal.
     - *Destructive Tertiary / Ghost:* Permitted **only** for genuinely low-consequence, reversible, non-critical utilities where discoverability remains intact and Product Canon permits the capability.
     - *High-Consequence Prohibition:* High-consequence or material destructive actions must **never** be visually weakened into Ghost merely because they are unpaired.

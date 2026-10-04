@@ -3,7 +3,7 @@
 **Last updated:** 2026-10-04
 **Phase 4D merge checkpoint:** `0134f60984d5d52f3442ef49763bf6c75a564214` (PR #92)
 **Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `NOT_STARTED`.
-**Active cross-cutting governance task:** `DESIGN_COURT_V1` — `ACTIVE / GOVERNANCE_INFRASTRUCTURE` (Founder-approved; does not alter roadmap dependency ordering).
+**Active cross-cutting governance task:** `DESIGN_COURT_V1` — `IMPLEMENTED_PENDING_PUBLICATION` (PR #93, branch `governance/design-court-v1`; Founder-approved; does not alter roadmap dependency ordering).
 **Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System); PR #92 merged (Phase 4D Form & Selection Primitives).
 
 ## Current status
@@ -85,10 +85,10 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
 
 ## Next work
 
-**Publication of Phase 4D & Transition to Phase 4E**
+**Active Governance Infrastructure & Roadmap Continuity**
 
-Phase 4D substantive design, Founder decision recording, and shared governance synchronization are complete (`SUBSTANTIVE_COMPLETE / FOUNDER_DECISION_RECORDED / GOVERNANCE_SYNCHRONIZED / PUBLICATION_PENDING`).
-After Phase 4D publication PR is merged into `main`, the next active design dependency per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md` is:
-- **Phase 4E — Structural System** (spacing scale, content insets, section separation, card and list-row grouping, structural borders and dividers, surface roles and canvas-to-container hierarchy, elevation and shadow semantic levels).
+- **Phase 4D (Form & Selection Primitives):** `CLOSED / MERGED / PUBLISHED` (PR #92, merge commit `0134f60984d5d52f3442ef49763bf6c75a564214`).
+- **Active cross-cutting governance task:** `DESIGN_COURT_V1` — `IMPLEMENTED_PENDING_PUBLICATION` (PR #93, branch `governance/design-court-v1`). Adds `konfrm-design-court` as the 8th internal governed skill (14 governed skill directories); advisory adjudication only.
+- **Next roadmap dependency:** **Phase 4E — Structural System** (spacing scale, content insets, section separation, card and list-row grouping, structural borders and dividers, surface roles and canvas-to-container hierarchy, elevation and shadow semantic levels).
   - **Status:** `NOT_STARTED`
   - **Execution Started:** `NO`

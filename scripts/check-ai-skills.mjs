@@ -460,6 +460,13 @@ if (fs.existsSync(courtSkillMd)) {
   } else {
     pass('Design Court external-skill subordination verified.');
   }
+
+  // R. Auditable consultation evidence requirements
+  if (!allCourtText.includes('CONSULTATION_SOURCE') || !allCourtText.includes('APPLIED_PRINCIPLE')) {
+    fail('Design Court missing CONSULTATION_SOURCE or APPLIED_PRINCIPLE requirements');
+  } else {
+    pass('Design Court auditable consultation requirements (CONSULTATION_SOURCE + APPLIED_PRINCIPLE) verified.');
+  }
 }
 
 // 10. Design Court Deterministic Contract Test Execution

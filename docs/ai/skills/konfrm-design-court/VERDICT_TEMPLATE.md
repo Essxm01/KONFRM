@@ -14,7 +14,15 @@ OPTIONS:
 KNOWN_CANON:
 HARD_GATE_RESULT:        [per option: PASS | FAIL (<gate>)]
 
-SKILLS_CONSULTED:        [SKILL / STATUS / POSITION / EVIDENCE / CONFIDENCE / LIMITATION]
+SKILLS_CONSULTED:        [per consulted skill:
+                          - SKILL: <name>
+                          - STATUS: CONSULTED
+                          - CONSULTATION_SOURCE: <exact repo-relative governed file read>
+                          - APPLIED_PRINCIPLE: <one concise principle applied>
+                          - POSITION: <position>
+                          - EVIDENCE: <evidence>
+                          - CONFIDENCE: LOW | MEDIUM | HIGH
+                          - LIMITATION: <limitation>]
 SKILLS_UNAVAILABLE:      [name + effect on confidence; no positions, no votes]
 
 SPECIALIST_POSITIONS:    [sealed-brief summaries, consulted roles only]

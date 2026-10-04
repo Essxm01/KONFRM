@@ -103,5 +103,5 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
   - **Execution Started:** `YES`
   - **Branch:** `design/structural-system-pilot-01`
   - **Base Checkpoint:** `674194e675731985b347d241d046f6acc48cf785`
-  - **PR:** `PENDING`
+  - **PR:** #95 (`OPEN` / `PENDING_FOUNDER_MERGE_AUTHORIZATION`)
 - **Next roadmap dependency:** **Phase 4F — Navigation & Surface System** (`STATUS: NOT_STARTED`, `EXECUTION_STARTED: NO`).

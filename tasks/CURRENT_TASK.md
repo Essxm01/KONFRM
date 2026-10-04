@@ -6,7 +6,7 @@ STATUS: READY_FOR_PUBLICATION
 FOUNDER_AUTHORIZATION: APPROVED (Option C — Role-Aware Hybrid Structural System)
 BASE_MAIN_SHA: 674194e675731985b347d241d046f6acc48cf785
 BRANCH: design/structural-system-pilot-01
-PR_STATUS: PENDING
+PR_STATUS: PR #95 (PENDING_FOUNDER_MERGE_AUTHORIZATION)
 SCOPE: Phase 4E Structural System — Discovery, product evidence, realistic visual pilot, candidate structural systems, multi-viewport stress testing, Design Court v1 deliberation, self-correction, Founder decision formalization, and publication PR preparation. Owns spacing scale, content insets, vertical rhythm, section separation, open grouped content, cards, interactive rows, borders, dividers, surface hierarchy, shape roles, and elevation/shadow relationships across Customer, Owner, and Admin boundary.
 
 ## Boundaries
@@ -25,7 +25,7 @@ SCOPE: Phase 4E Structural System — Discovery, product evidence, realistic vis
 - [x] Reversible implementation detail closed: 12px structural container radius evaluated and closed via bounded evidence check.
 - [x] Mobile Foundation updated to DF2 v1.4, Experience authority created (`STRUCTURAL_SYSTEM.md`), cards component updated, AI skills synchronized, thin shims regenerated.
 - [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `git diff --check`).
-- [ ] Publication PR created (pending `gh pr create`).
+- [x] Publication PR created (PR #95).
 - [ ] Phase 4F remains strictly `NOT_STARTED`.
 
 ---

@@ -35,25 +35,25 @@
 
 ### Specialist Consultation & Attribution Ledger
 
-| Skill | Status | Consultation Source | Applied Principle | Position | Evidence / Rationale | Confidence | Limitation |
-|---|---|---|---|---|---|---|---|
-| `konfrm-product-ux` | `CONSULTED` | `docs/ai/skills/konfrm-product-ux/SKILL.md` | Role mental model: Customer decisions prioritize trust and clarity; Owner prioritizes operational density. | Option B (8px) | 8px provides subtle perceptual affordance distinction between actionable triggers and editable data-entry fields without reducing touch targets or scan speed. | HIGH | Focuses on role task clarity; geometry preference is secondary to error prevention. |
-| `konfrm-mobile-design` | `CONSULTED` | `docs/ai/skills/konfrm-mobile-design/SKILL.md` | Platform ergonomics: visible control geometry separated from touch targets; container mass proportionality. | Option B (8px) | Controlled 48px Web pilot containers visually absorb 8px radius with natural contour tension; 6px on large containers appears slightly severe on modern mobile viewports. | HIGH | Evaluated on 390px mobile simulation; exact native Flutter rendering and geometry deferred to Phase 4I. |
-| `konfrm-accessibility` | `CONSULTED` | `docs/ai/skills/konfrm-accessibility/SKILL.md` | Web WCAG baseline: non-text component boundary contrast and interactive target bounds. | NO_PREFERENCE (Equally Valid) | Both 6px and 8px preserve full interactive bounds and non-text contrast boundaries; no material radius-dependent accessibility difference was identified in the available controlled Web evidence; native acceptance deferred to 4I. | HIGH | Evaluates conformance, not aesthetic brand flavor. |
-| `konfrm-rtl-arabic` | `CONSULTED` | `docs/ai/skills/konfrm-rtl-arabic/SKILL.md` | Logical start/end padding symmetry and Arabic baseline flow. | NO_PREFERENCE (Equally Valid) | Both radii preserve Arabic baseline flow and padding symmetry; no Bidi or text clipping difference observed between 6px and 8px. | HIGH | Language typography is independent of subtle corner curvature. |
-| `konfrm-visual-qa` | `CONSULTED` | `docs/ai/skills/konfrm-visual-qa/SKILL.md` | Attacking leading option across viewports and component states. | Evaluated Both (Attacking Leading Option) | Verified that neither 6px nor 8px introduces border aliasing or clipping across 360px and 390px frames (`input_radius_6px_owner.png`, `input_radius_8px_owner.png`). | HIGH | Web canvas screenshot evidence; native rasterizer deferred to Phase 4I. |
-| `ui-ux-pro-max-wrapper` | `NOT_CONSULTED` | — | — | — | Suppressed by Router: local radius choice resolved by internal skills without catalog lookup. | — | — |
-| `emil-wrapper` | `NOT_CONSULTED` | — | — | — | Suppressed: static field geometry does not involve gestural springs or physical motion. | — | — |
-| `vercel-web-guidelines-wrapper` | `NOT_CONSULTED` | — | — | — | Excluded: mobile primitive evaluation; web-only wrapper prohibited from native mobile architecture. | — | — |
+| Skill | Status | Consultation Source | Source Anchor | Applied Principle | Position | Evidence / Rationale | Confidence | Limitation |
+|---|---|---|---|---|---|---|---|---|
+| `konfrm-product-ux` | `CONSULTED` | `docs/ai/skills/konfrm-product-ux/SKILL.md` | §1 Role-Specific UX Mandates | Customer interfaces require calm, high-confidence transaction paths and booking clarity; Owner dashboards require operational certainty and high information density. | Option B (8px) lean | Role-lens inference: 8px subtly differentiates editable data-entry fields from 6px action triggers without reducing touch comfort or scan speed (classified as `EXPERT_HEURISTIC / ROLE-LENS INFERENCE`, not Product Truth or Canon). | MEDIUM | Focuses on role cognitive clarity and error prevention; Product UX Canon does not specify corner radii. |
+| `konfrm-mobile-design` | `CONSULTED` | `docs/ai/skills/konfrm-mobile-design/SKILL.md` | §3 Subordinating External Numeric Heuristics & Decision Status Bands | Platform-specific touch-target guidance must not be flattened into one universal raw-pixel rule; exact visual dimensions and component geometry remain governed by validated component decisions and native acceptance. | NO_PLATFORM_OBJECTION / NO_RADIUS_PREFERENCE | Neither 6px nor 8px violates platform touch-target conventions (Apple HIG ~44pt, Android Material ~48dp); physical touch bounds are separate from visual corner radius; native mobile acceptance remains deferred to Phase 4I. | HIGH | Evaluates platform ergonomic constraints, not aesthetic container curvature preference. |
+| `konfrm-accessibility` | `CONSULTED` | `docs/ai/skills/konfrm-accessibility/SKILL.md` | §1 Contrast Ratios & Legibility Framework & §2 Touch Targets | Web WCAG 2.2 AA baseline requires 3.0:1 non-text component boundary contrast; visual bounds and hit regions are distinct; native acceptance is evaluated separately. | NO_PREFERENCE (Equally Valid) | Both 6px and 8px preserve full interactive hit bounds and non-text outline contrast; no material radius-dependent accessibility difference was identified in the available controlled Web evidence; native acceptance deferred to Phase 4I. | HIGH | Evaluates statutory and platform accessibility conformance; corner curvature preference is non-accessible aesthetic choice. |
+| `konfrm-rtl-arabic` | `CONSULTED` | `docs/ai/skills/konfrm-rtl-arabic/SKILL.md` | §1 Core Foundations: Arabic-First & RTL-Native & §3 Typography | Interfaces engineer logical start/end semantics and natural Arabic baseline flow without blind mirroring; Cairo Profile B scale is provisional foundation. | NO_PREFERENCE (Equally Valid) | Both radii preserve symmetrical logical start/end padding and Arabic baseline reading flow; corner curvature has zero material impact on Arabic Bidi isolation or script rendering. | HIGH | Language typography and directional flow are independent of subtle corner curvature. |
+| `konfrm-visual-qa` | `CONSULTED` | `docs/ai/skills/konfrm-visual-qa/SKILL.md` | Core Tenet (CI GREEN != VISUAL QA PASSED) & §1 Initial QA Reference Matrix | Unit tests do not verify optical rendering; UI implementations require explicit visual inspection across relevant viewports, applicable component states, and optical checklists. | EVALUATED_BOTH (Zero Visual Defects) | Controlled Web screenshot inspection of `input_radius_6px_owner.png` and `input_radius_8px_owner.png` at 100% scale confirmed crisp 1px border rendering, zero antialiasing artifacts, and preserved CTA dominance under both candidates. | HIGH | Web canvas screenshot evidence; native Flutter rasterizer deferred to Phase 4I. |
+| `ui-ux-pro-max-wrapper` | `NOT_CONSULTED` | — | — | — | — | Suppressed by Router: local radius choice resolved by internal skills without catalog lookup. | — | — |
+| `emil-wrapper` | `NOT_CONSULTED` | — | — | — | — | Suppressed: static field geometry does not involve gestural springs or physical motion. | — | — |
+| `vercel-web-guidelines-wrapper` | `NOT_CONSULTED` | — | — | — | — | Excluded: mobile primitive evaluation; web-only wrapper prohibited from native mobile architecture. | — | — |
 
-*Attribution check: 5 internal skills consulted with explicit source files and principles; 3 external wrappers not consulted (zero fabricated positions or votes).*
+*Attribution check: 5 internal skills consulted with verified source files, anchors, and principles; 3 external wrappers not consulted (zero fabricated positions or votes).*
 
 ---
 
 ### Round 1 — Sealed Independent Briefs (Summary)
-- **Product UX Counsel:** Recommends Option B (8px). Reason: clear cognitive distinction between button action (6px) and data-entry container (8px). Risk: minor system complexity if radii proliferate. Confidence: HIGH.
-- **Visual Systems Director:** Leans Option B (8px) with strong respect for Option A (6px). Reason: 8px softens the taller 48px box while retaining discipline; 6px remains a viable strict architectural alternative. Confidence: MEDIUM.
-- **Platform & Accessibility Counsel:** Neutral. Both options meet interactive target standards and container ergonomics. Confidence: HIGH.
+- **Product UX Counsel:** Leans Option B (8px). Reason: subtle affordance cue between actionable button (6px) and data-entry field (8px) within calm transaction paths. Risk: slight token proliferation. Classification: `EXPERT_HEURISTIC / ROLE-LENS INFERENCE`. Confidence: MEDIUM.
+- **Visual Systems Director:** Leans Option B (8px) with strong respect for Option A (6px). Reason: 8px visually softens the taller 48px box while retaining discipline; 6px remains a viable strict architectural alternative. Classification: `EXPERT_HEURISTIC`. Confidence: MEDIUM.
+- **Platform & Accessibility Counsel (Mobile Design & Accessibility):** Neutral / No Platform Objection. Both candidates meet touch target standards, preserve contrast boundaries, and leave native acceptance to Phase 4I. Confidence: HIGH.
 
 ---
 
@@ -64,7 +64,7 @@
 - *Objection to 8px:* "Introducing 8px for fields creates two close radius tokens (6px vs 8px) that may look like an accidental inconsistency rather than deliberate design to casual observers."
 
 #### Challenger (Championing 8px Softened Candidate)
-- *Position:* "A 48px text box (pilot geometry) has 3× the visual area of a 44px button line. A 6px corner on a large input container feels austere and boxed-in. 8px provides optical softening proportionate to container mass."
+- *Position:* "The 48px Web pilot field geometry visually presents a larger field-shaped surface than the Primary action geometry. A 6px corner on a larger input container feels austere and boxed-in. 8px provides optical softening appropriate to container height."
 - *Rebuttal to Defender:* "The differentiation is semantic, not accidental: buttons trigger state changes (sharp, decisive 6px), whereas inputs invite text entry (open, welcoming 8px)."
 
 ---
@@ -77,7 +77,7 @@
 - **`TRUST_SENSITIVE_FIRST_TIME_CUSTOMER` Lens:**
   - *Immediate Understanding:* Both fields are instantly recognizable as inputs due to crisp outline (tested at #8E8E93 web pilot reference) and explicit top labels.
   - *Perceptual Distinction:* The 8px curve subtly conveys a slightly softer, more approachable booking inquiry flow compared to the austere 6px.
-  - *Risk / Mistake:* Zero functional difference in error rate predicted.
+  - *Risk / Mistake:* No radius-dependent error mechanism was identified by this synthetic role lens; no empirical error-rate claim is made.
 - **`OPERATIONAL_OWNER` Lens:**
   - *Immediate Understanding:* High-density property creation form is legible in both treatments.
   - *Perceptual Distinction:* 6px feels slightly more technical and spreadsheet-like; 8px feels modern without sacrificing data density. Neither impedes rapid scanning.
@@ -86,7 +86,7 @@
 
 ### Round 5 — Red Team (Visual QA Prosecutor)
 - **Baseline Radius Inspection (100% Scale):** Inspected `input_radius_6px_owner.png` and `input_radius_8px_owner.png` (controlled Web rendering at 100%).
-  - Geometry & contour: 6px matches button geometry exactly; 8px provides subtle optical softening proportionate to container mass.
+  - Geometry & contour: 6px matches button geometry exactly; 8px provides subtle optical softening for the taller field-shaped container.
   - Border rendering: 1px outline renders crisply on both candidates without clipping or border aliasing.
   - Visual hierarchy & CTA relationship: Under 8px, the field does not visually compete with the 6px `#000000` Primary button; CTA dominance is preserved.
 - **200% Text-Scale Stress Evidence:** Inspected `stress_text_scale_200.png`.
@@ -113,7 +113,7 @@
 
 ### Verdict & Governance Disposition
 
-- **CONSENSUS:** `STRONG_CONSENSUS` (in favor of 8px for mobile data-entry fields).
+- **CONSENSUS:** `NARROW_CONSENSUS` (in favor of 8px for mobile data-entry fields).
 - **FINAL_VERDICT:** **8px Mobile Field Radius** (`OPTION_B`).
 - **WHY:**
   1. *Optical Proportion:* 8px softens taller controlled Web pilot input containers (48px pilot geometry) without drifting into bubbly consumer roundness (10px). Exact native field height remains OPEN / deferred to Phase 4I.
@@ -122,7 +122,7 @@
 - **MINORITY_OPINION:**
   - *Dissent:* Preserving single 6px global radius across buttons and inputs guarantees absolute mathematical minimalism.
   - *Condition for Reconsideration:* If future cross-platform testing in Phase 4I shows that sub-pixel rendering on low-DPI Android screens causes 8px and 6px to look unintentionally mismatched in tight inline groupings.
-- **CONFIDENCE:** `HIGH`
+- **CONFIDENCE:** `MEDIUM`
 - **FOUNDER_DECISION_REQUIRED:** `NO` (Historical non-mutating validation; the Founder already evaluated these exact candidates and approved 8px).
 - **DECISION_STATUS:** `ADVISORY` (Test evidence only; does NOT canonize).
 - **COURT_OUTCOME:** `VERDICT_REACHED`

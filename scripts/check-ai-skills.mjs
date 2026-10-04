@@ -473,10 +473,10 @@ if (fs.existsSync(courtSkillMd)) {
   }
 
   // R. Auditable consultation evidence requirements
-  if (!allCourtText.includes('CONSULTATION_SOURCE') || !allCourtText.includes('APPLIED_PRINCIPLE')) {
-    fail('Design Court missing CONSULTATION_SOURCE or APPLIED_PRINCIPLE requirements');
+  if (!allCourtText.includes('CONSULTATION_SOURCE') || !allCourtText.includes('SOURCE_ANCHOR') || !allCourtText.includes('APPLIED_PRINCIPLE')) {
+    fail('Design Court missing CONSULTATION_SOURCE, SOURCE_ANCHOR, or APPLIED_PRINCIPLE requirements');
   } else {
-    pass('Design Court auditable consultation requirements (CONSULTATION_SOURCE + APPLIED_PRINCIPLE) verified.');
+    pass('Design Court auditable consultation requirements (CONSULTATION_SOURCE + SOURCE_ANCHOR + APPLIED_PRINCIPLE) verified.');
   }
 }
 

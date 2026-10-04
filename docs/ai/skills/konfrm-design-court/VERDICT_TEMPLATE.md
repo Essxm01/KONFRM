@@ -18,7 +18,8 @@ SKILLS_CONSULTED:        [per consulted skill:
                           - SKILL: <name>
                           - STATUS: CONSULTED
                           - CONSULTATION_SOURCE: <exact repo-relative governed file read>
-                          - APPLIED_PRINCIPLE: <one concise principle applied>
+                          - SOURCE_ANCHOR: <section heading / governed rule identifier actually used>
+                          - APPLIED_PRINCIPLE: <faithful concise paraphrase applied>
                           - POSITION: <position>
                           - EVIDENCE: <evidence>
                           - CONFIDENCE: LOW | MEDIUM | HIGH

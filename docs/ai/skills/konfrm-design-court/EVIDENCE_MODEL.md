@@ -29,14 +29,15 @@ For every specialist/skill shown in a Court report:
 SKILL:                <name>
 STATUS:               CONSULTED | NOT_CONSULTED | UNAVAILABLE
 CONSULTATION_SOURCE:  <exact governed repo-relative skill/reference file actually read; REQUIRED when CONSULTED>
-APPLIED_PRINCIPLE:    <one concise principle actually applied from that source; REQUIRED when CONSULTED>
+SOURCE_ANCHOR:        <section heading / governed rule identifier actually used; REQUIRED when CONSULTED>
+APPLIED_PRINCIPLE:    <faithful concise paraphrase actually applied from that source; REQUIRED when CONSULTED>
 POSITION:             <only if CONSULTED>
 EVIDENCE:             <concise, classified>
 CONFIDENCE:           LOW | MEDIUM | HIGH
 LIMITATION:           <if applicable>
 ```
 
-- `CONSULTED` means the skill's governing file was actually read and applied in this case. Both `CONSULTATION_SOURCE` and `APPLIED_PRINCIPLE` are mandatory for every `CONSULTED` entry to ensure auditability.
+- `CONSULTED` means the skill's governing file was actually read and applied in this case. `CONSULTATION_SOURCE`, `SOURCE_ANCHOR`, and `APPLIED_PRINCIPLE` are mandatory for every `CONSULTED` entry to ensure auditability.
 - `NOT_CONSULTED` → no position, no vote, no consultation source.
 - `UNAVAILABLE` (required specialist missing or unreadable) → **no fabricated position and no fabricated vote**; record the gap and its effect on confidence. If the missing specialist covers a deciding criterion, downgrade to `INSUFFICIENT_EVIDENCE` or request the specialist.
 - Never write aggregate claims such as "the design skills prefer X" without per-skill consultation evidence.

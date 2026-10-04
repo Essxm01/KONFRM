@@ -1,17 +1,17 @@
 ---
 name: konfrm-mobile-design
-description: "Authoritative mobile design interpretation and safety standards for KONFRM. Implements DF2 v1.1 foundations, monochrome-first brand identity, restrained interaction-accent role, platform adaptation, and useful density without inventing unapproved numeric Canon."
+description: "Authoritative mobile design interpretation and safety standards for KONFRM. Implements DF2 v1.3 foundations, monochrome-first brand identity, restrained interaction-accent role, platform adaptation, and useful density without inventing unapproved numeric Canon."
 ---
 
-# KONFRM Mobile Design Authority (DF2 v1.1 Interpretation)
+# KONFRM Mobile Design Authority (DF2 v1.3 Interpretation)
 
-Authoritative mobile design guidelines for future KONFRM Customer and Owner Flutter applications (`mobile/customer_app`, `mobile/owner_app`) under DF2 v1.1.
+Authoritative mobile design guidelines for future KONFRM Customer and Owner Flutter applications (`mobile/customer_app`, `mobile/owner_app`) under DF2 v1.3 (DS v2.1.8).
 
 ---
 
 > [!IMPORTANT]
 > ### THE CANON SUBORDINATION RULE
-> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill is strictly subordinate to KONFRM Design Canon (DF2 v1.1, monochrome-first, high useful density, Arabic-first RTL, Western Arabic numerals, `#276EF1` candidate interaction role). External skills may inform craftsmanship, ergonomics, accessibility checks, and engineering patterns, but never dictate product taste or violate brand identity.**
+> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill is strictly subordinate to KONFRM Design Canon (DF2 v1.3, monochrome-first, high useful density, Arabic-first RTL, Western Arabic numerals, `#276EF1` candidate interaction role). External skills may inform craftsmanship, ergonomics, accessibility checks, and engineering patterns, but never dictate product taste or violate brand identity.**
 
 ---
 
@@ -26,10 +26,9 @@ Authoritative mobile design guidelines for future KONFRM Customer and Owner Flut
   - Brand identity (Black/White) and interaction accent are intentionally separated.
   - A **restrained blue interaction-accent role** is canonical, while the specific token value `#276EF1` remains an **IMPLEMENTATION CANDIDATE**.
   - Blue is an interaction accent role, NEVER the primary brand logo artwork.
-- **Important Action Treatment Discipline:**
-  - Black/White brand identity does **NOT** mean "every primary action button is canonically black."
-  - The exact visual treatment of primary actions (solid black vs. blue interaction role vs. outlined) is an **open candidate question** to be evaluated in component contexts during Primitive Pilots.
-  - Skills must not pre-answer or freeze this decision.
+- **Primary Action Strategy & Color:**
+  - Exact Mobile Primary Black is `#000000` (`SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`; `#18181B` fallback comparator only; final native Canon not yet promoted).
+  - Primary button visual treatment follows Contextual Hierarchy Hybrid (`SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY`).
 - **Light-First Dominant Intent:**
   - Light-first product intent is canonical: white and light neutral surfaces dominate.
   - Dark navy/slate slabs, high-contrast dark cards, and glassmorphism are not normal product surfaces.
@@ -52,7 +51,7 @@ KONFRM adapts presentation to native mobile platforms while preserving core mean
 
 ---
 
-## 3. Subordinating External Numeric Heuristics
+## 3. Subordinating External Numeric Heuristics & Decision Status Bands
 
 External UI skills frequently assert rigid universal numbers (e.g., universal 44×44px touch target, universal 16px body text, 8px padding). Under KONFRM Canon, these are strictly subordinate:
 
@@ -60,10 +59,27 @@ External UI skills frequently assert rigid universal numbers (e.g., universal 44
    - Universal external rules (e.g. 44px) are subordinate to platform-specific conventions (Apple HIG ~44pt, Android Material ~48dp).
    - High-density operational controls (chips, compact steppers) must balance touch comfort with operational density on real devices.
    - Exact mobile target dimensions remain subject to Primitive and Component validation work (§29).
-2. **Typography & Layout Dimensions:**
-   - Exact type scales, line-height multipliers, corner radii, borders, and elevation values are **candidates**, not pre-approved numbers.
-   - Cairo is an **implementation candidate** pending real mobile device rendering and performance validation (§27.7).
-   - The 8pt-derived spacing scale is strong implementation evidence from Web, but requires mobile validation before canonicalization.
+
+2. **Decision Status Classification (Three Status Bands):**
+   - **PUBLISHED GOVERNED PROVISIONAL (Settled Baseline Directions; Do NOT Treat as Open; Do NOT Promote to Final Native Canon):**
+     - **Typography:** Cairo Profile B scale and metrics (`SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`).
+     - **Primary CTA Color:** `#000000` exact Mobile Primary Black (`SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`).
+     - **Primary Button Radius:** `6px` (`PRIMARY_ONLY` provisional; secondary button radius and global shape system remain open).
+     - **Action Strategy:** Contextual Hierarchy Hybrid (`SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY`).
+     - **Field Strategy:** Outline-Led field baseline with white field surface on light-first surfaces (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot candidate `#8E8E93` [~3.26:1 contrast] is rendering reference only).
+     - **Mobile Field Control Radius:** `8px` (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`; applies strictly to mobile field-shaped Form & Selection controls; deliberate semantic differentiation from 6px Primary CTA).
+     - **Focus Semantic Direction:** Restrained Interaction-Accent Emphasis (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot rendering reference is 1px accent field border + 3px outer halo).
+   - **OPEN VARIABLES (Genuinely Unresolved / Implementation Candidates / Phase-Deferred):**
+     - **Exact Blue:** `#276EF1` candidate token remains open.
+     - **Exact Neutrals:** Palette tokens remain open / implementation candidates.
+     - **Exact Native Focus Treatment:** Assistive/system focus and halo metrics remain open / deferred to Phase 4I.
+     - **Exact Native Stroke Width:** Border/stroke tokenization remains open / deferred to Phase 4I.
+     - **Exact Native Field Height:** Container height remains open / deferred to Phase 4I (48px in pilot was controlled Web pilot geometry).
+     - **Secondary Button Radius:** Remains open / undecided.
+     - **Global Shape System:** Card, sheet, row, and dialog radii remain open / Phase 4E & 4F scope.
+     - **Structural Spacing & Layout:** Spacing scale, content insets, section separation, and elevation levels remain Phase 4E scope (`STATUS: NOT_STARTED`).
+   - **NATIVE ACCEPTANCE:**
+     - `DEFERRED_TO_4I`: All provisional candidates require empirical Flutter device rendering, performance, and accessibility acceptance on real hardware before permanent Canon promotion.
 
 ---
 

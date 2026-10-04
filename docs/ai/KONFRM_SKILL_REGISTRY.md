@@ -1,15 +1,15 @@
 # KONFRM AI Design Skill Registry
 
 **Status:** CANDIDATE — SKILL INTEGRATION GATE
-**Version:** 1.1.0
-**Authority:** Governed by `DESIGN_SYSTEM/` (DF2 v1.1 / DS v2.1.6) and KONFRM Architecture.
+**Version:** 1.2.0
+**Authority:** Governed by `DESIGN_SYSTEM/` (DF2 v1.3 / DS v2.1.8) and KONFRM Architecture.
 **Audience:** Codex, Antigravity, ZCode, Engineering & Design Contributors.
 
 ---
 
 > [!IMPORTANT]
 > ### THE CANON SUBORDINATION RULE
-> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill is strictly subordinate to KONFRM Design Canon (DF2 v1.1, monochrome-first, high useful density, Arabic-first RTL, Western Arabic numerals, `#276EF1` candidate interaction role). External skills may inform craftsmanship, ergonomics, accessibility checks, and engineering patterns, but never dictate product taste or violate brand identity.**
+> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill is strictly subordinate to KONFRM Design Canon (DF2 v1.3, monochrome-first, high useful density, Arabic-first RTL, Western Arabic numerals, `#276EF1` candidate interaction role). External skills may inform craftsmanship, ergonomics, accessibility checks, and engineering patterns, but never dictate product taste or violate brand identity.**
 
 ---
 
@@ -146,17 +146,32 @@ A forensic audit of all 17 candidate design skill sources from `skills.sh` was c
 
 ## 4. Governed Internal Skills Suite
 
-In addition to wrapped external sources, KONFRM maintains a suite of 7 project-local, governed internal skills authored in `docs/ai/skills/`:
+In addition to wrapped external sources, KONFRM maintains a suite of 8 project-local, governed internal skills authored in `docs/ai/skills/` (14 governed skill directories in total: 8 internal + 6 governed wrappers):
 
 | # | Internal Skill | Primary Mandate & Scope | Governed Reference |
 |---|----------------|-------------------------|--------------------|
-| 1 | `konfrm-design-router` | Master design triage, classification, minimal activation, external skills debate management | `docs/ai/skills/konfrm-design-router/SKILL.md` |
+| 1 | `konfrm-design-router` | Master design triage, classification, minimal activation, external skills debate management, Design Court escalation | `docs/ai/skills/konfrm-design-router/SKILL.md` |
 | 2 | `konfrm-design-reasoning` | Human-centered perceptual decision layer, 12-step decision loop, Hypotheses A/B/C, micro-validation planning | `docs/ai/skills/konfrm-design-reasoning/SKILL.md` |
 | 3 | `konfrm-product-ux` | Role-specific UX mandates (Customer request flow, Owner certainty, Admin audit), truthful state grammar | `docs/ai/skills/konfrm-product-ux/SKILL.md` |
 | 4 | `konfrm-mobile-design` | Future mobile/native architecture interpretation, platform ergonomics, candidate token safety | `docs/ai/skills/konfrm-mobile-design/SKILL.md` |
 | 5 | `konfrm-rtl-arabic` | Arabic-first layout, logical start/end, Western Arabic numerals (0-9), bidirectional typography | `docs/ai/skills/konfrm-rtl-arabic/SKILL.md` |
 | 6 | `konfrm-accessibility` | Web WCAG 2.2 AA baseline, platform-appropriate mobile accessibility criteria, touch targets, screen-reader semantics, reduced motion | `docs/ai/skills/konfrm-accessibility/SKILL.md` |
 | 7 | `konfrm-visual-qa` | Multi-viewport regression testing, responsive breakpoint checks, screenshot validation protocols | `docs/ai/skills/konfrm-visual-qa/SKILL.md` |
+| 8 | `konfrm-design-court` | Governed collaborative adjudication of materially ambiguous design decisions (specialist panel, synthetic role lenses, defender/challenger, red team, hard gates, consensus + minority opinion, Founder gate) | `docs/ai/skills/konfrm-design-court/SKILL.md` |
+
+### 4.1 Design Court v1 (`konfrm-design-court`)
+
+- **Mandate:** Advisory adjudication of materially unresolved design decisions. Governing principle: *prefer an honest unresolved verdict over a confident unsupported recommendation.*
+- **Source:** `docs/ai/skills/konfrm-design-court/` — `SKILL.md` (orchestration contract) + `ROLES.md`, `DELIBERATION_PROTOCOL.md`, `PERSONA_PANEL.md`, `EVIDENCE_MODEL.md`, `VERDICT_TEMPLATE.md`, `TEST_CASES.md`, and `DESIGN_COURT_VALIDATION_REPORT.md` (test evidence only).
+- **Router relationship:** Invoked only by `konfrm-design-router` escalation for materially unresolved decisions; routine work returns `COURT_NOT_REQUIRED`.
+- **Design Reasoning relationship:** Orchestrates, does not replace, `konfrm-design-reasoning` (evidence quality, hypothesis discipline, micro-validation); adds multi-role adjudication, structured disagreement, persona lenses, red team, consensus classification and the Founder gate.
+- **Modes:** `FAST_PANEL` (default for bounded choices) and `FULL_COURT` (system-level, architecture, cross-role, brand-language decisions). `FULL_COURT` is never the default.
+- **Founder subordination:** Never replaces Founder authority; may emit only `ADVISORY` / `CANDIDATE` / `VALIDATED_CANDIDATE`; cannot promote Canon; preserves prior Founder decisions absent material new evidence.
+- **Persona rule:** Personas are `SYNTHETIC_ROLE_LENS` instruments — synthetic persona opinion is not user research evidence.
+- **Hard gates:** Product Truth, Business/Financial rules, security, applicable accessibility, platform impossibility, RTL correctness and architecture boundaries eliminate options before any consensus; a majority cannot override a hard-gate failure.
+- **Attribution & topology honesty:** Every skill in a report is `CONSULTED` / `NOT_CONSULTED` / `UNAVAILABLE`; no fabricated positions or votes. `DELIBERATION_TOPOLOGY` is reported as `TRUE_MULTI_AGENT` or `SINGLE_AGENT_STRUCTURED_PANEL`; single-agent execution is never presented as multi-agent consensus.
+- **Validation:** `scripts/test-design-court-contract.mjs` (deterministic, executed by `npm run ai:skills:check`).
+- **Discovery status:** Thin shims generated in `.agents/skills/` and `.zcode/skills/`; runtime discovery not claimed (see §5).
 
 ---
 
@@ -218,6 +233,11 @@ Any AI agent performing design or UI tasks on the KONFRM codebase MUST append th
 - EVIDENCE_VS_CANON: [distinction between advisory external inputs and canonical decisions taken]
 - VALIDATION_NEEDED: [recommended micro-validation method (prototype, test, survey), or NONE]
 - VISUAL_QA: [viewports tested or explicit NOT EXECUTED statement if simulation/routing only]
+- COURT_USED: [YES | NO]
+- COURT_MODE: [FAST_PANEL | FULL_COURT | N/A]
+- COURT_OUTCOME: [Design Court outcome, or N/A]
+- COURT_CONSENSUS: [consensus class, or N/A]
+- FOUNDER_DECISION_REQUIRED: [YES | NO]
 ```
 
 ### Mode B: COMPACT REPORT (for routine fixes, literal bugs, typos, and known accessibility remediations)

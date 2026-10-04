@@ -1,9 +1,10 @@
 # Current project state
 
-**Last updated:** 2026-10-04  
-**Phase 4C merge checkpoint:** `95e3789ae824cdc6ca0a6608f1752f3137ac5ac5` (PR #90)  
-**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `SUBSTANTIVE_COMPLETE / FOUNDER_DECISION_RECORDED / GOVERNANCE_SYNCHRONIZED / PUBLICATION_PENDING`.  
-**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System).
+**Last updated:** 2026-10-04
+**Phase 4D merge checkpoint:** `0134f60984d5d52f3442ef49763bf6c75a564214` (PR #92)
+**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `NOT_STARTED`.
+**Active cross-cutting governance task:** `DESIGN_COURT_V1` — `IMPLEMENTED_PENDING_PUBLICATION` (PR #93, branch `governance/design-court-v1`; Founder-approved; does not alter roadmap dependency ordering).
+**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System); PR #92 merged (Phase 4D Form & Selection Primitives).
 
 ## Current status
 
@@ -29,14 +30,16 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
   - Reflow: controlled 360px Web frame-width evidence.
   - Native component and accessibility acceptance: **`DEFERRED TO 4I`**.
   - Open variables preserved: Secondary Radius (`OPEN`), Exact Neutrals (`OPEN`), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Destructive Color (`OPEN`), Exact Native Focus Treatment (`OPEN`), Global Shape System (`OPEN`), Cancellation/Refund Policy (`OPEN / UNDECIDED`), Token-File Authoring (`SEPARATELY GATED`).
-- **Phase 4D (Form & Selection Primitives):** `SUBSTANTIVE_COMPLETE / FOUNDER_DECISION_RECORDED / GOVERNANCE_SYNCHRONIZED / PUBLICATION_PENDING` (Branch `design/form-selection-pilot-01`, publication PR pending; not claimed CLOSED or MERGED until PR merge). Governed Customer + Owner evidence inspection and controlled visual pilot complete.
+- **Phase 4D (Form & Selection Primitives):** `CLOSED / MERGED / PUBLISHED` (PR #92, merge checkpoint `0134f60984d5d52f3442ef49763bf6c75a564214`; reviewed head `b3d7fb1b57ab8d4a8adb3e1941710ab68c6aefad`). Governed Customer + Owner evidence inspection and controlled visual pilot complete. Design-System documentation/evidence publication only; no production-app, backend, database, or token JSON changes.
+  - Web pilot outline reference: `#8E8E93` (~3.26:1 against `#FFFFFF`; pilot rendering reference only, exact neutrals remain `OPEN`).
   - Field Strategy: **`OUTLINE_LED`** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; white surface, thin neutral outline, explicit top label, separate helper/error, no floating labels).
   - Mobile Field Radius: **`8px`** (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`; applies strictly to mobile field-shaped controls; does not alter 6px Primary Button radius `PRIMARY_ONLY`).
   - Focus Direction: **`RESTRAINED_INTERACTION_ACCENT`** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot `#276EF1`, 1px accent field border + 3px outer halo are rendering references only).
   - Selection Controls: Checkbox is **`OWNER_PRODUCT_EVIDENCED`** (notification preferences); Toggle is **`DEFERRED_NO_CURRENT_PRODUCT_EVIDENCE`** (zero product evidence; no switch migration).
   - Sizing & Touch Targets: iOS 44pt / Android 48dp guidance (no universal raw-pixel mobile rule).
   - Open variables preserved: Exact Neutrals (`OPEN`), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Native Focus Treatment (`OPEN`), Exact Native Stroke Width (`OPEN`), Global Shape System (`OPEN`), Native Acceptance (`DEFERRED TO 4I`).
-  - Next dependency after 4D merge: **`PHASE_4E_STRUCTURAL_SYSTEM`** (status: `NOT_STARTED`).
+- **Phase 4E (Structural System):** next roadmap dependency — `NOT_STARTED` (`EXECUTION_STARTED: NO`).
+- **Design Court v1 (cross-cutting governance infrastructure):** `ACTIVE` on branch `governance/design-court-v1` (Founder-approved architecture). Adds `konfrm-design-court` as the 8th internal governed skill (14 governed skill directories). Advisory adjudication only; does not alter roadmap order, Phase 4D decisions, tokens, or production code.
 
 The connected property vertical slice through Phase 3 remains live-verified on production. Phase 4 develops the design foundations through controlled empirical pilots before native mobile integration.
 
@@ -82,10 +85,10 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
 
 ## Next work
 
-**Publication of Phase 4D & Transition to Phase 4E**
+**Active Governance Infrastructure & Roadmap Continuity**
 
-Phase 4D substantive design, Founder decision recording, and shared governance synchronization are complete (`SUBSTANTIVE_COMPLETE / FOUNDER_DECISION_RECORDED / GOVERNANCE_SYNCHRONIZED / PUBLICATION_PENDING`).
-After Phase 4D publication PR is merged into `main`, the next active design dependency per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md` is:
-- **Phase 4E — Structural System** (spacing scale, content insets, section separation, card and list-row grouping, structural borders and dividers, surface roles and canvas-to-container hierarchy, elevation and shadow semantic levels).
+- **Phase 4D (Form & Selection Primitives):** `CLOSED / MERGED / PUBLISHED` (PR #92, merge commit `0134f60984d5d52f3442ef49763bf6c75a564214`).
+- **Active cross-cutting governance task:** `DESIGN_COURT_V1` — `IMPLEMENTED_PENDING_PUBLICATION` (PR #93, branch `governance/design-court-v1`). Adds `konfrm-design-court` as the 8th internal governed skill (14 governed skill directories); advisory adjudication only.
+- **Next roadmap dependency:** **Phase 4E — Structural System** (spacing scale, content insets, section separation, card and list-row grouping, structural borders and dividers, surface roles and canvas-to-container hierarchy, elevation and shadow semantic levels).
   - **Status:** `NOT_STARTED`
   - **Execution Started:** `NO`

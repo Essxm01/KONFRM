@@ -168,11 +168,11 @@ Instead, reason through multidimensional factors:
 5. **State Communication:** Unambiguous distinction between interactive states (default, hover, pressed, disabled) and semantic states (error, success, warning).
 6. **Accessibility:** Applicable contrast conformance (such as Web WCAG 2.2 AA baseline for text and essential controls) across color pairings.
 
-Current Canon remains:
-- Black/White primary identity.
-- Restrained blue interaction role.
-- `#276EF1` exact token = **Implementation Candidate**.
-- Exact primary CTA color treatment = **Unresolved Candidate** (subject to Primitive Pilots).
+Current Canon and Decision Status:
+- Black/White primary brand identity is canonical.
+- Restrained blue interaction role is canonical.
+- Exact Mobile Primary Black is `#000000` (`SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`; `#18181B` fallback comparator only; final native Canon not yet promoted).
+- Exact Blue token remains OPEN (`#276EF1` implementation candidate only).
 
 ---
 

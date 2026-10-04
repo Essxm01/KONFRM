@@ -11,7 +11,7 @@ The Master Design Triage Layer for the KONFRM platform across all AI agents (Cod
 
 > [!IMPORTANT]
 > ### THE CANON SUBORDINATION RULE
-> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill is strictly subordinate to KONFRM Design Canon (DF2 v1.1, monochrome-first, high useful density, Arabic-first RTL, Western Arabic numerals, `#276EF1` candidate interaction role) and canonical business invariants (`docs/BUSINESS_RULES.md`). External skills may inform craftsmanship, ergonomics, accessibility checks, and engineering patterns, but never dictate product taste, business rules, or brand identity.**
+> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill is strictly subordinate to KONFRM Design Canon (DF2 v1.3, monochrome-first, high useful density, Arabic-first RTL, Western Arabic numerals, `#276EF1` candidate interaction role) and canonical business invariants (`docs/BUSINESS_RULES.md`). External skills may inform craftsmanship, ergonomics, accessibility checks, and engineering patterns, but never dictate product taste, business rules, or brand identity.**
 
 ---
 
@@ -21,13 +21,14 @@ The Master Design Triage Layer for the KONFRM platform across all AI agents (Cod
    - **Role:** Customer, Owner, Admin, or Shared Design System.
    - **Surface Reality:**
      - **Current Web Implementation:** `customer-app/` (React SPA), `owner-app/` (React SPA), `admin-app/` (React SPA).
-     - **Future Native Mobile Target:** Future Flutter/Dart applications governed by DF2 v1.1 (`mobile/customer_app`, `mobile/owner_app` — topology not yet initialized).
+     - **Future Native Mobile Target:** Future Flutter/Dart applications governed by DF2 v1.3 (`mobile/customer_app`, `mobile/owner_app` — topology not yet initialized).
    - **Task Type:** UX Architecture, Visual Design, Micro-Polish, Accessibility Audit, Visual QA, or Code Structure.
 2. **Minimal Skill Activation:** Select ONLY the specific internal and wrapped external skills relevant to the task. Suppress unneeded or conflicting tools.
 3. **Structured Design Reasoning Pipeline:** For meaningful new Primitive, visual-hierarchy, or component-design choices, route requests through `konfrm-design-reasoning`. For routine bug fixes, typos, layout alignment, or known accessibility remediations, bypass the heavy dialectic and proceed directly with proportional discipline.
 4. **External Skills as Debate Participants:** Treat external skills as competing advisory perspectives in a disciplined dialectic, rather than authoritative commands.
 5. **Pre-flight Conflict Resolution:** Detect potential conflicts between external advice and KONFRM Design Canon before work begins, ensuring Canon wins unconditionally.
 6. **Standardized Reporting Enforcement:** Mandate the appropriate reporting block upon task completion: `FULL` mode for unresolved visual/architectural decisions, or `COMPACT` mode for routine implementations and fixes.
+7. **Design Court Escalation:** Route only materially unresolved design decisions to `konfrm-design-court` (`FAST_PANEL` by default, `FULL_COURT` for system-level or cross-role decisions). Routine work never enters the Court (see §3).
 
 ---
 
@@ -38,7 +39,7 @@ The Master Design Triage Layer for the KONFRM platform across all AI agents (Cod
 | **Current Customer Web** | `customer-app/` | React / Vite / Tailwind | `konfrm-product-ux`, `konfrm-design-reasoning`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`, `ui-ux-pro-max-wrapper` (advisory), `impeccable-wrapper` (polish/critique) |
 | **Current Owner Web** | `owner-app/` | React / Vite / Tailwind | `konfrm-product-ux`, `konfrm-design-reasoning`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`, `ui-ux-pro-max-wrapper` (advisory), `impeccable-wrapper` (polish/critique/distill) |
 | **Current Admin Web** | `admin-app/` | React / Vite / Tailwind | `konfrm-product-ux`, `konfrm-design-reasoning`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`, `impeccable-wrapper` (distill/quieter) |
-| **Future Mobile Target** | Future `mobile/` boundary (uninitialized) | Flutter / Dart (DF2 v1.1) | `konfrm-product-ux`, `konfrm-design-reasoning`, `konfrm-mobile-design`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `ui-ux-pro-max-wrapper` (advisory search only), `impeccable-wrapper` (polish/critique), `emil-wrapper` (tactile/gesture candidates) |
+| **Future Mobile Target** | Future `mobile/` boundary (uninitialized) | Flutter / Dart (DF2 v1.3) | `konfrm-product-ux`, `konfrm-design-reasoning`, `konfrm-mobile-design`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `ui-ux-pro-max-wrapper` (advisory search only), `impeccable-wrapper` (polish/critique), `emil-wrapper` (tactile/gesture candidates) |
 | **Design System Authority** | `DESIGN_SYSTEM/` | Semantic Tokens & Specs | `konfrm-design-reasoning`, `konfrm-mobile-design`, `konfrm-rtl-arabic`, `konfrm-accessibility` | `impeccable-wrapper` (audit), `ui-ux-pro-max-wrapper` (advisory style search) |
 
 > [!WARNING]
@@ -88,6 +89,24 @@ visual QA / prototype validation (konfrm-visual-qa)
   - Implementation parity fixes with existing screens
   - Routine accessibility remediations where the standard requirement is already known
 
+### Design Court Escalation (`konfrm-design-court`)
+
+```
+Incoming design task → classify
+  ├── routine / known / already governed  → normal minimal skill path (COMPACT report); Court returns COURT_NOT_REQUIRED
+  ├── meaningful but resolvable by one reasoning pass → konfrm-design-reasoning (FULL report)
+  └── materially unresolved design decision → konfrm-design-court
+        ├── bounded choice (radius A vs B, icon/field/secondary treatment) → FAST_PANEL (default)
+        └── primitive system, navigation/screen/interaction architecture, cross-role conflict,
+            brand-language or token-family strategy, material Founder-vs-system tension → FULL_COURT
+```
+
+Court triggers: unresolved primitive choice; two or more credible visual directions; role conflict; brand-vs-UX tradeoff; major component/system choice; major screen decision; interaction-architecture ambiguity; Founder explicitly requests the Design Court.
+
+- Do NOT send every UI task through the Court. Typos, literal clipping, obvious RTL property bugs, known a11y fixes, parity fixes, backend behavior and routine code bugs never require it.
+- The Court orchestrates `konfrm-design-reasoning` and the specialist skills; it does not replace them.
+- Court output is advisory (`ADVISORY` / `CANDIDATE` / `VALIDATED_CANDIDATE`); it never replaces Founder authority or promotes Canon.
+
 ---
 
 ## 4. External Skills as Debate Participants
@@ -121,28 +140,47 @@ When routing, the following skills MUST be actively suppressed or rejected:
 
 ---
 
-## 6. Canon vs. Candidate Pre-Flight Discipline
+## 6. Design Authority Snapshot & Pre-Flight Decision Classification
 
-Before reviewing or producing design work, enforce the decision boundaries established in DF2 (§26–§28):
+Before reviewing, routing, or producing design work, enforce the decision status boundaries reflecting published Phases 4A–4D:
 
-1. **What is CANONICAL NOW:**
-   - Monochrome-first brand identity (Solid Black/White).
-   - Restrained blue interaction-accent **role** (separate from identity).
-   - Light-first dominant surfaces.
-   - Arabic-first RTL native layout with logical start/end and Western Arabic numerals (`0-9`).
-   - Truthful state grammar (ERROR ≠ EMPTY, STALE ≠ ERROR, PENDING ≠ SUCCESS, MISSING ≠ ZERO).
-   - Action hierarchy (Primary, Secondary, Tertiary, Contextual, Destructive).
-   - Platform adaptation (preserve meaning/hierarchy, adapt presentation).
-   - High useful density over decorative whitespace.
-2. **What is an IMPLEMENTATION CANDIDATE (Do NOT promote to Canon):**
-   - Exact primary CTA color treatment (whether black, blue, or other treatment — to be resolved by Primitive Pilots).
-   - Preferred interaction accent value (`#276EF1`).
-   - Exact neutral/ink token values (no UI-black invented in DF2).
-   - Exact typography scale and line-heights.
-   - Cairo as the bundled mobile UI font family (strong candidate pending mobile rendering validation).
-   - Exact spacing scale, corner radii, borders, shadows, and control dimensions.
-   - Exact motion durations, easing curves, and spring constants.
-   - Exact platform component mappings.
+### 1. STABLE GOVERNING DIRECTION (Canon / Fixed Product Invariants)
+- **Brand Identity:** Monochrome-first identity (Solid Black/White).
+- **Interaction Role:** Restrained blue interaction-accent **role** (separate from brand identity).
+- **Surface Dominance:** Light-first dominant surfaces.
+- **Directional Semantics:** Arabic-first RTL native layout with logical start/end and Western Arabic numerals (`0–9`).
+- **State Grammar:** Truthful state grammar (ERROR ≠ EMPTY, STALE ≠ ERROR, PENDING ≠ SUCCESS, MISSING ≠ ZERO).
+- **Action Hierarchy:** Five-tier action grammar (Primary, Secondary, Tertiary, Contextual, Destructive).
+- **Role-Specific UX:** Role mental models (Customer booking clarity, Owner operational certainty, Admin audit governance).
+- **Information Density:** High useful operational density over decorative whitespace.
+- **Platform Adaptation:** Preserve semantic hierarchy across platforms while adapting presentation ergonomics.
+
+### 2. PUBLISHED GOVERNED PROVISIONAL DECISIONS (Do NOT Treat as Open; Do NOT Falsely Promote to Final Native Canon)
+- **Typography:** Cairo Profile B scale and metrics (`SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`; native mobile Flutter acceptance deferred to Phase 4I).
+- **Exact Mobile Primary Black:** `#000000` (`SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`; `#18181B` fallback comparator only; not promoted to final native Canon).
+- **Primary Button Radius:** `6px` (`PRIMARY_ONLY` provisional; secondary button radius and global shape system remain open).
+- **Action Strategy:** Contextual Hierarchy Hybrid (`SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY`).
+- **Field Visual Strategy:** Outline-Led field baseline with white field surface on light-first surfaces (structural grouping deferred to Phase 4E; `SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot candidate `#8E8E93` [~3.26:1 contrast] is rendering reference only).
+- **Mobile Field-Shaped Control Radius:** `8px` (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`; applies strictly to mobile field-shaped Form & Selection controls; deliberate semantic differentiation from 6px Primary CTA).
+- **Focus Semantic Direction:** Restrained Interaction-Accent Emphasis (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot rendering reference is 1px accent field border + 3px outer halo).
+
+### 3. OPEN VARIABLES (Genuinely Unresolved / Candidate / Phase-Deferred)
+- **Exact Blue Candidate Token:** `#276EF1` remains candidate / open.
+- **Exact Neutral Palette:** Hex tokens remain open / implementation candidates.
+- **Exact Native Focus Treatment:** Ring width, halo opacity, and native assistive focus remain open / deferred to Phase 4I.
+- **Exact Native Stroke Width:** Border/stroke tokenization remains open / deferred to Phase 4I.
+- **Exact Native Field Height:** Native input container height remains open / deferred to Phase 4I (48px in pilot was controlled Web pilot geometry).
+- **Secondary Button Radius:** Remains open / undecided.
+- **Global Shape System:** Card, sheet, row, and dialog radii remain open / Phase 4E & 4F scope.
+- **Structural System:** Spacing scale, content insets, section separation, and elevation levels remain Phase 4E scope (`STATUS: NOT_STARTED`).
+- **Final Native Component Acceptance:** Mobile Flutter implementation and accessibility acceptance deferred to Phase 4I.
+- **Token-File Authoring:** Authoring `DESIGN_SYSTEM/TOKENS/*.json` remains separately gated.
+
+> [!CRITICAL]
+> **GOVERNANCE STATUS DISTINCTIONS:**
+> Agents and the Design Court must strictly recognize:
+> - **`PROVISIONAL != OPEN`**: Governed provisional decisions are settled baseline directions; they must NOT be treated as unresolved or re-litigated without new material evidence.
+> - **`PROVISIONAL != FINAL_NATIVE_CANON`**: Governed provisional decisions require native Flutter/platform acceptance in Phase 4I before becoming permanent native Canon. Do not collapse these statuses.
 
 ---
 
@@ -167,7 +205,14 @@ Used whenever `konfrm-design-reasoning` is invoked:
 - EVIDENCE_VS_CANON: [advisory external inputs vs authoritative canonical decisions]
 - VALIDATION_NEEDED: [recommended micro-validation method (prototype, test, survey), or NONE]
 - VISUAL_QA: [tested viewports or explicit NOT EXECUTED statement if simulation/routing only]
+- COURT_USED: [YES | NO]
+- COURT_MODE: [FAST_PANEL | FULL_COURT | N/A]
+- COURT_OUTCOME: [Design Court outcome, or N/A]
+- COURT_CONSENSUS: [consensus class, or N/A]
+- FOUNDER_DECISION_REQUIRED: [YES | NO]
 ```
+
+The `COURT_*` fields are populated only when `konfrm-design-court` ran; otherwise `COURT_USED: NO` and the remaining Court fields are `N/A`.
 
 ### Mode B: COMPACT REPORT (for routine fixes, literal bugs, typos, and known accessibility remediations)
 

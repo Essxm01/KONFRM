@@ -1,5 +1,28 @@
 # KONFRM Design System Changelog
 
+## 2.1.7 — 2026-10-04
+
+### Phase 4C Action System governance synchronization
+
+- Completed independently reviewed Phase 4C Action System evidence, formalization, and shared-governance synchronization (Stages 2, 3A, and 3B passed independent reviews with zero blockers, zero material findings, zero minor findings).
+- Updated Button/IconButton component authority (`DESIGN_SYSTEM/COMPONENTS/buttons.md`) with explicit Web-vs-Mobile scope.
+- Updated Action Hierarchy shared semantic specification (`DESIGN_SYSTEM/EXPERIENCE/ACTION_HIERARCHY.md`).
+- Updated Mobile Design Foundation to DF2 v1.2 (`DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md`).
+- Recorded Contextual/Hierarchy-Based Hybrid action strategy as `SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY`.
+- Recorded Stable Black `#000000` as `SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK` (with `#18181B` as fallback comparator only; not promoted to final native Canon).
+- Recorded Primary radius `6px` as `PRIMARY_ONLY` provisional (not a global shape or secondary button radius decision; `SECONDARY_RADIUS: OPEN`).
+- Recorded Cairo Profile B button typography `15 / 700 / 1.20` as system-validated provisional.
+- Recorded Subtle Fill as default provisional secondary treatment and Conditional Neutral Outline semantic/perceptual eligibility.
+- Recorded destructive consequence model and low-consequence Ghost gate.
+- Recorded per-decision-point Primary uniqueness (independent decision units may each contain a primary action without competing for visual dominance).
+- Recorded iOS 44pt / Android 48dp guidance with no universal raw native px rule.
+- Recorded reflow contract and controlled 360px Web frame-width evidence.
+- Preserved current Web token and runtime authority.
+- No token JSON changes.
+- No production app changes.
+- No backend/database changes.
+- Native component and accessibility acceptance remains deferred to Phase 4I.
+
 ## 2.1.6 — 2026-10-01
 
 ### Canonical brand asset integration & legacy logo replacement

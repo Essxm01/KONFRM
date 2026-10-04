@@ -1,9 +1,10 @@
 # KONFRM Action System Pilot 01 — تقرير استكشاف وتقييم نظام الأزرار
 ## Phase 4C: Action System Evaluation & System Coherence Report
 ### Stage 1: Governed Discovery & Visual Evidence — COMPLETED (ARCHIVED)
-### Stage 2: System Coherence Validation — CLOSED / INDEPENDENTLY VERIFIED PASS
-### Stage 3A: Action Contract Formalization & Governance Reconciliation Draft — STARTED
-**Document Status:** `STAGE_2_CLOSED_PASS / STAGE_3A_ACTIVE` (Review HEAD: `f33674c902a4d2c63fcb5fd0fa6414851be5e7d2` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
+### Stage 2: System Coherence Validation — CLOSED / INDEPENDENTLY VERIFIED PASS (Review HEAD: `f33674c902a4d2c63fcb5fd0fa6414851be5e7d2` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
+### Stage 3A: Action Contract Formalization & Governance Reconciliation — CLOSED / INDEPENDENTLY VERIFIED PASS (Review HEAD: `92eb0ce282b4dd2ba8b29cb804215f4cb3b59464` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
+### Stage 3B: Targeted Shared Governance Synchronization — CLOSED / INDEPENDENTLY VERIFIED PASS (Review HEAD: `708ffb77bbd9dc3600dd4775be6f86da40b8e73f` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
+**Document Status:** `PHASE_4C_SUBSTANTIVE_COMPLETE / READY_FOR_PUBLICATION`
 
 ---
 
@@ -13,14 +14,20 @@
 
 1. **المرحلة الأولى (Stage 1 — Governed Discovery & Visual Evidence — COMPLETED / ARCHIVED):**
    إجراء استكشاف محكوم وتوفير حزمة أدلة بصرية متكاملة مكنت المؤسس (Founder) من اتخاذ قرارات حاسمة بشأن استراتيجية الأزرار الثانوية، التفاعل اللمسي، التدرج البصري، وحالات الأزرار في الهواتف الذكية. تم أرشفة لقطات هذه المرحلة رسمياً في المجلد الفرعي `evidence/archive/stage1-superseded/` لحفظ التسلسل التاريخي مع تجريدها من أي سلطة بصرية أو تعاقدية حالية.
-2. **المرحلة الثانية (Stage 2 — System Coherence Validation — CLOSED / INDEPENDENT PASS):**
+2. **المرحلة الثانية (Stage 2 — System Coherence Validation — CLOSED / INDEPENDENTLY VERIFIED PASS):**
    اجتازت المرحلة 2 التدقيق المستقل بنجاح كامل (`STAGE_2_VERDICT: PASS`) عند المراجعة المستقلة للـ HEAD: `f33674c902a4d2c63fcb5fd0fa6414851be5e7d2` (بدون أي ملاحظات مادية أو ثانوية أو معطلات). تم التحقق النظامي من تماسك قرارات المؤسس للنموذج الهجين القائم على دلالة الإجراء والتسلسل الهرمي (Contextual / Hierarchy-Based Hybrid)، وللون الأسود الصريح المفضل (`#000000`) مع الاحتفاظ بالبديل المقارن الاحتياطي (`#18181B`).
-3. **المرحلة 3أ (Stage 3A — Action Contract Formalization & Governance Reconciliation — STARTED):**
-   صياغة مسودة عقد نظام الإجراءات الموحد (`ACTION_SYSTEM_CONTRACT_DRAFT.md`) ومصفوفة التوفيق الحوكمي (`ACTION_SYSTEM_GOVERNANCE_RECONCILIATION.md`) لتحويل مخرجات المرحلة 2 إلى قواعد دلالية وهندسية محددة بدقة قبل الدمج في وثائق الحوكمة المعتمدة.
+3. **المرحلة 3أ (Stage 3A — Action Contract Formalization & Governance Reconciliation — CLOSED / INDEPENDENTLY VERIFIED PASS):**
+   اجتازت المرحلة 3أ التدقيق المستقل بنجاح كامل (`STAGE_3A_VERDICT: PASS`) عند المراجعة المستقلة للـ HEAD: `92eb0ce282b4dd2ba8b29cb804215f4cb3b59464` (بدون أي ملاحظات مادية أو ثانوية أو معطلات). تم إنجاز صياغة عقد نظام الإجراءات الموحد في `ACTION_SYSTEM_CONTRACT_DRAFT.md` ومصفوفة التوفيق الحوكمي في `ACTION_SYSTEM_GOVERNANCE_RECONCILIATION.md` بتحويل مخرجات المرحلة 2 إلى قواعد دلالية وهندسية محددة بدقة.
+4. **المرحلة 3ب (Stage 3B — Targeted Shared Governance Synchronization — CLOSED / INDEPENDENTLY VERIFIED PASS):**
+   اجتازت المرحلة 3ب التدقيق المستقل بنجاح كامل (`STAGE_3B_VERDICT: PASS`) عند المراجعة المستقلة للـ HEAD: `708ffb77bbd9dc3600dd4775be6f86da40b8e73f` (بدون أي ملاحظات مادية أو ثانوية أو معطلات). تم إنجاز المزامنة الحوكمية المشتركة في مراجع التصميم المعتمدة (`buttons.md`، `ACTION_HIERARCHY.md`، و `MOBILE_DESIGN_FOUNDATION.md` DF2 v1.2) مع الحفاظ التام على مرجعية الويب ونطاق الإنتاج والرموز غير المعدلة.
 
 > [!NOTE]
-> **إشعار استمرارية المرحلة 4C (Phase 4C Continuity Notice):**
-> إغلاق المرحلة 2 لا يعني إغلاق المرحلة 4C بالكامل. تظل المرحلة 4C نشطة ومفتوحة لاستكمال متطلبات الصياغة التعاقدية والحوكمة (`ACTION CONTRACT FORMALIZATION + GOVERNANCE INTEGRATION`)؛ كما أن جميع النتائج مصنفة كـ **مخرجات مؤقتة مثبتة نظامياً (System-Validated Provisional)** مع تأجيل الاعتماد الأصيل للمنصات إلى المرحلة 4I (`Native Acceptance: DEFERRED TO PHASE 4I`).
+> **إشعار تسليم السلطة المرجعية (Authority Handoff Notice):**
+> يظل هذا المعمل والملفات التابعة له بمثابة **سجل أدلة ومصدر تاريخي للتحقق (Evidence / Provenance / Validation History)** فقط؛ ولا يمثل كود CSS التجريبي أو أرشيف المرحلة 1 سلطة إنتاجية أو أصلية للمنصات. السلطة الحوكمية المشتركة الحالية لنظام الإجراءات أصبحت مستقرة وموثقة رسمياً في المراجع المشتركة:
+> - `DESIGN_SYSTEM/COMPONENTS/buttons.md`
+> - `DESIGN_SYSTEM/EXPERIENCE/ACTION_HIERARCHY.md`
+> - `DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md` (DF2 v1.2)
+> تظل القرارات مصنفة كـ **مخرجات مؤقتة مثبتة نظامياً (System-Validated Provisional)** مع تأجيل الاعتماد الأصيل للمنصات وإمكانية الوصول إلى المرحلة 4I (`Native Acceptance: DEFERRED TO PHASE 4I`). وحالة المرحلة الحالية هي: `PHASE_4C_SUBSTANTIVE_COMPLETE / READY_FOR_PUBLICATION` (بانتظار دمج طلب السحب PR، ولا يتم وسمها بـ CLOSED_MERGED قبل الدمج الفعلي).
 
 > [!IMPORTANT]
 > **إشعار حوكمة البيانات التجريبية (Synthetic Test Data Governance Disclaimer):**
@@ -309,29 +316,55 @@
 
 ### 9. Current Governance Status & Next Dependency Framing
 
-#### أ. الحالات الحوكمية المؤقتة المعتمدة في نهاية المرحلة 2 (Stage 2 Validated Provisional Statuses)
-- **استراتيجية الإجراءات الهجينة (Secondary Action Strategy):**
-  `SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY` (`CONTEXTUAL_HIERARCHY_HYBRID`)
-- **الأسود الرئيسي الصريح (Exact Primary Black):**
-  `#000000` — `SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`
+#### أ. النتائج الحوكمية المؤقتة المثبتة للمرحلة 4C (Phase 4C Validated Provisional Statuses)
+- **استراتيجية الإجراءات (Action Strategy):**
+  `SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY` (`CONTEXTUAL_HIERARCHY_HYBRID`).
+- **الأسود الرئيسي الصريح للهواتف (Exact Primary Black):**
+  `#000000` — `SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`.
 - **البديل الاحتياطي للمقارنة (Fallback Black):**
-  `#18181B` — `FALLBACK COMPARATOR`
-- **تغطية حالات التفاعل (Interaction States Coverage):**
-  `REQUIRED ACTION STATE COVERAGE — SYSTEM-VALIDATED PROVISIONAL` (يشمل: الافتراضي، الضغط، التركيز / تركيز إمكانية الوصول، التحميل المحمي بلوحة المفاتيح، التعطيل، والتحديد حيث ينطبق دلالياً؛ المعالجات معملية والاعتماد الأصيل مؤجل للمرحلة 4I)
-- **عقد تدفق وترتيب الإجراءات (Action Group Reflow Contract):**
-  `SYSTEM / ACCESSIBILITY REQUIREMENT` (متطلب نظامي لسلامة التخطيط وإمكانية الوصول عند انكسار التوزيع الأفقي)
-- **أدلة إمكانية الوصول في بيئة الويب (Web Accessibility Evidence):**
-  `CONTROLLED WEB ACCESSIBILITY EVIDENCE: PASS` (مع تأجيل الاعتماد الأصيل للمرحلة 4I: `Native Accessibility Acceptance: DEFERRED TO 4I`)
+  `#18181B` — `FALLBACK COMPARATOR ONLY`.
+- **نصف قطر الزر الرئيسي (Primary Radius):**
+  `6px` — `PRIMARY_ONLY PROVISIONAL` (مقصور حصراً على الزر الرئيسي).
+- **خط الأزرار (Button Typography):**
+  Cairo Profile B (`15 / 700 / 1.20`) — `SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`.
+- **البديل الثانوي الافتراضي (Secondary Default):**
+  `SUBTLE FILL` — `SYSTEM-VALIDATED PROVISIONAL STRATEGY`.
+- **الإطار المحايد المشروط (Conditional Neutral Outline):**
+  `SEMANTIC / PERCEPTUAL ELIGIBILITY ONLY` (مشروط بأهلية تباين السطح الدلالية).
+- **الإجراءات من الدرجة الثالثة (Tertiary / Inline):**
+  `GHOST / TEXT-LIKE` (شفاف وبدون إطار؛ يحتفظ بـ Cairo Profile B عند تقديمه كزر).
+- **الإجراءات التحذيرية (Destructive Consequence Dimension):**
+  بُعد دلالي لعواقب الإجراء:
+  - *Destructive Primary:* مقيد بسياق التأكيد الصريح ذي الخطوتين فقط.
+  - *Destructive Secondary:* إطار تحذيري (Destructive Outline) للإقران أو الإلغاء الظاهر.
+  - *Destructive Low-Emphasis:* مقيد حصراً بالإجراءات ذات العواقب المنخفضة القابلة للتراجع دون ضرر.
+- **تفرد الزر الرئيسي (Primary Uniqueness):**
+  `PER ACTIVE DECISION POINT / INDEPENDENT DECISION UNIT` (زر رئيسي واحد لكل نقطة قرار نشطة أو وحدة قرار مستقلة).
+- **عقد تدفق وترتيب الإجراءات (Reflow Contract):**
+  `SYSTEM / ACCESSIBILITY REQUIREMENT` (الأدلة مثبتة عبر محاكاة عرض الإطار 360px في الويب؛ لا توجد نقاط توقف قسرية عامة 150/200/360).
+- **المستهدفات اللمسية للمنصات (Touch Target Guidance):**
+  iOS: 44pt / Android: 48dp (إرشادات منصات محددة بدون فرض بكسلات عشوائية).
 
 #### ب. المتغيرات والرموز المفتوحة صراحة (Explicit Open Variables — DO NOT PREMATURELY CLOSE)
-- **نصف قطر الزر الثانوي (Secondary Radius):** `OPEN` (تطبيق 6px في المعمل كان متغير ضبط تجريبي للمقارنة فقط).
+- **نصف قطر الزر الثانوي (Secondary Radius):** `OPEN / FUTURE GOVERNED DESIGN DECISION` (تطبيق 6px في المعمل كان متغير ضبط تجريبي للمقارنة فقط).
 - **لوحة الألوان المحايدة الصريحة (Exact Neutrals):** `OPEN` (قيم `#F1F5F9` و `#CBD5E1` هي قيم عرض معملية فقط).
-- **كود اللون التحذيري الصريح (Exact Destructive Color):** `OPEN` (ما لم يكن هناك مرجع كانوني قائم يحكمه صراحة؛ ورمز `#DC2626` هو قيمة عرض معملية فقط).
-- **كود اللون الأزرق التفاعلي (Exact Blue):** `OPEN` (`#276EF1` مرشح معملي فقط لدور محصور).
-- **مصفوفة سياسات الإلغاء والاسترداد:** `OPEN / UNDECIDED` (محكومة حصرياً بكانون المنتج والمالية؛ لا يتم اختراعها في أعمال التصميم).
-- **الاعتماد والتطبيق الأصيل للمنصات (Native Flutter Acceptance):** `DEFERRED TO 4I`.
+- **كود اللون الأزرق التفاعلي (Exact Blue):** `OPEN` (`#276EF1` هو مرشح تطبيقي فقط `IMPLEMENTATION CANDIDATE ONLY`).
+- **كود اللون التحذيري الصريح (Exact Destructive Color):** `OPEN` (رمز `#DC2626` هو قيمة عرض معملية فقط).
+- **معالجة التركيز الأصيلة الصريحة (Exact Native Focus Treatment):** `OPEN`.
+- **نظام الأشكال العام (Global Shape System):** `OPEN`.
+- **مصفوفة سياسات الإلغاء والاسترداد (Cancellation & Refund Policy):** `OPEN / UNDECIDED` (محكومة حصرياً بكانون المنتج والمالية).
+- **تأليف ملفات الرموز (Token-File Authoring):** `SEPARATELY GATED` (لا يتم تعديل ملفات الرموز قبل استحقاقها المعتمد).
+- **الاعتماد الأصيل للمكونات وإمكانية الوصول (Native Component & Accessibility Acceptance):** `DEFERRED TO PHASE 4I`.
 
-#### ج. تأطير الخطوة التالية بعد المراجعة المستقلة (Next Step Framing)
-بعد استكمال المراجعة المستقلة لحزمة الأدلة والحوكمة، تُؤطر الخطوة التالية كـ:
-**`ACTION CONTRACT FORMALIZATION + GOVERNANCE INTEGRATION`**
-(صياغة عقود الإجراءات والتكامل الحوكمي — **وليس** اعتماد رموز نهائية مجمل "Token Formalization"، لضمان بقاء الرموز المفتوحة مفتوحة حتى موعد استحقاقها المنضبط، وتضمين قواعد الأهلية الدلالية للإطار المحايد المشروط).
+#### ج. تسليم السلطة المرجعية (Authority Handoff)
+- يظل معمل المرحلة 4C (`action-system-pilot-01`) بمثابة: **سجل أدلة ومصدر تاريخي للتحقق (Evidence / Provenance / Validation History)**.
+- السلطة الحوكمية المشتركة الحالية لنظام الإجراءات تستقر وتُدار رسمياً في المراجع المعتمدة:
+  - `DESIGN_SYSTEM/COMPONENTS/buttons.md`
+  - `DESIGN_SYSTEM/EXPERIENCE/ACTION_HIERARCHY.md`
+  - `DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md` (DF2 v1.2)
+- لا يُعامل أرشيف المرحلة 1 أو كود CSS المعملي كسلطة إنتاجية أو أصلية للمنصات.
+
+#### د. تأطير الاعتمادية التالية بعد دمج النشر (Next Dependency Framing)
+بعد استكمال العمل الجوهري والمراجعة المستقلة للمرحلة 4C، تُؤطر الخطوة التالية بعد دمج طلب النشر (PR Merge) كـ:
+**`PHASE_4D_FORM_SELECTION_PRIMITIVES` (NOT_STARTED)**
+(حقول الإدخال، النصوص، أرقام الهواتف، البريد الإلكتروني، البحث، القوائم المنسدلة، مربعات الاختيار ومفاتيح التبديل، سلوك المساعدة والأخطاء، وسلوك التركيز ولوحة المفاتيح، وتفاصيل الإدخال باللغة العربية RTL — استناداً إلى `KONFRM_EXECUTION_DEPENDENCY_ORDER.md`).

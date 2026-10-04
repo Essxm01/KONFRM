@@ -1,7 +1,8 @@
 # KONFRM — Execution Dependency Order Clarification
 
 **Status:** Founder Approved
-**Date:** 2026-09-03
+**Original approval date:** 2026-09-03
+**Latest strategic amendment:** 2026-10-04
 **Purpose:** Clarify how the fixed PHASE 0–22 roadmap is executed according to real product dependencies, without renumbering, deleting, replacing, or rewriting the existing roadmap.
 
 ---
@@ -854,3 +855,222 @@ When a new contradiction is discovered:
 > add a new decision/conflict record.
 
 Do not silently rewrite history.
+
+---
+
+# 20. Founder Amendment — Flutter Transition and Durable Execution Discipline (2026-10-04)
+
+**Status:** Founder Approved Strategic Amendment
+**Scope:** Clarifies execution after the Customer/Owner mobile direction moved to Flutter/Dart.
+**Preservation rule:** Additive only. It does not renumber PHASE 0–22, erase React-era evidence, or declare unfinished phases complete.
+
+## 20.1 The Flutter transition is not a project restart
+
+The move to Flutter changes the future mobile implementation layer, not the product itself.
+
+Preserve and reuse as authority/evidence where applicable:
+
+- Product truth and Business Rules;
+- canonical Backend/API contracts;
+- Supabase persistence and migrations;
+- Auth/session architecture;
+- cross-role lifecycle rules;
+- approved UX flows, copy, state semantics and prior research;
+- Admin Web architecture;
+- Design System and Design Foundation decisions.
+
+The existing Customer/Owner React applications are behavioral, product, UX and regression evidence. They are not future Flutter visual/component implementation authority and their JSX/Tailwind/DOM code must not be mechanically ported.
+
+Current target topology remains:
+
+- Customer: future Flutter/Dart mobile application;
+- Owner: future Flutter/Dart mobile application;
+- Admin: Web application;
+- Backend/Database: shared canonical server truth.
+
+Framework migration means: reuse product truth and contracts; rebuild mobile presentation/runtime correctly. It does not mean discard prior product work and start again.
+
+## 20.2 Current strategic position — dated snapshot
+
+As of 2026-10-04:
+
+- PHASE 4 is the active macro program.
+- Controlled Primitive Pilot 01 is merged and closed.
+- Founder-selected provisional Primary Button direction: 6px radius + Stable Black Primary.
+- Cairo is Founder-selected as the primary KONFRM UI font-family direction.
+- Exact mobile typography sizes, weights, line-heights and native scaling behavior are not yet canonical.
+- The active design dependency is Cairo Mobile Typography Foundation Validation before continuing the Action System.
+- No later screen or feature may be pulled forward merely because it is visually interesting or historically present.
+
+This dated snapshot never overrides fresher Git/repository evidence. On recovery, always inspect current HEAD, docs/CURRENT_STATE.md, tasks/CURRENT_TASK.md, open PRs, and the latest decision records.
+
+---
+
+# 21. PHASE 4 Internal Dependency Order — Unified Mobile Design System
+
+PHASE 4 must not become an endless collection of disconnected design experiments.
+
+The approved internal dependency sequence is:
+
+4A Foundation / Brand / Role / RTL / Design Governance
+→ 4B Typography Foundation
+→ 4C Action System
+→ 4D Form & Selection Primitives
+→ 4E Structural System
+→ 4F Navigation & Overlay System
+→ 4G Product States & Content Presentation
+→ 4H Component Contract / Reference Catalog
+→ 4I Minimal Native Flutter Validation Gate
+
+### 4A — Foundation / Brand / Role / RTL / Design Governance
+
+Includes Design Foundation, brand identity, logo integration, role psychology, Arabic-first RTL rules, useful-density philosophy and governed AI design workflow.
+
+### 4B — Typography Foundation
+
+Resolve the Cairo mobile hierarchy: semantic roles, sizes, weights, line heights, numeric/financial treatment, Arabic readability, narrow-width behavior, text scaling and Customer-vs-Owner role pressure.
+
+Founder typography decisions should be presented primarily through visual/mobile evidence, not abstract token tables alone.
+
+### 4C — Action System
+
+After typography is sufficiently stable, define Primary relationship, Secondary, Outline/Ghost where justified, Destructive, Icon actions, loading/disabled/pressed/focus relationships and action pairing/stacking.
+
+Pilot 01's 6px + Stable Black decision is provisional and scoped; it must not be generalized to every shape/component without evidence.
+
+### 4D — Form & Selection Primitives
+
+Define text inputs, phone/email fields, search, select/pickers, checkbox/toggle where required, helper/error behavior, focus/keyboard behavior and Arabic/RTL input details.
+
+### 4E — Structural System
+
+Define spacing, content insets, sections, cards/rows, borders/dividers, surface hierarchy, shape roles and elevation. Do not infer that a 6px Primary Button radius means cards, dialogs, sheets, fields or media also use 6px.
+
+### 4F — Navigation & Overlay System
+
+Define Customer/Owner bottom navigation, app bars, nested navigation, RTL back semantics, dialogs, bottom sheets, sticky actions and safe-area behavior.
+
+### 4G — Product States & Content Presentation
+
+Define loading, skeleton, empty, error, retry, stale, disabled, success and image/gallery/media presentation.
+
+### 4H — Component Contract / Reference Catalog
+
+Turn validated decisions into consumable, role-aware contracts with state matrix, RTL behavior, accessibility behavior, role differences, reference visuals and permitted/open values.
+
+### 4I — Minimal Native Flutter Validation Gate
+
+Before numeric mobile design tokens become final mobile Canon, validate a minimal representative subset in real Flutter runtime conditions: Cairo native rendering, text scaling, touch sizing, safe areas, RTL, keyboard behavior, native corner/rendering differences and platform interaction differences.
+
+This is not permission to build the full mobile applications early.
+
+---
+
+# 22. PHASE 5–7 After the Flutter Pivot
+
+## PHASE 5 — Customer Flutter UX + Implementation
+
+Do not port React source code line-for-line. Use prior Customer screens and React implementation as product-behavior, UX choreography, copy/state and regression/reference evidence.
+
+Preferred dependency order: App shell/session → Auth → Explore/Search → Property → Booking Decision → Favorites/Bookings → Account/Profile.
+
+Later capabilities stay attached to their owning macro phases. Chat, Disputes, Reviews and Payment are not completed early merely because a historical screen number exists.
+
+## PHASE 6 — Owner Flutter UX + Implementation
+
+Preferred dependency order: Shell/session → Property management → Media → Availability/Calendar → Booking requests → Operational states → Profile/verification.
+
+Owner UX prioritizes action priority, operational scanability, property state, booking decisions and financial-state clarity. It is not a Customer UI recolored.
+
+Wallet/Payout completion remains governed by PHASE 11 even if earlier Owner surfaces expose bounded factual summaries.
+
+## PHASE 7 — Admin Web UX Refinement
+
+Admin remains Web. It shares product truth, status grammar, brand lineage and Arabic-first principles, but may legitimately use denser tables, filters, queues and operational layouts. Do not invent a Flutter Admin application.
+
+---
+
+# 23. New-Idea / Surprise-Task Classification Gate
+
+A Founder question, new idea, external AI suggestion, newly discovered UI issue or attractive feature must not automatically become the next task.
+
+Classify it first:
+
+| Classification | Execution rule |
+| --- | --- |
+| Blocking Dependency | Pull forward only the minimum subset required to unblock the current critical path. |
+| Architecture / Product Conflict | Stop at the relevant gate, gather evidence, resolve authority/decision, then resume. |
+| Useful but Non-Blocking | Record it and schedule it in its correct dependency position; do not interrupt current work. |
+| Future Feature | Attach it to its owning PHASE; do not implement it merely because it was discovered early. |
+| Nice-to-Have / Curiosity | Do not disrupt the roadmap; investigate only when it becomes decision-relevant. |
+
+Permanent rule: **A new question is not automatically a new task.**
+
+Every proposed interruption must answer:
+
+1. What current dependency does it block?
+2. What happens if we defer it?
+3. What rework does doing it now prevent?
+4. What rework does doing it now risk creating?
+5. Which macro phase owns the full capability?
+6. What is the minimum safe subset, if any, that must be pulled forward?
+
+---
+
+# 24. Founder Decision Interface Rule
+
+The form of Founder decision-making must match the nature of the decision.
+
+| Decision domain | Preferred Founder evidence |
+| --- | --- |
+| Visual UI / typography / shape / motion | Screenshots, interactive HTML labs, side-by-side mobile states, real role context |
+| UX flow / navigation | Journey maps, clickable flows, state transitions, concrete scenarios |
+| Business rule | Plain-language scenarios and consequences |
+| Financial logic | Numeric examples, edge cases, invariants, accounting consequences |
+| Architecture | Options, dependencies, reversibility, failure modes, migration cost |
+| Security / privacy | Risk, impact, exploit boundary, recovery/containment |
+| Admin operations | Real operational scenario, queue/decision consequences |
+| Legal / provider / production payment | External authoritative facts plus explicit Founder/Product decision where required |
+
+Do not force the Founder to make a visual decision from abstract numbers when visual evidence can be produced. Do not dress a financial/business decision as a visual preference.
+
+---
+
+# 25. External AI / Tool Adoption Rule
+
+No new AI subscription, model, plugin, skill or external tool becomes part of the project merely because it is described as faster or smarter.
+
+Adopt only when it closes a demonstrated capability gap. For material adoption, benchmark it on real KONFRM tasks for correctness, evidence discipline, hallucination rate, architecture/product-rule preservation, governance compliance, speed, cost and integration overhead.
+
+Operating principle: **Use independent reviewers where risk warrants it; do not multiply tools without proven gain.**
+
+---
+
+# 26. Roadmap Change-Control Protocol
+
+This document is strategic authority and should change rarely.
+
+Update it only when the Founder changes macro execution interpretation, framework/platform direction materially changes, a dependency-order assumption is proven wrong, a new permanent cross-phase rule is approved, or the internal order of a macro phase changes materially.
+
+When updating:
+
+1. preserve existing history;
+2. append a dated amendment rather than silently rewriting rationale;
+3. state whether PHASE IDs change or only execution precedence;
+4. identify consequences and rework risk;
+5. update continuity/recovery routing if needed;
+6. keep transient task details in docs/CURRENT_STATE.md, tasks/CURRENT_TASK.md and PR/task reports.
+
+---
+
+# 27. Durable Recovery Principle
+
+Chat history, model memory, a specific AI account, local IDE history or one developer machine must never be the sole holder of KONFRM strategic state.
+
+The repository is the durable recovery surface.
+
+For a fresh AI account/session, begin with KONFRM_PROJECT_CONTINUITY_BOOTSTRAP.md and follow the repository mandatory context refresh.
+
+A recovered agent must prefer Git + current repository authorities + explicit Founder decisions over remembered chat summaries, old screenshots, stale model memory or assumptions.
+
+The goal is not to preserve every conversation sentence. The goal is to preserve enough authoritative structure, decisions, evidence routing and current-state pointers that the project can resume without strategic amnesia or hallucinated continuity.

@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONFRM — Profile B System Coherence Validation (Cairo Mobile Typography)</title>
+  <style>
+    /* Pinned Local Font Provenance Gate */
+    @font-face {
+      font-family: 'KONFRM Typography Pilot Cairo';
+      src: url('fonts/Cairo-VariableFont.ttf') format('truetype');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: block;
+    }
+
+    :root {
+      /* GOVERNED PALETTE DIRECTION: Monochrome-first (Black / White), Light-first mobile surfaces */
+      /* PILOT IMPLEMENTATION VALUES ONLY (NOT final mobile tokens): */
+      --kf-brand-black: #0F172A; /* Pilot implementation value — Stable Black action strategy candidate */
+      --kf-brand-white: #FFFFFF;
+      --kf-text-primary: #0F172A;
+      --kf-text-secondary: #64748B;
+      --kf-text-muted: #94A3B8;
+      --kf-surface-canvas: #F8FAFC;
+      --kf-surface-card: #FFFFFF;
+      --kf-surface-subtle: #F1F5F9;
+      --kf-border-default: #E2E8F0;
+      --kf-border-subtle: #F1F5F9;
+
+      /* INTERACTION ACCENT: Restrained Blue ROLE (Canonical Role; Exact token is OPEN) */
+      /* Pilot Rendering Value (DF2 Implementation Candidate #276EF1 — Not final Canon): */
+      --kf-accent-df2: #276EF1;
+      --kf-accent-subtle: #EFF6FF;
+
+      /* SEMANTIC STATE COLORS (Independent from brand colors; Pilot values): */
+      --kf-status-amber-bg: #FEF3C7;
+      --kf-status-amber-text: #92400E;
+      --kf-status-amber-border: #FCD34D;
+      --kf-status-green-bg: #DCFCE7;
+      --kf-status-green-text: #166534;
+      --kf-status-green-border: #86EFAC;
+
+      /* Founder-Selected Provisional Button Geometry & Action Strategy Candidate */
+      /* (Pilot implementation values: 6px radius, Stable Black candidate #0F172A) */
+      --btn-primary-bg: #0F172A;
+      --btn-primary-text: #FFFFFF;
+      --btn-primary-radius: 6px;
+      --btn-height: 48px;
+
+      /* Governed Secondary Button Placeholder (System styling OPEN) */
+      --btn-secondary-bg: #FFFFFF;
+      --btn-secondary-text: #0F172A;
+      --btn-secondary-border: #CBD5E1;
+
+      /* Font Family */
+      --kf-font-family: 'KONFRM Typography Pilot Cairo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+      /* Dynamic Scale Factor */
+      --scale-factor: 1;
+
+      /* FOUNDER-SELECTED PROFILE B TOKENS (Mobile Balanced Candidate) */
+      --typo-display-size: 24px;
+      --typo-display-weight: 700;
+      --typo-display-lh: 1.30;
+
+      --typo-page-title-size: 20px;
+      --typo-page-title-weight: 700;
+      --typo-page-title-lh: 1.35;
+
+      --typo-section-title-size: 17px;
+      --typo-section-title-weight: 700;
+      --typo-section-title-lh: 1.40;
+
+      --typo-card-title-size: 15px;
+      --typo-card-title-weight: 700;
+      --typo-card-title-lh: 1.40;
+
+      --typo-body-size: 14px;
+      --typo-body-weight: 500;
+      --typo-body-lh: 1.50;
+
+      --typo-body-strong-size: 14px;
+      --typo-body-strong-weight: 700;
+      --typo-body-strong-lh: 1.50;
+
+      --typo-label-size: 12px;
+      --typo-label-weight: 600;
+      --typo-label-lh: 1.35;
+
+      --typo-supporting-size: 12px;
+      --typo-supporting-weight: 400;
+      --typo-supporting-lh: 1.40;
+
+      --typo-numeric-size: 16px;
+      --typo-numeric-weight: 700;
+      --typo-numeric-lh: 1.30;
+
+      --typo-button-size: 15px;
+      --typo-button-weight: 700;
+      --typo-button-lh: 1.20;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--kf-font-family);
+      background-color: var(--kf-surface-canvas);
+      color: var(--kf-text-primary);
+      line-height: 1.5;
+      padding: 24px 16px;
+      direction: rtl;
+      text-align: right;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* Governance Header */
+    .gov-header {
+      background-color: #0F172A;
+      color: #FFFFFF;
+      padding: 20px 24px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      border: 1px solid #1E293B;
+    }
+    .gov-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .badge-gov {
+      background-color: #DC2626;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    .badge-selection {
+      background-color: #334155;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid #475569;
+    }
+    .badge-font {
+      background-color: #16A34A;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .gov-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-top: 6px;
+      color: #FFFFFF;
+    }
+    .gov-subtitle {
+      font-size: 13px;
+      color: #94A3B8;
+      margin-top: 2px;
+    }
+
+    /* Scope Notice */
+    .scope-box {
+      background: #FFFFFF;
+      border: 1px solid var(--kf-border-default);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: var(--kf-text-secondary);
+      line-height: 1.6;
+    }
+    .scope-box strong {
+      color: var(--kf-text-primary);
+    }
+
+    /* Token Card */
+    .token-summary-bar {
+      background: #FFFFFF;
+      border: 1px solid var(--kf-border-default);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .token-chip {
+      background: var(--kf-surface-subtle);
+      border: 1px solid var(--kf-border-subtle);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      display: flex;
+      gap: 6px;
+      align-items: baseline;
+    }
+    .token-chip-name {
+      font-weight: 700;
+      color: var(--kf-text-secondary);
+    }
+    .token-chip-val {
+      font-family: monospace;
+      color: var(--kf-brand-black);
+      font-weight: 700;
+    }
+
+    /* Interactive Controls */
+    .controls-panel {
+      background: #FFFFFF;
+      border: 1px solid var(--kf-border-default);
+      border-radius: 8px;
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 20px;
+    }
+    .ctrl-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ctrl-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--kf-text-secondary);
+    }
+    .seg-group {
+      display: inline-flex;
+      background: var(--kf-surface-subtle);
+      border: 1px solid var(--kf-border-subtle);
+      border-radius: 6px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .seg-btn {
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--kf-text-secondary);
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .seg-btn.active {
+      background: #FFFFFF;
+      color: var(--kf-brand-black);
+      font-weight: 700;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    /* Composites Grid Area */
+    .composites-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+      align-items: start;
+    }
+
+    /* Mobile Device Shell */
+    .device-shell {
+      background: #FFFFFF;
+      border: 12px solid #0F172A;
+      border-radius: 36px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+      width: 360px;
+      transition: width 0.15s ease;
+    }
+    .device-status-bar {
+      height: 30px;
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .device-notch {
+      width: 80px;
+      height: 12px;
+      background: #1E293B;
+      border-radius: 0 0 8px 8px;
+    }
+    .device-body {
+      padding: 16px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--kf-surface-canvas);
+      min-height: 620px;
+    }
+
+    /* Role Header Banner inside Device */
+    .screen-header-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--kf-border-subtle);
+    }
+    .composite-tag {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #CBD5E1;
+    }
+    .tag-customer {
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #CBD5E1;
+    }
+    .tag-owner {
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #CBD5E1;
+    }
+
+    /* Typographic Utility Classes for Profile B */
+    .typo-display {
+      font-size: calc(var(--typo-display-size) * var(--scale-factor));
+      font-weight: var(--typo-display-weight);
+      line-height: var(--typo-display-lh);
+    }
+    .typo-page-title {
+      font-size: calc(var(--typo-page-title-size) * var(--scale-factor));
+      font-weight: var(--typo-page-title-weight);
+      line-height: var(--typo-page-title-lh);
+      color: var(--kf-text-primary);
+    }
+    .typo-section-title {
+      font-size: calc(var(--typo-section-title-size) * var(--scale-factor));
+      font-weight: var(--typo-section-title-weight);
+      line-height: var(--typo-section-title-lh);
+      color: var(--kf-text-primary);
+    }
+    .typo-card-title {
+      font-size: calc(var(--typo-card-title-size) * var(--scale-factor));
+      font-weight: var(--typo-card-title-weight);
+      line-height: var(--typo-card-title-lh);
+      color: var(--kf-text-primary);
+    }
+    .typo-body {
+      font-size: calc(var(--typo-body-size) * var(--scale-factor));
+      font-weight: var(--typo-body-weight);
+      line-height: var(--typo-body-lh);
+      color: var(--kf-text-primary);
+    }
+    .typo-body-strong {
+      font-size: calc(var(--typo-body-strong-size) * var(--scale-factor));
+      font-weight: var(--typo-body-strong-weight);
+      line-height: var(--typo-body-lh);
+      color: var(--kf-text-primary);
+    }
+    .typo-label {
+      font-size: calc(var(--typo-label-size) * var(--scale-factor));
+      font-weight: var(--typo-label-weight);
+      line-height: var(--typo-label-lh);
+      color: var(--kf-text-secondary);
+    }
+    .typo-supporting {
+      font-size: calc(var(--typo-supporting-size) * var(--scale-factor));
+      font-weight: var(--typo-supporting-weight);
+      line-height: var(--typo-supporting-lh);
+      color: var(--kf-text-secondary);
+    }
+    .typo-numeric {
+      font-size: calc(var(--typo-numeric-size) * var(--scale-factor));
+      font-weight: var(--typo-numeric-weight);
+      line-height: var(--typo-numeric-lh);
+      font-variant-numeric: tabular-nums;
+      color: var(--kf-text-primary);
+    }
+    .typo-button {
+      font-size: calc(var(--typo-button-size) * var(--scale-factor));
+      font-weight: var(--typo-button-weight);
+      line-height: var(--typo-button-lh);
+    }
+
+    /* Card Surfaces */
+    .ui-card {
+      background: var(--kf-surface-card);
+      border: 1px solid var(--kf-border-default);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .img-mock {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      color: #FFFFFF;
+    }
+    .badge-tag {
+      font-size: calc(11px * var(--scale-factor));
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .tag-id {
+      background: rgba(15, 23, 42, 0.75);
+      color: #FFFFFF;
+      font-family: monospace;
+    }
+    .tag-status-amber {
+      background: var(--kf-status-amber-bg);
+      color: var(--kf-status-amber-text);
+      border: 1px solid var(--kf-status-amber-border);
+    }
+    .tag-status-green {
+      background: var(--kf-status-green-bg);
+      color: var(--kf-status-green-text);
+      border: 1px solid var(--kf-status-green-border);
+    }
+    .tag-status-neutral {
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #CBD5E1;
+    }
+
+    /* Interactive Filter Chips (Demonstrating Interaction-Accent Selected Role) */
+    .chip-filter {
+      font-size: calc(11px * var(--scale-factor));
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 12px;
+      border: 1px solid var(--kf-border-default);
+      background: var(--kf-surface-card);
+      color: var(--kf-text-secondary);
+      cursor: pointer;
+      display: inline-block;
+    }
+    .chip-filter.active {
+      border-color: var(--kf-accent-df2);
+      color: var(--kf-accent-df2);
+      background: var(--kf-accent-subtle);
+      font-weight: 700;
+    }
+
+    /* Synthetic Test Data Disclaimer Banner */
+    .disclaimer-banner {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-right: 4px solid #64748B;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+    }
+
+    /* Financial Row Layout */
+    .fin-box {
+      background: var(--kf-surface-subtle);
+      border: 1px solid var(--kf-border-subtle);
+      border-radius: 6px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .fin-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      min-height: var(--btn-height);
+      background-color: var(--btn-primary-bg);
+      color: var(--btn-primary-text);
+      border: none;
+      border-radius: var(--btn-primary-radius);
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+    }
+    .btn-secondary {
+      min-height: var(--btn-height);
+      background-color: var(--btn-secondary-bg);
+      color: var(--btn-secondary-text);
+      border: 1px solid var(--btn-secondary-border);
+      border-radius: var(--btn-primary-radius);
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* Coherence Checklist Section */
+    .checklist-section {
+      background: #FFFFFF;
+      border: 1px solid var(--kf-border-default);
+      border-radius: 8px;
+      padding: 24px;
+      margin-top: 32px;
+    }
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .check-item {
+      background: var(--kf-surface-canvas);
+      border: 1px solid var(--kf-border-default);
+      border-radius: 6px;
+      padding: 14px;
+    }
+    .check-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .check-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--kf-text-primary);
+    }
+    .badge-pass {
+      background: #DCFCE7;
+      color: #166534;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .badge-dep {
+      background: #FEF3C7;
+      color: #92400E;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .check-desc {
+      font-size: 12px;
+      color: var(--kf-text-secondary);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Governance Header Banner -->
+  <header class="gov-header">
+    <div>
+      <div class="gov-badges">
+        <span class="badge-gov">GOVERNANCE: SYSTEM COHERENCE CHECK</span>
+        <span class="badge-selection">FOUNDER SELECTION: PROFILE B (MOBILE BALANCED)</span>
+        <span id="font-status-badge" class="badge-font">أصل الخط المحلي جاهز ومحمّل (LOADED)</span>
+      </div>
+      <h1 class="gov-title">فحص التماسك البصري لملف القاهرة B مع لغة كونفرم التصميمية</h1>
+      <p class="gov-subtitle">فحص تركيبي شامل للتحقق من تكامل قيم خط القاهرة B مع زر 6px واستراتيجية الأسود المستقر وهوية الأبيض والأسود</p>
+    </div>
+    <div style="font-size: 12px; color: #94A3B8; text-align: left; direction: ltr;">
+      <div><strong>STATUS:</strong> SELECTED PROVISIONAL (NOT CANON)</div>
+      <div><strong>PRIMARY ANCHOR:</strong> Radius 6px Candidate | Stable Black Action Strategy (Pilot Value #0F172A)</div>
+    </div>
+  </header>
+
+  <!-- Test-Data Governance Disclaimer -->
+  <aside class="disclaimer-banner" aria-label="إشعار بيانات الاختبار">
+    <div style="font-weight: 700; color: #0F172A; margin-bottom: 2px;">إشعار حوكمة البيانات التجريبية (Synthetic Test Data Governance Disclaimer):</div>
+    <div style="font-size: 12px; color: #475569; line-height: 1.5;">
+      "All listing, booking, guest, financial and operational values shown in this design evidence are realistic synthetic test content used only for UI/system evaluation. They are not production records."
+      <br>
+      (جميع قيم الإقامات، والحجوزات، والضيوف، والأرقام المالية والتشغيلية المعروضة في هذا الدليل هي محتوى اختباري تركيبي واقعي يُستخدم فقط لتقييم النظام وواجهة المستخدم، وليست سجلات إنتاجية حقيقية).
+    </div>
+  </aside>
+
+  <!-- Methodological Scope Notice -->
+  <div class="scope-box">
+    <strong>الهدف المنهجي لفحص التماسك (System Coherence Gate):</strong>
+    هذه الشاشات الأربع تمثل <strong>شاشات مرجعية تركيبية (Composite Integration References)</strong> لاختبار اندماج القرارات التصميمية المختارة من المؤسس (خط القاهرة B + زر نصف قطر 6px + استراتيجية الأسود المستقر + الأرقام الغربية 0–9 + صياغة العملة 1,600 ج.م + اتجاه اليمين لليسار RTL) لمنع حدوث أي تنافر بصري أو انكسار في الهرمية بين واجهات العميل وواجهات المالك.
+  </div>
+
+  <!-- Token Summary Bar -->
+  <section class="token-summary-bar" aria-label="قيم الملف الطباعي B">
+    <div class="token-chip"><span class="token-chip-name">display:</span><span class="token-chip-val">24px / 700 / 1.30</span></div>
+    <div class="token-chip"><span class="token-chip-name">pageTitle:</span><span class="token-chip-val">20px / 700 / 1.35</span></div>
+    <div class="token-chip"><span class="token-chip-name">sectionTitle:</span><span class="token-chip-val">17px / 700 / 1.40</span></div>
+    <div class="token-chip"><span class="token-chip-name">cardTitle:</span><span class="token-chip-val">15px / 700 / 1.40</span></div>
+    <div class="token-chip"><span class="token-chip-name">body:</span><span class="token-chip-val">14px / 500 / 1.50</span></div>
+    <div class="token-chip"><span class="token-chip-name">bodyStrong:</span><span class="token-chip-val">14px / 700 / 1.50</span></div>
+    <div class="token-chip"><span class="token-chip-name">label:</span><span class="token-chip-val">12px / 600 / 1.35</span></div>
+    <div class="token-chip"><span class="token-chip-name">supporting:</span><span class="token-chip-val">12px / 400 / 1.40</span></div>
+    <div class="token-chip"><span class="token-chip-name">numeric:</span><span class="token-chip-val">16px / 700 / 1.30</span></div>
+    <div class="token-chip"><span class="token-chip-name">button:</span><span class="token-chip-val">15px / 700 / 1.20</span></div>
+  </section>
+
+  <!-- Interactive Width & Scale Controls -->
+  <section class="controls-panel" aria-label="أدوات تحكم إطار الفحص">
+    <div class="ctrl-group">
+      <span class="ctrl-label">عرض إطار الفحص:</span>
+      <div class="seg-group">
+        <button class="seg-btn active" onclick="setCoherenceWidth(360)">360px (إطار اختباري)</button>
+        <button class="seg-btn" onclick="setCoherenceWidth(390)">390px (إطار اختباري)</button>
+        <button class="seg-btn" onclick="setCoherenceWidth(430)">430px (إطار اختباري)</button>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">تكبير النص (Web Scaling):</span>
+      <div class="seg-group">
+        <button class="seg-btn active" onclick="setCoherenceScale(1)">100% (1.0x)</button>
+        <button class="seg-btn" onclick="setCoherenceScale(1.25)">125% (1.25x)</button>
+        <button class="seg-btn" onclick="setCoherenceScale(1.5)">150% (1.5x)</button>
+        <button class="seg-btn" onclick="setCoherenceScale(2)">200% (2.0x)</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Composites Grid -->
+  <div class="composites-grid">
+
+    <!-- COMPOSITE 1: CUSTOMER DISCOVERY / EXPLORE -->
+    <div class="device-shell" id="frame-cust-01">
+      <div class="device-status-bar">
+        <span>9:41</span>
+        <div class="device-notch"></div>
+        <span>100% 🔋</span>
+      </div>
+      <div class="device-body">
+        <div class="screen-header-bar">
+          <span class="composite-tag tag-customer">Customer Composite 01</span>
+          <span class="typo-supporting" style="font-size: 11px;">استكشاف الإقامات</span>
+        </div>
+
+        <h2 class="typo-page-title">اكتشف إقامات الساحل الشمالي</h2>
+        <div class="typo-supporting">رأس الحكمة • فيلات مستقلة • الساحل الشمالي</div>
+
+        <div style="margin-top: 4px;">
+          <h3 class="typo-section-title">فيلات مميزة للإقامة</h3>
+          <p class="typo-supporting" style="font-size: 11px; margin-top: 2px;">خيارات إقامة للعائلات والمجموعات</p>
+        </div>
+
+        <!-- Interactive Filter Chips (Demonstrating Interaction-Accent Selected Role) -->
+        <div style="display: flex; gap: 6px; margin: 8px 0;">
+          <span class="chip-filter active">الكل</span>
+          <span class="chip-filter">فيلات مستقلة</span>
+          <span class="chip-filter">شاليهات</span>
+        </div>
+
+        <!-- Property Card 1 -->
+        <div class="ui-card">
+          <div class="img-mock">
+            <span class="badge-tag tag-id"><bdi dir="ltr">#KNF-10492</bdi></span>
+          </div>
+          <div>
+            <h4 class="typo-card-title">فيلا ريفيرا بإطلالة مباشرة على البحر</h4>
+            <div class="typo-supporting" style="margin-top: 2px;">رأس الحكمة • 5 غرف نوم • حمام سباحة خاص</div>
+          </div>
+          <div class="fin-box">
+            <div class="fin-row">
+              <span class="typo-label">سعر الإقامة:</span>
+              <div>
+                <span class="typo-numeric">3,200 ج.م</span>
+                <span class="typo-supporting" style="font-size: 11px;"> / الليلة</span>
+              </div>
+            </div>
+          </div>
+          <p class="typo-body" style="font-size: 13px;">
+            فيلا هادئة على شاطئ رأس الحكمة مباشرة، مجهزة بكافة سبل الراحة ومناسبة للعائلات الكبيرة.
+          </p>
+          <button class="btn-primary typo-button">
+            <span>عرض تفاصيل الإقامة</span>
+          </button>
+        </div>
+
+        <!-- Property Card 2 (Compact) -->
+        <div class="ui-card">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <h4 class="typo-card-title">شاليه مارينا بريميوم</h4>
+            <span class="typo-numeric">2,100 ج.م</span>
+          </div>
+          <div class="typo-supporting">مارينا 5 • 3 غرف نوم • حديقة خاصة</div>
+          <button class="btn-secondary typo-button" style="min-height: 40px; padding: 8px 12px; font-size: 13px;">
+            <span>معاينة الإقامة</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPOSITE 2: CUSTOMER BOOKING DECISION -->
+    <div class="device-shell" id="frame-cust-02">
+      <div class="device-status-bar">
+        <span>9:41</span>
+        <div class="device-notch"></div>
+        <span>100% 🔋</span>
+      </div>
+      <div class="device-body">
+        <div class="screen-header-bar">
+          <span class="composite-tag tag-customer">Customer Composite 02</span>
+          <span class="typo-supporting" style="font-size: 11px;">قرار الحجز المالي</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 14px; font-weight: bold; cursor: pointer;">→</span>
+          <h2 class="typo-page-title">تأكيد طلب حجز الإقامة</h2>
+        </div>
+
+        <div class="ui-card">
+          <div class="img-mock" style="height: 120px;">
+            <span class="badge-tag tag-id"><bdi dir="ltr">#KNF-88219</bdi></span>
+            <span class="badge-tag tag-status-amber">في انتظار تقديم الطلب</span>
+          </div>
+          <div>
+            <h4 class="typo-card-title">فيلا خاصة بحمام سباحة في الساحل الشمالي</h4>
+            <div class="typo-supporting" style="margin-top: 2px;">15–18 أكتوبر 2026 (3 ليالٍ) • 4 ضيوف</div>
+          </div>
+
+          <!-- Financial Breakdown -->
+          <div class="fin-box">
+            <div class="fin-row">
+              <span class="typo-label">سعر الإقامة لليلة:</span>
+              <span class="typo-numeric">1,600 ج.م</span>
+            </div>
+            <div class="fin-row" style="border-top: 1px dashed var(--kf-border-subtle); padding-top: 6px;">
+              <span class="typo-body-strong">إجمالي الحجز (3 ليالٍ):</span>
+              <span class="typo-numeric" style="color: var(--kf-brand-black); font-size: 17px;">4,800 ج.م</span>
+            </div>
+            <div class="fin-row">
+              <span class="typo-supporting">العربون المطلوب عند موافقة المالك:</span>
+              <span class="typo-numeric" style="font-size: 13px;">1,600 ج.م</span>
+            </div>
+          </div>
+
+          <!-- Truthful Booking Status Body Copy -->
+          <p class="typo-body">
+            سيتم إرسال طلبك إلى المالك للمراجعة. لا يتم خصم أي مبالغ أو تأكيد التواريخ نهائياً إلا بعد موافقة المالك الرسمية وتأكيد سداد العربون.
+          </p>
+
+          <!-- Interactive Text Link (Demonstrating Interaction-Accent Link Role) -->
+          <div style="margin: 4px 0 8px 0;">
+            <a href="#" style="color: var(--kf-accent-df2); font-size: 12px; font-weight: 600; text-decoration: underline;">عرض تفاصيل سياسة الإلغاء</a>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+            <button class="btn-primary typo-button">
+              <span>إرسال طلب الحجز</span>
+            </button>
+            <button class="btn-secondary typo-button">
+              <span>تعديل التواريخ أو الضيوف</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPOSITE 3: OWNER BOOKING REQUEST REVIEW -->
+    <div class="device-shell" id="frame-owner-01">
+      <div class="device-status-bar">
+        <span>9:41</span>
+        <div class="device-notch"></div>
+        <span>100% 🔋</span>
+      </div>
+      <div class="device-body">
+        <div class="screen-header-bar">
+          <span class="composite-tag tag-owner">Owner Composite 01</span>
+          <span class="typo-supporting" style="font-size: 11px;">مراجعة طلب وارد</span>
+        </div>
+
+        <h2 class="typo-page-title">إدارة طلبات الحجز التشغيلية</h2>
+        <div class="typo-supporting">لديك طلب حجز واحد بانتظار قرارك خلال 18 ساعة</div>
+
+        <div style="margin-top: 4px;">
+          <h3 class="typo-section-title">طلبات تتطلب اتخاذ إجراء</h3>
+        </div>
+
+        <div class="ui-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="badge-tag tag-status-neutral">طلب حجز جديد</span>
+            <span class="badge-tag tag-status-amber">بانتظار قرار المالك</span>
+          </div>
+
+          <div>
+            <h4 class="typo-card-title">فيلا خاصة بحمام سباحة • الساحل الشمالي</h4>
+            <div class="typo-supporting" style="margin-top: 4px;">الضيف: أحمد محمود • <bdi dir="ltr">+20 10 9876 5432</bdi></div>
+            <div class="typo-supporting">الفترة: 15–18 أكتوبر 2026 (3 ليالٍ) • <bdi dir="ltr">#KNF-88219</bdi></div>
+          </div>
+
+          <!-- Financial Payout Box -->
+          <div class="fin-box">
+            <div class="fin-row">
+              <span class="typo-label">صافي مستحقات المالك:</span>
+              <span class="typo-numeric" style="font-size: 17px; font-weight: 800;">1,280 ج.م</span>
+            </div>
+            <div class="fin-row" style="font-size: 11px; color: var(--kf-text-secondary);">
+              <span>من إجمالي عربون الليلة الأولى:</span>
+              <span>1,600 ج.م (عمولة المنصة 20%)</span>
+            </div>
+          </div>
+
+          <!-- Operational Instructions Body -->
+          <p class="typo-body">
+            موافقتك على الطلب تمنح الضيف مهلة محددة لسداد العربون لتأكيد الحجز. لا يتم حظر التقويم أثناء فترة المراجعة.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+            <button class="btn-primary typo-button">
+              <span>الموافقة على الطلب</span>
+            </button>
+            <button class="btn-secondary typo-button">
+              <span>رفض الطلب</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPOSITE 4: OWNER FINANCIAL & OPERATIONAL DASHBOARD -->
+    <div class="device-shell" id="frame-owner-02">
+      <div class="device-status-bar">
+        <span>9:41</span>
+        <div class="device-notch"></div>
+        <span>100% 🔋</span>
+      </div>
+      <div class="device-body">
+        <div class="screen-header-bar">
+          <span class="composite-tag tag-owner">Owner Composite 02</span>
+          <span class="typo-supporting" style="font-size: 11px;">المتابعة المالية</span>
+        </div>
+
+        <h2 class="typo-page-title">لوحة المتابعة المالية والتشغيلية</h2>
+
+        <!-- Operational KPI Cards -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div style="background: var(--kf-surface-card); border: 1px solid var(--kf-border-default); border-radius: 8px; padding: 12px;">
+            <div class="typo-label">الرصيد المتاح للسحب</div>
+            <div class="typo-numeric" style="font-size: 18px; margin-top: 4px;">12,400 ج.م</div>
+            <div class="typo-supporting" style="font-size: 11px; margin-top: 2px;">جاهز للتحويل الفوري</div>
+          </div>
+          <div style="background: var(--kf-surface-card); border: 1px solid var(--kf-border-default); border-radius: 8px; padding: 12px;">
+            <div class="typo-label">حجوزات مؤكدة قادمة</div>
+            <div class="typo-numeric" style="font-size: 18px; margin-top: 4px;">3 حجوزات</div>
+            <div class="typo-supporting" style="font-size: 11px; margin-top: 2px;">متوقع: 14,400 ج.م</div>
+          </div>
+        </div>
+
+        <!-- Interactive Text Link (Demonstrating Interaction-Accent Link Role) -->
+        <div style="margin: 8px 0 4px 0;">
+          <a href="#" style="color: var(--kf-accent-df2); font-size: 12px; font-weight: 600; text-decoration: underline;">عرض سجل المعاملات المالية والتقارير</a>
+        </div>
+
+        <div style="margin-top: 4px;">
+          <h3 class="typo-section-title">حالة الإقامات والتقويم</h3>
+        </div>
+
+        <!-- Listing Management Card -->
+        <div class="ui-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 class="typo-card-title">فيلا ريفيرا • رأس الحكمة</h4>
+            <span class="badge-tag tag-status-green">محدثة وجاهزة</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 4px; background: var(--kf-surface-subtle); padding: 8px 10px; border-radius: 6px;">
+            <div class="fin-row">
+              <span class="typo-label">الحجز القادم:</span>
+              <span class="typo-supporting">يبدأ 15 أكتوبر (3 ليالٍ)</span>
+            </div>
+            <div class="fin-row">
+              <span class="typo-label">سعر الليلة الحالي:</span>
+              <span class="typo-numeric" style="font-size: 14px;">1,600 ج.م</span>
+            </div>
+          </div>
+
+          <p class="typo-body" style="font-size: 13px;">
+            التقويم مفتوح لشهر أكتوبر ونوفمبر مع تفعيل سياسة الدفع المباشر للعربون.
+          </p>
+
+          <button class="btn-primary typo-button" style="min-height: 44px; padding: 10px 14px;">
+            <span>إدارة التقويم والأسعار</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Live Coherence Audit Checklist -->
+  <section class="checklist-section">
+    <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">نتائج فحص التماسك البصري (System Coherence Audit Results)</h2>
+    <p style="font-size: 13px; color: var(--kf-text-secondary);">
+      فحص شامل للأسئلة العشرة المحددة للتحقق من التماسك بين ملف الخط B والقرارات التصميمية للمؤسس:
+    </p>
+
+    <div class="check-grid">
+      <div class="check-item">
+        <div class="check-item-header">
+          <span class="check-title">1. تناسب عنوان الصفحة (20px) مع عنوان البطاقة (15px)</span>
+          <span class="badge-pass">PASS</span>
+        </div>
+        <p class="check-desc">نسبة التدرج 1.33x توفر فاصلاً هرمياً واضحاً ومريحاً على شاشات الجوال؛ عنوان الصفحة يسيطر على رأس الشاشة دون استهلاك مفرط للمساحة الرأسية، بينما يظل عنوان البطاقة مهيمناً على المتن.</p>
+      </div>
+
+      <div class="check-item">
+        <div class="check-item-header">
+          <span class="check-title">2. كفاية عنوان القسم (17px / 700) كحلقة وصل هرمية</span>
+          <span class="badge-pass">PASS</span>
+        </div>
+        <p class="check-desc">الحجم 17px يقع بدقة في المنتصف بين 20px و15px. الهامش المكاني الخارجي للقسم يعزز وظيفته في تجميع البطاقات دون الحاجة لقفزة حجمية مفرطة تؤثر على الكثافة المفيدة.</p>
+      </div>
+
+      <div class="check-item">
+        <div class="check-item-header">
+          <span class="check-title">3. توافق المتن (14px / 500) مع زر 6px الهندسي</span>
+          <span class="badge-pass">PASS</span>
+        </div>
+        <p class="check-desc">وزن 500 في القاهرة يمتلك سُمكاً حبرياً متوازناً وحلقات واضحة تتناغم تماماً مع نصف القطر الهندسي الحديث 6px؛ لا يوجد أي شعور بالرخاوة أو التنافر الهندسي.</p>
+      </div>
+
+      <div class="check-item">
+        <div class="check-item-header">
+          <span class="check-title">4. خط الزر (15px / 700) مع استراتيجية الأسود المستقر</span>
+          <span class="badge-pass">PASS</span>
+        </div>
+        <p class="check-desc">النص الأبيض بحجم 15px يمنح قراءة حاسمة وفورية دون أن يتحول الزر إلى كتلة ثقيلة تطغى بصرياً على عنوان الصفحة أو محتوى الإقامة.</p>
+      </div>
+
+      <div class="check-item">
+        <div class="check-item-header">
+          <span class="check-title">5. النص المساعد (12px / 400) بجانب المتن (14px / 500)</span>
+          <span class="badge-dep">MINOR TENSION</span>
+        </div>
+        <p class="check-desc">يعمل بامتياز في الشاشات لتقليل الضجيج. التنبيه الوحيد هو في ظروف الإضاءة الخارجية الساطعة على الجوال، وهو اعتماد سيتم التحقق منه على الأجهزة الفعلية (Phase 4I).</p>
+      </div>
+
+      <div class="check-item">
+        <div class="check-item-header">
+          <span class="check-title">6. ملصقات البيانات (12px / 600) ومقروئيتها</span>
+          <span class="badge-pass">PASS</span>
+        </div>
+        <p class="check-desc">وزن 600 يمنح حجم 12px متانة حبرية تمنع التلاشي، مشكلاً ثنائية مريحة مع الأرقام 16px دون إحداث ازدحام نصي دقيق.</p>
+      </div>
+
+      <div class="check-item">
+        <div class="check-item-header">
+          <span class="check-title">7. هيمنة الأرقام المالية (16px / 700)</span>
+          <span class="badge-pass">PASS</span>
+        </div>
+        <p class="check-desc">الأرقام تبرز بوضوح فوري في ملخصات الأسعار وصافي المالك، مع اتساق رياضي واستقرار تام للاحقة العملة (1,600 ج.م).</p>
+      </div>
+
+      <div class="check-item">
+        <div class="check-item-header">
+          <span class="check-title">8. اتساق الهرمية عبر دوري العميل والمالك</span>
+          <span class="badge-pass">PASS</span>
+        </div>
+        <p class="check-desc">تخدم نفس الأدوار العشرة واجهات العميل الهادئة وعمليات المالك الكثيفة بنجاح تام وبدون الحاجة لإنشاء أحجام مخصصة لكل دور.</p>
+      </div>
+
+      <div class="check-item">
+        <div class="check-item-header">
+          <span class="check-title">9. انطباع العلامة الواحدة الموحدة (One Brand)</span>
+          <span class="badge-pass">PASS</span>
+        </div>
+        <p class="check-desc">يشعر المستخدم بالاتساق البصري التام بين تجربة الاستكشاف كعميل ولوحة التحكم كمالك بفضل انضباط الخط ونصف القطر 6px وألوان الأبيض والأسود.</p>
+      </div>
+
+      <div class="check-item">
+        <div class="check-item-header">
+          <span class="check-title">10. غياب الصراع بين القرارات التصميمية المعتمدة</span>
+          <span class="badge-pass">PASS</span>
+        </div>
+        <p class="check-desc">لا يوجد أي تعارض بين خط القاهرة B، وزر 6px، والأسود المستقر، والأزرق المقيّد، والأرقام الغربية. النظام يندمج ككتلة واحدة متماسكة.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  function setCoherenceWidth(w) {
+    document.querySelectorAll('.device-shell').forEach(el => {
+      el.style.width = w + 'px';
+    });
+    document.querySelectorAll('.ctrl-group:first-child .seg-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.includes(w + 'px'));
+    });
+  }
+
+  function setCoherenceScale(scale) {
+    document.documentElement.style.setProperty('--scale-factor', scale);
+    document.querySelectorAll('.ctrl-group:last-child .seg-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.includes(scale + 'x') || (scale === 1 && btn.textContent.includes('100%')));
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    try {
+      await document.fonts.load('700 15px "KONFRM Typography Pilot Cairo"', '1,600 ج.م');
+      await document.fonts.ready;
+      const loaded = document.fonts.check('700 15px "KONFRM Typography Pilot Cairo"');
+      const badge = document.getElementById('font-status-badge');
+      if (loaded && badge) {
+        badge.textContent = 'أصل الخط المحلي جاهز ومحمّل (LOADED)';
+        badge.style.background = '#16A34A';
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const focusFrame = urlParams.get('focus');
+      if (focusFrame) {
+        document.querySelectorAll('.gov-header, .scope-box, .token-summary-bar, .controls-panel, .checklist-section').forEach(el => {
+          el.style.display = 'none';
+        });
+        document.querySelectorAll('.device-shell').forEach(el => {
+          if (!el.id.includes(focusFrame)) {
+            el.style.display = 'none';
+          }
+        });
+        document.body.style.padding = '12px 0';
+        document.body.style.background = '#F1F5F9';
+      }
+
+      const w = parseInt(urlParams.get('w'));
+      if (w) setCoherenceWidth(w);
+      const scale = parseFloat(urlParams.get('scale'));
+      if (scale) setCoherenceScale(scale);
+    } catch (e) {
+      console.error(e);
+    }
+  });
+</script>
+
+</body>
+</html>

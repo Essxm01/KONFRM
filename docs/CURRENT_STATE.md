@@ -1,15 +1,25 @@
 # Current project state
 
-**Last updated:** 2026-09-06  
-**Authoritative main:** `9ef59f64008db16df0386ac92c5d64bfc8c73b58`  
-**Phase status:** Phase 0–3 complete; Phase 3 is `LIVE_CLOSED`.  
-**Publication evidence:** PR #19 merged; main CI run `34007323794` succeeded; the Phase 3 same-property Owner → Admin → Owner → Customer live trace passed on disposable QA data.
+**Last updated:** 2026-10-04  
+**Authoritative main:** `a988a62702c64c2586c2c9437c9026658bbd6edf`  
+**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED`.  
+**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); Phase 4B Cairo Typography Foundation checkpoint in progress.
 
 ## Current status
 
-KONFRM has completed the implementation and live verification required through Phase 3. The connected property vertical slice is proven with one canonical property flowing through Owner creation/media/submission, Admin review/approval, canonical `PUBLISHED + VERIFIED` persistence, Owner no-reload revalidation, Customer Explore visibility, and Customer canonical Detail rendering.
+KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Program**:
+- **Phase 4A (Controlled Primitive Pilot 01):** `CLOSED`. Primary button radius selected at 6px. Primary color strategy selected as Stable Black. Status: Founder-Selected Provisional Design Foundation Candidate.
+- **Phase 4B (Cairo Typography Foundation):** `CLOSED`. Primary UI font family established as Cairo. Founder visual preference selected as **Profile B** (Mobile Balanced Candidate). Status: **`SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`** (System coherence verdict: `COHERENT_WITH_MINOR_FUTURE_COMPONENT_DEPENDENCIES`).
+  - Profile B values: display 24/700/1.30, pageTitle 20/700/1.35, sectionTitle 17/700/1.40, cardTitle 15/700/1.40, body 14/500/1.50, bodyStrong 14/700/1.50, label 12/600/1.35, supporting 12/400/1.40, numeric 16/700/1.30, button 15/700/1.20.
+  - Profile B is provisional design foundation, **NOT** promoted to final native Canon.
+  - Exact primary black: **`OPEN`** (Stable Black Primary strategy is Founder-selected provisional; `#0F172A` is pilot-only rendering value).
+  - Exact blue: **`OPEN`** (Restrained blue interaction-accent role is governed direction; `#276EF1` is pilot candidate only).
+  - Exact neutral palette: **`OPEN`**.
+  - Known Profile B Web stress evidence: 5 / 24 overflow cases under extreme scaling (150% and 200%). Causal classification: **`MIXED`**. Profile-selection impact: **`MINOR`**.
+  - Native Flutter typography acceptance: **`DEFERRED TO 4I`**.
+  - Next active design dependency: **`4C ACTION SYSTEM`**.
 
-Phase 3 closed without database schema changes, migrations, RPC changes, booking/availability/finance-rule changes, or broad UI redesign. Phase 4 must not start automatically; it is the dedicated UI/UX program and requires the planned UI/UX Design Lab / LAP collaboration.
+The connected property vertical slice through Phase 3 remains live-verified on production. Phase 4 develops the design foundations through controlled empirical pilots before native mobile integration.
 
 ## Implemented areas
 
@@ -53,6 +63,7 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
 
 ## Next work
 
-**STOP before Phase 4.**
+**Phase 4C — Action System**
 
-Phase 3 is complete and live-closed. The next roadmap phase is **Phase 4 — Unified Design System / UI/UX program**, which is intentionally held until the Founder resumes with the UI/UX Design Lab / LAP collaboration. No Phase 4 implementation should begin implicitly from this state.
+Phase 4B Typography Foundation is closed and undergoing repository checkpointing. Following merge of PR for Phase 4B, the next active design program step is:
+- **Phase 4C — Action System** (Buttons, touch targets, hierarchy, states, and text-wrapping resilience building upon 6px radius, Stable Black strategy, and Cairo Profile B provisional typography).

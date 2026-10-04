@@ -4,7 +4,7 @@
 ### Stage 2: System Coherence Validation — CLOSED / INDEPENDENTLY VERIFIED PASS (Review HEAD: `f33674c902a4d2c63fcb5fd0fa6414851be5e7d2` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
 ### Stage 3A: Action Contract Formalization & Governance Reconciliation — CLOSED / INDEPENDENTLY VERIFIED PASS (Review HEAD: `92eb0ce282b4dd2ba8b29cb804215f4cb3b59464` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
 ### Stage 3B: Targeted Shared Governance Synchronization — CLOSED / INDEPENDENTLY VERIFIED PASS (Review HEAD: `708ffb77bbd9dc3600dd4775be6f86da40b8e73f` • Blockers: NONE • Material Findings: NONE • Minor Findings: NONE)
-**Document Status:** `PHASE_4C_SUBSTANTIVE_COMPLETE / READY_FOR_PUBLICATION`
+**Document Status:** `PHASE_4C_CLOSED_PUBLISHED` (PR: `#90` • Merge Checkpoint: `95e3789ae824cdc6ca0a6608f1752f3137ac5ac5` • Status: `CLOSED / MERGED`)
 
 ---
 
@@ -27,7 +27,7 @@
 > - `DESIGN_SYSTEM/COMPONENTS/buttons.md`
 > - `DESIGN_SYSTEM/EXPERIENCE/ACTION_HIERARCHY.md`
 > - `DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md` (DF2 v1.2)
-> تظل القرارات مصنفة كـ **مخرجات مؤقتة مثبتة نظامياً (System-Validated Provisional)** مع تأجيل الاعتماد الأصيل للمنصات وإمكانية الوصول إلى المرحلة 4I (`Native Acceptance: DEFERRED TO PHASE 4I`). وحالة المرحلة الحالية هي: `PHASE_4C_SUBSTANTIVE_COMPLETE / READY_FOR_PUBLICATION` (بانتظار دمج طلب السحب PR، ولا يتم وسمها بـ CLOSED_MERGED قبل الدمج الفعلي).
+> تظل القرارات مصنفة كـ **مخرجات مؤقتة مثبتة نظامياً (System-Validated Provisional)** مع تأجيل الاعتماد الأصيل للمنصات وإمكانية الوصول إلى المرحلة 4I (`Native Acceptance: DEFERRED TO PHASE 4I`). وحالة المرحلة الحالية: `PHASE_4C_CLOSED_PUBLISHED` (تم دمج طلب النشر PR #90 بنجاح عند نقطة التحقق `95e3789ae824cdc6ca0a6608f1752f3137ac5ac5`؛ الحالة المعتمدة: `CLOSED / MERGED`).
 
 > [!IMPORTANT]
 > **إشعار حوكمة البيانات التجريبية (Synthetic Test Data Governance Disclaimer):**
@@ -365,6 +365,6 @@
 - لا يُعامل أرشيف المرحلة 1 أو كود CSS المعملي كسلطة إنتاجية أو أصلية للمنصات.
 
 #### د. تأطير الاعتمادية التالية بعد دمج النشر (Next Dependency Framing)
-بعد استكمال العمل الجوهري والمراجعة المستقلة للمرحلة 4C، تُؤطر الخطوة التالية بعد دمج طلب النشر (PR Merge) كـ:
-**`PHASE_4D_FORM_SELECTION_PRIMITIVES` (NOT_STARTED)**
+بعد اكتمال واعتماد ودمج المرحلة 4C (PR #90 عند `95e3789ae824cdc6ca0a6608f1752f3137ac5ac5`)، تُؤطر الخطوة التالية كـ:
+**`PHASE_4D_FORM_SELECTION_PRIMITIVES` (READY_TO_START; EXECUTION_STARTED: NO)**
 (حقول الإدخال، النصوص، أرقام الهواتف، البريد الإلكتروني، البحث، القوائم المنسدلة، مربعات الاختيار ومفاتيح التبديل، سلوك المساعدة والأخطاء، وسلوك التركيز ولوحة المفاتيح، وتفاصيل الإدخال باللغة العربية RTL — استناداً إلى `KONFRM_EXECUTION_DEPENDENCY_ORDER.md`).

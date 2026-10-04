@@ -1,28 +1,48 @@
-# Active Task — CUSTOMER_SCREEN_15_FAVORITES
+# Active Task — PHASE_4B_TYPOGRAPHY_FOUNDATION_CHECKPOINT
 
-TASK_ID: CUSTOMER_SCREEN_15_FAVORITES
-ROADMAP_PHASE: PHASE_5_CUSTOMER_EXPERIENCE
-STATUS: LIVE_VERIFIED_COMPLETE
-MERGED_PR: #64
-MERGED_MAIN_SHA: 0612feb142a55877e16c1b5982763dcd3aeab5a3
-MAIN_CI_RUN: 36152981595
-BASE_MAIN_SHA: da3be0fd4d6a14f9059825cd797484a081baf9b0
-SCOPE: Customer Screen 15 — Favorites / المفضلة.
-PRODUCTION_STATUS:
-- Customer Screen 15 is merged and live on the production Customer Pages bundle: `https://sola-customer-app.pages.dev/`.
-- A dedicated `CustomerFavoritesScreen` uses server-authoritative `GET /customer/favorites`, `POST /customer/favorites/:propertyId`, and `DELETE /customer/favorites/:propertyId` APIs.
-- Guest Favorites does not auto-open Auth; `FAVORITES_TAB` Auth origin and `PROTECTED_FAVORITE { propertyId }` canonical same-property resume are preserved.
-- States are explicit: `GUEST`, `INITIAL_LOADING`, `LOADED`, `EMPTY`, `REFRESHING`, `STALE_ERROR`, `ERROR`, and `SESSION_EXPIRED`.
-- 401/403 clears private Favorites display state fail-closed without independently clearing unrelated Booking or Payment state.
-- Server-confirmed DELETE keeps the card until success; Undo performs POST for the same property ID followed by canonical GET. Stale GET protection prevents deleted Favorites from being resurrected.
-- `PropertyCard` is reused; Favorite hearts expose `aria-pressed`, use a touch target of at least 48px, and primary Guest/Empty/Session CTAs use 52px targets. The Favorite numeric Bottom Nav badge was removed while the Bookings attention indicator remains.
-- Responsive production UI was verified at 360×800, 390×844, and 430×932, including open-page Guest, Empty, Error, and Session surfaces.
-- Real production Cloudflare Pages bundle, Guest Screen 15, responsive 360/390/430 UI, and `FAVORITES_TAB` Auth handoff were verified on the production frontend.
-- Sensitive, error, and mutation states were verified on the real production frontend with controlled network responses where avoiding production data mutation was appropriate; no production data mutation was required for final verification.
-- No ratings, reviews, scarcity, fake recommendations, backend schema, or database changes were introduced.
+TASK_ID: PHASE_4B_TYPOGRAPHY_FOUNDATION_CHECKPOINT
+ROADMAP_PHASE: PHASE_4_UNIFIED_DESIGN_SYSTEM
+STATUS: CHECKPOINT_IN_PROGRESS
+BASE_MAIN_SHA: a988a62702c64c2586c2c9437c9026658bbd6edf
+SCOPE: Phase 4B — Cairo Mobile Typography Foundation Repository Checkpoint & PR.
 
-The historical Phase 5 roadmap below is preserved as evidence. This active
-contract records live verified closure for Screen 15.
+## Phase 4B Authoritative Status
+- **Phase 4B Cairo Typography Foundation:** CLOSED / APPROVED.
+- **Primary UI Font Family:** CAIRO (Founder family selection established; no reopening).
+- **Founder Visual Selection:** PROFILE B (Mobile Balanced Candidate).
+- **Typography Status:** `SYSTEM-VALIDATED PROVISIONAL TYPOGRAPHY`.
+  - display: 24 / 700 / 1.30
+  - pageTitle: 20 / 700 / 1.35
+  - sectionTitle: 17 / 700 / 1.40
+  - cardTitle: 15 / 700 / 1.40
+  - body: 14 / 500 / 1.50
+  - bodyStrong: 14 / 700 / 1.50
+  - label: 12 / 600 / 1.35
+  - supporting: 12 / 400 / 1.40
+  - numeric: 16 / 700 / 1.30
+  - button: 15 / 700 / 1.20
+- **System Coherence Verdict:** `COHERENT_WITH_MINOR_FUTURE_COMPONENT_DEPENDENCIES`.
+- **Canon Promotion:** NONE (Provisional foundation only; not promoted to final native Canon).
+- **Color Governance:**
+  - Stable Black Primary: Founder-selected provisional strategy.
+  - Exact primary black: `OPEN` (`#0F172A` is pilot-only rendering value, NOT final button black).
+  - Exact blue: `OPEN` (`#276EF1` is pilot candidate only).
+  - Exact neutral palette: `OPEN`.
+- **Stress & Overflow Evidence:**
+  - Known Web stress: 5 / 24 overflow cases under extreme scaling (150% and 200%).
+  - Causal classification: `MIXED` (primarily component/layout constraint limitations).
+  - Profile-selection impact: `MINOR`.
+- **Native Acceptance:** DEFERRED TO PHASE 4I (Native Flutter Prototype & Validation).
+- **Scope Boundaries:** Zero changes to production apps (`customer-app/`, `owner-app/`, `admin-app/`), `backend/`, or database schema.
+
+## Next Task
+Phase 4B repository checkpoint is currently being completed. After merge of Phase 4B PR:
+- **NEXT TASK:** Phase 4C — Action System
+  - Focus: Buttons, touch targets, action hierarchy, loading/disabled states, text-wrapping resilience.
+  - Dependencies: 6px radius (Phase 4A), Stable Black strategy (Phase 4A), Cairo Profile B provisional typography (Phase 4B).
+  - Do NOT start Phase 4C in this PR.
+
+The historical Phase 5 roadmap below is preserved as evidence.
 
 # Phase 5 — Customer App Roadmap Tracking
 

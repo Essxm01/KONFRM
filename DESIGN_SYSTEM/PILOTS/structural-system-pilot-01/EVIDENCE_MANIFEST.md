@@ -3,9 +3,9 @@
 **Phase:** Phase 4E — Structural System
 **Pilot:** `structural-system-pilot-01`
 **Location:** `DESIGN_SYSTEM/PILOTS/structural-system-pilot-01/evidence/`
-**Total Artifacts:** 18
+**Total Artifacts:** 24
 **Format:** PNG (Rendered via Headless Chromium, Cairo Variable Font, native Arabic RTL)
-**Date:** 2026-10-04
+**Date:** 2026-10-04 (Updated: 2026-10-05)
 
 ---
 
@@ -15,10 +15,10 @@
 |---|---|---|---|---|---|---|---|---|
 | 01 | `candidate_a_customer_detail_390.png` | Customer | A (Open/Editorial) | 390×844 | 100% | Normal | Open property details. Minimal containers; facts separated by clean 1px dividers; quote bounded by top/bottom dividers. Highly readable, generous hospitality feel. | PASS (Valid Option A) |
 | 02 | `candidate_b_customer_detail_390.png` | Customer | B (Modular/Contained) | 390×844 | 100% | Normal | Fully contained modules. Facts enclosed in a rounded-12px box; quote enclosed in rounded-16px container. High containment, but increases visual complexity and card framing. | REJECTED_COMPARATOR (Eliminated by Hard Gates) |
-| 03 | `candidate_c_customer_detail_390.png` | Customer | C (Role Hybrid) | 390×844 | 100% | Normal | Open editorial facts row + bounded single-surface quote breakdown with 12px container radius. Ideal balance: unboxed editorial hospitality above, clear financial decision unit below. | PASS (Court Recommended Option C) |
+| 03 | `candidate_c_customer_detail_390.png` | Customer | C (Role Hybrid) | 390×844 | 100% | Normal | Open editorial facts row + bounded single-surface quote breakdown with 12px container radius. Ideal balance: unboxed editorial hospitality above, clear financial decision unit below. | PASS (Founder Selected Option C) |
 | 04 | `candidate_a_owner_home_390.png` | Owner | A (Open/Editorial) | 390×844 | 100% | Normal | Open operational sections. Minimal card framing. Works well for simple lists, but urgent attention banner lacks strong physical boundary contrast. | PASS (Valid Option A) |
 | 05 | `candidate_b_owner_home_390.png` | Owner | B (Modular/Contained) | 390×844 | 100% | Normal | Heavy modular card stack. Every section is a bordered card with subtle shadow. Clear boundaries, but high card density on small screens creates visual repetition. | REJECTED_COMPARATOR (Eliminated by Hard Gates) |
-| 06 | `candidate_c_owner_home_390.png` | Owner | C (Role Hybrid) | 390×844 | 100% | Normal | Connected operational groups with clean internal dividers (`Open Grouped Content`). High scanability, zero card soup, clear 12px container geometry. | PASS (Court Recommended Option C) |
+| 06 | `candidate_c_owner_home_390.png` | Owner | C (Role Hybrid) | 390×844 | 100% | Normal | Connected operational groups with clean internal dividers (`Open Grouped Content`). High scanability, zero card soup, clear 12px container geometry. | PASS (Founder Selected Option C) |
 | 07 | `customer_detail_360.png` | Customer | C | 360×800 | 100% | Normal | Compact Android viewport test. Facts row reflows gracefully; zero horizontal clipping; Cairo Profile B remains comfortably readable. | PASS |
 | 08 | `customer_detail_390.png` | Customer | C | 390×844 | 100% | Normal | Baseline iOS viewport test. Balanced vertical rhythm (24px section gap); clear hierarchy from imagery to quote to sticky decision CTA. | PASS |
 | 09 | `customer_detail_430.png` | Customer | C | 430×932 | 100% | Normal | Large mobile viewport test. 16px page insets expand gracefully; no awkward empty horizontal stretches; content stays naturally proportioned. | PASS |
@@ -31,6 +31,12 @@
 | 16 | `stress_text_scale_200.png` | Customer | C | 390×844 | 200% | Normal | True 200% text-scale stress test. Cairo Profile B scales to 2× size; words wrap gracefully onto multiple lines; zero text clipping or container overflow. | PASS |
 | 17 | `stress_long_arabic_390.png` | Customer | C | 390×844 | 100% | Stress | Extreme Arabic copy stress: 4-line property title, multi-line destination string, 37,000 ج.م nightly price, long description. Layout handles extreme copy smoothly. | PASS |
 | 18 | `stress_reflow_360_width.png` | Owner | C | 360×800 | 100% | Stress | Owner queue under 360px width with stress copy and multi-line metadata. Action buttons reflow without horizontal clipping or content trapping; controlled Web reflow preserved visible layout; native touch target acceptance (~44pt iOS / ~48dp Android) is not established by this Web evidence and is `DEFERRED_TO_4I`. | PASS |
+| 19 | `radius_comparison_10_customer_390.png` | Customer | C | 390×844 | 100% | Normal | Bounded radius comparison: Customer quote container at 10px radius. Demonstrates slightly boxy geometry with minimal visual contrast against 8px fields. | EVALUATED_COMPARATOR |
+| 20 | `radius_comparison_12_customer_390.png` | Customer | C | 390×844 | 100% | Normal | Bounded radius comparison: Customer quote container at 12px radius. Optimal balance of hospitality warmth and discrete financial containment. | PASS (Selected 12px) |
+| 21 | `radius_comparison_16_customer_390.png` | Customer | C | 390×844 | 100% | Normal | Bounded radius comparison: Customer quote container at 16px radius. Demonstrates overly rounded, generic consumer SaaS bubble appearance. | EVALUATED_COMPARATOR |
+| 22 | `radius_comparison_10_owner_390.png` | Owner | C | 390×844 | 100% | Normal | Bounded radius comparison: Owner grouped container at 10px radius. High density, but corners feel rigid on curved physical displays. | EVALUATED_COMPARATOR |
+| 23 | `radius_comparison_12_owner_390.png` | Owner | C | 390×844 | 100% | Normal | Bounded radius comparison: Owner grouped container at 12px radius. Optimal density; clean interior row margins; natural curvature within 16px page margins. | PASS (Selected 12px) |
+| 24 | `radius_comparison_16_owner_390.png` | Owner | C | 390×844 | 100% | Normal | Bounded radius comparison: Owner grouped container at 16px radius. Excessive corner encroachment on dense list rows; internal 1px dividers feel indented. | EVALUATED_COMPARATOR |
 
 ---
 
@@ -46,3 +52,5 @@
    In all views, Western Arabic numerals (`16,500`, `82,500`, `37,000`) maintain canonical Arabic currency suffix order (`ج.م / ليلة`).
 5. **Exact Neutrals Open:**
    Pilot rendering reference values (`#FFFFFF`, `#E2E8F0`, `#F8FAFC`) are `CONTROLLED_WEB_PILOT_RENDERING_REFERENCE` only; exact neutral tokens remain `OPEN`.
+6. **Bounded Radius Evaluation (10px vs 12px vs 16px): PASSED.**
+   Empirical artifacts 19–24 demonstrate that 12px provides the optimal balance of role distinction (clearly distinct from 8px fields and 6px buttons) and scanable density without generic consumer SaaS bubbling (16px) or boxiness (10px). Closed as `SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`.

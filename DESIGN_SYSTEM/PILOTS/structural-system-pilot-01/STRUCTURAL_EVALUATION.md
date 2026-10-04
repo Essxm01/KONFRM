@@ -3,8 +3,9 @@
 **Phase:** Phase 4E — Structural System
 **Pilot ID:** `structural-system-pilot-01`
 **Governing Authority:** `DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md`, `DESIGN_SYSTEM/COMPONENTS/cards.md`
-**Evaluation Date:** 2026-10-04
-**Status:** `SYSTEM_EVALUATED_CANDIDATE`
+**Evaluation Date:** 2026-10-04 (Formalized: 2026-10-05)
+**Founder Decision:** `OPTION_C_APPROVED` (Role-Aware Hybrid Structural System)
+**Status:** `FOUNDER_SELECTED_SYSTEM_EVALUATED_PROVISIONAL`
 
 ---
 
@@ -57,10 +58,8 @@ One of the primary goals of Phase 4E is eliminating **Card Soup**. The evaluatio
 ### E. Shape Roles & Radius System
 - **`SHAPE_ACTION` (6px):** Action-oriented controls (Primary buttons; `PROVISIONAL_PRIMARY_ONLY`). Secondary button radius remains open.
 - **`SHAPE_INPUT` (8px):** Data entry containers (Text fields, search bars, pickers; `PROVISIONAL_FIELD_SHAPED_ONLY`).
-- **`SHAPE_CONTAINER` (12px vs 16px Candidate):**
-  - *Candidate 12px (Balanced):* Evaluated as `COURT_RECOMMENDED_PILOT_CANDIDATE`. Harmonizes visually with 8px inputs and 6px buttons without looking overly rounded or generic. (Note: 6px → 8px → 12px is an `EXPERT_HEURISTIC / VISUAL_SYSTEM_REASONING`, not self-validating mathematical proof).
-  - *Candidate 16px (Legacy Web):* Familiar from current web Tailwind classes, but produces excessive curvature in dense operational contexts.
-  - *Candidate 0px (Open):* For inline divided content (Candidate A).
+- **`SHAPE_CONTAINER` (12px):** Structural containers and cards radius evaluated and selected as `SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`. Controlled bounded evidence check (10px vs 12px vs 16px) confirmed 12px harmonizes visually with 8px inputs and 6px buttons without looking boxy (10px) or overly bubbly (16px). (Note: 6px → 8px → 12px is an `EXPERT_HEURISTIC / VISUAL_SYSTEM_REASONING`, not self-validating mathematical proof).
+- **`SHAPE_OPEN` (0px):** For inline divided content (Candidate A).
 - **`SHAPE_INDICATOR` (Status Badges / Chips):** Compact rectangular or softly rounded indicators. Exact Badge/Tag geometry remains `OPEN_OR_COMPONENT_GOVERNED`; pilot did not assert universal 9999px Canon.
 
 ---
@@ -80,6 +79,7 @@ One of the primary goals of Phase 4E is eliminating **Card Soup**. The evaluatio
 | Evaluation Dimension | Candidate A (Open / Editorial) | Candidate B (Modular / Contained) | Candidate C (Role-Aware Hybrid) |
 |---|---|---|---|
 | **Hard Gates Result** | **VALID** | **ELIMINATED_BY_HARD_GATE** (`REJECTED_COMPARATOR`) | **VALID (`COURT_RECOMMENDED`)** |
+| **Founder Decision** | **VALID_NOT_SELECTED** | **REJECTED_COMPARATOR** | **FOUNDER_SELECTED_PROVISIONAL** |
 | **Customer Role Fit** | **High** — Exceptional hospitality feel, photography-forward, minimal visual clutter. | **Low** — Over-boxed, feels like a SaaS dashboard rather than vacation discovery. | **High** — Open editorial facts above, bounded financial quote below. |
 | **Owner Role Fit** | **Medium** — Harder to scan dense operational priorities without container grounding. | **Medium** — Clear module boundaries, but high card repetition produces noise. | **High** — Connected operational units (`Open Grouped Content`) maximize scanability and density. |
 | **Admin Boundary Fit** | Neutral | Neutral | **High** — Desktop table and audit workspace strictly isolated from mobile cards. |
@@ -102,3 +102,17 @@ During empirical pilot implementation and headless screenshot capture, three def
 3. **Defect 3: Metric KPI Over-Rounding on Desktop Admin:**
    - *Cause:* Admin desktop tables were inheriting 16px mobile card radii.
    - *Fix:* Restricted Admin container radii to 8px (`CONTROLLED_WEB_BOUNDARY_REFERENCE`), maintaining crisp desktop operational rigor and proving mobile card language does not contaminate desktop.
+
+---
+
+## 4. Bounded Structural Radius Evaluation & Closure
+
+To close the implementation-level container radius without burdening the Founder, a controlled evidence check evaluated Candidate C across radius values (`10px`, `12px`, `16px`) using the same viewport (390×844), typography (Cairo Profile B), page insets (16px), and content:
+
+| Radius Candidate | Customer Decision Unit | Owner Grouped Unit | Visual System Coherence | Verdict |
+|---|---|---|---|---|
+| **`10px`** | Slightly boxy for hospitality screen. | High operational density, but feels rigid. | Too close to 8px field control (only 2px difference); blurs line between data entry input and structural surface. | REJECTED |
+| **`12px`** | Soft, calm, reassuring financial summary. | Clean, compact interior spacing; corners curve naturally within 16px page margins. | Clearly distinct from 8px field controls and 6px action buttons without bubbly consumer excess. | **SELECTED (`SYSTEM-EVALUATED PROVISIONAL`)** |
+| **`16px`** | Bubbly SaaS dashboard appearance. | Excessive corner encroachment; internal 1px dividers feel awkwardly inset or clipped at extreme corners. | Encounters generic rounded-SaaS risk (`rounded-2xl` Tailwind default). | REJECTED |
+
+*Conclusion:* `12px` performs best across all dimensions with zero material Founder-level tradeoff. Closed as `SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`.

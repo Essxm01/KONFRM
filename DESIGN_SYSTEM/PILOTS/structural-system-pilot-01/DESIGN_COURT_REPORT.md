@@ -181,3 +181,21 @@ frontend-design-wrapper:  NOT_CONSULTED
 - هندسة الشارات (Badges) تظل مفتوحة ومحكومة على مستوى المكونات (`OPEN_OR_COMPONENT_GOVERNED`).
 - شاشات الإدارة تظل جداول سطح مكتب احترافية ولا تتأثر ببطاقات الهاتف (`WEB_BOUNDARY_REFERENCE_ONLY`).
 - اعتماد استجابة اللمس على الأجهزة الحقيقية مؤجل لمرحلة الفلاتر الأصلية (`DEFERRED_TO_4I`).
+
+---
+
+## 7. Post-Deliberation Formalization & Founder Decision Record
+
+- **FOUNDER DECISION:** `APPROVED`
+- **SELECTED OPTION:** `OPTION_C` (Role-Aware Hybrid Structural System)
+- **DECISION STATUS:** `FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE_4E_STRUCTURAL_MODEL`
+- **DATE OF APPROVAL:** 2026-10-05
+
+### Record of Options:
+- **Candidate C (Option C):** `FOUNDER_SELECTED_PROVISIONAL` (Role-Aware Hybrid: Customer open/editorial default, Owner operational grouped-content direction, Admin desktop tables preserved).
+- **Candidate A (Option A):** `VALID_NOT_SELECTED` (Preserved as evaluated aesthetic minority alternative).
+- **Candidate B (Option B):** `ELIMINATED_BY_HARD_GATE` (`REJECTED_COMPARATOR`).
+
+### Reversible Implementation Details Closed via Controlled Evidence:
+- **Structural Container Radius:** Evaluated via bounded comparison (10px vs 12px vs 16px). Recorded as `12px` (`SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`).
+- **Open / Deferred Items Preserved:** Exact neutrals remain `OPEN`; native touch acceptance remains `DEFERRED_TO_4I`; navigation and overlay geometry remain `DEFERRED_TO_4F`.

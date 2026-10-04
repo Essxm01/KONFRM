@@ -394,7 +394,7 @@
 
     /* Candidate C: Role-Aware Hybrid (Recommended) */
     .cand-C {
-      --struct-container-radius: 12px;
+      --struct-container-radius: var(--custom-radius, 12px);
       --struct-card-border: 1px solid var(--border-subtle);
       --struct-card-shadow: none;
       --struct-card-bg: #FFFFFF;
@@ -1182,6 +1182,9 @@
     if (params.get('scale')) currentScale = params.get('scale');
     if (params.get('stress')) isStress = (params.get('stress') === '1' || params.get('stress') === 'true');
     if (params.get('embed') === '1') isEmbed = true;
+    if (params.get('radius')) {
+      document.documentElement.style.setProperty('--custom-radius', `${params.get('radius')}px`);
+    }
 
     applyState();
   </script>

@@ -2,27 +2,31 @@
 
 TASK_ID: PHASE_4E_STRUCTURAL_SYSTEM
 TASK_CLASS: DESIGN_SYSTEM_FOUNDATION_PHASE
-STATUS: ACTIVE
-FOUNDER_AUTHORIZATION: APPROVED (Phase 4E Structural System Kickoff)
+STATUS: READY_FOR_PUBLICATION
+FOUNDER_AUTHORIZATION: APPROVED (Option C — Role-Aware Hybrid Structural System)
 BASE_MAIN_SHA: 674194e675731985b347d241d046f6acc48cf785
 BRANCH: design/structural-system-pilot-01
-SCOPE: Phase 4E Structural System — Discovery, product evidence, realistic visual pilot, candidate structural systems, multi-viewport stress testing, Design Court v1 deliberation, self-correction, and Founder gate (if material). Owns spacing scale, content insets, vertical rhythm, section separation, open grouped content, cards, interactive rows, borders, dividers, surface hierarchy, shape roles, and elevation/shadow relationships across Customer, Owner, and Admin boundary.
+PR_STATUS: PENDING
+SCOPE: Phase 4E Structural System — Discovery, product evidence, realistic visual pilot, candidate structural systems, multi-viewport stress testing, Design Court v1 deliberation, self-correction, Founder decision formalization, and publication PR preparation. Owns spacing scale, content insets, vertical rhythm, section separation, open grouped content, cards, interactive rows, borders, dividers, surface hierarchy, shape roles, and elevation/shadow relationships across Customer, Owner, and Admin boundary.
 
 ## Boundaries
 - Does NOT start Phase 4F (Navigation & Surface System: app bars, bottom navigation, nested navigation, dialogs, bottom sheets, overlay architecture, sticky action architecture belong strictly to 4F).
 - Does NOT modify production applications (`customer-app/`, `owner-app/`, `admin-app/`).
 - Does NOT modify token files (`DESIGN_SYSTEM/TOKENS/*.json`) or backend/database/API contracts.
-- Does NOT formalize unresolved structural values into Canon before governed visual/evidence decision is complete.
+- Does NOT merge publication PR without explicit Founder merge authorization.
 - Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D).
-- Design Court v1 output is advisory governance evidence; it does not constitute automatic Canon promotion.
 
 ## Closure Gates
-- Structural discovery documented (`STRUCTURAL_DISCOVERY.md`).
-- Multi-role visual pilot implemented (`DESIGN_SYSTEM/PILOTS/structural-system-pilot-01/`).
-- Multi-viewport visual evidence captured and inspected (360px, 390px, 430px, 200% text scale, Admin desktop).
-- Design Court v1 deliberation completed (`FULL_COURT` mode, `DESIGN_COURT_REPORT.md`).
-- Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `git diff --check`).
-- Founder gate prepared if material visual decisions remain; otherwise advisory verdict documented.
+- [x] Structural discovery documented (`STRUCTURAL_DISCOVERY.md`).
+- [x] Multi-role visual pilot implemented (`DESIGN_SYSTEM/PILOTS/structural-system-pilot-01/`).
+- [x] Multi-viewport visual evidence captured and inspected (360px, 390px, 430px, 200% text scale, Admin desktop, and 6 radius comparison PNGs).
+- [x] Design Court v1 deliberation completed (`FULL_COURT` mode, `DESIGN_COURT_REPORT.md`).
+- [x] Founder decision recorded: Option C approved (`ROLE-AWARE HYBRID STRUCTURAL SYSTEM`).
+- [x] Reversible implementation detail closed: 12px structural container radius evaluated and closed via bounded evidence check.
+- [x] Mobile Foundation updated to DF2 v1.4, Experience authority created (`STRUCTURAL_SYSTEM.md`), cards component updated, AI skills synchronized, thin shims regenerated.
+- [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `git diff --check`).
+- [ ] Publication PR created (pending `gh pr create`).
+- [ ] Phase 4F remains strictly `NOT_STARTED`.
 
 ---
 

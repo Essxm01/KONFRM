@@ -11,7 +11,7 @@ The Master Design Triage Layer for the KONFRM platform across all AI agents (Cod
 
 > [!IMPORTANT]
 > ### THE CANON SUBORDINATION RULE
-> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill is strictly subordinate to KONFRM Design Canon (DF2 v1.3, monochrome-first, high useful density, Arabic-first RTL, Western Arabic numerals, `#276EF1` candidate interaction role) and canonical business invariants (`docs/BUSINESS_RULES.md`). External skills may inform craftsmanship, ergonomics, accessibility checks, and engineering patterns, but never dictate product taste, business rules, or brand identity.**
+> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill is strictly subordinate to KONFRM Design Canon (DF2 v1.4, monochrome-first, high useful density, Arabic-first RTL, Western Arabic numerals, `#276EF1` candidate interaction role) and canonical business invariants (`docs/BUSINESS_RULES.md`). External skills may inform craftsmanship, ergonomics, accessibility checks, and engineering patterns, but never dictate product taste, business rules, or brand identity.**
 
 ---
 
@@ -21,7 +21,7 @@ The Master Design Triage Layer for the KONFRM platform across all AI agents (Cod
    - **Role:** Customer, Owner, Admin, or Shared Design System.
    - **Surface Reality:**
      - **Current Web Implementation:** `customer-app/` (React SPA), `owner-app/` (React SPA), `admin-app/` (React SPA).
-     - **Future Native Mobile Target:** Future Flutter/Dart applications governed by DF2 v1.3 (`mobile/customer_app`, `mobile/owner_app` — topology not yet initialized).
+     - **Future Native Mobile Target:** Future Flutter/Dart applications governed by DF2 v1.4 (`mobile/customer_app`, `mobile/owner_app` — topology not yet initialized).
    - **Task Type:** UX Architecture, Visual Design, Micro-Polish, Accessibility Audit, Visual QA, or Code Structure.
 2. **Minimal Skill Activation:** Select ONLY the specific internal and wrapped external skills relevant to the task. Suppress unneeded or conflicting tools.
 3. **Structured Design Reasoning Pipeline:** For meaningful new Primitive, visual-hierarchy, or component-design choices, route requests through `konfrm-design-reasoning`. For routine bug fixes, typos, layout alignment, or known accessibility remediations, bypass the heavy dialectic and proceed directly with proportional discipline.
@@ -39,7 +39,7 @@ The Master Design Triage Layer for the KONFRM platform across all AI agents (Cod
 | **Current Customer Web** | `customer-app/` | React / Vite / Tailwind | `konfrm-product-ux`, `konfrm-design-reasoning`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`, `ui-ux-pro-max-wrapper` (advisory), `impeccable-wrapper` (polish/critique) |
 | **Current Owner Web** | `owner-app/` | React / Vite / Tailwind | `konfrm-product-ux`, `konfrm-design-reasoning`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`, `ui-ux-pro-max-wrapper` (advisory), `impeccable-wrapper` (polish/critique/distill) |
 | **Current Admin Web** | `admin-app/` | React / Vite / Tailwind | `konfrm-product-ux`, `konfrm-design-reasoning`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`, `impeccable-wrapper` (distill/quieter) |
-| **Future Mobile Target** | Future `mobile/` boundary (uninitialized) | Flutter / Dart (DF2 v1.3) | `konfrm-product-ux`, `konfrm-design-reasoning`, `konfrm-mobile-design`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `ui-ux-pro-max-wrapper` (advisory search only), `impeccable-wrapper` (polish/critique), `emil-wrapper` (tactile/gesture candidates) |
+| **Future Mobile Target** | Future `mobile/` boundary (uninitialized) | Flutter / Dart (DF2 v1.4) | `konfrm-product-ux`, `konfrm-design-reasoning`, `konfrm-mobile-design`, `konfrm-rtl-arabic`, `konfrm-accessibility`, `konfrm-visual-qa` | `ui-ux-pro-max-wrapper` (advisory search only), `impeccable-wrapper` (polish/critique), `emil-wrapper` (tactile/gesture candidates) |
 | **Design System Authority** | `DESIGN_SYSTEM/` | Semantic Tokens & Specs | `konfrm-design-reasoning`, `konfrm-mobile-design`, `konfrm-rtl-arabic`, `konfrm-accessibility` | `impeccable-wrapper` (audit), `ui-ux-pro-max-wrapper` (advisory style search) |
 
 > [!WARNING]
@@ -142,7 +142,7 @@ When routing, the following skills MUST be actively suppressed or rejected:
 
 ## 6. Design Authority Snapshot & Pre-Flight Decision Classification
 
-Before reviewing, routing, or producing design work, enforce the decision status boundaries reflecting published Phases 4A–4D:
+Before reviewing, routing, or producing design work, enforce the decision status boundaries reflecting published Phases 4A–4E:
 
 ### 1. STABLE GOVERNING DIRECTION (Canon / Fixed Product Invariants)
 - **Brand Identity:** Monochrome-first identity (Solid Black/White).
@@ -160,19 +160,23 @@ Before reviewing, routing, or producing design work, enforce the decision status
 - **Exact Mobile Primary Black:** `#000000` (`SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK`; `#18181B` fallback comparator only; not promoted to final native Canon).
 - **Primary Button Radius:** `6px` (`PRIMARY_ONLY` provisional; secondary button radius and global shape system remain open).
 - **Action Strategy:** Contextual Hierarchy Hybrid (`SYSTEM-VALIDATED PROVISIONAL ACTION STRATEGY`).
-- **Field Visual Strategy:** Outline-Led field baseline with white field surface on light-first surfaces (structural grouping deferred to Phase 4E; `SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot candidate `#8E8E93` [~3.26:1 contrast] is rendering reference only).
+- **Field Visual Strategy:** Outline-Led field baseline with white field surface on light-first surfaces (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot candidate `#8E8E93` [~3.26:1 contrast] is rendering reference only).
 - **Mobile Field-Shaped Control Radius:** `8px` (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`; applies strictly to mobile field-shaped Form & Selection controls; deliberate semantic differentiation from 6px Primary CTA).
 - **Focus Semantic Direction:** Restrained Interaction-Accent Emphasis (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`; Web pilot rendering reference is 1px accent field border + 3px outer halo).
+- **Structural System:** Role-Aware Hybrid Structural System (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4E DIRECTION`; Option C: Customer open/editorial composition default, Owner open grouped operational records default with subtle internal dividers [exact native stroke width `OPEN` / deferred to Phase 4I; 1px is controlled Web pilot rendering reference only], Admin desktop data boundary preserved; `DESIGN_SYSTEM/EXPERIENCE/STRUCTURAL_SYSTEM.md`).
+- **Mobile Structural Container Radius:** `12px` (`SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS`; bounded evidence: 10px valid close alternative, 12px balanced provisional system tie-breaker, 16px materially rounder with higher generic-SaaS styling risk; `NO_MATERIAL_FOUNDER_DECISION_REQUIRED: YES`).
+- **Mobile Page Horizontal Insets:** `16px` (`SYSTEM-EVALUATED PROVISIONAL MOBILE_PAGE_INSET`; page insets != platform safe-area insets).
+- **Provisional Spacing Scale:** Canonical relational hierarchy `TIER_1 < TIER_2 < TIER_3 < TIER_4`; evaluated mobile numeric mapping `4 / 8 / 12 / 16 / 24 / 32 px` (`SYSTEM-EVALUATED PROVISIONAL NUMERIC MAPPING`; 40/48px sizing clearances observed in Web pilots are not part of formal spacing scale).
 
 ### 3. OPEN VARIABLES (Genuinely Unresolved / Candidate / Phase-Deferred)
 - **Exact Blue Candidate Token:** `#276EF1` remains candidate / open.
-- **Exact Neutral Palette:** Hex tokens remain open / implementation candidates.
+- **Exact Neutral Palette:** Hex tokens remain open / implementation candidates (`CONTROLLED_WEB_PILOT_RENDERING_REFERENCE`).
 - **Exact Native Focus Treatment:** Ring width, halo opacity, and native assistive focus remain open / deferred to Phase 4I.
 - **Exact Native Stroke Width:** Border/stroke tokenization remains open / deferred to Phase 4I.
 - **Exact Native Field Height:** Native input container height remains open / deferred to Phase 4I (48px in pilot was controlled Web pilot geometry).
 - **Secondary Button Radius:** Remains open / undecided.
-- **Global Shape System:** Card, sheet, row, and dialog radii remain open / Phase 4E & 4F scope.
-- **Structural System:** Spacing scale, content insets, section separation, and elevation levels remain Phase 4E scope (`STATUS: NOT_STARTED`).
+- **Global Shape System:** Sheet, row, and dialog radii remain open / Phase 4F scope.
+- **Navigation & Modality:** App bars, tabs, bottom sheets, and dialogs remain Phase 4F scope (`STATUS: NOT_STARTED`).
 - **Final Native Component Acceptance:** Mobile Flutter implementation and accessibility acceptance deferred to Phase 4I.
 - **Token-File Authoring:** Authoring `DESIGN_SYSTEM/TOKENS/*.json` remains separately gated.
 

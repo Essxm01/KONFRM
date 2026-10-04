@@ -260,7 +260,7 @@ for (const skill of internalSkills) {
 
     // Freshness & authority synchronization checks:
     if (text.includes('DF2 v1.1')) {
-      fail(`Stale DF2 v1.1 authority reference in internal skill ${skill}/SKILL.md (current is DF2 v1.3)`);
+      fail(`Stale DF2 v1.1 authority reference in internal skill ${skill}/SKILL.md (current is DF2 v1.4)`);
     }
     if (skill === 'konfrm-design-reasoning' && /Exact primary CTA color treatment.*Unresolved Candidate/i.test(text)) {
       fail(`Stale unresolved primary CTA status phrase in konfrm-design-reasoning/SKILL.md`);
@@ -270,7 +270,7 @@ for (const skill of internalSkills) {
     }
   }
 }
-pass('Internal skill Canon vs Candidate discipline & research hygiene passed (0 false-canon phrases, current DF2 v1.3 authority verified).');
+pass('Internal skill Canon vs Candidate discipline & research hygiene passed (0 false-canon phrases, current DF2 v1.4 authority verified).');
 
 // 6. UI/UX Pro Max Behavioral Runner Safety Verification
 const testScript = path.join(projectRoot, 'scripts', 'test-uiux-runner-safety.py');

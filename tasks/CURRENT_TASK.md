@@ -1,60 +1,64 @@
-# Active Task — GOVERNANCE_DESIGN_COURT_V1
+# Active Task — PHASE_4E_STRUCTURAL_SYSTEM
 
-TASK_ID: GOVERNANCE_DESIGN_COURT_V1
-TASK_CLASS: CROSS_CUTTING_GOVERNANCE_INFRASTRUCTURE
-STATUS: ACTIVE
-FOUNDER_AUTHORIZATION: APPROVED (Design Court v1 architecture spec)
-BASE_MAIN_SHA: 0134f60984d5d52f3442ef49763bf6c75a564214
-BRANCH: governance/design-court-v1
-SCOPE: Design decision governance infrastructure only — add `konfrm-design-court` (8th internal governed skill; 14 governed skill directories), Router/Registry integration, deterministic policy + contract tests, thin discovery shims, and a historical non-mutating replay.
+TASK_ID: PHASE_4E_STRUCTURAL_SYSTEM
+TASK_CLASS: DESIGN_SYSTEM_FOUNDATION_PHASE
+STATUS: READY_FOR_PUBLICATION
+FOUNDER_AUTHORIZATION: APPROVED (Option C — Role-Aware Hybrid Structural System)
+BASE_MAIN_SHA: 674194e675731985b347d241d046f6acc48cf785
+BRANCH: design/structural-system-pilot-01
+PR_STATUS: PR #95 (PENDING_FOUNDER_MERGE_AUTHORIZATION)
+SCOPE: Phase 4E Structural System — Discovery, product evidence, realistic visual pilot, candidate structural systems, multi-viewport stress testing, Design Court v1 deliberation, self-correction, Founder decision formalization, and publication PR preparation. Owns spacing scale, content insets, vertical rhythm, section separation, open grouped content, cards, interactive rows, borders, dividers, surface hierarchy, shape roles, and elevation/shadow relationships across Customer, Owner, and Admin boundary.
 
 ## Boundaries
-- Does NOT alter roadmap dependency ordering.
-- Does NOT modify production apps, backend, database, API contracts, tokens, business/financial/booking/auth rules, or published Phase 4D decisions.
-- Design Court output is advisory governance evidence; it never constitutes Founder approval, Product Truth, or Canon promotion.
-- **PHASE_4E_STRUCTURAL_SYSTEM:** `NOT_STARTED` (`EXECUTION_STARTED: NO`). Do NOT begin 4E work in this task.
+- Does NOT start Phase 4F (Navigation & Surface System: app bars, bottom navigation, nested navigation, dialogs, bottom sheets, overlay architecture, sticky action architecture belong strictly to 4F).
+- Does NOT modify production applications (`customer-app/`, `owner-app/`, `admin-app/`).
+- Does NOT modify token files (`DESIGN_SYSTEM/TOKENS/*.json`) or backend/database/API contracts.
+- Does NOT merge publication PR without explicit Founder merge authorization.
+- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D).
 
 ## Closure Gates
-- Court skill + support files, Router/Registry integration, `npm run ai:skills:check` (including Design Court contract test), `npm run design:check`, thin shims synchronized, PR created. Not CLOSED until the PR merges.
+- [x] Structural discovery documented (`STRUCTURAL_DISCOVERY.md`).
+- [x] Multi-role visual pilot implemented (`DESIGN_SYSTEM/PILOTS/structural-system-pilot-01/`).
+- [x] Multi-viewport visual evidence captured and inspected (360px, 390px, 430px, 200% text scale, Admin desktop, and 6 radius comparison PNGs).
+- [x] Design Court v1 deliberation completed (`FULL_COURT` mode, `DESIGN_COURT_REPORT.md`).
+- [x] Founder decision recorded: Option C approved (`ROLE-AWARE HYBRID STRUCTURAL SYSTEM`).
+- [x] Reversible implementation detail closed: 12px structural container radius evaluated and closed via bounded evidence check.
+- [x] Mobile Foundation updated to DF2 v1.4, Experience authority created (`STRUCTURAL_SYSTEM.md`), cards component updated, AI skills synchronized, thin shims regenerated.
+- [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `git diff --check`).
+- [x] Publication PR created (PR #95).
+- [ ] Phase 4F remains strictly `NOT_STARTED`.
 
 ---
+
+## Closed Upstream Dependency — Design Court v1 (Governance Infrastructure)
+- **STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#93`
+- **MERGE_COMMIT:** `674194e675731985b347d241d046f6acc48cf785`
+- **REVIEWED_HEAD:** `92c681fca5ac2c2e2e3a6c74cc34f483317b0365`
+- **Infrastructure:** `konfrm-design-court` is available as cross-cutting governance infrastructure (14 governed design skills, 8 internal).
 
 ## Closed Upstream Dependency — Phase 4D Form & Selection Primitives
 - **PHASE_4D_STATUS:** `CLOSED / MERGED / PUBLISHED`
 - **PR:** `#92`
 - **MERGE_COMMIT:** `0134f60984d5d52f3442ef49763bf6c75a564214`
 - **REVIEWED_HEAD:** `b3d7fb1b57ab8d4a8adb3e1941710ab68c6aefad`
-- **Web pilot outline reference:** `#8E8E93` (~3.26:1 against `#FFFFFF`; reference only).
+- **Field Strategy:** `OUTLINE_LED` (white surface, thin outline, explicit top label).
+- **Mobile Field Radius:** `8px` (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`).
+- **Focus Semantic Direction:** `RESTRAINED_INTERACTION_ACCENT` (blue interaction accent role, `#276EF1` candidate comparator).
+- **Selection Controls:** Checkbox is `OWNER_PRODUCT_EVIDENCED`; Toggle is `DEFERRED_NO_CURRENT_PRODUCT_EVIDENCE`.
 
-### Phase 4D Published Decisions (preserved)
-- **Field Visual Strategy:** **`OUTLINE_LED`** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). White surface, thin neutral outline, explicit persistent top label, separate helper/error, no floating-label dependency.
-- **Mobile Field Radius:** **`8px`** (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`).
-  - *Exact Scope:* Applies strictly to mobile field-shaped Form & Selection primitives: text input, phone container, email container, numeric container, search container, multiline textarea, select/picker trigger when rendered as a field.
-  - *Deliberate Differentiation:* Primary Button retains 6px `PRIMARY_ONLY` provisional radius (Action = 6px; Data Entry = 8px). 8px does not apply to secondary buttons, checkboxes, toggles, chips, cards, sheets, or global shape.
-  - *Evaluated Alternatives:* 6px and 10px recorded as evaluated alternatives, NOT selected for fields.
-- **Focus Semantic Direction:** **`RESTRAINED_INTERACTION_ACCENT`** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). Provides obvious focus feedback without competing with Stable Black Primary CTA. Web pilot rendering values (`#276EF1`, 1px accent field border + 3px outer halo) are references only.
-- **Selection Controls:** Checkbox is **`OWNER_PRODUCT_EVIDENCED`** (notification preferences); Toggle is **`DEFERRED_NO_CURRENT_PRODUCT_EVIDENCE`** (zero current canonical product evidence; no switch migration manufactured).
-- **Select / Picker Primitive Boundary:** Phase 4D owns field trigger and field semantics; overlay containers, bottom sheets, dialogs, and picker navigation belong strictly to Phase 4F.
-- **Platform Touch Sizing:** iOS guidance: 44pt; Android guidance: 48dp. Target bounds decoupled from visible geometry. No universal raw-pixel mobile target rule.
-- **Preserved Open Variables:** Exact Neutrals (`OPEN`), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Native Focus Treatment (`OPEN`), Exact Native Stroke Width (`OPEN`), Global Shape System (`OPEN`), Native Mobile Flutter Acceptance (`DEFERRED TO 4I`).
-- **Production / Token Safety:** Zero runtime production changes (`customer-app`, `owner-app`, `admin-app`), zero backend/database changes, zero token JSON changes.
-
-## Upstream Closed Dependency — Phase 4C Action System
+## Closed Upstream Dependency — Phase 4C Action System
 - **PHASE_4C_STATUS:** `CLOSED / MERGED`
 - **PR:** `#90`
 - **MERGE_COMMIT:** `95e3789ae824cdc6ca0a6608f1752f3137ac5ac5`
-- **Stage 2:** `CLOSED_INDEPENDENT_PASS`
-- **Stage 3A:** `CLOSED_INDEPENDENT_PASS`
-- **Stage 3B:** `CLOSED_INDEPENDENT_PASS`
-- **Production Changes:** NONE
-- **Token Changes:** NONE
-- **Native Acceptance:** `DEFERRED_TO_4I`
+- **Action Strategy:** `CONTEXTUAL_HIERARCHY_HYBRID`.
+- **Primary Button Radius:** `6px` (`PRIMARY_ONLY`).
+- **Primary Color:** Stable Black `#000000`.
 
-## Next Roadmap Dependency (unchanged by Design Court)
-- **PHASE_4E_STRUCTURAL_SYSTEM**
+## Next Roadmap Dependency (after 4E)
+- **PHASE_4F_NAVIGATION_SURFACE_SYSTEM**
   - **STATUS:** `NOT_STARTED`
   - **EXECUTION_STARTED:** `NO`
-  - Requires its own separately issued task instruction; not started by this governance task.
 
 ---
 

@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONFRM Phase 4E — Structural System Pilot</title>
+  <style>
+    @font-face {
+      font-family: 'Cairo';
+      src: url('./fonts/Cairo-VariableFont.ttf') format('truetype');
+      font-weight: 200 900;
+      font-style: normal;
+    }
+
+    :root {
+      /* Typography — Cairo Profile B (4B System-Validated Provisional) */
+      --konfrm-font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      --typo-display: 700 24px/1.30 var(--konfrm-font-family);
+      --typo-page-title: 700 20px/1.35 var(--konfrm-font-family);
+      --typo-section-title: 700 17px/1.40 var(--konfrm-font-family);
+      --typo-card-title: 700 15px/1.40 var(--konfrm-font-family);
+      --typo-body: 500 14px/1.50 var(--konfrm-font-family);
+      --typo-body-strong: 700 14px/1.50 var(--konfrm-font-family);
+      --typo-label: 600 12px/1.35 var(--konfrm-font-family);
+      --typo-supporting: 400 12px/1.40 var(--konfrm-font-family);
+      --typo-numeric: 700 16px/1.30 var(--konfrm-font-family);
+      --typo-button: 700 15px/1.20 var(--konfrm-font-family);
+
+      /* Colors — Upstream Closed Foundations */
+      --primary-black: #000000;
+      --button-primary-radius: 6px; /* Phase 4C PRIMARY_ONLY */
+      --field-radius: 8px;          /* Phase 4D Field-shaped controls */
+      --accent-blue: #276EF1;       /* Restrained interaction accent candidate */
+      --accent-blue-soft: #EAF1FF;
+      --border-field: #8E8E93;      /* Web pilot field border reference */
+
+      /* Neutral Palette (Evidence Candidates) */
+      --bg-canvas-light: #F8FAFC;
+      --bg-surface-white: #FFFFFF;
+      --bg-surface-subtle: #F1F5F9;
+      --text-main: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --border-subtle: #E2E8F0;
+      --border-divider: #F1F5F9;
+      --status-success: #059669;
+      --status-success-bg: #ECFDF5;
+      --status-pending: var(--accent-blue);
+      --status-pending-bg: var(--accent-blue-soft);
+      --status-danger: #DC2626;
+      --status-danger-bg: #FEF2F2;
+
+      /* Structural Dynamic Variables — Driven by Candidate System */
+      --struct-container-radius: 12px;
+      --struct-card-border: 1px solid var(--border-subtle);
+      --struct-card-shadow: none;
+      --struct-card-bg: var(--bg-surface-white);
+      --struct-page-inset: 16px;
+      --struct-section-gap: 24px;
+      --struct-item-gap: 12px;
+      --struct-divider-color: #F1F5F9;
+      --struct-content-mode: 'hybrid'; /* 'editorial' | 'modular' | 'hybrid' */
+
+      /* Text scaling multiplier */
+      --scale-factor: 1;
+    }
+
+    /* Scaling support */
+    body.scale-150 { --scale-factor: 1.5; }
+    body.scale-200 { --scale-factor: 2.0; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--konfrm-font-family);
+      background-color: #0B1120;
+      color: #F8FAFC;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      direction: rtl;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Control Bar */
+    header.pilot-bar {
+      background: #1E293B;
+      border-bottom: 1px solid #334155;
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .pilot-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+    }
+
+    .brand-phase {
+      background: #000000;
+      color: #38BDF8;
+      border: 1px solid #38BDF8/30;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .controls-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ctrl-group {
+      display: flex;
+      align-items: center;
+      background: #0F172A;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .ctrl-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94A3B8;
+      padding: 4px 8px;
+    }
+
+    .ctrl-btn {
+      background: transparent;
+      border: none;
+      color: #CBD5E1;
+      font-family: var(--konfrm-font-family);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .ctrl-btn:hover {
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .ctrl-btn.active {
+      background: #38BDF8;
+      color: #0F172A;
+      font-weight: 800;
+    }
+
+    /* Main Stage Workspace */
+    main.pilot-stage {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 24px 16px 80px;
+      overflow-y: auto;
+      background: #0B1120;
+    }
+
+    /* Device / Viewport Wrapper Frame */
+    .viewport-frame {
+      background: var(--bg-canvas-light);
+      color: var(--text-main);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      transition: width 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .viewport-frame.vp-360 { width: 360px; min-height: 800px; border-radius: 24px; border: 4px solid #334155; }
+    .viewport-frame.vp-390 { width: 390px; min-height: 844px; border-radius: 28px; border: 4px solid #334155; }
+    .viewport-frame.vp-430 { width: 430px; min-height: 932px; border-radius: 32px; border: 4px solid #334155; }
+    .viewport-frame.vp-1440 { width: 1440px; min-height: 900px; border-radius: 12px; border: 2px solid #334155; max-width: 95vw; }
+
+    /* Clean Embed Mode for Headless Visual Evidence Capture */
+    body.embed {
+      background: var(--bg-canvas-light) !important;
+      display: block !important;
+      overflow-x: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    body.embed header.pilot-bar {
+      display: none !important;
+    }
+    body.embed main.pilot-stage {
+      display: block !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      background: var(--bg-canvas-light) !important;
+      position: relative !important;
+      width: 100% !important;
+      min-height: 100vh !important;
+    }
+    body.embed .viewport-frame {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      margin: 0 !important;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      direction: rtl !important;
+    }
+    body.embed .viewport-frame.vp-360 { width: 360px !important; min-width: 360px !important; max-width: 360px !important; }
+    body.embed .viewport-frame.vp-390 { width: 390px !important; min-width: 390px !important; max-width: 390px !important; }
+    body.embed .viewport-frame.vp-430 { width: 430px !important; min-width: 430px !important; max-width: 430px !important; }
+    body.embed .viewport-frame.vp-1440 { width: 1440px !important; min-width: 1440px !important; max-width: 1440px !important; }
+    body.embed.scroll-quote .viewport-frame { top: -550px !important; }
+
+    /* Frame Info Header (Simulation info) */
+    .frame-status-bar {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 6px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      direction: ltr;
+      user-select: none;
+    }
+
+    .candidate-pill {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pill-cand-a { background: #FEF3C7; color: #92400E; }
+    .pill-cand-b { background: #E0E7FF; color: #3730A3; }
+    .pill-cand-c { background: #DCFCE7; color: #166534; }
+
+    /* Structural Surface Types */
+    .screen-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Common Components inside Screens */
+    .btn-primary {
+      background: var(--primary-black);
+      color: #FFFFFF;
+      font-family: var(--konfrm-font-family);
+      font-size: calc(15px * var(--scale-factor));
+      font-weight: 700;
+      line-height: 1.20;
+      border: none;
+      border-radius: var(--button-primary-radius);
+      padding: 12px 18px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s ease;
+      min-height: 48px;
+      text-decoration: none;
+      width: 100%;
+    }
+    .btn-primary:active { opacity: 0.85; }
+
+    .btn-secondary {
+      background: var(--bg-surface-subtle);
+      color: var(--text-main);
+      font-family: var(--konfrm-font-family);
+      font-size: calc(14px * var(--scale-factor));
+      font-weight: 700;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--button-primary-radius);
+      padding: 8px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 40px;
+    }
+
+    /* Sticky Bottom Bar */
+    .sticky-decision-bar {
+      position: sticky;
+      bottom: 0;
+      background: #FFFFFF;
+      border-top: 1px solid var(--border-subtle);
+      padding: 12px var(--struct-page-inset);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 50;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+    }
+
+    /* ─── CANDIDATE SYSTEM VARIATIONS ─── */
+
+    /* Candidate A: Open / Editorial */
+    .cand-A {
+      --struct-container-radius: 0px;
+      --struct-card-border: none;
+      --struct-card-shadow: none;
+      --struct-card-bg: transparent;
+      --struct-page-inset: 16px;
+      --struct-section-gap: 28px;
+      --struct-item-gap: 14px;
+      --struct-divider-color: #E2E8F0;
+    }
+    .cand-A .card-surface {
+      background: #FFFFFF;
+      border: none;
+      border-bottom: 1px solid var(--struct-divider-color);
+      border-radius: 0;
+      box-shadow: none;
+      padding: 16px 0;
+    }
+    .cand-A .quote-container {
+      background: #FFFFFF;
+      border: none;
+      border-top: 1px solid var(--struct-divider-color);
+      border-bottom: 1px solid var(--struct-divider-color);
+      border-radius: 0;
+      padding: 16px 0;
+    }
+    .cand-A .open-facts-row {
+      border-top: 1px solid var(--struct-divider-color);
+      border-bottom: 1px solid var(--struct-divider-color);
+      padding: 12px 0;
+    }
+
+    /* Candidate B: Contained / Modular */
+    .cand-B {
+      --struct-container-radius: 16px;
+      --struct-card-border: 1px solid var(--border-subtle);
+      --struct-card-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      --struct-card-bg: #FFFFFF;
+      --struct-page-inset: 16px;
+      --struct-section-gap: 20px;
+      --struct-item-gap: 12px;
+      --struct-divider-color: #E2E8F0;
+    }
+    .cand-B .card-surface {
+      background: var(--struct-card-bg);
+      border: var(--struct-card-border);
+      border-radius: var(--struct-container-radius);
+      box-shadow: var(--struct-card-shadow);
+      padding: 16px;
+      margin-bottom: var(--struct-item-gap);
+    }
+    .cand-B .quote-container {
+      background: var(--struct-card-bg);
+      border: var(--struct-card-border);
+      border-radius: var(--struct-container-radius);
+      box-shadow: var(--struct-card-shadow);
+      padding: 16px;
+    }
+    .cand-B .open-facts-row {
+      background: var(--bg-surface-subtle);
+      border: var(--struct-card-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    /* Candidate C: Role-Aware Hybrid (Recommended) */
+    .cand-C {
+      --struct-container-radius: var(--custom-radius, 12px);
+      --struct-card-border: 1px solid var(--border-subtle);
+      --struct-card-shadow: none;
+      --struct-card-bg: #FFFFFF;
+      --struct-page-inset: 16px;
+      --struct-section-gap: 24px;
+      --struct-item-gap: 12px;
+      --struct-divider-color: #F1F5F9;
+    }
+    /* Customer: Open Editorial */
+    .cand-C .customer-view .open-facts-row {
+      border-top: 1px solid #E2E8F0;
+      border-bottom: 1px solid #E2E8F0;
+      padding: 14px 4px;
+      background: transparent;
+      border-radius: 0;
+    }
+    .cand-C .customer-view .quote-container {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: var(--struct-container-radius);
+      padding: 16px;
+    }
+    .cand-C .customer-view .card-surface {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--struct-container-radius);
+      box-shadow: none;
+      overflow: hidden;
+    }
+    /* Owner: Grouped Operational Units */
+    .cand-C .owner-view .grouped-unit {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--struct-container-radius);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .cand-C .owner-view .operational-row {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-divider);
+    }
+    .cand-C .owner-view .operational-row:last-child {
+      border-bottom: none;
+    }
+
+    /* ─── TYPOGRAPHY CLASSES ─── */
+    .t-page-title { font-size: calc(20px * var(--scale-factor)); font-weight: 700; line-height: 1.35; color: var(--text-main); }
+    .t-section-title { font-size: calc(17px * var(--scale-factor)); font-weight: 700; line-height: 1.40; color: var(--text-main); }
+    .t-card-title { font-size: calc(15px * var(--scale-factor)); font-weight: 700; line-height: 1.40; color: var(--text-main); }
+    .t-body { font-size: calc(14px * var(--scale-factor)); font-weight: 500; line-height: 1.50; color: var(--text-secondary); }
+    .t-body-strong { font-size: calc(14px * var(--scale-factor)); font-weight: 700; line-height: 1.50; color: var(--text-main); }
+    .t-label { font-size: calc(12px * var(--scale-factor)); font-weight: 600; line-height: 1.35; color: var(--text-muted); }
+    .t-supporting { font-size: calc(12px * var(--scale-factor)); font-weight: 400; line-height: 1.40; color: var(--text-muted); }
+    .t-numeric { font-size: calc(16px * var(--scale-factor)); font-weight: 700; line-height: 1.30; color: var(--text-main); }
+
+    /* Tags / Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: calc(11px * var(--scale-factor));
+      font-weight: 700;
+    }
+    .badge-success { background: var(--status-success-bg); color: var(--status-success); }
+    .badge-pending { background: var(--status-pending-bg); color: var(--status-pending); }
+    .badge-neutral { background: var(--bg-surface-subtle); color: var(--text-secondary); }
+
+    /* Photo Thumbnail Simulation */
+    .photo-hero {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94A3B8;
+      position: relative;
+    }
+    .photo-card-img {
+      width: 100%;
+      aspect-ratio: 1.4/1;
+      background: linear-gradient(135deg, #334155 0%, #475569 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #CBD5E1;
+      font-size: 12px;
+      font-weight: 700;
+      position: relative;
+    }
+    .fav-btn {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748B;
+      cursor: pointer;
+    }
+
+    /* Admin Workspace Styling */
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+      font-size: 13px;
+    }
+    .admin-table th {
+      background: #F8FAFC;
+      border-bottom: 2px solid #E2E8F0;
+      padding: 10px 14px;
+      font-weight: 700;
+      color: #475569;
+    }
+    .admin-table td {
+      border-bottom: 1px solid #E2E8F0;
+      padding: 12px 14px;
+      color: #1E293B;
+    }
+    .admin-table tr:hover td {
+      background: #F1F5F9;
+    }
+
+    /* Lab scenario label watermark */
+    .lab-watermark {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 800;
+      background: #E2E8F0;
+      color: #475569;
+      padding: 1px 5px;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body class="cand-C scale-100">
+
+  <!-- ── PILOT HARNESS BAR ── -->
+  <header class="pilot-bar">
+    <div class="pilot-brand">
+      <span class="brand-title">KONFRM UI LAB</span>
+      <span class="brand-phase">PHASE 4E · STRUCTURAL SYSTEM</span>
+    </div>
+
+    <div class="controls-cluster">
+      <!-- Candidate Switcher -->
+      <div class="ctrl-group">
+        <span class="ctrl-label">النظام:</span>
+        <button class="ctrl-btn" data-candidate="A" onclick="setCandidate('A')">A: مفتوح / تحريري</button>
+        <button class="ctrl-btn" data-candidate="B" onclick="setCandidate('B')">B: مقيد / وحداتي</button>
+        <button class="ctrl-btn active" data-candidate="C" onclick="setCandidate('C')">C: هجين موجه للأدوار</button>
+      </div>
+
+      <!-- Surface / Screen Switcher -->
+      <div class="ctrl-group">
+        <span class="ctrl-label">الشاشة:</span>
+        <button class="ctrl-btn active" data-screen="cust-detail" onclick="setScreen('cust-detail')">تفاصيل الإقامة (عميل)</button>
+        <button class="ctrl-btn" data-screen="cust-results" onclick="setScreen('cust-results')">نتائج البحث (عميل)</button>
+        <button class="ctrl-btn" data-screen="owner-home" onclick="setScreen('owner-home')">الرئيسية (مالك)</button>
+        <button class="ctrl-btn" data-screen="owner-queue" onclick="setScreen('owner-queue')">طابور الحجوزات (مالك)</button>
+        <button class="ctrl-btn" data-screen="admin-queue" onclick="setScreen('admin-queue')">مراجعة الوحدات (إدارة)</button>
+      </div>
+
+      <!-- Viewport Width Switcher -->
+      <div class="ctrl-group">
+        <span class="ctrl-label">العرض:</span>
+        <button class="ctrl-btn" data-vp="360" onclick="setViewport('360')">360px</button>
+        <button class="ctrl-btn active" data-vp="390" onclick="setViewport('390')">390px</button>
+        <button class="ctrl-btn" data-vp="430" onclick="setViewport('430')">430px</button>
+        <button class="ctrl-btn" data-vp="1440" onclick="setViewport('1440')">1440px</button>
+      </div>
+
+      <!-- Text Scaling Switcher -->
+      <div class="ctrl-group">
+        <span class="ctrl-label">الخط:</span>
+        <button class="ctrl-btn active" data-scale="100" onclick="setScale('100')">100%</button>
+        <button class="ctrl-btn" data-scale="150" onclick="setScale('150')">150%</button>
+        <button class="ctrl-btn" data-scale="200" onclick="setScale('200')">200%</button>
+      </div>
+
+      <!-- Stress Mode Switcher -->
+      <div class="ctrl-group">
+        <button class="ctrl-btn" id="stress-toggle" onclick="toggleStress()">بيانات الإجهاد: إيقاف</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── MAIN STAGE ── -->
+  <main class="pilot-stage">
+    <div id="viewport-frame" class="viewport-frame vp-390">
+
+      <!-- Frame Meta Header -->
+      <div class="frame-status-bar">
+        <span id="frame-meta-vp">390 × 844 px</span>
+        <span class="lab-watermark">LAB_SCENARIO_DATA</span>
+        <span id="frame-meta-cand" class="candidate-pill pill-cand-c">CANDIDATE C: ROLE HYBRID</span>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <!-- SCREEN 1: CUSTOMER PROPERTY DETAIL / BOOKING DECISION           -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <div id="screen-cust-detail" class="screen-container customer-view">
+        <!-- Photo Hero -->
+        <div class="photo-hero">
+          <button class="fav-btn" aria-label="حفظ بالمفضلة">♥</button>
+          <span style="font-size: 13px; font-weight: 700;">صور الفيلا (1 / 6)</span>
+          <span style="font-size: 11px; margin-top: 4px; color: #64748B;">سيدي عبد الرحمن · الساحل الشمالي</span>
+        </div>
+
+        <!-- Scrollable Content Body -->
+        <div style="padding: var(--struct-page-inset); display: flex; flex-direction: column; gap: var(--struct-section-gap); padding-bottom: 90px;">
+
+          <!-- 01: Property Identity -->
+          <div>
+            <h1 class="t-page-title" id="cust-prop-title">فيلا ريزيدنس بإطلالة مباشرة على بحيرة العلمين</h1>
+            <p class="t-body" style="color: var(--text-muted); margin-top: 4px;" id="cust-prop-loc">مراسي، سيدي عبد الرحمن، الساحل الشمالي</p>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 8px;">
+              <span class="t-numeric" style="font-size: 20px;" id="cust-prop-price">16,500</span>
+              <span style="font-size: 14px; font-weight: 700; color: var(--text-main);">ج.م</span>
+              <span class="t-supporting">/ ليلة</span>
+            </div>
+          </div>
+
+          <!-- 02: Essential Facts Row -->
+          <div class="open-facts-row" style="display: flex; justify-content: space-around; align-items: center; text-align: center;">
+            <div>
+              <div class="t-body-strong">8 ضيوف</div>
+              <div class="t-supporting">السعة القصوى</div>
+            </div>
+            <span style="color: #CBD5E1;">|</span>
+            <div>
+              <div class="t-body-strong">4 غرف نوم</div>
+              <div class="t-supporting">مفروشة بالكامل</div>
+            </div>
+            <span style="color: #CBD5E1;">|</span>
+            <div>
+              <div class="t-body-strong">4 حمامات</div>
+              <div class="t-supporting">مجهزة</div>
+            </div>
+          </div>
+
+          <!-- 03: Description & Amenities Preview -->
+          <div>
+            <h2 class="t-section-title">عن هذه الإقامة</h2>
+            <p class="t-body" style="margin-top: 6px; line-height: 1.6;" id="cust-prop-desc">
+              فيلا مستقلة فاخرة بتشطيب فندقي متكامل، تضم حديقة خاصة ومسبحًا بإطلالة مباشرة على اللاجون، مجهزة لراحة العائلات ولقضاء إجازة ساحلية متميزة مع خصوصية تامة.
+            </p>
+          </div>
+
+          <!-- 04: Booking Decision Section -->
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <h2 class="t-section-title">اختار إقامتك</h2>
+
+            <!-- Dates Field Trigger -->
+            <div style="border: 1px solid var(--border-field); border-radius: var(--field-radius); padding: 12px 14px; background: #FFFFFF; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="t-label">تواريخ الإقامة</div>
+                <div class="t-body-strong" style="margin-top: 2px;">15 يوليو - 20 يوليو 2026 (5 ليالٍ)</div>
+              </div>
+              <span style="font-size: 13px; color: var(--accent-blue); font-weight: 700;">تعديل</span>
+            </div>
+
+            <!-- Guests Field Trigger -->
+            <div style="border: 1px solid var(--border-field); border-radius: var(--field-radius); padding: 12px 14px; background: #FFFFFF; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="t-label">عدد الضيوف</div>
+                <div class="t-body-strong" style="margin-top: 2px;">6 ضيوف (عائلة)</div>
+              </div>
+              <span style="font-size: 13px; color: var(--accent-blue); font-weight: 700;">تعديل</span>
+            </div>
+          </div>
+
+          <!-- 05: Server Quote Breakdown -->
+          <div class="quote-container">
+            <h3 class="t-card-title" style="margin-bottom: 12px;">تفاصيل السعر المؤكدة</h3>
+
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span class="t-body">إجمالي الإقامة (5 ليالي):</span>
+              <span class="t-numeric" id="cust-quote-total">82,500 ج.م</span>
+            </div>
+
+            <!-- Highlighted Deposit -->
+            <div style="background: var(--accent-blue-soft); border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
+              <div>
+                <div style="font-size: 13px; font-weight: 800; color: var(--accent-blue);">العربون بعد موافقة المالك:</div>
+                <div style="font-size: 11px; color: var(--text-secondary);">دفعة ليلة واحدة لحجز التواريخ</div>
+              </div>
+              <span class="t-numeric" style="color: var(--accent-blue); font-size: 15px;" id="cust-quote-deposit">16,500 ج.م</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 13px;">
+              <span>المبلغ المتبقي عند الوصول:</span>
+              <span style="font-weight: 700;" id="cust-quote-remain">66,000 ج.م</span>
+            </div>
+          </div>
+
+          <!-- Process Reassurance -->
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+            <strong>كيف بيتم الحجز؟</strong> يُرسل طلب الحجز للمالك أولاً، وبعد موافقته يتم دفع العربون لتأكيد الحجز رسميًا.
+          </div>
+
+        </div>
+
+        <!-- Sticky Decision Bar -->
+        <div class="sticky-decision-bar">
+          <div>
+            <div class="t-label">المطلوب سداده بعد الموافقة</div>
+            <div style="display: flex; align-items: baseline; gap: 4px;">
+              <span class="t-numeric" style="font-size: 18px;" id="sticky-bar-deposit">16,500</span>
+              <span style="font-size: 13px; font-weight: 700;">ج.م</span>
+            </div>
+          </div>
+          <div style="flex: 1; max-width: 180px;">
+            <button class="btn-primary" type="button">مراجعة طلب الحجز</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <!-- SCREEN 2: CUSTOMER DISCOVERY / PROPERTY RESULTS                -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <div id="screen-cust-results" class="screen-container customer-view" style="display: none;">
+        <!-- Sticky Search Filter Bar -->
+        <div style="background: #FFFFFF; border-bottom: 1px solid var(--border-subtle); padding: 12px var(--struct-page-inset); display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+          <div style="border: 1px solid var(--border-field); border-radius: var(--field-radius); padding: 8px 12px; background: #FFFFFF; flex: 1;">
+            <div class="t-label">الوجهة والتواريخ</div>
+            <div class="t-body-strong" style="font-size: 13px;">الساحل الشمالي · 15-20 يوليو · 6 ضيوف</div>
+          </div>
+          <button class="btn-secondary" style="height: 44px;">تصفية</button>
+        </div>
+
+        <!-- Results List -->
+        <div style="padding: var(--struct-page-inset); display: flex; flex-direction: column; gap: var(--struct-section-gap);">
+          <div>
+            <span class="t-label">تم العثور على 18 إقامة متاحة</span>
+            <h2 class="t-section-title" style="margin-top: 2px;">إقامات مختارة في الساحل الشمالي</h2>
+          </div>
+
+          <!-- Card 1 -->
+          <div class="card-surface">
+            <div class="photo-card-img">
+              <button class="fav-btn" aria-label="حفظ">♥</button>
+              <span>فيلا مراسي · 4 غرف</span>
+            </div>
+            <div style="padding: 14px;">
+              <h3 class="t-card-title">فيلا ريزيدنس بإطلالة مباشرة على بحيرة العلمين</h3>
+              <p class="t-supporting" style="margin-top: 2px;">مراسي، سيدي عبد الرحمن</p>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px;">
+                <span class="t-supporting">8 ضيوف · 4 غرف · 4 حمام</span>
+                <div style="display: flex; align-items: baseline; gap: 2px;">
+                  <span class="t-numeric">16,500</span>
+                  <span style="font-size: 12px; font-weight: 700;">ج.م</span>
+                  <span class="t-supporting">/ ليلة</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="card-surface">
+            <div class="photo-card-img" style="background: linear-gradient(135deg, #475569 0%, #64748B 100%);">
+              <button class="fav-btn" aria-label="حفظ">♥</button>
+              <span>شاليه رأس الحكمة · غرفتان</span>
+            </div>
+            <div style="padding: 14px;">
+              <h3 class="t-card-title">شاليه مطل على البحر برأس الحكمة</h3>
+              <p class="t-supporting" style="margin-top: 2px;">فوكا باي، رأس الحكمة</p>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px;">
+                <span class="t-supporting">4 ضيوف · غرفتان · 2 حمام</span>
+                <div style="display: flex; align-items: baseline; gap: 2px;">
+                  <span class="t-numeric">8,200</span>
+                  <span style="font-size: 12px; font-weight: 700;">ج.م</span>
+                  <span class="t-supporting">/ ليلة</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="card-surface">
+            <div class="photo-card-img" style="background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);">
+              <button class="fav-btn" aria-label="حفظ">♥</button>
+              <span>بنتهاوس الجونة · 3 غرف</span>
+            </div>
+            <div style="padding: 14px;">
+              <h3 class="t-card-title">بنتهاوس خاص مع مسبح وتراس مفتوح</h3>
+              <p class="t-supporting" style="margin-top: 2px;">مارينا الجونة، البحر الأحمر</p>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px;">
+                <span class="t-supporting">6 ضيوف · 3 غرف · 3 حمام</span>
+                <div style="display: flex; align-items: baseline; gap: 2px;">
+                  <span class="t-numeric">22,000</span>
+                  <span style="font-size: 12px; font-weight: 700;">ج.م</span>
+                  <span class="t-supporting">/ ليلة</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <!-- SCREEN 3: OWNER ACTION-FIRST HOME                               -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <div id="screen-owner-home" class="screen-container owner-view" style="display: none; padding: var(--struct-page-inset); display: flex; flex-direction: column; gap: var(--struct-section-gap);">
+
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div class="t-label">مرحباً بك، م. طارق</div>
+            <h1 class="t-page-title" style="margin-top: 2px;">لوحة العمليات</h1>
+          </div>
+          <span class="badge badge-success">الحساب موثق</span>
+        </div>
+
+        <!-- 01: Attention Banner -->
+        <div class="card-surface" style="background: #FFFFFF; border-right: 4px solid var(--accent-blue);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <span class="badge badge-pending">يحتاج قرارك الآن</span>
+              <h2 class="t-card-title" style="margin-top: 6px;">طلب حجز جديد ينتظر الرد</h2>
+              <p class="t-supporting" style="margin-top: 2px;">فيلا مراسي · أحمد الشناوي · 5 ليالٍ (82,500 ج.م)</p>
+            </div>
+          </div>
+          <div style="margin-top: 12px; display: flex; gap: 8px;">
+            <button class="btn-primary" style="flex: 1; min-height: 42px; font-size: 13px;" type="button">مراجعة والرد</button>
+            <button class="btn-secondary" style="min-height: 42px; font-size: 13px;" type="button">التفاصيل</button>
+          </div>
+        </div>
+
+        <!-- 02: Upcoming Confirmed Stay -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+            <h2 class="t-section-title">الحجز القادم</h2>
+            <span style="font-size: 12px; color: var(--accent-blue); font-weight: 700;">عرض الجدول</span>
+          </div>
+          <div class="card-surface">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="t-body-strong">شاليه رأس الحكمة</div>
+                <div class="t-supporting">كريم سامي · 18 - 22 يوليو (4 ليالٍ)</div>
+              </div>
+              <span class="badge badge-success">مؤكد مسدد</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03: Financial Summary -->
+        <div>
+          <h2 class="t-section-title" style="margin-bottom: 8px;">الموقف المالي الفعلي</h2>
+          <div class="grouped-unit card-surface" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="padding: 4px 0;">
+              <div class="t-supporting">صافي متاح للسحب</div>
+              <div class="t-numeric" style="font-size: 18px; color: var(--status-success); margin-top: 2px;">64,000 ج.م</div>
+              <div class="t-supporting" style="font-size: 11px;">جاهز للتحويل البنكي</div>
+            </div>
+            <div style="padding: 4px 0; border-right: 1px solid var(--border-divider); padding-right: 12px;">
+              <div class="t-supporting">عربون معلّق</div>
+              <div class="t-numeric" style="font-size: 18px; margin-top: 2px;">32,800 ج.م</div>
+              <div class="t-supporting" style="font-size: 11px;">يتاح بعد 24 ساعة من تسجيل الدخول</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04: Property Status -->
+        <div>
+          <h2 class="t-section-title" style="margin-bottom: 8px;">حالة الوحدات</h2>
+          <div class="grouped-unit card-surface">
+            <div class="operational-row">
+              <div>
+                <div class="t-body-strong">فيلا ريزيدنس مراسي</div>
+                <div class="t-supporting">متاحة للحجز المباشر</div>
+              </div>
+              <span class="badge badge-success">منشورة</span>
+            </div>
+            <div class="operational-row">
+              <div>
+                <div class="t-body-strong">شاليه رأس الحكمة</div>
+                <div class="t-supporting">محجوز حالياً حتى 22 يوليو</div>
+              </div>
+              <span class="badge badge-neutral">مشغول</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <!-- SCREEN 4: OWNER OPERATIONAL LIST / BOOKING QUEUE                -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <div id="screen-owner-queue" class="screen-container owner-view" style="display: none; padding: var(--struct-page-inset); display: flex; flex-direction: column; gap: var(--struct-section-gap);">
+
+        <div>
+          <h1 class="t-page-title">طابور الحجوزات</h1>
+          <p class="t-supporting" style="margin-top: 2px;">إدارة ومتابعة طلبات الحجز والإقامات القادمة</p>
+        </div>
+
+        <!-- Filter Segment -->
+        <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;">
+          <span class="badge" style="background: #000; color: #FFF; padding: 6px 12px;">الكل (3)</span>
+          <span class="badge badge-neutral" style="padding: 6px 12px;">بانتظار الرد (2)</span>
+          <span class="badge badge-neutral" style="padding: 6px 12px;">مؤكدة (1)</span>
+          <span class="badge badge-neutral" style="padding: 6px 12px;">سابقة (12)</span>
+        </div>
+
+        <!-- Connected Queue Rows or Cards -->
+        <div class="grouped-unit">
+          <!-- Row 1 -->
+          <div class="operational-row card-surface">
+            <div style="flex: 1;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge badge-pending">بانتظار قرارك</span>
+                <span class="t-supporting">منذ ساعتين</span>
+              </div>
+              <h3 class="t-card-title" style="margin-top: 4px;">أحمد الشناوي · فيلا مراسي</h3>
+              <p class="t-supporting">15 - 20 يوليو (5 ليالٍ) · 6 ضيوف</p>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px;">
+                <span class="t-numeric">82,500 ج.م</span>
+                <button class="btn-primary" style="width: auto; min-height: 36px; padding: 6px 14px; font-size: 13px;" type="button">مراجعة</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2 -->
+          <div class="operational-row card-surface">
+            <div style="flex: 1;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge badge-pending">بانتظار قرارك</span>
+                <span class="t-supporting">منذ 5 ساعات</span>
+              </div>
+              <h3 class="t-card-title" style="margin-top: 4px;">محمود طارق · بنتهاوس الجونة</h3>
+              <p class="t-supporting">1 - 7 أغسطس (6 ليالٍ) · 4 ضيوف</p>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px;">
+                <span class="t-numeric">132,000 ج.م</span>
+                <button class="btn-primary" style="width: auto; min-height: 36px; padding: 6px 14px; font-size: 13px;" type="button">مراجعة</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3 -->
+          <div class="operational-row card-surface">
+            <div style="flex: 1;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge badge-success">حجز مؤكد</span>
+                <span class="t-supporting">تم التأكيد أمس</span>
+              </div>
+              <h3 class="t-card-title" style="margin-top: 4px;">كريم سامي · شاليه رأس الحكمة</h3>
+              <p class="t-supporting">18 - 22 يوليو (4 ليالٍ) · عائلة</p>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px;">
+                <span class="t-numeric">32,800 ج.م</span>
+                <button class="btn-secondary" style="width: auto; min-height: 36px; padding: 6px 14px; font-size: 13px;" type="button">التفاصيل</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <!-- SCREEN 5: ADMIN DESKTOP REVIEW WORKSPACE (1440px)               -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <div id="screen-admin-queue" class="screen-container" style="display: none; padding: 24px; background: #F8FAFC;">
+
+        <!-- Breadcrumb & Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+          <div>
+            <div class="t-supporting">لوحة الإدارة / مراجعة الوحدات الجديدة</div>
+            <h1 class="t-page-title" style="font-size: 22px; margin-top: 4px;">طابور مراجعة الوحدات المعروضة (FIFO)</h1>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-secondary" style="height: 40px;">تصدير السجل</button>
+            <button class="btn-primary" style="width: auto; height: 40px; padding: 0 16px;">تحديث الطابور</button>
+          </div>
+        </div>
+
+        <!-- Desktop Metric KPI Row -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
+          <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px;">
+            <div class="t-supporting">قيد المراجعة الفورية</div>
+            <div class="t-numeric" style="font-size: 24px; color: var(--status-pending); margin-top: 4px;">4 وحدات</div>
+            <div class="t-supporting" style="font-size: 11px;">متوسط وقت الانتظار: 4.2 ساعة</div>
+          </div>
+          <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px;">
+            <div class="t-supporting">إجمالي الوحدات المنشورة</div>
+            <div class="t-numeric" style="font-size: 24px; color: var(--status-success); margin-top: 4px;">128 وحدة</div>
+            <div class="t-supporting" style="font-size: 11px;">متاحة للبحث والحجز</div>
+          </div>
+          <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px;">
+            <div class="t-supporting">وحدات معادة للمالك للتعديل</div>
+            <div class="t-numeric" style="font-size: 24px; color: var(--status-danger); margin-top: 4px;">6 وحدات</div>
+            <div class="t-supporting" style="font-size: 11px;">نقص في المستندات أو الصور</div>
+          </div>
+        </div>
+
+        <!-- Desktop Table Workspace -->
+        <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden;">
+          <div style="padding: 14px 16px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+            <input type="text" placeholder="بحث بالاسم أو المالك أو الموقع..." style="width: 320px; padding: 8px 12px; border: 1px solid var(--border-field); border-radius: var(--field-radius); font-family: var(--konfrm-font-family); font-size: 13px;" />
+            <div class="t-supporting">عرض 4 من أصل 4 طلبات معلقة</div>
+          </div>
+
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>معرف الوحدة</th>
+                <th>اسم الوحدة</th>
+                <th>المالك</th>
+                <th>الموقع</th>
+                <th>سعر الليلة</th>
+                <th>تاريخ التقديم</th>
+                <th>الحالة</th>
+                <th>الإجراء</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-family: monospace; font-weight: 700;">PROP-8921</td>
+                <td style="font-weight: 700;">فيلا ريزيدنس مراسي</td>
+                <td>م. طارق العوضي</td>
+                <td>الساحل الشمالي</td>
+                <td class="t-numeric">16,500 ج.م</td>
+                <td class="t-supporting">2026-10-04 14:20</td>
+                <td><span class="badge badge-pending">قيد المراجعة</span></td>
+                <td><button class="btn-primary" style="width: auto; min-height: 32px; padding: 4px 12px; font-size: 12px;" type="button">فحص الوحدة</button></td>
+              </tr>
+              <tr>
+                <td style="font-family: monospace; font-weight: 700;">PROP-8924</td>
+                <td style="font-weight: 700;">شاليه رأس الحكمة الفاخر</td>
+                <td>د. عصام إبراهيم</td>
+                <td>رأس الحكمة</td>
+                <td class="t-numeric">8,200 ج.م</td>
+                <td class="t-supporting">2026-10-04 15:10</td>
+                <td><span class="badge badge-pending">قيد المراجعة</span></td>
+                <td><button class="btn-primary" style="width: auto; min-height: 32px; padding: 4px 12px; font-size: 12px;" type="button">فحص الوحدة</button></td>
+              </tr>
+              <tr>
+                <td style="font-family: monospace; font-weight: 700;">PROP-8930</td>
+                <td style="font-weight: 700;">بنتهاوس مارينا الجونة</td>
+                <td>أ. نادية فهمي</td>
+                <td>الجونة</td>
+                <td class="t-numeric">22,000 ج.م</td>
+                <td class="t-supporting">2026-10-04 16:45</td>
+                <td><span class="badge badge-pending">قيد المراجعة</span></td>
+                <td><button class="btn-primary" style="width: auto; min-height: 32px; padding: 4px 12px; font-size: 12px;" type="button">فحص الوحدة</button></td>
+              </tr>
+              <tr>
+                <td style="font-family: monospace; font-weight: 700;">PROP-8935</td>
+                <td style="font-weight: 700;">فيلا بورتو السخنة</td>
+                <td>م. ماجد عبد الله</td>
+                <td>العين السخنة</td>
+                <td class="t-numeric">11,500 ج.م</td>
+                <td class="t-supporting">2026-10-04 18:00</td>
+                <td><span class="badge badge-pending">قيد المراجعة</span></td>
+                <td><button class="btn-primary" style="width: auto; min-height: 32px; padding: 4px 12px; font-size: 12px;" type="button">فحص الوحدة</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // State management & query parameter integration
+    let currentCandidate = 'C';
+    let currentScreen = 'cust-detail';
+    let currentViewport = '390';
+    let currentScale = '100';
+    let isStress = false;
+    let isEmbed = false;
+    let isScrollQuote = false;
+
+    function applyState() {
+      // Body Candidate class
+      document.body.className = `cand-${currentCandidate} scale-${currentScale}${isEmbed ? ' embed' : ''}${isScrollQuote ? ' scroll-quote' : ''}`;
+
+      // Candidate button states
+      document.querySelectorAll('[data-candidate]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.candidate === currentCandidate);
+      });
+
+      // Screen button states
+      document.querySelectorAll('[data-screen]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.screen === currentScreen);
+      });
+
+      // Viewport button states
+      document.querySelectorAll('[data-vp]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.vp === currentViewport);
+      });
+
+      // Scale button states
+      document.querySelectorAll('[data-scale]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.scale === currentScale);
+      });
+
+      // Viewport container width
+      const frame = document.getElementById('viewport-frame');
+      frame.className = `viewport-frame vp-${currentViewport}`;
+
+      // Update metadata text
+      document.getElementById('frame-meta-vp').innerText = `${currentViewport} px`;
+      const pill = document.getElementById('frame-meta-cand');
+      pill.className = `candidate-pill pill-cand-${currentCandidate.toLowerCase()}`;
+      pill.innerText = currentCandidate === 'A' ? 'CANDIDATE A: OPEN / EDITORIAL' :
+                       currentCandidate === 'B' ? 'CANDIDATE B: CONTAINED / MODULAR' :
+                       'CANDIDATE C: ROLE HYBRID';
+
+      // Screen visibility
+      const screens = ['cust-detail', 'cust-results', 'owner-home', 'owner-queue', 'admin-queue'];
+      screens.forEach(s => {
+        const el = document.getElementById(`screen-${s}`);
+        if (el) el.style.display = (s === currentScreen) ? 'flex' : 'none';
+      });
+
+      // Stress content application
+      const stressBtn = document.getElementById('stress-toggle');
+      if (stressBtn) {
+        stressBtn.innerText = isStress ? 'بيانات الإجهاد: مفعل' : 'بيانات الإجهاد: إيقاف';
+        stressBtn.classList.toggle('active', isStress);
+      }
+
+      const pTitle = document.getElementById('cust-prop-title');
+      const pLoc = document.getElementById('cust-prop-loc');
+      const pPrice = document.getElementById('cust-prop-price');
+      const pDesc = document.getElementById('cust-prop-desc');
+      const qTotal = document.getElementById('cust-quote-total');
+      const qDep = document.getElementById('cust-quote-deposit');
+      const qRem = document.getElementById('cust-quote-remain');
+      const sDep = document.getElementById('sticky-bar-deposit');
+
+      if (isStress) {
+        if (pTitle) pTitle.innerText = 'فيلا ريزيدنس بانورامية فاخرة بصف أول مباشر على بحيرة العلمين الكبرى ومجهزة بملحق خاص';
+        if (pLoc) pLoc.innerText = 'القطاع الرابع - فيلات لاجون فيوز، منتجع مراسي، سيدي عبد الرحمن، مطروح، الساحل الشمالي الغربي';
+        if (pPrice) pPrice.innerText = '37,000';
+        if (pDesc) pDesc.innerText = 'فيلا مستقلة استثنائية بتشطيب فندقي متكامل فائق الفخامة، تمتد على مساحة 650 مترًا مربعًا، وتحتوي على 5 أجنحة نوم رئيسية بحمامات مستقلة، وغرفة سائق، ومسبح خاص مع نظام تدفئة وجاكوزي، مع خصوصية تامة للعائلات المحافظة وإمكانية الدخول لكافة مرافق الشاطئ الخاص.';
+        if (qTotal) qTotal.innerText = '185,000 ج.م';
+        if (qDep) qDep.innerText = '37,000 ج.م';
+        if (qRem) qRem.innerText = '148,000 ج.م';
+        if (sDep) sDep.innerText = '37,000';
+      } else {
+        if (pTitle) pTitle.innerText = 'فيلا ريزيدنس بإطلالة مباشرة على بحيرة العلمين';
+        if (pLoc) pLoc.innerText = 'مراسي، سيدي عبد الرحمن، الساحل الشمالي';
+        if (pPrice) pPrice.innerText = '16,500';
+        if (pDesc) pDesc.innerText = 'فيلا مستقلة فاخرة بتشطيب فندقي متكامل، تضم حديقة خاصة ومسبحًا بإطلالة مباشرة على اللاجون، مجهزة لراحة العائلات ولقضاء إجازة ساحلية متميزة مع خصوصية تامة.';
+        if (qTotal) qTotal.innerText = '82,500 ج.م';
+        if (qDep) qDep.innerText = '16,500 ج.م';
+        if (qRem) qRem.innerText = '66,000 ج.م';
+        if (sDep) sDep.innerText = '16,500';
+      }
+    }
+
+    function setCandidate(cand) { currentCandidate = cand; applyState(); }
+    function setScreen(scr) {
+      currentScreen = scr;
+      // Auto-switch viewport to 1440 for admin, or 390 for mobile screens if coming from admin
+      if (scr === 'admin-queue' && currentViewport !== '1440') {
+        currentViewport = '1440';
+      } else if (scr !== 'admin-queue' && currentViewport === '1440') {
+        currentViewport = '390';
+      }
+      applyState();
+    }
+    function setViewport(vp) { currentViewport = vp; applyState(); }
+    function setScale(sc) { currentScale = sc; applyState(); }
+    function toggleStress() { isStress = !isStress; applyState(); }
+
+    // Read URL params on initial load
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('candidate')) currentCandidate = params.get('candidate');
+    if (params.get('screen')) currentScreen = params.get('screen');
+    if (params.get('viewport')) currentViewport = params.get('viewport');
+    if (params.get('scale')) currentScale = params.get('scale');
+    if (params.get('stress')) isStress = (params.get('stress') === '1' || params.get('stress') === 'true');
+    if (params.get('embed') === '1') isEmbed = true;
+    if (params.get('scroll') === 'quote') isScrollQuote = true;
+    if (params.get('radius')) {
+      document.documentElement.style.setProperty('--custom-radius', `${params.get('radius')}px`);
+    }
+
+    applyState();
+  </script>
+</body>
+</html>

@@ -1,5 +1,26 @@
 # KONFRM Design System Changelog
 
+## 2.1.9 — 2026-10-05
+
+### Phase 4E Structural System governance synchronization
+
+- Recorded Founder approval of Option C: Role-Aware Hybrid Structural System (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE_4E_STRUCTURAL_MODEL`).
+- Customer Structural Grammar: `OPEN_EDITORIAL_DEFAULT`. Content and photography lead; proximity and whitespace before containers; property facts, descriptions, and amenities unboxed with restrained dividers / subtle hairline-style separation (exact native stroke width `OPEN` / deferred to Phase 4I; 1px is controlled Web pilot rendering reference only); bounded containers strictly reserved for discrete decision units or independent discovery objects; card soup prohibited.
+- Owner Structural Grammar: `OPERATIONAL_GROUPING_DEFAULT_WHEN_SEMANTIC`. Operational records share a single container with subtle internal dividers (`OPEN_GROUPED_CONTENT`; exact native stroke width `OPEN` / deferred to Phase 4I; 1px in pilot is controlled Web rendering reference); eliminates card framing repetition, maximizes scanability, state certainty, and compact operational density.
+- Admin Boundary: Desktop operational Web preserved (`CONTROLLED_WEB_BOUNDARY_REFERENCE`). Tabular data grids and FIFO review queues remain desktop-operational without mobile card leakage.
+- Card Model: Restricted semantic container. Valid for `PropertyCard`, complete booking objects, and coherent decision summaries. Forbidden as generic layout separator, per metric, or per simple paragraph. Open content has no enclosing structural container and does not possess or require a container radius token.
+- Spacing Scale & Hierarchy: Codified four-tier relational hierarchy as canonical principle (`TIER_1 < TIER_2 < TIER_3 < TIER_4`). Evaluated mobile spacing family 4/8/12/16/24/32 as `SYSTEM-EVALUATED PROVISIONAL NUMERIC MAPPING`. Mobile page insets: Customer 16px, Owner 16px (`SYSTEM-EVALUATED PROVISIONAL MOBILE_PAGE_INSET`); explicit rule: page insets != platform safe-area insets. Sizing/clearance 40/48px not part of formal spacing scale (platform touch guidance iOS ~44pt / Android ~48dp evaluated separately; native acceptance deferred to Phase 4I). Rule: no new spacing value without demonstrated semantic need and central design-system governance.
+- Structural Container Radius: Evaluated bounded comparison (10px vs 12px vs 16px) across roles and viewports; recorded 12px as `SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS` (10px valid close alternative; 12px balanced provisional system tie-breaker; 16px materially rounder with higher generic-SaaS styling risk in repeated operational groups; reversible implementation detail, `NO_MATERIAL_FOUNDER_DECISION_REQUIRED: YES`). Distinct from 6px action (`PRIMARY_ONLY`) and 8px input (`PROVISIONAL_FIELD_SHAPED_ONLY`).
+- Surface & Elevation: Flat structural content by default (`FLAT_BY_DEFAULT`). Shadows strictly reserved for floating app bars, sticky decision bars, and sheets (Phase 4F owned). Exact native stroke width remains `OPEN` / deferred to Phase 4I.
+- Exact Neutrals: Palette tokens remain `OPEN`. Web pilot values (`#FFFFFF`, `#E2E8F0`, `#F8FAFC`) are `CONTROLLED_WEB_PILOT_RENDERING_REFERENCE` only.
+- Updated Mobile Design Foundation to DF2 v1.4 (`DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md`).
+- Synchronized component card authority (`DESIGN_SYSTEM/COMPONENTS/cards.md`).
+- Phase 4F Boundary Preserved: Navigation bars, bottom sheets, dialogs, and overlay architecture remain strictly `NOT_STARTED` (Phase 4F scope).
+- Native Acceptance: Physical mobile rendering, scaling, and touch target acceptance remain strictly `DEFERRED_TO_4I`.
+- No token JSON changes.
+- No runtime production changes.
+- No backend/database changes.
+
 ## 2.1.8 — 2026-10-04
 
 ### Phase 4D Form & Selection Primitives governance synchronization

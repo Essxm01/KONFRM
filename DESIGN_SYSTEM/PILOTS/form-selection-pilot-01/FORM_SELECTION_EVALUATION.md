@@ -17,7 +17,7 @@ Phase 4D evaluates form inputs and selection primitive semantics for the KONFRM 
 Based on real product inspection across `customer-app/` and `owner-app/`, controlled empirical rendering across candidate visual families, three radius options, two focus modalities, three controlled Web frame widths (360px, 390px, 430px), and three text scaling levels (100%, 150%, 200%), this evaluation delivers a decisive system recommendation:
 
 1. **Recommended Field Visual Strategy:** **Outline-Led Field Baseline (Crisp 1px Neutral Outline on Pure White)**. Standalone fields utilize a crisp 1px neutral outline (`#E4E4E7` pilot reference) on a pure white background (`#FFFFFF`), ensuring clear figure-ground separation on light-first surfaces and avoiding low-contrast "surface soup" when embedded inside cards. Any multi-field grouped containers or module dividers demonstrated in the pilot are strictly **PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED**.
-2. **Input Radius Recommendation (8PX_RECOMMENDATION_RETAINED):** **8px** is retained as the system-recommended candidate based purely on visual criteria: it introduces gentle visual softness to larger 48px input containers compared to 6px, avoids the generic bubbly roundness of 10px, and harmonizes with the 6px Primary Button without copying button geometry blindly. **6px** is preserved as an explicit Founder aesthetic alternative if exact geometric alignment is preferred. Radius is evaluated strictly on visual aesthetics and not conflated with accessible touch-target bounds.
+2. **Input Radius Founder Decision:** **8px Mobile Field Radius** (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`). The Founder explicitly approved the system recommendation: 8px applies strictly to mobile field-shaped Form & Selection primitives (text input, phone container, email container, numeric container, search container, multiline textarea, select/picker trigger). Primary Button retains 6px (`PRIMARY_ONLY`), establishing deliberate semantic differentiation between Action (6px) and Data Entry (8px). 6px is recorded as an evaluated alternative, NOT selected for fields; 10px is recorded as an evaluated alternative, NOT selected. Radius is evaluated strictly on visual aesthetics and not conflated with accessible touch-target bounds.
 3. **Focus Treatment:** **Semantic Restrained Interaction-Accent Emphasis**. Restrained interaction-accent focus is empirically superior to pure black focus because pure black competes visually with the provisional `#000000` Primary action button. The specific values used in the pilot (`#276EF1`, 2px ring, 2px halo) are **Web pilot rendering reference only**; exact native focus treatment remains `OPEN / Phase 4I validation`.
 4. **Label / Helper / Error Hierarchy:** Explicit top labels (Cairo Profile B 12/600/1.35), contextual helper text (12/400/1.40), and text-associated error indicators (explicit copy and semantic alert icon). Floating labels are rejected due to Arabic descender clipping and translation expansion risks. Pilot error styling (`#DC2626`, alert icon) is a rendering reference, not final universal Canon.
 5. **Selection Controls:** Checkbox is evidenced in Owner notification settings. Toggle has zero current product evidence and is classified as deferred future capability; no switch migration is manufactured.
@@ -203,20 +203,26 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
   - Narrow-width reflow verified in `stress_reflow_360_width.png` (360px controlled Web frame reference) with zero horizontal overflow.
   - High text scaling (200%) verified in `stress_text_scale_200.png` with clean multi-line wrapping and robust Bidi preservation.
 
-### Step 11: DECISION
-- Adopt **Outline-Led Field Baseline (Crisp 1px Neutral Outline on Pure White)** as the system-recommended field visual strategy. Any multi-field grouping shown in the pilot is `PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED`.
-- Retain **8px** as the provisional input radius candidate (`8PX_RECOMMENDATION_RETAINED`), offering 6px as a Founder aesthetic alternative.
-- Adopt **Semantic Restrained Interaction-Accent Emphasis** as the focus model; exact native focus tokens remain `OPEN`.
-- Adopt top-aligned explicit labels (Cairo 12/600/1.35) and text-associated error indicators.
-- Classify Select/Picker overlay grammar as `PILOT COMPOSITION ONLY / PHASE 4F AUTHORITY DEFERRED`.
-- Classify Checkbox as `PRODUCT-EVIDENCED CONTROL (Owner Settings)`.
-- Classify Toggle as `DEFERRED / NO CURRENT PRODUCT EVIDENCE`.
+### Step 11: DECISION & FOUNDER SELECTION
+- **Field Strategy:** Adopt **Outline-Led Field Baseline (Crisp 1px Neutral Outline on Pure White)** as the provisional field visual strategy (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). Any multi-field grouping shown in the pilot is `PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED`.
+- **Founder Decision (Mobile Field Radius):**
+  - **FOUNDER_DECISION:** **8PX MOBILE FIELD RADIUS**
+  - **STATUS:** **`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`**
+  - **Evaluated Alternatives:**
+    - `6px`: evaluated alternative, NOT selected for fields (retained as `PRIMARY_ONLY` for Primary buttons).
+    - `10px`: evaluated alternative, NOT selected.
+  - **Scope:** Mobile field-shaped controls only (text inputs, phone, email, numeric, search, textarea, select trigger). Not applied to buttons, checkboxes, toggles, cards, sheets, or global shape.
+- **Focus Model:** Adopt **Semantic Restrained Interaction-Accent Emphasis** as the focus model (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`); exact native focus tokens remain `OPEN / DEFERRED TO PHASE 4I`.
+- **Label / Helper / Error:** Adopt top-aligned explicit labels (Cairo 12/600/1.35), contextual helper text (12/400/1.40), and text-associated error indicators. Floating labels are not selected.
+- **Select / Picker Boundary:** Trigger semantics belong to 4D; overlay grammar is `PILOT COMPOSITION ONLY / PHASE 4F AUTHORITY DEFERRED`.
+- **Checkbox:** Classified as `OWNER PRODUCT-EVIDENCED CONTROL (Owner Settings)`.
+- **Toggle:** Classified as `DEFERRED / NO CURRENT PRODUCT EVIDENCE`.
 
 ### Step 12: CONFIDENCE & STATUS
 - **Overall Confidence:** **HIGH**
-- **Recommended Field Strategy Status:** `SYSTEM_RECOMMENDATION`
-- **Input Radius Status:** `SYSTEM-VALIDATED PROVISIONAL CANDIDATE` (Founder visual preference between 8px and 6px available).
-- **Focus Treatment Status:** `SYSTEM_RECOMMENDATION` (Semantic model; exact native token remains `OPEN`).
+- **Recommended Field Strategy Status:** `SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`
+- **Input Radius Status:** `FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`
+- **Focus Treatment Status:** `SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION` (Semantic model; exact native token remains `OPEN`).
 
 ---
 
@@ -225,19 +231,23 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
 ### Question 1: Recommended Overall Field Visual Strategy
 - **Recommendation:** **Outline-Led Field Baseline (Crisp 1px Neutral Outline on Pure White Background)**
 - **Rationale:** It establishes a crisp 1px neutral outline (`#E4E4E7` pilot reference) on pure white as the universal baseline for standalone fields, ensuring clear edge definition on light surfaces and preventing muddy gray fills inside cards. Any multi-field grouped containers or module dividers demonstrated in the pilot are strictly **PILOT COMPOSITION ONLY / PHASE 4E STRUCTURAL AUTHORITY DEFERRED**.
-- **Status:** `SYSTEM_RECOMMENDATION`
+- **Status:** `SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`
 
-### Question 2: Recommended Input Radius (8PX_RECOMMENDATION_RETAINED)
-- **Recommendation:** **8px**
-- **Alternative:** **6px** (exact geometric match with Primary Button)
+### Question 2: Input Radius Founder Decision
+- **FOUNDER_DECISION:** **8PX MOBILE FIELD RADIUS**
+- **STATUS:** **`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`**
+- **Selected Value:** **8px**
+- **Evaluated Alternatives (Not Selected for Fields):**
+  - **6px:** Evaluated alternative, NOT selected for fields (retained as `PRIMARY_ONLY` provisional for Primary buttons; establishes deliberate 6px action vs 8px field data-entry semantic differentiation).
+  - **10px:** Evaluated alternative, NOT selected.
 - **Rationale:** 8px provides the most visually balanced curve for taller 48px input containers without drifting into consumer roundness (10px). It pairs harmoniously with 6px Primary buttons while avoiding rigid geometry copying. Radius is justified solely by visual and architectural balance, not touch target ergonomics.
-- **Status:** `SYSTEM-VALIDATED PROVISIONAL CANDIDATE` / `FOUNDER_VISUAL_SELECTION_REQUIRED` (if Founder prefers exact 6px geometric alignment).
+- **Scope:** Applies strictly to mobile field-shaped Form & Selection controls.
 
 ### Question 3: Recommended Focus Treatment
 - **Recommendation:** **Semantic Restrained Interaction-Accent Emphasis**
 - **Pilot Reference:** 2px ring + 2px soft halo in candidate blue (`#276EF1`) is a **Web pilot rendering reference only**.
 - **Rationale:** Pure black focus rings visually compete with the provisional `#000000` Primary CTA button. The restrained accent provides clear focus feedback without creating action confusion.
-- **Status:** `SYSTEM_RECOMMENDATION` (Semantic direction; exact native token remains `OPEN`).
+- **Status:** `SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION` (Semantic direction; exact native token remains `OPEN`).
 
 ### Question 4: Recommended Label / Helper / Error Hierarchy
 - **Label:** Cairo Profile B `12 / 600 / 1.35` in `#09090B`, placed strictly above the input. Floating labels are rejected due to Arabic descender clipping and translation expansion risks.
@@ -273,8 +283,8 @@ Based on real product inspection across `customer-app/` and `owner-app/`, contro
 - Overlay Container & Bottom Sheet Grammar (`PHASE 4F`).
 - Native Mobile Flutter Acceptance (`PHASE 4I`).
 
-### Question 10: Founder Decisions Budget
-- **Total Founder Decisions Requested:** **1** (or **0** if Founder adopts the system recommendation directly).
-- **Decision:**
-  - *Option 1 (System Recommended):* Confirm **8px** input radius as provisional mobile candidate.
-  - *Option 2:* Confirm **6px** input radius to match Primary Button radius exactly.
+### Question 10: Founder Decisions Budget & Resolution
+- **Decision Status:** **RECORDED & RESOLVED**
+- **FOUNDER_DECISION:** **8PX MOBILE FIELD RADIUS**
+- **STATUS:** **`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`**
+- **Resolution:** The Founder explicitly approved the system recommendation of 8px mobile field radius. 6px is recorded as an evaluated alternative, NOT selected for fields (retained as `PRIMARY_ONLY` for Primary buttons). 10px is recorded as an evaluated alternative, NOT selected. Zero further visual decisions required for Phase 4D.

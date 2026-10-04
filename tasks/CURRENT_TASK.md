@@ -2,28 +2,36 @@
 
 TASK_ID: PHASE_4D_FORM_SELECTION_PRIMITIVES
 ROADMAP_PHASE: PHASE_4_UNIFIED_DESIGN_SYSTEM
-STATUS: ACTIVE
-EXECUTION_STARTED: YES
+STATUS: READY_FOR_PUBLICATION
+SUBSTANTIVE_STATUS: COMPLETE
+FOUNDER_DECISION_STATUS: RECORDED
+GOVERNANCE_SYNC_STATUS: COMPLETE
+PUBLICATION_STATUS: PR_PENDING
 BASE_MAIN_SHA: 3520ca0dd28c013a52a2b0cc15670eab1b974442
-STAGE: GOVERNED_DISCOVERY_VISUAL_EVIDENCE_SYSTEM_EVALUATION
+BRANCH: design/form-selection-pilot-01
 SCOPE: Phase 4D — Form & Selection Primitives (text inputs, phone/email fields, search, select/pickers, checkbox/toggle where required, helper/error behavior, focus/keyboard behavior, and Arabic/RTL input details).
 
 ## Execution Position Notice
-- `STATUS: ACTIVE` indicates that Phase 4D execution is currently underway on branch `design/form-selection-pilot-01`.
-- `EXECUTION_STARTED: YES`
-- `STAGE: GOVERNED_DISCOVERY_VISUAL_EVIDENCE_SYSTEM_EVALUATION`
-- Controlled discovery, pilot implementation, and system evaluation are active under Phase 4D scope.
+- `STATUS: READY_FOR_PUBLICATION` indicates that Phase 4D discovery, visual pilot, Founder decision recording, and shared governance synchronization are complete.
+- `SUBSTANTIVE_STATUS: COMPLETE`
+- `FOUNDER_DECISION_STATUS: RECORDED`
+- `GOVERNANCE_SYNC_STATUS: COMPLETE`
+- `PUBLICATION_STATUS: PR_PENDING`
+- Publication PR is prepared against `main`. Do NOT mark CLOSED or MERGED until PR is merged.
+- Next active design dependency after PR merge is **Phase 4E — Structural System** (`STATUS: NOT_STARTED`).
 
-## Authoritative Phase 4D Scope
-Per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md`:
-- text inputs
-- phone/email fields
-- search
-- select/pickers
-- checkbox/toggle where required
-- helper/error behavior
-- focus/keyboard behavior
-- Arabic/RTL input details
+## Phase 4D Core Decisions & Governance Results
+- **Field Visual Strategy:** **`OUTLINE_LED`** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). White surface, thin neutral outline, explicit persistent top label, separate helper/error, no floating-label dependency.
+- **Mobile Field Radius:** **`8px`** (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`).
+  - *Exact Scope:* Applies strictly to mobile field-shaped Form & Selection primitives: text input, phone container, email container, numeric container, search container, multiline textarea, select/picker trigger when rendered as a field.
+  - *Deliberate Differentiation:* Primary Button retains 6px `PRIMARY_ONLY` provisional radius (Action = 6px; Data Entry = 8px). 8px does not apply to secondary buttons, checkboxes, toggles, chips, cards, sheets, or global shape.
+  - *Evaluated Alternatives:* 6px and 10px recorded as evaluated alternatives, NOT selected for fields.
+- **Focus Semantic Direction:** **`RESTRAINED_INTERACTION_ACCENT`** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). Provides obvious focus feedback without competing with Stable Black Primary CTA. Web pilot rendering values (`#276EF1`, 2px ring, 2px halo) are references only.
+- **Selection Controls:** Checkbox is **`OWNER_PRODUCT_EVIDENCED`** (notification preferences); Toggle is **`DEFERRED_NO_CURRENT_PRODUCT_EVIDENCE`** (zero current canonical product evidence; no switch migration manufactured).
+- **Select / Picker Primitive Boundary:** Phase 4D owns field trigger and field semantics; overlay containers, bottom sheets, dialogs, and picker navigation belong strictly to Phase 4F.
+- **Platform Touch Sizing:** iOS guidance: 44pt; Android guidance: 48dp. Target bounds decoupled from visible geometry. No universal raw-pixel mobile target rule.
+- **Preserved Open Variables:** Exact Neutrals (`OPEN`), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Native Focus Treatment (`OPEN`), Exact Native Stroke Width (`OPEN`), Global Shape System (`OPEN`), Native Mobile Flutter Acceptance (`DEFERRED TO 4I`).
+- **Production / Token Safety:** Zero runtime production changes (`customer-app`, `owner-app`, `admin-app`), zero backend/database changes, zero token JSON changes.
 
 ## Upstream Closed Dependency — Phase 4C Action System
 - **PHASE_4C_STATUS:** `CLOSED / MERGED`
@@ -36,22 +44,11 @@ Per `KONFRM_EXECUTION_DEPENDENCY_ORDER.md`:
 - **Token Changes:** NONE
 - **Native Acceptance:** `DEFERRED_TO_4I`
 
-## Inherited Upstream Foundations & Phase 4D Boundaries
-Phase 4D carries forward upstream design authority without reopening validated decisions:
-- **Typography:** Cairo Profile B (`15 / 700 / 1.20` for button controls, role typography per DF2 v1.2) — `SYSTEM-VALIDATED PROVISIONAL`.
-- **Action System:** Phase 4C `CLOSED / MERGED` (Contextual / Hierarchy-Based Hybrid action strategy).
-- **Exact Mobile Primary Black:** `#000000` — `SYSTEM-VALIDATED PROVISIONAL EXACT PRIMARY BLACK` (`#18181B` fallback comparator only).
-- **Primary Button Radius:** `6px` — `PRIMARY_ONLY` provisional.
-  - **Boundary:** Do **NOT** generalize 6px to inputs, pickers, checkboxes, cards, sheets, or global shape.
-- **Secondary Radius:** `OPEN / FUTURE GOVERNED DESIGN DECISION`.
-- **Global Shape System:** `OPEN`.
-- **Exact Neutrals:** `OPEN` (pilot rendering values only).
-- **Exact Blue:** `OPEN` (`#276EF1` is implementation candidate only; restrained interaction-accent role).
-- **Exact Native Focus Treatment:** `OPEN`.
-- **Structural System:** Phase 4E scope. Phase 4D must not casually resolve spacing systems, content insets, section/card/row structure, borders/dividers, surface hierarchy, global shape roles, or elevation.
-- **Navigation & Overlay System:** Phase 4F scope. Phase 4D must not casually resolve bottom navigation, app bars, nested navigation, global RTL back semantics, dialog/sheet container grammar, sticky-action architecture, or safe-area/navigation behavior. While Phase 4D legitimately defines the input and selection primitive behavior of fields (including select/picker field semantics), any overlay container, sheet, dialog, navigation pattern, or global overlay grammar belongs strictly to Phase 4F.
-- **Cancellation & Refund Policy:** `OPEN / UNDECIDED` (governed exclusively by Product and Financial Canon).
-- **Token-File Authoring:** `SEPARATELY GATED`.
+## Next Dependency After 4D Publication Merge
+- **PHASE_4E_STRUCTURAL_SYSTEM**
+  - **STATUS:** `NOT_STARTED`
+  - **EXECUTION_STARTED:** `NO`
+  - Do NOT switch active task to Phase 4E until PR merges into `main`.
 
 ---
 

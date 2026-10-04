@@ -1,9 +1,10 @@
-# KONFRM Mobile Design Foundation — v1.2
+# KONFRM Mobile Design Foundation — v1.3
 
 **Status:** CANONICAL SPECIFICATION — DF2
 Independent platform/accessibility/design-system review and final Bridge verification completed. DF2 is canonical.
 **Amendment v1.1 (Founder brand-identity decision):** mobile brand identity is monochrome-first — Black/White; Summer Yellow removed from the core mobile brand architecture; blue demoted to a restrained interaction accent (candidate `#276EF1`). See §9.
 **Amendment v1.2 (Phase 4C Action System synchronization):** records independently reviewed SYSTEM-VALIDATED PROVISIONAL Action System mappings inside the canonical foundation without promoting exact provisional component values to final native Canon. Native component and accessibility acceptance remains strictly deferred to Phase 4I. The canonical document is authoritative about STATUS, SEMANTIC ROLES, and ARCHITECTURAL DIRECTION, not falsely about final native token acceptance.
+**Amendment v1.3 (Phase 4D Form & Selection Primitives synchronization):** records independently evaluated and Founder-approved SYSTEM-VALIDATED PROVISIONAL Form & Selection primitive directions (Outline-led field baseline, 8px mobile field radius for field-shaped controls, explicit top-label hierarchy, semantic restrained interaction-accent focus emphasis, Owner-evidenced checkbox, toggle deferred) inside the canonical foundation without promoting provisional component values to final native Canon. Exact neutrals, stroke width, blue candidate (`#276EF1`), focus geometry, and platform component mappings remain OPEN / IMPLEMENTATION CANDIDATE. Native component and accessibility acceptance remains strictly deferred to Phase 4I. Admin remains Web.
 **Scope:** The design foundation governing future `mobile/customer_app`, `mobile/owner_app`, mobile design tokens, canonical mobile primitives, AI design Skills, visual QA and the controlled pilot.
 **Upstream authority (not reopened here):**
 
@@ -369,7 +370,18 @@ CANONICAL principles:
 5. State grammar applies: loading/disabled/error states of controls are explicit; a disabled control communicates why when needed.
 6. Destructive field actions (clear, discard) follow §15 destructive grammar.
 
-**IMPLEMENTATION CANDIDATE:** exact field heights, radii, focus-ring values.
+**Phase 4D Form & Selection Primitives Synchronization:**
+
+- **Field Visual Strategy:** **Outline-Led Field Baseline** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). Standalone fields utilize a white field surface with a thin neutral outline, providing clear boundary definition on light surfaces without floating labels.
+- **Mobile Field Radius:** **8px** (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`). Applies strictly to mobile field-shaped Form & Selection controls (text input, phone container, email container, numeric/currency container, search container, multiline textarea, select/picker trigger when rendered as a field).
+  - *Boundary:* Does **not** apply to Primary Button (which retains 6px `PRIMARY_ONLY` provisional radius), secondary buttons, icon buttons, checkboxes, toggles, chips, segmented controls, steppers, cards, rows, sheets, dialogs, overlays, or global container shapes.
+  - *Semantic Differentiation:* Action / Primary Button = 6px; Data Entry / Field-Shaped Control = 8px. This is deliberate semantic differentiation.
+- **Label / Helper / Error Hierarchy:** Explicit persistent top label (Cairo Profile B `label` 12/600/1.35), contextual helper copy (`supporting` 12/400/1.40), and field-associated textual error (text-identified, adjacent, announced, never color-only). Floating labels are not selected for mobile due to Arabic descender clipping and translation expansion.
+- **Focus Direction:** **Semantic Restrained Interaction-Accent Emphasis** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). Restrained interaction accent provides obvious focus feedback without competing visually with the Stable Black Primary CTA. Web pilot references (`#276EF1`, 2px ring, 2px halo) are rendering references only.
+- **Select / Picker Primitive Boundary:** Phase 4D defines field trigger and field semantics (label, placeholder, selected value, affordance, disabled/error states, RTL alignment). Overlay presentation containers (sheets, dialogs, dropdown lists) and navigation behavior are strictly `PHASE 4F AUTHORITY DEFERRED` (pilot overlays are composition references only).
+- **Selection Controls:** Checkbox is `OWNER PRODUCT-EVIDENCED CONTROL` (notification preferences); Toggle is `DEFERRED / FUTURE BOUNDED CONTROL` (zero current canonical product evidence; no switch migration is manufactured).
+- **Platform Touch Sizing:** iOS guidance: 44pt; Android guidance: 48dp. Interactive touch target bounds are decoupled from visible component geometry. No universal raw-pixel mobile target rule is canonized.
+- **Open Variables / Native Validation:** Exact neutral hex, exact native stroke width, exact blue token candidate (`#276EF1`), exact focus ring/halo geometry, and exact native field heights remain `OPEN / IMPLEMENTATION CANDIDATE`. Native component and accessibility acceptance is strictly `DEFERRED TO PHASE 4I`.
 
 ## 19. Imagery
 
@@ -508,7 +520,7 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 5. **Transport-independent design-token delivery**: the existing generated-token pipeline concept (`TOKENS/*.json` → generated consumer artifacts) is an implementation candidate for mobile, with all mobile values validated before canonicalization.
 6. Exact state-surface compositions (skeletons, empty/error art) per state grammar (§16).
 7. Cairo as the bundled mobile UI family — pending mobile rendering/performance validation.
-8. Field/control dimensions and focus treatments (§18, §21).
+8. Field/control exact native dimensions, neutral border hex, stroke width, and native focus treatments (§18, §21) — provisional 8px field radius, outline-led baseline, and restrained interaction-accent focus direction recorded in §18.
 
 ## 28. DEFERRED / OPEN
 

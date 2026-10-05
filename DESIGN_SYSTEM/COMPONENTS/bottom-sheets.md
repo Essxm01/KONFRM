@@ -3,13 +3,14 @@
 ## 1. Authority & Classification
 
 - **Governance Level:** `GOVERNED_CANONICAL_SPECIFICATION`
+- **Maturity & Scoping Disclaimer:** This document governs contextual mobile overlay behavior. Individual motion curves, detents, scrim parameters, and platform accessibility mechanics preserve their distinct maturity (`SYSTEM_EVALUATED_PROVISIONAL`, `CURRENT_WEB_REFERENCE`, `OPEN`, `DEFERRED_TO_4I`).
 - **Surface Reality:** React 19 / TypeScript Web baseline (`CONTROLLED_WEB_PILOT_REFERENCE`); native mobile architecture governed for Flutter target (`PHASE_4I_TARGET`).
 - **Governed Geometric Invariants:**
   - `radius.bottom_sheet_top`: **16px** (`SYSTEM_EVALUATED_PROVISIONAL_BOTTOM_SHEET_TOP_RADIUS`).
-  - Close Control: **REQUIRED** (explicit visible Close X or Cancel button).
+  - Close Control: **REQUIRED** (explicit visible Close affordance).
   - Single Layer Discipline: Exactly one temporary overlay layer at a time.
   - Contextual Task Boundary: Reserved strictly for contained tasks, filter refinement, pickers, and transient confirmations.
-- **Open Parameters:** Exact shadow elevation (`OPEN / DEFERRED_TO_4I`), scrim opacity and backdrop blur (`OPEN / DEFERRED_TO_4I`), exact native height detents and spring dynamics (`DEFERRED_TO_4I`). 85% max-height in Web pilot is a controlled geometry reference only.
+- **Open Parameters:** Exact shadow elevation (`OPEN / DEFERRED_TO_4I`), scrim opacity and backdrop blur (`OPEN / DEFERRED_TO_4I`), exact native height detents, motion curves, and spring dynamics (`DEFERRED_TO_4I`). 85% max-height in Web pilot is a controlled geometry reference only.
 - **Anti-Patterns:** BottomSheet is **NEVER** a full-screen navigation substitute. It must not be used for Auth V2 (`08 → 09 → 10`), Property Detail, Booking Request Review (Screen 07), multi-step wizards, or full entity evaluations.
 
 ---
@@ -21,7 +22,7 @@
 | `Scrim` | Dimmed backdrop behind sheet | Blocks interaction with underlying page; conditional tap-dismiss. |
 | `SheetSurface` | Elevated container (`surface.elevated`) | 16px top border radius; flat bottom edges anchored to viewport base. |
 | `DragHandle` | Visual affordance for swiping | **OPTIONAL**. Governed only when the sheet is physically draggable and supported by platform conventions. Not universal Canon. |
-| `Header` | Title + explicit close affordance | Contains clear Arabic title (`17px font-bold`) and explicit Close X button (`>=48px` touch target). |
+| `Header` | Title + explicit close affordance | Contains clear Arabic title and explicit Close X affordance (iOS ~44pt / Android ~48dp touch target guidance; 48 CSS px is `CONTROLLED_WEB_REFERENCE_ONLY`). |
 | `Body` | Contained task content | Scrollable area with internal padding (`16px`). Keyboard-aware insets. |
 | `Footer` (Optional) | Action surface for confirmation | Sticky bottom action pair (e.g. "تطبيق الفلاتر" / "إعادة ضبط"). Follows `StickyActionSurface` rules. |
 
@@ -40,12 +41,12 @@
 
 | State | Visual Behavior | Interactive Behavior |
 |---|---|---|
-| `OPENING` | Sheet translates up from bottom edge (200–300ms transition curve). Scrim fades in. | Interaction blocked until fully anchored. |
+| `OPENING` | Sheet translates up from bottom edge via platform-appropriate transition. Scrim fades in. (Exact duration/curve `OPEN / DEFERRED_TO_4I`; Web pilot ~250ms CSS is `WEB_REFERENCE_ONLY`). | Interaction blocked until fully anchored. |
 | `PRESENTED / IDLE` | Stationary anchored at bottom; header fixed; body scrollable. | Full interaction with form controls and pickers. |
 | `INTERACTING / DRAGGING` | Follows finger drag gesture if draggable; opacity remains stable. | Scroll gestures disambiguated from dismiss drags. |
 | `SUBMITTING` | Footer action enters `SUBMITTING` state (spinner + disabled). | Sheet cannot be dismissed via backdrop or swipe during mutation. |
 | `DISMISSING` | Translates down below bottom edge. Scrim fades out. | Focus returned to trigger element on parent surface. |
-| `CLOSED` | Unmounted or hidden from accessibility tree (`aria-hidden="true"`). | Parent screen becomes fully interactive. |
+| `CLOSED` | Layer dismissed and removed from accessibility tree. | Parent screen becomes fully interactive. |
 
 ---
 
@@ -60,19 +61,32 @@
 ## 6. RTL & Bidirectional Layout Rules
 
 - **Header Alignment:** Sheet title is start-aligned (Right).
-- **Close Button:** Positioned at logical end (Left) in RTL header, or top-left corner with minimum 48px touch area.
+- **Close Button:** Positioned at logical end (Left) in RTL header, with platform touch target guidance (iOS ~44pt / Android ~48dp).
 - **Animation Direction:** Translates strictly along the vertical Y-axis (bottom to top); no directional X-axis movement to avoid RTL conflict.
-- **Content Flow:** All nested controls (radios, checkboxes, sliders, inputs) follow standard Arabic RTL flow.
+- **Content Flow:** All nested controls follow standard Arabic RTL flow.
 
 ---
 
-## 7. Accessibility & Focus Management
+## 7. Accessibility Contract (Web vs Native Scoping)
 
-- **Modal Trap:** When open, focus is trapped within the BottomSheet (`role="dialog"` or `role="region"`, `aria-modal="true"`).
-- **Initial Focus:** Initial focus moves to sheet title or the first interactive element (e.g. search input).
-- **Keyboard Dismiss:** Pressing `Escape` triggers dismiss sequence (subject to unsaved-changes confirmation if dirty).
-- **Screen Reader Announcements:** Sheet title announced on mount (`aria-labelledby="sheet-title"`).
-- **Safe Area Insets:** Sheet footer respects device home indicator / bottom navigation bar safe area padding (`env(safe-area-inset-bottom)`).
+### A. Platform-Agnostic Accessibility Intent
+- Meaningful announcement: Opening the sheet is announced to assistive technology with its title.
+- Contained interaction: While the sheet is open, focus and touch navigation are contained within the sheet layer; underlying screen content is inert and inaccessible.
+- Discoverable dismiss: An explicit close affordance is immediately discoverable.
+- Logical focus restoration: Dismissing the sheet restores focus cleanly to the trigger element on the parent surface.
+
+### B. Current Web Mapping (`CURRENT_WEB_MAPPING`)
+- Uses `role="dialog"` or `role="region"`, with `aria-modal="true"`.
+- Sheet title linked via `aria-labelledby="sheet-title"`.
+- Keyboard dismiss via `Escape` key.
+- Unmounted or hidden from DOM tree (`aria-hidden="true"`).
+- Safe-area padding via `env(safe-area-inset-bottom)`.
+
+### C. Future Native Acceptance (`DEFERRED_TO_4I`)
+- Flutter `Semantics` modal barrier (`scopesRoute = true`, `barrierDismissible`).
+- VoiceOver (iOS) and TalkBack (Android) sheet container announcements and rotor navigation.
+- System Android back button / iOS predictive back gesture dismiss integration.
+- Native safe-area insets (`MediaQuery.paddingOf(context)` / `SafeArea`).
 
 ---
 

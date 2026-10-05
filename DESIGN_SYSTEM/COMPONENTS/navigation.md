@@ -1,5 +1,8 @@
 # Navigation & App Bar Contracts
 
+> [!NOTE]
+> **Component Maturity & Scope Disclaimer:** This specification defines shared component contracts across KONFRM's three roles (Customer, Owner, Admin). Web implementations (React 19 / TypeScript) serve as the current running baseline (`CONTROLLED_WEB_PILOT_REFERENCE`). Native mobile specifications establish contract boundaries for the future Flutter target (`PHASE_4I_TARGET`). Exact native mobile layout parameters and styling details are explicitly governed in Phase 4I.
+
 ## 1. Authority & Classification
 
 - **Governance Level:** `GOVERNED_CANONICAL_SPECIFICATION`
@@ -8,6 +11,7 @@
   - Customer Navigation: Exactly 4 persistent root destinations (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`).
   - Screen 16 Governed Exception (`MR-17`): Notification Center is an `ACCOUNT_SHELL_CHILD_EXCEPTION` where Bottom Navigation remains **VISIBLE** and the Account tab remains **ACTIVE**.
   - Owner Navigation: Action-First Operational Hub with nested stack routing. **Customer-style bottom navigation is PROHIBITED BY CANONICAL MOBILE ARCHITECTURE.**
+  - Owner Booking Chat Eligibility: Explicitly `DEFERRED_TO_PHASE_12_PRODUCT_POLICY`.
   - Dual Bottom Chrome Prohibition: Bottom navigation and sticky action surfaces must **NEVER** coexist on the same screen.
   - Header Families: Exactly 7 governed app bar screen configurations.
 - **Open Parameters:** Exact blue accent hex (`OPEN / CANDIDATE #276EF1`), shadow elevation parameters (`OPEN`), and physical touch target sizing in native mobile (`DEFERRED_TO_4I`). iOS ~44pt / Android ~48dp guidance.
@@ -40,17 +44,18 @@
   - Visible on top-level tabs.
   - Hidden on nested browsing, transactional review (Screen 07), and full-screen flows (Auth V2).
   - **Screen 16 Exception:** Visible on Notification Center; Account tab remains highlighted.
+- **200% Text Scaling Reflow:** Bottom navigation bar allows vertical expansion to accommodate larger text. Tab labels must remain understandable and wrap/reflow vertically; dropping or truncating labels is prohibited.
 
 ### 3.2 OwnerOperationalHub
 - **Architecture:** Zero bottom navigation. Operates as an Action-First Operational Hub with dashboard-style nested stack routing.
 - **Home Surface:**
   - High-contrast 3-column domain grid (`الطلبات`, `الوحدات`, `المحفظة`) for direct operational triage.
-  - Contextual access paths: Calendar (nested under Property operations), Messages (booking-contextual), Profile/Notifications (app bar affordances).
+  - Contextual access paths: Calendar (nested under Property operations), Messages (booking-contextual; full eligibility `DEFERRED_TO_PHASE_12_PRODUCT_POLICY`), Profile/Notifications (app bar affordances).
   - Prohibits hidden hamburger menus.
 
 ### 3.3 AppBar (7 Governed Screen Configurations)
 1. `TOP_LEVEL_CUSTOMER`: Standalone KONFRM mark (32px, `alt="KONFRM"`) + single account/identity affordance on Explore:
-   - Guest: `UserRoundPlus` icon button (44px target, routes to Auth V2).
+   - Guest: `UserRoundPlus` icon button (routes to Auth V2).
    - Authenticated: Avatar / initials / `UserRound` routing to Account.
    - Notifications: Zero Bell icon on Explore; Notification Center is inside Account.
 2. `NESTED_CUSTOMER`: Contextual header for browsing detail: RTL Back button (arrow pointing right [➔]) + Page title + optional actions (Share, Favorite).
@@ -97,9 +102,20 @@
 
 ## 7. Accessibility & Touch Discipline
 
-- **Touch Targets:** Minimum **44 × 44 pt** (iOS) / **48 × 48 dp** (Android) for all tab items, back buttons, and header actions.
-- **Screen Reader Roles:** Bottom navigation uses `<nav aria-label="التنقل الرئيسي">` with `aria-current="page"` on the active tab.
-- **Keyboard Navigation:** Left/Right arrow keys navigate tabs; Enter/Space activates.
+### 7.1 Platform-Agnostic Intent
+- **Hit Target Bounds:** Navigation items, back buttons, and header actions must provide sufficient interactive area meeting platform standards.
+- **Active Destination Announcement:** The currently active root destination or step must be explicitly announced to assistive technology.
+- **Stack Hierarchy Communication:** Screen title and back affordance clearly convey current position in the navigation hierarchy.
+
+### 7.2 Current Web Mapping (`CONTROLLED_WEB_PILOT_REFERENCE`)
+- Minimum **48 × 48 px** CSS hit area.
+- Bottom navigation uses `<nav aria-label="التنقل الرئيسي">` with `aria-current="page"` on the active tab item.
+- Left/Right arrow keys navigate tabs; Enter/Space activates.
+
+### 7.3 Future Native Mobile Acceptance (`DEFERRED_TO_PHASE_4I`)
+- Minimum touch targets: iOS ~44pt / Android ~48dp.
+- Native mobile tab bar semantics and screen reader announcements.
+- Platform safe area insets (`SafeArea`) applied to both top app bar and bottom navigation surfaces.
 
 ---
 

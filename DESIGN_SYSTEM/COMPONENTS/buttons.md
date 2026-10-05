@@ -1,8 +1,11 @@
 # Button and IconButton
 
-**Governance Status:** `CANONICAL COMPONENT CONTRACT — PHASE 4H`
-**Phase Integration:** Phase 4C (Action System) / Phase 4H (Contract Formalization)
-**Native Mobile Status:** `Native Component & Accessibility Acceptance: DEFERRED TO PHASE 4I`
+> [!NOTE]
+> **Component Maturity & Scope Disclaimer:** This specification defines shared component contracts across KONFRM's three roles (Customer, Owner, Admin). Web implementations (React 19 / TypeScript) serve as the current running baseline (`CONTROLLED_WEB_PILOT_REFERENCE`). Native mobile specifications establish contract boundaries for the future Flutter target (`PHASE_4I_TARGET`). Exact native mobile layout parameters and styling details are explicitly governed in Phase 4I.
+
+- **Governance Status:** `CANONICAL COMPONENT CONTRACT — PHASE 4H`
+- **Phase Integration:** Phase 4C (Action System) / Phase 4H (Contract Formalization)
+- **Native Mobile Status:** `Native Component & Accessibility Acceptance: DEFERRED TO PHASE 4I`
 
 ---
 
@@ -26,7 +29,7 @@ This document defines the component contract for Buttons and IconButtons across 
 
 ---
 
-## 2. Current Web Implementation / Token Authority
+## 3. Current Web Implementation / Token Authority
 
 The active React/Web applications continue to consume the established web tokens and styling rules. These tokens remain active authority for the web codebase:
 
@@ -47,11 +50,11 @@ The active React/Web applications continue to consume the established web tokens
 
 ---
 
-## 3. Mobile Phase 4C Provisional Action Mapping
+## 4. Mobile Phase 4C Provisional Action Mapping
 
 For future mobile applications, Phase 4C establishes a semantic, hierarchy-driven action grammar. Visual treatment is determined by **action semantics, consequence, and hierarchy**, rather than arbitrary container styles.
 
-### 3.1 Semantic Action Roles (Mobile Provisional)
+### 4.1 Semantic Action Roles (Mobile Provisional)
 
 | Mobile Action Role | Semantic Purpose | Provisional Treatment | Governance Status |
 | :--- | :--- | :--- | :--- |
@@ -64,12 +67,12 @@ For future mobile applications, Phase 4C establishes a semantic, hierarchy-drive
 | **Destructive Primary** | Affirmative confirmation of an intentional destructive action within an explicit destructive confirmation context. | **Destructive Solid Fill**<br>Radius: `OPEN` | **PROVISIONAL STRATEGY**<br>(Confirmation context gated) |
 | **Destructive Tertiary / Ghost** | Low-emphasis discard or removal for genuinely low-consequence operations. | **Destructive Ghost** (text-only, transparent fill) | **PROVISIONAL STRATEGY**<br>(Strict low-consequence gate) |
 
-### 3.2 Primary Uniqueness & Coexistence
+### 4.2 Primary Uniqueness & Coexistence
 - **Scope:** Exactly **one Decision Primary per active decision point / decision unit**.
 - **Coexistence:** Multiple Decision Primaries may coexist in the same viewport **only** when they belong to distinct, independently actionable decision units (e.g., consecutive Owner booking request cards in an operational list). They must never compete for visual dominance within the same decision hierarchy.
 - **Lifecycle Validity:** A Decision Primary must represent an actionable, server-valid transition. It must never visually imply a lifecycle transition that canonical backend state does not permit (`UX-ACTION-01`).
 
-### 3.3 Conditional Neutral Outline Eligibility
+### 4.3 Conditional Neutral Outline Eligibility
 On standard light surfaces, Subtle Fill remains the **default provisional secondary treatment**. Neutral Outline may replace Subtle Fill **if and only if all of the following conditions are met**:
 1. Subtle Fill does not provide sufficient component boundary separation against the surrounding surface in the actual container context.
 2. Ghost / Text-like treatment would provide insufficient visible affordance for the action's importance.
@@ -78,7 +81,7 @@ On standard light surfaces, Subtle Fill remains the **default provisional second
 5. The affordance cannot be resolved more cleanly through layout, grouping, or surface contrast.
 *(Eligibility is perceptual and contrast-driven; no hardcoded raw hex or unvalidated numeric contrast threshold rules apply).*
 
-### 3.4 Destructive Consequence Dimension
+### 4.4 Destructive Consequence Dimension
 Destructive is not an ad-hoc visual style, but a **semantic consequence dimension** evaluated by **Consequence Level**, **Hierarchy Rank**, and **Discoverability**:
 1. **Destructive Primary:** Permitted **only** within an explicit destructive confirmation context (dialog, sheet, modal, full-screen confirmation, or other platform-appropriate confirmation surface) where the destructive consequence is clearly stated, two-step confirmation is warranted per Product/UX authority, and Product Canon permits the action.
 2. **Destructive Secondary:** Standard visible destructive treatment (**Destructive Outline**) for paired rejection/discard actions or standalone destructive actions requiring clear danger affordance without a full confirmation modal.
@@ -94,7 +97,7 @@ Destructive is not an ad-hoc visual style, but a **semantic consequence dimensio
 
 ---
 
-## 4. Contextual Actions
+## 5. Contextual Actions
 
 **Contextual** is an attachment and placement relationship, **not an arbitrary eighth visual style**:
 - A contextual action is physically and semantically attached to the specific object, list row, or task it affects.
@@ -102,7 +105,7 @@ Destructive is not an ad-hoc visual style, but a **semantic consequence dimensio
 
 ---
 
-## 5. Interaction State Semantics
+## 6. Interaction State Semantics
 
 Implementations must provide comprehensive state coverage based on shared semantic requirements. Exact Web pilot CSS values (e.g., `scale(0.98)`, `brightness(0.90)`, `opacity: 0.85`, `0 0 0 2px #fff`) are **pilot reference treatments**, not cross-platform contract tokens:
 
@@ -112,7 +115,7 @@ Implementations must provide comprehensive state coverage based on shared semant
 - **Loading:**
   - Active busy/progress feedback, visibly distinct from disabled.
   - Multi-input activation suppression across all inputs (touch, mouse, keyboard Space/Enter).
-  - Duplicate submission protection.
+  - Single in-flight mutation guard against duplicate network mutations.
   - Accessible busy semantics (`aria-busy` on Web / platform semantic equivalent).
 - **Disabled:** Clearly unavailable and non-interactive. Communicates unavailability; recovery action replaces disabled state where understanding requires it.
 - **Selected:** Used exclusively where an action carries toggle or selection semantics.
@@ -120,22 +123,22 @@ Implementations must provide comprehensive state coverage based on shared semant
 
 ---
 
-## 6. Touch Targets and Component Geometry
+## 7. Touch Targets and Component Geometry
 
-### 6.1 Separation of Concerns
+### 7.1 Separation of Concerns
 1. **Visible Component Geometry:** The rendered visual boundary of the button (background, padding, border). Exact visible mobile component height and padding remain: **`OPEN / IMPLEMENTATION VALIDATION REQUIRED`** (no universal 52–56px mobile height canon).
 2. **Interactive Target Bounds:** The tappable hit area evaluated by the platform touch dispatcher.
 
-### 6.2 Platform Touch Target Guidance
+### 7.2 Platform Touch Target Guidance
 - **iOS Platform Guidance:** Minimum **`44pt × 44pt`** interactive area (Apple Human Interface Guidelines).
 - **Android Platform Guidance:** Minimum **`48dp × 48dp`** interactive area (Android Material / Accessibility Guidance).
 - **Guidance Rule:** There is no universal raw `44px` or `48px` native mobile rule. Compact or inline controls expand their invisible touch target bounds to satisfy platform guidance without distorting visible component padding.
 
 ---
 
-## 7. Action Group Reflow Contract
+## 8. Action Group Reflow Contract
 
-### 7.1 Reflow Requirement
+### 8.1 Reflow Requirement
 Action groups must reflow from a horizontal arrangement to a vertical/stacked arrangement **when and only when** the horizontal composition cannot preserve:
 1. Complete readable labels (zero truncation of decision-critical text).
 2. Valid platform touch-target geometry.
@@ -144,6 +147,27 @@ Action groups must reflow from a horizontal arrangement to a vertical/stacked ar
 5. Zero clipping and zero overlap.
 6. Clear visual hierarchy.
 
-### 7.2 Evidence Boundary
+### 8.2 Evidence Boundary
 - Controlled Stage 2 evidence (`hybrid_action_360_stress_reflow.png`) reflects a **controlled 360px Web frame-width simulation** under 200% text scaling (30px text vs 15px baseline).
 - There is **no universal `150%` or `200%` numeric breakpoint token**, and **no universal `360px` hardcoded media query**. Layout reflow is evaluated dynamically by platform-adaptive layout containers based on label length and text scaling.
+
+---
+
+## 9. Accessibility Contract (Three-Tier Scope)
+
+### 9.1 Platform-Agnostic Intent
+- **Semantic Clarity:** Action intent and consequence rank (Primary, Secondary, Destructive) must be clearly conveyed through visual styling and assistive technology semantics.
+- **Single Action Mutex:** Buttons in loading state must prevent duplicate execution regardless of input mechanism.
+- **Independent Hit Bounds:** Controls maintain accessible touch hit areas decoupled from compact visual geometry.
+
+### 9.2 Current Web Mapping (`CONTROLLED_WEB_PILOT_REFERENCE`)
+- Standard `<button>` elements with type attributes (`type="button" | "submit"`).
+- `aria-label` provided for icon-only buttons (`IconButton`).
+- `aria-busy="true"` set during in-flight mutations.
+- `aria-disabled="true"` for unavailable states.
+- Fully operable via keyboard Tab navigation and Enter/Space activation.
+
+### 9.3 Future Native Mobile Acceptance (`DEFERRED_TO_PHASE_4I`)
+- Minimum interactive targets: iOS ~44pt / Android ~48dp.
+- Native Flutter `Semantics` (e.g. `button: true`, `enabled: ...`, `label: ...`).
+- Physical device accessibility testing under VoiceOver and TalkBack.

@@ -1,5 +1,8 @@
 # StatusBadge Contract
 
+> [!NOTE]
+> **Component Maturity & Scope Disclaimer:** This specification defines shared component contracts across KONFRM's three roles (Customer, Owner, Admin). Web implementations (React 19 / TypeScript) serve as the current running baseline (`CONTROLLED_WEB_PILOT_REFERENCE`). Native mobile specifications establish contract boundaries for the future Flutter target (`PHASE_4I_TARGET`). Exact native mobile layout parameters and styling details are explicitly governed in Phase 4I.
+
 ## 1. Authority & Classification
 
 - **Governance Level:** `GOVERNED_CANONICAL_SPECIFICATION`
@@ -10,13 +13,16 @@
   - Actor Causality Invariant: `CANCELLED_BY_OWNER` and `CANCELLED_BY_GUEST` must preserve actor causality.
   - Verification Truth vs Lifecycle Enum: Property rejection is `properties.verification_status = 'REJECTED'`, returning lifecycle to `DRAFT`.
   - Normal Process != Warning: `PENDING` states are healthy progress; never map to amber/yellow warnings (`MR-17`).
+  - Text Contrast Target: Normal-size text within status badges targets a contrast ratio of `>= 4.5:1` against the badge background. (A `3:1` threshold applies strictly to large text or non-text boundary indicators / icons).
 - **Open Parameters:** Exact badge border/background token hexes (`OPEN / DEFERRED_TO_4I`).
 
 A `StatusBadge` is a semantic presentation of a canonical status, not an independently styled screen chip. It uses the corresponding semantic background, text and border token; an icon or dot is optional and cannot be the only signal.
 
 A status badge **identifies** canonical state; it does **not** substitute for required explanatory copy or recovery actions (`STATE_EXPLANATION_AND_RECOVERY_CONTRACT`).
 
-## Canonical Domain Status Mapping
+---
+
+## 2. Canonical Domain Status Mapping
 
 | Domain Family | Canonical Source & Classification | Status → Arabic Label Guidance | Semantic Category |
 |---|---|---|---|
@@ -31,25 +37,27 @@ A status badge **identifies** canonical state; it does **not** substitute for re
 
 Applications map internal enum values centrally and never expose them as raw technical strings. Exact role-aware Arabic wording may be refined centrally without changing business status semantics.
 
-## Architectural & Semantic Rules
+---
 
-### 1. Property Rejection is Verification Truth, Not Lifecycle Enum
+## 3. Architectural & Semantic Rules
+
+### 3.1 Property Rejection is Verification Truth, Not Lifecycle Enum
 `properties.status` has no `REJECTED` value (`DRAFT`, `PENDING_REVIEW`, `PUBLISHED`, `PAUSED`, `ARCHIVED`). Under canonical Admin review behavior, property rejection returns the lifecycle status to `DRAFT` and sets `properties.verification_status = 'REJECTED'`. UI may display an operational badge such as "مرفوضة" or "بحاجة إلى تعديل", but documentation and code must never treat `REJECTED` as a `properties.status` enum.
 
-### 2. Booking Cancellation Causal Discipline
+### 3.2 Booking Cancellation Causal Discipline
 The canonical `bookings.status` model preserves explicit actor causality: `CANCELLED_BY_OWNER` is strictly distinct from `CANCELLED_BY_GUEST`, and both are distinct from `REJECTED` (Owner decline prior to payment) and `EXPIRED` (passive timeout). Presentation must never collapse these into a generic `CANCELLED`. `COMPLETED` represents verified stay completion truth.
 
-### 3. Payout UNKNOWN Handling
+### 3.3 Payout UNKNOWN Handling
 The canonical `payout_requests.status` includes `UNKNOWN` for indeterminate provider/network states requiring reconciliation. It must be presented as `neutral_process` / `informational_process` ("قيد التحقق من حالة التحويل" for Owner; "حالة التحويل غير محسومة — تحتاج تحقق" for Admin). It must **NEVER** be presented as `COMPLETED`, `FAILED`, `REJECTED`, or `AVAILABLE`, and financial funds must remain reserved until authoritative reconciliation is finalized.
 
-### 4. Normal Process Statuses are Not Warnings
+### 3.4 Normal Process Statuses are Not Warnings
 Ordinary operational milestones (`PENDING_OWNER_APPROVAL`, `PENDING_REVIEW`, `Wallet PENDING`, `PENDING_VERIFICATION`, `Payout UNKNOWN`) represent healthy in-flight progress and **must NOT** map to warning/amber styling. They map to `neutral_process` or `informational_process`.
 
 Warning/attention semantics are reserved for genuine caution, consequential risk, or action requiring elevated attention when supported by canonical context.
 
 Exact semantic tokens and hex colors remain **OPEN / token-gated**.
 
-### 5. Status Badge is Not a Marketing Trust Badge
+### 3.5 Status Badge is Not a Marketing Trust Badge
 This contract maps canonical status to human presentation. It does **not** authorize customer-facing claims such as “إقامة موثقة من كونفرم”, “مضمونة” or similar marketing trust language.
 
 Specifically:

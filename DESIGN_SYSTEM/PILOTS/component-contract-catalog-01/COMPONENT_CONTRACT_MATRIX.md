@@ -2,38 +2,75 @@
 
 **Document Status:** CANONICAL CONTRACT SPECIFICATION — PHASE 4H  
 **Branch:** `design/component-contract-catalog-01`  
-**Purpose:** Formal, consumable contracts for all 20 component families across KONFRM, providing unambiguous behavioral, state, RTL, accessibility, and role-aware specifications.
+**Purpose:** Formal, consumable contracts for all component families across KONFRM, providing unambiguous behavioral, state, RTL, accessibility, and role-aware specifications.
 
 ---
 
-## 1. Master Component State Matrix
+## 1. Component State Matrices
 
-*Legend: `REQUIRED` = Built-in core state; `SUPPORTED` = Supported where semantically relevant; `N/A` = Not applicable to this component; `FORBIDDEN` = Prohibited by Canon/logic; `COMPOSE` = Composed with Phase 4G State System.*
+The Phase 4G State System establishes a strict four-category state architecture:
+1. **Component Interaction State** (Primitive control lifecycle: resting, pressed, focused, disabled, etc.)
+2. **View & Data State** (Collection & resource lifecycle: loading, loaded, empty, error, offline, unauthorized, partial, stale, conflict)
+3. **Action & Mutation State** (Network operation lifecycle: idle, submitting, succeeded, failed, conflicted, disabled)
+4. **Domain & Business Status** (Canonical backend entities: booking status, property status, payout status, KYC status)
 
-| Component Family | DEFAULT | PRESSED | FOCUSED | SELECTED | LOADING | DISABLED | ERROR | SUCCESS | PENDING | EMPTY | OFFLINE | UNAUTH | STALE | CONFLICT |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **Button (Primary/Secondary)** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `N/A` | `REQUIRED` | `REQUIRED` | `N/A` | `SUPPORTED` | `N/A` | `FORBIDDEN` | `COMPOSE` | `COMPOSE` | `N/A` | `COMPOSE` |
-| **IconButton** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `SUPPORTED` | `SUPPORTED` | `REQUIRED` | `N/A` | `N/A` | `N/A` | `FORBIDDEN` | `COMPOSE` | `COMPOSE` | `N/A` | `N/A` |
-| **InputField / Phone / Numeric** | `REQUIRED` | `N/A` | `REQUIRED` | `N/A` | `FORBIDDEN` | `REQUIRED` | `REQUIRED` | `SUPPORTED` | `N/A` | `REQUIRED` (Filled=False) | `COMPOSE` | `COMPOSE` | `N/A` | `N/A` |
-| **SearchField** | `REQUIRED` | `N/A` | `REQUIRED` | `N/A` | `SUPPORTED` | `REQUIRED` | `SUPPORTED` | `N/A` | `N/A` | `REQUIRED` | `COMPOSE` | `COMPOSE` | `N/A` | `N/A` |
-| **SelectTrigger** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `SUPPORTED` | `N/A` | `REQUIRED` | `REQUIRED` | `N/A` | `N/A` | `REQUIRED` | `COMPOSE` | `COMPOSE` | `N/A` | `N/A` |
-| **Checkbox** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `REQUIRED` | `N/A` | `REQUIRED` | `SUPPORTED` | `FORBIDDEN` (Sel!=Success) | `N/A` | `N/A` | `COMPOSE` | `COMPOSE` | `N/A` | `N/A` |
-| **StatusBadge** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `FORBIDDEN` | `N/A` | `N/A` | `REQUIRED` (Enum) | `REQUIRED` (Enum) | `FORBIDDEN` | `N/A` | `N/A` | `N/A` | `N/A` |
-| **SectionAlert** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `REQUIRED` | `SUPPORTED` | `REQUIRED` | `FORBIDDEN` | `REQUIRED` | `REQUIRED` | `REQUIRED` | `REQUIRED` |
-| **Toast** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `FORBIDDEN` (Critical) | `REQUIRED` (Low-risk) | `N/A` | `FORBIDDEN` | `N/A` | `N/A` | `N/A` | `N/A` |
-| **StateView (Screen/Section)** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `REQUIRED` | `N/A` | `REQUIRED` | `N/A` | `REQUIRED` | `REQUIRED` | `REQUIRED` | `REQUIRED` | `REQUIRED` | `REQUIRED` |
-| **SkeletonLoader** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `REQUIRED` | `N/A` | `FORBIDDEN` | `FORBIDDEN` | `N/A` | `FORBIDDEN` | `N/A` | `N/A` | `N/A` | `N/A` |
-| **StructuralContainer (Card)** | `REQUIRED` | `SUPPORTED` | `SUPPORTED` | `SUPPORTED` | `COMPOSE` | `SUPPORTED` | `COMPOSE` | `N/A` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` |
-| **OpenGroupedContainer** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `COMPOSE` | `N/A` | `COMPOSE` | `N/A` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` |
-| **ListRow / SettingsRow** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `SUPPORTED` | `N/A` | `REQUIRED` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
-| **CustomerPropertyCard** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `N/A` | `COMPOSE` | `N/A` | `COMPOSE` | `N/A` | `N/A` | `FORBIDDEN` | `COMPOSE` | `N/A` | `COMPOSE` | `N/A` |
-| **BookingCard** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `N/A` | `COMPOSE` | `N/A` | `COMPOSE` | `REQUIRED` (Status) | `REQUIRED` (Status) | `FORBIDDEN` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` |
-| **MetricCard / SummaryUnit** | `REQUIRED` | `SUPPORTED` | `SUPPORTED` | `N/A` | `COMPOSE` | `N/A` | `COMPOSE` | `N/A` | `COMPOSE` | `REQUIRED` (0 true) | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` |
-| **BottomNavigation (Customer)** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `REQUIRED` (Active) | `N/A` | `SUPPORTED` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
-| **AppBar Family** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
-| **BottomSheet** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `COMPOSE` | `N/A` | `COMPOSE` | `N/A` | `N/A` | `COMPOSE` | `N/A` | `N/A` | `N/A` | `N/A` |
-| **ConfirmationDialog** | `REQUIRED` | `N/A` | `REQUIRED` | `N/A` | `SUPPORTED` (CTA) | `SUPPORTED` (CTA) | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
-| **StickyActionSurface** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `SUPPORTED` (CTA) | `SUPPORTED` (CTA) | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
+To maintain semantic truth and prevent state category conflation, contracts evaluate state across three focused composition matrices:
+
+### 1.1 Component Interaction State Matrix
+
+*Evaluates local interactive and presentation states of individual component primitives.*
+
+| Component Family | RESTING / DEFAULT | PRESSED / ACTIVE | FOCUSED | HOVER (Web Only) | DISABLED | SELECTED | READ_ONLY | ERROR |
+|---|---|---|---|---|---|---|---|---|
+| **Button (Primary/Secondary)** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `SUPPORTED` | `REQUIRED` | `N/A` | `N/A` | `N/A` |
+| **IconButton** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `SUPPORTED` | `REQUIRED` | `SUPPORTED` | `N/A` | `N/A` |
+| **InputField / Phone / Numeric** | `REQUIRED` (Unfilled) | `N/A` | `REQUIRED` | `SUPPORTED` | `REQUIRED` | `N/A` | `SUPPORTED` | `REQUIRED` |
+| **SearchField** | `REQUIRED` (Unfilled) | `N/A` | `REQUIRED` | `SUPPORTED` | `REQUIRED` | `N/A` | `N/A` | `SUPPORTED` |
+| **SelectTrigger** | `REQUIRED` (Unfilled) | `REQUIRED` | `REQUIRED` | `SUPPORTED` | `REQUIRED` | `SUPPORTED` | `N/A` | `REQUIRED` |
+| **Checkbox** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `SUPPORTED` | `REQUIRED` | `REQUIRED` | `N/A` | `SUPPORTED` |
+| **StatusBadge** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
+| **SectionAlert** | `REQUIRED` | `N/A` | `SUPPORTED` (CTA) | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
+| **Toast** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
+| **StructuralContainer (Card)** | `REQUIRED` | `SUPPORTED` | `SUPPORTED` | `SUPPORTED` | `SUPPORTED` | `SUPPORTED` | `N/A` | `N/A` |
+| **OpenGroupedContainer** | `REQUIRED` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
+| **ListRow / SettingsRow** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `SUPPORTED` | `REQUIRED` | `SUPPORTED` | `N/A` | `N/A` |
+| **CustomerPropertyCard** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `SUPPORTED` | `N/A` | `N/A` | `N/A` | `N/A` |
+| **BookingCard** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `SUPPORTED` | `N/A` | `N/A` | `N/A` | `N/A` |
+| **BottomNavigation (Customer)** | `REQUIRED` | `REQUIRED` | `REQUIRED` | `N/A` | `SUPPORTED` | `REQUIRED` (Active) | `N/A` | `N/A` |
+| **AppBar Family** | `REQUIRED` | `N/A` | `SUPPORTED` (Actions) | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
+| **BottomSheet** | `REQUIRED` | `N/A` | `REQUIRED` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
+| **ConfirmationDialog** | `REQUIRED` | `N/A` | `REQUIRED` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |
+| **StickyActionSurface** | `REQUIRED` | `N/A` | `SUPPORTED` (CTA) | `N/A` | `SUPPORTED` (CTA) | `N/A` | `N/A` | `N/A` |
+
+*Note on Form Fields:* Form fields evaluate `UNFILLED / NO_VALUE` vs `FILLED`. They do **not** use the Phase 4G view-level `EMPTY` state.
+
+### 1.2 View & Data State Composition Matrix
+
+*Evaluates how container, surface, and composite components compose with Phase 4G View/Data lifecycle states.*
+
+| Component Family | LOADING | EMPTY | ERROR | OFFLINE | UNAUTHORIZED | PARTIAL | STALE | CONFLICT |
+|---|---|---|---|---|---|---|---|---|
+| **StateView (Screen / Section)** | `BUILT-IN` | `BUILT-IN` | `BUILT-IN` | `BUILT-IN` | `BUILT-IN` | `BUILT-IN` | `BUILT-IN` | `BUILT-IN` |
+| **SkeletonLoader** | `BUILT-IN` | `FORBIDDEN` | `FORBIDDEN` | `FORBIDDEN` | `FORBIDDEN` | `FORBIDDEN` | `FORBIDDEN` | `FORBIDDEN` |
+| **SectionAlert** | `N/A` | `FORBIDDEN` | `BUILT-IN` | `BUILT-IN` | `BUILT-IN` | `BUILT-IN` | `BUILT-IN` | `BUILT-IN` |
+| **SearchField** | `SUPPORTED` (In-flight) | `COMPOSE` (Zero results view) | `COMPOSE` | `COMPOSE` | `N/A` | `N/A` | `N/A` | `N/A` |
+| **CustomerPropertyCard** | `COMPOSE` (Skeleton) | `FORBIDDEN` | `COMPOSE` | `COMPOSE` | `N/A` | `N/A` | `COMPOSE` | `N/A` |
+| **BookingCard** | `COMPOSE` (Skeleton) | `FORBIDDEN` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `N/A` | `COMPOSE` | `COMPOSE` |
+| **OpenGroupedContainer** | `COMPOSE` (Skeleton) | `COMPOSE` (Empty list) | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` |
+| **StructuralContainer** | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` |
+| **BottomSheet** | `COMPOSE` | `COMPOSE` | `COMPOSE` | `COMPOSE` | `N/A` | `N/A` | `N/A` | `N/A` |
+
+### 1.3 Action & Mutation State Composition Matrix
+
+*Evaluates how interactive action primitives and forms manage operational mutations.*
+
+| Component Family | IDLE | SUBMITTING | SUCCEEDED | FAILED | CONFLICTED | DISABLED |
+|---|---|---|---|---|---|---|
+| **Button (Action Primary)** | `REQUIRED` | `REQUIRED` (In-flight spinner) | `SUPPORTED` (Flow contract) | `REQUIRED` (Returns to IDLE) | `COMPOSE` (Conflict alert) | `REQUIRED` |
+| **IconButton** | `REQUIRED` | `SUPPORTED` | `SUPPORTED` | `REQUIRED` | `N/A` | `REQUIRED` |
+| **FormComposition** | `REQUIRED` | `REQUIRED` (Single in-flight guard) | `REQUIRED` (Flow contract) | `REQUIRED` (Inline errors + alert) | `REQUIRED` | `REQUIRED` |
+| **ConfirmationDialog** | `REQUIRED` | `REQUIRED` (CTA spinner) | `REQUIRED` (Dismiss on success) | `REQUIRED` (Display error) | `REQUIRED` | `REQUIRED` |
+| **StickyActionSurface** | `REQUIRED` | `REQUIRED` (CTA spinner) | `REQUIRED` (Flow contract) | `REQUIRED` (Display error) | `REQUIRED` | `REQUIRED` |
 
 ---
 
@@ -47,9 +84,9 @@
 | **InputField** | Outline-Led 8px radius; Search & Date/Guest focus; Phone auth. | Outline-Led 8px radius; Operational pricing, listing edit, payout details. | Desktop compact tabular/form inputs with thin borders. | `SAME COMPONENT / ROLE VARIANT` |
 | **StatusBadge** | Displays booking/stay confirmation; NO generic "verified account" trust badges. | Displays Property, Booking Request, KYC, and Payout lifecycle states. | Displays raw queue status, audit eligibility, and verification flags. | `SAME COMPONENT / ROLE-FILTERED ENUMS` |
 | **SectionAlert** | Informational/Process guidance (Open typography); Booking conflict notices. | KYC rejected reasons, Payout delays, Property review correction notices. | System errors, worker exceptions, queue sync discrepancies. | `SAME COMPONENT / ROLE CONTENT` |
-| **Structural Container** | `OPEN_EDITORIAL_DEFAULT` (Unboxed facts, hairline dividers; Cards for property/quote only). | `OPEN_GROUPED_CONTENT` (One outer 12px container with internal hairline dividers). | Desktop multi-column audit tables and dense inspector panels. | `ROLE-SPECIFIC STRUCTURAL GRAMMAR` |
-| **ListRow** | Navigation & Settings links (Chevron pointing left [←]); Compact booking facts. | Operational unit queues, settings rows, booking request lists with trailing triage CTA. | Dense tabular rows with multi-column audit data and inline actions. | `ROLE-SPECIFIC COMPOSITION` |
-| **PropertyCard** | Discovery hero (1.4:1 media, favorite heart, price/night, compact facts). | Not used as discovery; Owner uses operational listing row with status badge. | Not used as discovery; Admin uses review queue record with image gallery inspector. | `CUSTOMER-SPECIFIC ASSEMBLY` |
+| **Structural Container** | `OPEN_EDITORIAL_DEFAULT` (Unboxed facts, hairline dividers; Cards for property/quote only). Flat by default. | `OPEN_GROUPED_CONTENT` (One outer 12px container with internal hairline dividers). Flat by default. | Desktop multi-column audit tables and dense inspector panels. | `ROLE-SPECIFIC STRUCTURAL GRAMMAR` |
+| **ListRow** | Navigation & Settings links (Chevron pointing left [←]); Compact booking facts. `CONTENT_ADAPTIVE` height. | Operational unit queues, settings rows, booking request lists with trailing triage CTA. `CONTENT_ADAPTIVE` height. | Dense tabular rows with multi-column audit data and inline actions. | `ROLE-SPECIFIC COMPOSITION` |
+| **PropertyCard** | Discovery hero (1.4:1 media reference, favorite heart, price/night, compact facts). | Not used as discovery; Owner uses operational listing row with status badge. | Not used as discovery; Admin uses review queue record with image gallery inspector. | `CUSTOMER-SPECIFIC ASSEMBLY` |
 | **BookingCard** | Stay recognition, dates, property title, payment/check-in next action. | Request priority, guest count, night count, payout amount, Accept/Decline action pair. | Multi-field audit record with renter identity, owner identity, payout status. | `ROLE-SPECIFIC ASSEMBLY` |
 | **Navigation Shell** | 4-tab persistent bottom nav (Explore, Favorites, Bookings, Account) + Screen 16 exception. | Action-First Nested stack routing; Customer-style bottom nav PROHIBITED. | Desktop persistent sidebar / top navigation bar. | `ROLE-SPECIFIC ARCHITECTURE` |
 | **AppBar** | Customer Header family (`TopLevelCustomer`, `NestedCustomer`, `TransactionalCustomer`). | Owner Header family (`TopLevelOwner`, `NestedOwner` with queue badges). | Desktop breadcrumb / operational workspace header. | `FAMILY / COMPOSITION PATTERN` |
@@ -63,8 +100,8 @@
 
 | Component | Product Truth Entity / Source | Server-Authoritative Fields | Hard Constraints & Presentation Truth |
 |---|---|---|---|
-| **StatusBadge** | `properties`, `bookings`, `payment_transactions`, `owner_wallets`, `payout_requests`, `owners`, `owner_verification_documents` | `status`, `verification_status` | Never fabricates status; normal pending is not warning; no marketing trust inference. |
-| **CustomerPropertyCard** | `properties` (public slice) | `id`, `title`, `region`, `resort_name`, `base_price_per_night`, `images`, `bedrooms`, `bathrooms`, `max_guests` | Real media only; no fake rating stars; no scarcity countdowns; price in EGP `/ ليلة`. |
+| **StatusBadge** | `properties`, `bookings`, `payment_transactions`, `owner_wallets`, `payout_requests`, `owners`, `owner_verification_documents` | `status`, `verification_status` | Never fabricates status; normal pending is not warning; no marketing trust inference. Text contrast targets >= 4.5:1. |
+| **CustomerPropertyCard** | `properties` (public slice) | `id`, `title`, `region`, `resort_name`, `base_price_per_night`, `images`, `bedrooms`, `bathrooms`, `max_guests` | Real media reference only (1.4:1); no fake rating stars; no scarcity countdowns; price in EGP `/ ليلة`. |
 | **Customer BookingCard** | `bookings`, `properties` | `status`, `check_in_date`, `check_out_date`, `total_amount`, `deposit_amount`, `property.title` | Actor causality preserved; never collapses `CANCELLED_BY_OWNER` with `CANCELLED_BY_GUEST`. |
 | **Owner BookingCard** | `bookings`, `renters` (via safe booking view) | `id`, `status`, `check_in_date`, `check_out_date`, `total_amount`, `deposit_amount`, `guests_count`, `created_at` | Shows decision urgency; shows deposit and Owner net entitlement (80%); no customer private data leakage. |
 | **MetricCard (Owner)** | `owner_wallets`, `bookings`, `properties` | `available_balance`, `pending_balance`, `pending_requests_count`, `published_units_count` | Available (min 500 EGP) strictly separated from Pending (releases 24h post check-in); never renders `0 ج.م` on query failure. |
@@ -96,14 +133,14 @@
 
 | Component | Accessible Role | Accessible Name / Label | State Exposure | 200% Text Reflow Expectation |
 |---|---|---|---|---|
-| **Button** | `button` | Text content or `aria-label` / `Semantics(label)`. | Exposes `disabled`, `busy` (loading). Never color-only. | Text wraps to multiple lines; button expands vertically; minimum 44pt/48dp target preserved; no text clipping. |
-| **IconButton** | `button` | Mandatory explicit label (`aria-label` / tooltip / semantic label). Never unlabeled. | Exposes `disabled`, `selected` (favorite heart). | Touch bounding box remains >=44pt/48dp; icon scales proportionally up to platform threshold. |
+| **Button** | `button` | Text content or `aria-label` / `Semantics(label)`. | Exposes `disabled`, `busy` (loading). Never color-only. | Text wraps to multiple lines; button expands vertically; minimum platform target preserved; no text clipping. |
+| **IconButton** | `button` | Mandatory explicit label (`aria-label` / tooltip / semantic label). Never unlabeled. | Exposes `disabled`, `selected` (favorite heart). | Touch bounding box satisfies platform guidance; icon scales proportionally up to platform threshold. |
 | **InputField** | `textbox` | Explicit persistent top label associated via `for`/`id` or native field label slot. | Exposes `invalid`, `required`, `disabled`, `error-message`. | Label and helper text wrap naturally; container height expands vertically to fit text; no horizontal scroll. |
-| **Checkbox** | `checkbox` | Label text associated with checkbox input. | Exposes `checked` / `unchecked` / `disabled`. Never relies on color alone. | Label wraps multiline; checkbox box remains aligned to first text line; target bounds >=44pt/48dp. |
-| **StatusBadge** | `status` / `img` (semantic) | Arabic label text serves as accessible name. | Identified by text, NOT color alone. | Badge container expands horizontally or wraps; font scales up cleanly without clipping descenders. |
+| **Checkbox** | `checkbox` | Label text associated with checkbox input. | Exposes `checked` / `unchecked` / `disabled`. Never relies on color alone. | Label wraps multiline; checkbox box remains aligned to first text line; target bounds satisfy platform guidance. |
+| **StatusBadge** | `status` / `img` (semantic) | Arabic label text serves as accessible name. | Identified by text, NOT color alone. Text contrast targets >= 4.5:1. | Badge container expands horizontally or wraps; font scales up cleanly without clipping descenders. |
 | **SectionAlert** | `alert` / `region` | Title and message read in sequence; retry CTA exposed. | Persistent until resolved. Focus moves to alert on consequential error. | Alert container grows vertically; text wraps; retry CTA wraps beneath copy if horizontal space tightens. |
 | **Toast** | `status` (live region) | Announcement read via `aria-live="polite"` / native accessibility announcement. | Transient lifecycle; dismissed automatically. | Toast width expands up to viewport margins; text wraps to multiple lines without truncation. |
-| **StateView** | `region` / `status` | State title + explanatory message + recovery action. | Complete state exposed to screen reader. | Full vertical reflow; illustration/icon scales or compresses gracefully; retry button remains prominent. |
+| **StateView** | `region` / `status` | State title + explanatory message + recovery action. | Complete state exposed to screen reader. | Full vertical reflow; illustration/icon scales or compresses gracefully; recovery CTA remains prominent. |
 | **BottomSheet** | `dialog` | Sheet title provides accessible name. Explicit close control accessible to focus. | Focus trapped inside sheet while open; restored to trigger upon dismissal. | Content within body scrolls vertically; header and footer CTA remain pinned; text wraps completely. |
 | **ConfirmationDialog**| `alertdialog` | Dialog title + consequence body announced immediately. Focus trapped inside dialog. | Safe dismiss action is default focused control; consequence action clearly labeled. | Dialog expands vertically up to 90vh; text wraps; action buttons stack vertically when text expands at 200%. |
 | **StickyActionSurface**| `region` | Screen reader encounters action at end of reading sequence. | In-flight loading state disables CTA. | Surface height expands to accommodate multiline CTA text; content scrollview clearance increases dynamically. |
@@ -121,10 +158,11 @@
 - **ANATOMY:** Container, Label Text, Optional Leading/Trailing Icon, In-flight Spinner.
 - **SEMANTIC VARIANTS:** Decision Primary (Stable Black `#000000`), Standard Primary, Neutral Secondary (Subtle Fill), Conditional Neutral Outline, Tertiary/Ghost, Destructive Primary, Destructive Secondary (Outline), Destructive Ghost.
 - **INTERACTION STATES:** Default, Pressed, Focused, Loading, Disabled.
+- **MUTATION PROTECTION:** In-flight mutex protection against duplicate network mutations (`SINGLE_IN_FLIGHT_MUTATION_GUARD`).
 - **CONTENT CONTRACT:** Action verbs in plain Arabic ("إرسال", "تأكيد", "إلغاء", "تحديث"). Never promise unverified states (e.g. never "تأكيد الحجز" prior to payment).
 - **PRODUCT TRUTH DEPENDENCIES:** Must represent valid server lifecycle transitions (`UX-ACTION-01`).
 - **RTL / BIDI:** Directional icons mirror (➔ / ←); Western Arabic digits (`0–9`).
-- **ACCESSIBILITY:** Accessible name mandatory; state not color-only; iOS 44pt / Android 48dp touch bounds.
+- **ACCESSIBILITY:** Accessible name mandatory; state not color-only; platform touch bounds (iOS ~44pt / Android ~48dp; Web min 48px CSS).
 - **200% REFLOW:** Text wraps to 2 lines; button height increases; no horizontal text truncation.
 - **COMPOSITION RULES:** Exactly ONE Decision Primary per active decision unit. Multiple Primaries allowed across distinct independent cards.
 - **FORBIDDEN COMBINATIONS:** Yellow/amber primary button; multiple competing Primaries in one decision unit; disabled button concealing recoverable failure without retry copy.
@@ -140,7 +178,7 @@
 - **PLATFORM AUTHORITY:** Outline-Led field baseline; Mobile Field Radius: `8px` (`FOUNDER-SELECTED PROVISIONAL FIELD_ONLY`).
 - **ANATOMY:** Explicit Top Label, Field Container (White surface, thin neutral outline), Value / Placeholder, Optional Leading Icon, Optional Trailing Clear Action, Helper Copy, Error Copy.
 - **SEMANTIC VARIANTS:** Text, Phone, Numeric / Currency, Multiline Textarea, Search.
-- **INTERACTION STATES:** Default, Focused (Restrained blue interaction accent), Filled, Error, Disabled, Read-only.
+- **INTERACTION STATES:** Unfilled (`NO_VALUE`), Focused (Restrained blue interaction accent), Filled, Error, Disabled, Read-only. (Does NOT use Phase 4G view-level `EMPTY`).
 - **CONTENT CONTRACT:** Plain Arabic labels; concise placeholder; specific error messages explaining exact failure.
 - **PRODUCT TRUTH DEPENDENCIES:** Field-level validation rules from backend schema.
 - **RTL / BIDI:** RTL text alignment; Phone and numeric inputs strictly LTR-isolated with Western Arabic digits (`0–9`).
@@ -149,7 +187,7 @@
 - **COMPOSITION RULES:** Label is always persistent top label; floating labels are PROHIBITED.
 - **FORBIDDEN COMBINATIONS:** Floating labels; error indicated by red border alone without text; placeholder-only fields without labels.
 - **GOVERNED VALUES:** Outline-Led baseline, Mobile Field Radius `8px` (provisional field-only), Cairo Profile B.
-- **OPEN VALUES:** Exact neutral outline hex, exact focus halo geometry, exact native field height.
+- **OPEN VALUES:** Exact neutral outline hex, exact focus halo geometry, exact native field height (`DEFERRED_TO_4I`).
 - **NATIVE ACCEPTANCE:** `DEFERRED_TO_4I` (virtual keyboard behavior, cursor positioning, input accessory).
 
 ### 6.3 StatusBadge
@@ -163,8 +201,8 @@
 - **INTERACTION STATES:** Static presentation (non-interactive).
 - **PRODUCT TRUTH DEPENDENCIES:** Bound strictly to canonical server enums (`properties.status`, `properties.verification_status`, `bookings.status`, `payment_transactions.status`, `owner_wallets`, `payout_requests.status`, `owners.verification_status`, `owner_verification_documents.status`).
 - **RTL / BIDI:** Arabic label text aligned center-right; Western Arabic digits if present.
-- **ACCESSIBILITY:** Accessible text label; never relies on color alone; minimum 3:1 text contrast.
-- **200% REFLOW:** Badge expands horizontally to fit scaled text; padding scales gracefully.
+- **ACCESSIBILITY:** Accessible text label; never relies on color alone; normal text targets `>= 4.5:1` text contrast against badge background.
+- **200% REFLOW:** Badge container expands horizontally to fit scaled text; padding scales gracefully.
 - **COMPOSITION RULES:** Always placed adjacent to entity title or within metadata row; never floating without context.
 - **FORBIDDEN COMBINATIONS:** Amber/warning styling for normal pending milestones; marketing trust labels ("إقامة موثقة"); generic "CANCELLED" collapsing actor causality.
 - **GOVERNED VALUES:** Canonical enum mappings (badges.md).
@@ -177,17 +215,17 @@
 - **DO NOT USE WHEN:** Toast must NEVER be used for critical failures, financial warnings, or blocking errors.
 - **ROLE APPLICABILITY:** Shared across Customer, Owner, Admin.
 - **PLATFORM AUTHORITY:** Phase 4G Four-Layer State Delivery model; MR-17 Founder rule (NO yellow/amber boxed containers).
-- **ANATOMY:** SectionAlert: Container (12px radius), Status Icon, Title, Description, Action Button. Toast: Floating pill, Icon, Confirmation text.
+- **ANATOMY:** SectionAlert: Container (`OPEN / COMPONENT-GOVERNED` radius), Status Icon, Title, Description, Action Button. Toast: Floating pill, Icon, Confirmation text.
 - **SEMANTIC VARIANTS:** Neutral Process, Informational (Soft Blue), Error / Danger (Rose/Red), Success.
-- **INTERACTION STATES:** SectionAlert: Static container with interactive retry CTA. Toast: Transient display with automatic dismissal.
+- **INTERACTION STATES:** SectionAlert: Static container with state-appropriate recovery CTA. Toast: Transient display with automatic dismissal.
 - **PRODUCT TRUTH DEPENDENCIES:** Server error codes, sync failures, mutation confirmations.
 - **RTL / BIDI:** RTL alignment; icon at visual right, text center, CTA at visual left or stacked below.
 - **ACCESSIBILITY:** Live region announcement; SectionAlert receives keyboard focus on error; Toast announced non-disruptively.
 - **200% REFLOW:** Full vertical wrapping; action button drops below copy if horizontal width < 300px; no clipping.
 - **COMPOSITION RULES:** Critical failures must be SectionAlert or ScreenState, NEVER Toast-only.
 - **FORBIDDEN COMBINATIONS:** Yellow/amber/orange container fills or borders (MR-17); toast-only critical errors.
-- **GOVERNED VALUES:** 12px container radius (provisional), 4-tier state delivery hierarchy.
-- **OPEN VALUES:** Exact toast display duration, exact semantic background/border hex.
+- **GOVERNED VALUES:** 4-tier state delivery hierarchy.
+- **OPEN VALUES:** Exact toast display duration (`OPEN / PLATFORM_ACCESSIBILITY_GATED`), exact semantic background/border hex, alert radius (`OPEN / COMPONENT-GOVERNED`).
 - **NATIVE ACCEPTANCE:** `DEFERRED_TO_4I` (native overlay positioning, accessibility focus management).
 
 ### 6.5 StateView (ScreenState, SectionState, InlineState)
@@ -196,9 +234,11 @@
 - **DO NOT USE WHEN:** Data is loaded and healthy (render normal components).
 - **ROLE APPLICABILITY:** Customer (Explore empty, Bookings error), Owner (Requests empty, Wallet error), Admin (Queue empty/error).
 - **PLATFORM AUTHORITY:** Phase 4G Role-Aware Layered State System (Candidate C).
-- **ANATOMY:** State Illustration / Icon, Title (`pageTitle` or `sectionTitle`), Explanatory Message (`body`), Primary Recovery Action, Optional Secondary Action.
+- **ANATOMY:** State Illustration / Icon, Title (`pageTitle` or `sectionTitle`), Explanatory Message (`body`), State-Appropriate Recovery Action (conditional on real action existing).
 - **SEMANTIC VARIANTS:** `LOADING`, `EMPTY`, `ERROR`, `OFFLINE`, `UNAUTHORIZED`, `PARTIAL`, `STALE`, `CONFLICT`.
-- **INTERACTION STATES:** Interactive recovery CTAs (`[إعادة المحاولة]`, `[تسجيل الدخول]`, `[تحديث]`).
+- **EMPTY STATE ACTION:** Conditional upon a real next action existing (`EMPTY_STATE_ACTION: CONDITIONAL_WHEN_REAL_NEXT_ACTION_EXISTS`). Admin review queue empty has NO recovery CTA.
+- **RECOVERY ACTIONS:** State-appropriate recovery (`STATE_APPROPRIATE_RECOVERY`: Retry, Refresh, Re-auth, Change filters, Review changed truth, Fix input, Return, Contact support — never a universal retry button).
+- **INTERACTION STATES:** Interactive recovery CTAs when appropriate.
 - **PRODUCT TRUTH DEPENDENCIES:** View lifecycle query state; answers the 4 Critical State Questions (What happened? What is still true? What is the impact? What can I do?).
 - **RTL / BIDI:** Centered or right-aligned Arabic text; icons non-directional.
 - **ACCESSIBILITY:** Announced to screen reader; focus directed to recovery CTA on error.
@@ -214,17 +254,18 @@
 - **USE WHEN:** Grouping homogeneous records (Owner queue) or framing an independently actionable entity (PropertyCard, Server Quote).
 - **DO NOT USE WHEN:** Content belongs to a continuous reading journey (use `OPEN_CONTENT` with unboxed typography and hairline dividers).
 - **ROLE APPLICABILITY:** Customer (`OPEN_EDITORIAL_DEFAULT`), Owner (`OPEN_GROUPED_CONTENT`), Admin (`DESKTOP_WEB_PRESERVED`).
-- **PLATFORM AUTHORITY:** Phase 4E Role-Aware Hybrid Structural System; Mobile Structural Container Radius: `12px` (`SYSTEM-EVALUATED PROVISIONAL`).
-- **ANATOMY:** Container (12px radius, flat elevation, subtle border), Optional Title, Content Rows, Internal Hairline Dividers (1px reference).
+- **PLATFORM AUTHORITY:** Phase 4E Role-Aware Hybrid Structural System; Mobile Structural Container Radius: `12px` (`SYSTEM-EVALUATED PROVISIONAL` for semantic containers and grouped collections; open editorial has NO container radius).
+- **ANATOMY:** Container (12px radius, `FLAT_BY_DEFAULT / NO SHADOW`, subtle border), Optional Title, Content Rows, Internal Hairline Dividers (1px reference).
 - **SEMANTIC VARIANTS:** `OPEN_CONTENT` (No container), `OPEN_GROUPED_CONTENT` (Single container with dividers), `INTERACTIVE_CONTAINER / CARD` (Bounded decision unit).
 - **INTERACTION STATES:** Resting, Pressed (ListRow), Focused.
+- **ADAPTIVE HEIGHT:** ListRow vertical dimension is `CONTENT_ADAPTIVE`, expanding vertically under 200% text scaling without clipping.
 - **RTL / BIDI:** RTL row layout; ListRow trailing chevron points **Left** (`←`) in RTL.
 - **ACCESSIBILITY:** Container boundaries marked for screen reader; whole-row clicks have accessible role.
 - **200% REFLOW:** Container expands vertically; rows expand in height; text wraps without clipping.
 - **COMPOSITION RULES:** Anti-card soup: DO NOT nest cards inside cards; DO NOT frame every text paragraph in a box.
 - **FORBIDDEN COMBINATIONS:** Card soup; yellow/amber container fills; dark KPI slabs.
 - **GOVERNED VALUES:** Mobile Structural Container Radius `12px` (provisional), Mobile Page Inset `16px` (provisional), Spacing Scale `4/8/12/16/24/32`.
-- **OPEN VALUES:** Exact neutral border hex, exact divider stroke width.
+- **OPEN VALUES:** Exact neutral border hex, exact divider stroke width, exact native ListRow height (`DEFERRED_TO_4I`).
 - **NATIVE ACCEPTANCE:** `DEFERRED_TO_4I`.
 
 ### 6.7 Customer PropertyCard
@@ -233,15 +274,18 @@
 - **DO NOT USE WHEN:** Displaying Owner management queues or Admin audit lists.
 - **ROLE APPLICABILITY:** Customer exclusively.
 - **PLATFORM AUTHORITY:** Phase 4E / Phase 5 Screen 03 spec (`CUSTOMER_PHASE5_MASTER_UX.md`).
-- **ANATOMY:** 1.4:1 Aspect Ratio Photo, Floating Favorite Heart Button (Top-Left, >=48px target), Title (Cairo `16px` bold, line-clamp 2), Location (Cairo `13px`, line-clamp 2), Compact Facts (X ضيوف · Y غرف · Z حمام), Price (Cairo `18–20px` EGP `/ ليلة`).
-- **INTERACTION STATES:** Default, Pressed, Favorite Toggled (Blue `#0059FF` or Interaction Accent).
+- **AUTHORITY SPLIT:**
+  - `CURRENT WEB PROPERTYCARD AUTHORITY`: React Tailwind implementation in `customer-app/`, >=48px CSS touch target, active `#0059FF`.
+  - `FUTURE MOBILE CONTRACT`: Cairo Profile B semantic roles, platform touch bounds (iOS ~44pt / Android ~48dp), interaction-accent role with exact blue `OPEN`, 1.4:1 ratio is `PROVISIONAL_MOBILE_REFERENCE`.
+- **ANATOMY:** 1.4:1 Aspect Ratio Photo reference, Floating Favorite Heart Button (Top-Left), Title (Cairo `16px` bold, line-clamp 2), Location (Cairo `13px`, line-clamp 2), Compact Facts (X ضيوف · Y غرف · Z حمام), Price (Cairo `18–20px` EGP `/ ليلة`).
+- **INTERACTION STATES:** Default, Pressed, Favorite Toggled.
 - **PRODUCT TRUTH DEPENDENCIES:** Server property record (`id`, `title`, `region`, `resort_name`, `base_price_per_night`, `images`, `bedrooms`, `bathrooms`, `max_guests`).
 - **RTL / BIDI:** RTL text alignment; Price in EGP `/ ليلة` with Western Arabic numerals (`0–9`).
-- **ACCESSIBILITY:** Card has single accessible action to view details; Favorite heart is independent accessible button.
+- **ACCESSIBILITY:** Card has single accessible action to view details; Favorite heart is independent accessible button with decoupled click handling.
 - **200% REFLOW:** Text wraps cleanly; line-clamps relaxed under extreme scaling; card height expands.
 - **COMPOSITION RULES:** Unboxed clean surface; no internal borders; entire card is interactive trigger to Property Details.
 - **FORBIDDEN COMBINATIONS:** Synthetic trust badges ("إقامة موثقة"); fake star ratings; scarcity counters ("تبقى غرفة واحدة!"); nested secondary links.
-- **GOVERNED VALUES:** Aspect ratio `1.4:1`, Cairo Profile B typography, EGP `/ ليلة` format.
+- **GOVERNED VALUES:** Aspect ratio `1.4:1` (`CURRENT_WEB_AUTHORITY + PROVISIONAL_MOBILE_REFERENCE`), Cairo Profile B typography, EGP `/ ليلة` format.
 - **OPEN VALUES:** Exact favorite heart accent blue hex.
 - **NATIVE ACCEPTANCE:** `DEFERRED_TO_4I` (image caching, hero transitions).
 
@@ -274,7 +318,7 @@
 - **DUAL BOTTOM CHROME BAN:** Must NEVER coexist with a sticky action surface on the same screen.
 - **RTL / BIDI:** Tabs ordered right-to-left; labels in Arabic; icons non-directional.
 - **ACCESSIBILITY:** `tablist` with `tab` items; exposes `selected` state; labels accessible.
-- **200% REFLOW:** Tab labels truncate gracefully or drop to icon+indicator under extreme scaling; safe touch bounds maintained.
+- **200% REFLOW:** Bar expands vertically to accommodate larger text; tab labels must remain understandable and wrap/reflow vertically; dropping or truncating labels is PROHIBITED.
 - **GOVERNED VALUES:** Exactly 4 root destinations, mutual exclusivity with sticky actions.
 - **OPEN VALUES:** Exact blue accent hex (`#276EF1` candidate), exact bar height token.
 - **NATIVE ACCEPTANCE:** `DEFERRED_TO_4I` (safe-area bottom padding, tab state persistence).
@@ -317,12 +361,12 @@
 - **COMPOSITION RULES:** Exactly ONE temporary layer at a time; cascading sheets PROHIBITED.
 - **FORBIDDEN COMBINATIONS:** Full-screen navigation masquerading as a sheet; sheet without an explicit close button; backdrop dismissal on unsaved forms.
 - **GOVERNED VALUES:** 16px provisional top radius, explicit close requirement.
-- **OPEN VALUES:** Exact native detents (50%/85%/full), exact scrim opacity/blur.
+- **OPEN VALUES:** Exact native detents, exact scrim opacity/blur, transition duration (`DEFERRED_TO_4I`).
 - **NATIVE ACCEPTANCE:** `DEFERRED_TO_4I` (gesture dragging physics, keyboard avoidance).
 
 ### 6.12 ConfirmationDialog
 - **PURPOSE:** Centered overlay for short, consequential confirmation and irreversible decisions.
-- **USE WHEN:** High-stakes actions: Owner reject booking request, destructive deletions, irreversible commits.
+- **USE WHEN:** High-stakes actions supported by current product capabilities: Owner reject booking request, Admin property/KYC rejection. (Future capabilities such as banning accounts, releasing disputed payouts, deleting listings, or calendar blocking are `DEFERRED_TO_OWNING_PRODUCT_PHASE`).
 - **DO NOT USE WHEN:** Navigation, long forms, entity details, routine low-risk actions.
 - **ROLE APPLICABILITY:** Shared across Customer, Owner, Admin.
 - **PLATFORM AUTHORITY:** Phase 4F Navigation & Overlay System.

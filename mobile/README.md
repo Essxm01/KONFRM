@@ -22,9 +22,8 @@ mobile/
 ├── apps/
 │   └── design_system_validation/     # Phase 4I Validation Harness App
 │       ├── android/                  # Android native project files
-│       ├── assets/fonts/             # Pinned Cairo font asset
 │       ├── lib/
-│       │   └── main.dart             # Arabic RTL validation shell
+│       │   └── main.dart             # Arabic RTL diagnostic scenario catalog
 │       ├── test/
 │       │   └── widget_test.dart      # Harness widget test
 │       └── pubspec.yaml              # Depends on konfrm_design_system
@@ -33,8 +32,7 @@ mobile/
         ├── assets/fonts/             # Pinned Cairo font asset & license
         ├── lib/
         │   ├── konfrm_design_system.dart # Package entrypoint
-        │   └── src/                  # Internal implementation files
-        │       └── constants.dart    # Package metadata
+        │   └── src/                  # Theme, primitives, bidi helpers
         ├── test/
         │   └── konfrm_design_system_test.dart # Package unit tests
         └── pubspec.yaml              # Package configuration
@@ -48,11 +46,10 @@ Codex branches directly from the Mission A baseline commit and implements within
 
 | Surface | Path in `mobile/packages/konfrm_design_system/` | Description |
 |---|---|---|
-| **Theme & Typography** | `lib/src/theme/` | Cairo Profile B text styles, colors, light-first theme data |
-| **Buttons & Actions** | `lib/src/components/buttons/` | Primary Button (6px `#000000`), Secondary, IconButton |
-| **Form & Inputs** | `lib/src/components/inputs/` | InputField (8px), SearchField, PhoneField |
-| **Status & States** | `lib/src/components/status/` | StatusBadge (8 canonical families), StateView |
-| **Alerts & Containers** | `lib/src/components/containers/` | SectionAlert (MR-17 no yellow boxes), StructuralContainer (12px) |
+| **Theme & Typography** | `lib/src/theme/konfrm_theme.dart` | Cairo Profile B roles; open colors separately labeled validation-only |
+| **Actions and Inputs** | `lib/src/components/primitives.dart` | Primary (6px), representative Secondary (radius lab-only), IconAction, Input/Phone/Search fields |
+| **Status and Structure** | `lib/src/components/primitives.dart` | 8-domain StatusBadge families, StateView, SectionAlert, StructuralContainer (12px provisional) |
+| **Navigation and scenarios** | `lib/src/components/primitives.dart`, validation app `lib/main.dart` | Four-destination Customer nav and separate StickyActionSurface / Owner grouping scenario |
 | **RTL / Bidi Helpers** | `lib/src/utils/` | Directional alignment helpers, bidi isolation utilities |
 | **Semantics** | Within component files | Accessible roles, labels, and traits |
 | **Widget Tests** | `test/` | Component widget tests, semantics, and contract tests |
@@ -105,7 +102,7 @@ flutter run -d <device-id>
 
 ---
 
-## 5. Governed Design Boundaries (Phase 4H Canon)
+## 5. Governed Design Boundaries and implementation maturity
 
 - **Typography:** Cairo Profile B (`display 24/700`, `pageTitle 20/700`, `sectionTitle 17/700`, `cardTitle 15/700`, `body 14/500`, `bodyStrong 14/700`, `label 12/600`, `supporting 12/400`, `numeric 16/700`, `button 15/700/1.20`).
 - **Primary Color:** Stable Black `#000000`.
@@ -118,3 +115,9 @@ flutter run -d <device-id>
 - **BottomSheet Top Radius:** `16px`.
 - **MR-17 Rule:** Zero yellow/amber boxed UI by default.
 - **RTL:** Native Arabic-first directionality; Western Arabic digits `0–9`; currency `1,600 ج.م`.
+
+**Maturity boundary:** Cairo Profile B is system-validated provisional. Primary black and the 6px Primary-only radius, 8px field-only radius, and 12px structural radius retain the classifications assigned by Design Canon. Exact blue, neutrals, semantic colors, shadows, secondary radius, native field height/focus, sheet detents, motion curves, and toast duration remain open. Any temporary visual values live under `ValidationReferenceOnly` in the package and are not approved tokens.
+
+The package is the sole owner of the Cairo font binary and OFL license. The app uses the registered package font family `packages/konfrm_design_system/Cairo`; package tests load the actual asset and app tests assert the resolved theme family. Text-scale choices in the catalog are Flutter layout simulations, not native Dynamic Type/fontScale acceptance. Android device runtime remains pending Antigravity Mission C. The 44 logical-unit iOS target branch is `IOS_LAYOUT_PREVIEW_ONLY`; all iOS native acceptance remains pending.
+
+The validation catalog is explicitly `LAB_SCENARIO_DATA`. Its Customer bottom navigation and StickyActionSurface appear in separate scenarios; it does not implement production routes, booking/payment operations, BottomSheet/Dialog runtime, or business state.

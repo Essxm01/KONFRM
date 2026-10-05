@@ -1,13 +1,14 @@
-# Active Task — PHASE_4I_NATIVE_BOOTSTRAP_BASELINE
+# Active Task — PHASE_4I_MISSION_B_PRIMITIVES_AND_SCENARIOS
 
-TASK_ID: PHASE_4I_NATIVE_BOOTSTRAP_BASELINE
-TASK_CLASS: NATIVE_MOBILE_INTEGRATION_BASELINE
-STATUS: IN_PROGRESS
-PR: NONE (MISSION_A_BASELINE)
+TASK_ID: PHASE_4I_MISSION_B_PRIMITIVES_AND_SCENARIOS
+TASK_CLASS: NATIVE_DESIGN_SYSTEM_IMPLEMENTATION
+STATUS: MISSION_B_IMPLEMENTED / READY_FOR_INTEGRATION_REVIEW
+PR: NONE (MISSION_B_BRANCH; NO PR TO MAIN)
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
-BRANCH: phase4i/native-bootstrap-baseline
-SCOPE: Phase 4I Mission A — Minimum Native Flutter Validation Foundation, minimum mobile/ repository boundary, validation harness app, konfrm_design_system package skeleton, Android toolchain validation, and stable Codex interface contract.
+BASE_MISSION_A_SHA: 9f24b2bea5130faeaa05e39b204ef4c8abc7b464
+BRANCH: phase4i/mobile-primitives-and-scenarios
+SCOPE: Phase 4I Mission B — governed shared Flutter typography/primitives, accessibility/RTL semantics, representative validation scenarios and tests, and bounded Mission A/B documentation reconciliation.
 
 ## Boundaries
 - Does NOT build Customer or Owner production Flutter applications.
@@ -18,7 +19,33 @@ SCOPE: Phase 4I Mission A — Minimum Native Flutter Validation Foundation, mini
 - Z Code is not used and no dependency/workflow may rely on it.
 - Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E), Role-Aware Contextual Navigation & Overlays + 16px Sheet Radius + 12px Dialog Radius + DF2 v1.5 + CHANGELOG 2.1.10 (4F), Role-Aware Layered State System + Four-Layer State Delivery + Canonical Domain Status Mappings + DF2 v1.6 + CHANGELOG 2.1.11 (4G), Component Contract Catalog + DF2 v1.7 + CHANGELOG 2.1.12 (4H).
 
-## Closure Gates — Mission A
+## Boundaries — Mission B
+- Does not implement Customer/Owner production apps or routing.
+- Does not modify Admin, backend, database, Supabase, Cloudflare, API contracts, business/finance/auth/booking/payment logic, token JSON, or Phase 5/6 implementation.
+- Android runtime, SafeArea/keyboard/back/sheet/dialog integration and native screenshots remain Antigravity Mission C.
+- Open values stay validation-reference-only and are not promoted to Canon.
+
+## Closure Gates — Mission B
+- [x] Required package/app pub get, analyze, tests, formatting, Android APK build, repository design/governance checks, and diff check pass.
+- [x] Package owns the single Cairo font source and validation app consumes it by package font semantics.
+- [x] Flutter primitives, semantics, RTL/bidi, scaling tests, and catalog scenarios match Phase 4H contracts.
+- [x] Production/backend/database/API/token JSON/Phase 5/6 forbidden paths remain untouched.
+- [ ] Changes are committed and pushed only to `phase4i/mobile-primitives-and-scenarios`; final HEAD recorded.
+
+---
+
+## Historical Task — PHASE_4I_NATIVE_BOOTSTRAP_BASELINE (Mission A)
+
+TASK_ID: PHASE_4I_NATIVE_BOOTSTRAP_BASELINE
+TASK_CLASS: NATIVE_MOBILE_INTEGRATION_BASELINE
+STATUS: MISSION_A_BASELINE_CREATED
+PR: NONE (MISSION_A_BASELINE)
+EXECUTION_STARTED: YES
+BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
+BRANCH: phase4i/native-bootstrap-baseline
+SCOPE: Minimum Flutter repository boundary, validation harness, package skeleton, Android toolchain check, and stable Codex interface contract.
+
+## Historical Closure Gates — Mission A
 - [x] Canonical starting base independently verified (`9c908d2756fba0d421e67959ecfbc13d0ca35f9b`).
 - [x] Minimum `mobile/` boundary created (`mobile/packages/konfrm_design_system`, `mobile/apps/design_system_validation`).
 - [x] Validation app created with Arabic RTL shell (`design_system_validation`).
@@ -33,7 +60,8 @@ SCOPE: Phase 4I Mission A — Minimum Native Flutter Validation Foundation, mini
 - [x] Legitimate tests pass (`flutter test` on package and app: 100% pass).
 - [x] Android debug build succeeds (`flutter build apk --debug`).
 - [x] Current State reflects merged Phase 4H and started Phase 4I.
-- [ ] Clean Git status and immutable baseline commit SHA produced.
+- [x] Immutable baseline commit SHA produced: `9f24b2bea5130faeaa05e39b204ef4c8abc7b464`.
+- [ ] A clean working-tree state at baseline creation is not attested by this Mission B checkout; pre-existing untracked workspace files remain excluded from Mission B.
 
 ---
 
@@ -93,9 +121,14 @@ SCOPE: Phase 4I Mission A — Minimum Native Flutter Validation Foundation, mini
 - **Primary Button Radius:** `6px` (`PRIMARY_ONLY`).
 - **Primary Color:** Stable Black `#000000`.
 
-## Next Roadmap Dependency (after 4H)
+## Historical Next Roadmap Dependency (recorded before Mission B; superseded)
 - **PHASE_4I_NATIVE_FLUTTER_FOUNDATION**
-  - **STATUS:** `NOT_STARTED`
+  - **STATUS:** `STARTED — MISSION A BASELINE ACCEPTED; MISSION B ACTIVE`
+  - **EXECUTION_STARTED:** `YES`
+
+## Next Roadmap Dependency (after Mission B)
+- **PHASE_4I_MISSION_C_ANDROID_RUNTIME_INTEGRATION**
+  - **STATUS:** `PENDING_INTEGRATION_REVIEW`
   - **EXECUTION_STARTED:** `NO`
 
 ---

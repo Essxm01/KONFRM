@@ -13,3 +13,6 @@
 library;
 
 export 'src/constants.dart';
+export 'src/theme/konfrm_theme.dart';
+export 'src/utils/bidi.dart';
+export 'src/components/primitives.dart';

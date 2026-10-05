@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-10-05
 **Merge checkpoint:** `9c908d2756fba0d421e67959ecfbc13d0ca35f9b` (PR #98)
-**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `CLOSED / MERGED / PUBLISHED` (PR #95); Phase 4F Navigation & Overlay System is `CLOSED / MERGED / PUBLISHED` (PR #96); Phase 4G Content & State Presentation is `CLOSED / MERGED / PUBLISHED` (PR #97); Phase 4H Component Contract & Reference Catalog is `CLOSED / MERGED / PUBLISHED` (PR #98); Phase 4I Native Flutter Foundation is `STARTED — MISSION A BOOTSTRAP`.
+**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `CLOSED / MERGED / PUBLISHED` (PR #95); Phase 4F Navigation & Overlay System is `CLOSED / MERGED / PUBLISHED` (PR #96); Phase 4G Content & State Presentation is `CLOSED / MERGED / PUBLISHED` (PR #97); Phase 4H Component Contract & Reference Catalog is `CLOSED / MERGED / PUBLISHED` (PR #98); Phase 4I Native Flutter Foundation is `MISSION B IMPLEMENTED / READY FOR INTEGRATION REVIEW` (Android runtime Mission C pending).
 **Cross-cutting governance infrastructure:** `DESIGN_COURT_V1` — `CLOSED / MERGED / PUBLISHED` (PR #93, merge checkpoint `674194e675731985b347d241d046f6acc48cf785`; 14 governed design skills, 8 internal; available as cross-cutting design-decision system).
 **Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System); PR #92 merged (Phase 4D Form & Selection Primitives); PR #93 merged (Design Court v1 Governance Infrastructure); PR #95 merged (Phase 4E Structural System); PR #96 merged (Phase 4F Navigation & Overlay System); PR #97 merged (Phase 4G Content & State Presentation System); PR #98 merged (Phase 4H Component Contract & Reference Catalog).
 
@@ -141,9 +141,9 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
   - Canonical Domain Status Mappings: Property, Booking, Payment, Payout, Wallet Buckets, Owner KYC Identity (`owners.verification_status`), Owner Verification Documents (`owner_verification_documents.status`)
   - DF2: `v1.6`
   - CHANGELOG: `2.1.11`
-- **Active Phase:** **Phase 4H — Component Contract & Reference Catalog**
-  - **Status:** `READY_FOR_BRIDGE_REVIEW` (PR #98)
-  - **Execution Started:** `YES`
-  - **Branch:** `design/component-contract-catalog-01`
-  - **Base Checkpoint:** `bb4534fc9edbb3b44ab6431c259f115220e7fbf9`
-- **Next roadmap dependency:** Phase 4I — Native Flutter Foundation (`STATUS: NOT_STARTED`, `EXECUTION_STARTED: NO`).
+- **Active Phase:** **Phase 4I — Native Flutter Foundation, Mission B**
+  - **Status:** `MISSION_B_IMPLEMENTED / READY_FOR_INTEGRATION_REVIEW` on `phase4i/mobile-primitives-and-scenarios`.
+  - **Base:** Mission A integration baseline `9f24b2bea5130faeaa05e39b204ef4c8abc7b464`.
+  - **Scope:** shared Flutter design-system primitives and diagnostic validation scenarios only; no production app, backend, database, API, or token JSON changes.
+  - **Native Android runtime acceptance:** pending Antigravity Mission C; this implementation does not claim device validation.
+- **Next roadmap dependency:** Phase 4I Mission C — Android runtime integration and evidence (`PENDING_INTEGRATION_REVIEW`). Phase 5/6 Flutter product implementation has not started.

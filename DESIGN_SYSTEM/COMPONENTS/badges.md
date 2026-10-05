@@ -4,27 +4,39 @@ A `StatusBadge` is a semantic presentation of a canonical status, not an indepen
 
 A status badge **identifies** canonical state; it does **not** substitute for required explanatory copy or recovery actions (`STATE_EXPLANATION_AND_RECOVERY_CONTRACT`).
 
-| Domain | Status → Arabic label guidance | Semantic category |
-|---|---|---|
-| Property | DRAFT → مسودة; PENDING_REVIEW → قيد المراجعة; PUBLISHED → منشورة; REJECTED → مرفوضة; PAUSED → موقوفة | neutral_process, neutral_process, success, danger, neutral_muted |
-| Booking | PENDING_OWNER_APPROVAL → بانتظار موافقة المالك; APPROVED_PENDING_PAYMENT → تمت الموافقة — العربون مطلوب; CONFIRMED → الحجز مؤكد; REJECTED → مرفوض; CANCELLED → ملغى; EXPIRED → انتهت صلاحية الطلب | neutral_process, informational_process, success, danger, neutral_muted, neutral_muted |
-| Payment | INITIATED → بدأ الدفع; PENDING → قيد المعالجة; SUCCEEDED → تم الدفع; FAILED → فشل الدفع | informational_process, neutral_process, success, danger |
-| Wallet Balance Buckets (`owner_wallets`) | AVAILABLE → متاح للسحب; PENDING → معلق (يتاح بعد 24 ساعة من تسجيل الوصول); HELD → محتجز; RESERVED_FOR_PAYOUT → محجوز لطلب سحب | success, neutral_process, neutral_attention, informational_process |
-| Payout Request Lifecycle (`payout_requests`) | PENDING_ADMIN_PROCESSING (PENDING) → قيد المراجعة; PROCESSING → قيد التحويل; COMPLETED → تم التحويل; FAILED → فشل التحويل; REJECTED → مرفوض; CANCELLED_BY_OWNER (CANCELLED) → ملغى من المالك | neutral_process, informational_process, success, danger, danger, neutral_muted |
-| Identity & Owner KYC | UNVERIFIED → غير موثق; PENDING_VERIFICATION → قيد المراجعة; VERIFIED → موثق; REJECTED → مرفوض | neutral_muted, neutral_process, success, danger |
+## Canonical Domain Status Mapping
 
-Applications map internal enum values centrally and never expose them as user-facing English text. Exact wording may be refined centrally without changing business status semantics.
+| Domain Family | Canonical Source & Classification | Status → Arabic Label Guidance | Semantic Category |
+|---|---|---|---|
+| **Property Lifecycle** | `properties.status`<br>`[SERVER_ENUM]` | `DRAFT` → مسودة<br>`PENDING_REVIEW` → قيد المراجعة<br>`PUBLISHED` → منشورة<br>`PAUSED` → موقوفة<br>`ARCHIVED` → مؤرشفة | `neutral_process`<br>`neutral_process`<br>`success`<br>`neutral_muted`<br>`neutral_muted` |
+| **Property Verification** | `properties.verification_status`<br>`[VERIFICATION_STATE / SERVER_ENUM]` | `UNVERIFIED` → غير موثق<br>`PENDING_VERIFICATION` → قيد الفحص<br>`VERIFIED` → موثق<br>`REJECTED` → مرفوض | `neutral_muted`<br>`neutral_process`<br>`success`<br>`danger` |
+| **Booking Lifecycle** | `bookings.status`<br>`[SERVER_ENUM]` | `PENDING_OWNER_APPROVAL` → بانتظار موافقة المالك<br>`APPROVED_PENDING_PAYMENT` → تمت الموافقة — العربون مطلوب<br>`CONFIRMED` → الحجز مؤكد<br>`REJECTED` → مرفوض من المالك<br>`EXPIRED` → انتهت صلاحية الطلب<br>`CANCELLED_BY_OWNER` → Customer: ألغى المالك الحجز / Owner: تم الإلغاء من جانبك / Admin: ملغى بواسطة المالك<br>`CANCELLED_BY_GUEST` → Customer: تم الإلغاء من جانبك / Owner: ألغى الضيف الحجز / Admin: ملغى بواسطة الضيف<br>`COMPLETED` → اكتملت الإقامة | `neutral_process`<br>`informational_process`<br>`success`<br>`danger`<br>`neutral_muted`<br>`neutral_muted`<br>`neutral_muted`<br>`success` |
+| **Payment Transactions** | `payment_transactions.status`<br>`[SERVER_ENUM]` | `INITIATED` → بدأ الدفع<br>`PENDING` → قيد المعالجة<br>`SUCCEEDED` → تم الدفع بنجاح<br>`FAILED` → فشل الدفع<br>`EXPIRED` → منتهية الصلاحية<br>`CANCELLED` → ملغاة<br>`REFUNDED` → مسترد بالكامل<br>`PARTIALLY_REFUNDED` → مسترد جزئياً<br>*(Adapter Alias: `NO_PAYMENT_INITIATED` [CLIENT_PRESENTATION_ALIAS] → لم يبدأ الدفع بعد)* | `informational_process`<br>`neutral_process`<br>`success`<br>`danger`<br>`neutral_muted`<br>`neutral_muted`<br>`informational_process`<br>`informational_process`<br>`neutral_muted` |
+| **Wallet Balance Buckets** | `owner_wallets` columns<br>`[BALANCE_BUCKET]` | `AVAILABLE` (`available_balance`) → متاح للسحب (الحد الأدنى 500 ج.م)<br>`PENDING` (`pending_balance`) → معلق (يتاح بعد 24 ساعة من تسجيل الوصول)<br>`HELD` (`held_balance`) → محتجز مؤقتاً<br>`RESERVED_FOR_PAYOUT` (`reserved_for_payout_balance`) → محجوز لطلب سحب | `success`<br>`neutral_process`<br>`neutral_attention`<br>`informational_process` |
+| **Payout Request Lifecycle** | `payout_requests.status`<br>`[SERVER_ENUM]` | `PENDING_ADMIN_PROCESSING` *(Legacy alias: `PENDING` [CLIENT_PRESENTATION_ALIAS])* → قيد المراجعة<br>`PROCESSING` → قيد التحويل<br>`COMPLETED` → تم التحويل بنجاح<br>`UNKNOWN` → Owner: قيد التحقق من حالة التحويل / Admin: حالة التحويل غير محسومة — تحتاج تحقق<br>`FAILED` → فشل التحويل<br>`REJECTED` → مرفوض<br>`CANCELLED_BY_OWNER` *(Legacy alias: `CANCELLED` [CLIENT_PRESENTATION_ALIAS])* → ملغى من المالك | `neutral_process`<br>`informational_process`<br>`success`<br>`neutral_process`<br>`danger`<br>`danger`<br>`neutral_muted` |
+| **Identity & Owner KYC** | `owner_profiles.verification_status` / `owner_verifications.status`<br>`[VERIFICATION_STATE / SERVER_ENUM]` | `UNVERIFIED` → غير موثق<br>`PENDING_VERIFICATION` → قيد المراجعة<br>`VERIFIED` → موثق<br>`REJECTED` → تعذر التوثيق | `neutral_muted`<br>`neutral_process`<br>`success`<br>`danger` |
 
-## Normal process statuses are not warnings
+Applications map internal enum values centrally and never expose them as raw technical strings. Exact role-aware Arabic wording may be refined centrally without changing business status semantics.
 
-Ordinary operational milestones (`PENDING_OWNER_APPROVAL`, `PENDING_REVIEW`, `Wallet PENDING`, `PENDING_VERIFICATION`) represent healthy in-flight progress and **must NOT** map to warning/amber styling. They map to `neutral_process` or `informational_process`.
+## Architectural & Semantic Rules
+
+### 1. Property Rejection is Verification Truth, Not Lifecycle Enum
+`properties.status` has no `REJECTED` value (`DRAFT`, `PENDING_REVIEW`, `PUBLISHED`, `PAUSED`, `ARCHIVED`). Under canonical Admin review behavior, property rejection returns the lifecycle status to `DRAFT` and sets `properties.verification_status = 'REJECTED'`. UI may display an operational badge such as "مرفوضة" or "بحاجة إلى تعديل", but documentation and code must never treat `REJECTED` as a `properties.status` enum.
+
+### 2. Booking Cancellation Causal Discipline
+The canonical `bookings.status` model preserves explicit actor causality: `CANCELLED_BY_OWNER` is strictly distinct from `CANCELLED_BY_GUEST`, and both are distinct from `REJECTED` (Owner decline prior to payment) and `EXPIRED` (passive timeout). Presentation must never collapse these into a generic `CANCELLED`. `COMPLETED` represents verified stay completion truth.
+
+### 3. Payout UNKNOWN Handling
+The canonical `payout_requests.status` includes `UNKNOWN` for indeterminate provider/network states requiring reconciliation. It must be presented as `neutral_process` / `informational_process` ("قيد التحقق من حالة التحويل" for Owner; "حالة التحويل غير محسومة — تحتاج تحقق" for Admin). It must **NEVER** be presented as `COMPLETED`, `FAILED`, `REJECTED`, or `AVAILABLE`, and financial funds must remain reserved until authoritative reconciliation is finalized.
+
+### 4. Normal Process Statuses are Not Warnings
+Ordinary operational milestones (`PENDING_OWNER_APPROVAL`, `PENDING_REVIEW`, `Wallet PENDING`, `PENDING_VERIFICATION`, `Payout UNKNOWN`) represent healthy in-flight progress and **must NOT** map to warning/amber styling. They map to `neutral_process` or `informational_process`.
 
 Warning/attention semantics are reserved for genuine caution, consequential risk, or action requiring elevated attention when supported by canonical context.
 
 Exact semantic tokens and hex colors remain **OPEN / token-gated**.
 
-## Status badge is not a marketing trust badge
-
+### 5. Status Badge is Not a Marketing Trust Badge
 This contract maps canonical status to human presentation. It does **not** authorize customer-facing claims such as “إقامة موثقة من كونفرم”, “مضمونة” or similar marketing trust language.
 
 Specifically:

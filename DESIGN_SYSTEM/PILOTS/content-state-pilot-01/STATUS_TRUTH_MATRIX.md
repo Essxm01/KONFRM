@@ -20,28 +20,41 @@
 
 ## 2. Comprehensive Status Presentation Matrix
 
-### 2.1 Property Lifecycle Statuses
+### 2.1 Property Statuses
+
+#### 2.1A Property Lifecycle Statuses (`properties.status` [SERVER_ENUM])
 
 | Canonical Enum | Customer Presentation | Owner Presentation | Admin Presentation | Visual Alarm Level | Preferred Component | Invariant / Boundary |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **`DRAFT`** | *Hidden (Never exposed)* | **مسودة**<br>*"أكمل بيانات الوحدة لإرسالها للمراجعة"* | **مسودة**<br>*"غير مقدمة للمراجعة"* | `MUTED` | Subtle Neutral Badge | Invisible to renters until published and verified. |
-| **`PENDING_REVIEW`** | *Hidden (Never exposed)* | **قيد المراجعة**<br>*"الوحدة قيد تدقيق فريق كونفرم"* | **بانتظار المراجعة**<br>*"تتطلب قرار اعتماد أو رفض"* | `NEUTRAL_PROCESS` (Soft Blue / Neutral) | Info Badge (No amber box) | In Admin review queue. Owner cannot directly publish, reject, or self-resubmit. |
+| **`PENDING_REVIEW`** | *Hidden (Never exposed)* | **قيد المراجعة**<br>*"الوحدة قيد تدقيق فريق كونفرم"* | **بانتظار المراجعة**<br>*"تتطلب قرار اعتماد أو رفض"* | `NEUTRAL_PROCESS` (Soft Blue / Neutral) | Info Badge (No amber box) | In Admin review queue. Owner cannot directly publish, pause, or self-resubmit. |
 | **`PUBLISHED`** | **متاحة للحجز**<br>*(Shown implicitly via card presence)* | **منشورة ومتاحة**<br>*"تظهر للضيوف ويمكن استقبال طلبات عليها"* | **معتمدة ومنشورة**<br>*"متاحة في نتائج البحث العامة"* | `SUCCESS` | Muted Success Badge | Verified + Published required for public listing visibility. |
-| **`REJECTED`** | *Hidden (Never exposed)* | **بحاجة إلى تعديل**<br>*"راجع ملاحظات المراجعة وعدّل الوحدة"* | **مرفوضة**<br>*"تم الرفض مع تدوين السبب"* | `DANGER` (Destructive/Rose) | Danger Badge + Inline Reason | Accompanied by plain Arabic rejection feedback. |
 | **`PAUSED`** | *Hidden from active search* | **موقوفة مؤقتاً**<br>*"الوحدة مخفية عن العرض العام"* | **موقوفة**<br>*"موقوفة من جانب المالك أو الإدارة"* | `MUTED` | Neutral Outline Badge | **SUPPORTED TRUTH:** Unit is paused/hidden from public listing. Booking request consequences remain governed by Product/availability authority. |
+| **`ARCHIVED`** | *Hidden (Never exposed)* | **مؤرشفة**<br>*"الوحدة في الأرشيف"* | **مؤرشفة**<br>*"وحدة خارج التداول"* | `MUTED` | Neutral Badge | Fully archived; excluded from active operations. |
+
+#### 2.1B Property Verification Statuses (`properties.verification_status` [VERIFICATION_STATE / SERVER_ENUM])
+
+| Canonical Enum | Customer Presentation | Owner Presentation | Admin Presentation | Visual Alarm Level | Preferred Component | Invariant / Boundary |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`UNVERIFIED`** | *Hidden* | **غير موثقة**<br>*"تتطلب إرفاق مستندات الملكية"* | **غير موثقة** | `MUTED` | Neutral Badge | Default initial state. |
+| **`PENDING_VERIFICATION`** | *Hidden* | **المستندات قيد الفحص**<br>*"يجري فحص مستندات الملكية"* | **فحص مستندات الملكية معلق** | `NEUTRAL_PROCESS` | Info Badge | In Admin verification queue. |
+| **`VERIFIED`** | *Implicit in listing* | **موثقة**<br>*"تم تدقيق مستندات الملكية"* | **مستندات معتمدة** | `SUCCESS` | Muted Success Badge | Authorizes publication. |
+| **`REJECTED`** | *Hidden* | **بحاجة إلى تعديل**<br>*"راجع ملاحظات المراجعة وعدّل المستندات"* | **مرفوضة**<br>*"تم رفض المستندات مع تدوين السبب"* | `DANGER` | Danger Badge + Reason | **VERIFICATION TRUTH:** Sets `verification_status = 'REJECTED'` and lifecycle returns to `DRAFT`. `REJECTED` is not a `properties.status` enum. |
 
 ---
 
-### 2.2 Booking Lifecycle Statuses
+### 2.2 Booking Lifecycle Statuses (`bookings.status` [SERVER_ENUM])
 
 | Canonical Enum | Customer Presentation | Owner Presentation | Admin Presentation | Visual Alarm Level | Preferred Component | Invariant / Boundary |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **`PENDING_OWNER_APPROVAL`** | **طلبك وصل للمالك**<br>*"بانتظار مراجعة وقرار المالك"* | **طلب حجز جديد**<br>*"يحتاج قرارك (قبول أو رفض)"* | **بانتظار موافقة المالك**<br>*"طلب معلق لدى المالك"* | `NEUTRAL_PROCESS` (Soft Blue / Neutral) | Info Badge / Inline Text | **REQUEST-BASED CANON:** Does NOT block dates. No payment collected. No Owner response SLA exists or is stated. Never an alarm or failure. |
 | **`APPROVED_PENDING_PAYMENT`** | **تمت الموافقة — سداد العربون مطلوب**<br>*"سدّد العربون لتأكيد الحجز."* | **تمت الموافقة من جانبك**<br>*"بانتظار سداد الضيف للعربون لتأكيد الحجز"* | **موافقة معلقة بالسداد**<br>*"بانتظار إتمام الدفع"* | `ACTION_REQUIRED` (Restrained Accent / Slate) | High-Contrast Badge + Action CTA | **BLOCKS DATES:** Deposit payment is the next governed step. Bottom nav attention dot active. **NO INVENTED PAYMENT DEADLINE.** |
 | **`CONFIRMED`** | **حجز مؤكد**<br>*"تم سداد العربون وتأكيد الإقامة بنجاح"* | **حجز مؤكد**<br>*"تم سداد العربون وتثبيت الموعد بالتقويم"* | **حجز مؤكد**<br>*"عربون مسدد والعملية مكتملة"* | `SUCCESS` | Muted Green Badge | **BLOCKS DATES:** Deposit finalized. Full booking confirmation established. |
-| **`REJECTED`** | **لم يتم قبول الطلب**<br>*"اعتذر المالك عن قبول هذا الطلب"* | **تم رفض الطلب**<br>*"تم رفض الطلب من جانبك"* | **مرفوض من المالك**<br>*"تم الرفض بواسطة المالك"* | `MUTED_DANGER` | Neutral/Destructive Badge | Strictly distinct from Guest Cancellation. |
-| **`CANCELLED`** | **تم الإلغاء**<br>*"ملغي من جانبك"* (or *"بسبب المالك"*) | **طلب ملغي**<br>*"أُلغي من قبل الضيف أو النظام"* | **ملغي**<br>*"مسجل كملغي مع بيان الطرف"* | `MUTED` | Neutral Gray Badge | **NEVER label cancellation as "مرفوض"**. Identifies causal party truthfully. |
+| **`REJECTED`** | **لم يتم قبول الطلب**<br>*"اعتذر المالك عن قبول هذا الطلب"* | **تم رفض الطلب**<br>*"تم رفض الطلب من جانبك"* | **مرفوض من المالك**<br>*"تم الرفض بواسطة المالك"* | `MUTED_DANGER` | Neutral/Destructive Badge | Strictly distinct from cancellation. Pre-payment decline. |
 | **`EXPIRED`** | **انتهت صلاحية الطلب** | **انتهت صلاحية الطلب** | **طلب منتهي الصلاحية** | `MUTED` | Neutral Gray Badge | **CAUSE-NEUTRAL TRUTH:** Request is no longer active. Expiry cause is not universally inferred (no assumed Owner delay or payment SLA). Dates are non-blocked. |
+| **`CANCELLED_BY_OWNER`** | **ألغى المالك الحجز**<br>*"تم إلغاء الحجز من جانب المالك"* | **تم الإلغاء من جانبك**<br>*"ألغيت هذا الحجز"* | **ملغى بواسطة المالك** | `MUTED` | Neutral Gray Badge | Causal actor explicit. Distinguishable from guest cancellation. |
+| **`CANCELLED_BY_GUEST`** | **تم الإلغاء من جانبك**<br>*"ألغيت طلب الحجز"* | **ألغى الضيف الحجز**<br>*"تم الإلغاء من جانب الضيف"* | **ملغى بواسطة الضيف** | `MUTED` | Neutral Gray Badge | Causal actor explicit. Distinguishable from owner cancellation. |
+| **`COMPLETED`** | **اكتملت الإقامة**<br>*"انتهت فترة الإقامة بنجاح"* | **إقامة مكتملة**<br>*"اكتملت الإقامة ومستحقاتها المالية"* | **إقامة مكتملة وموثقة** | `SUCCESS` | Muted Success Badge | Represents completed stay truth. |
 
 ---
 
@@ -110,3 +123,4 @@ These are two structurally distinct domain concepts: (A) balance buckets on the 
 | **Platform Commission (20%)** | **HIDDEN** | **VISIBLE** (in breakdown) | **VISIBLE** | **CUSTOMER LEAKAGE PROHIBITED:** Customer never sees platform split. Applies only to first-night deposit. |
 | **Owner Net Entitlement (80%)** | **HIDDEN** | **VISIBLE** | **VISIBLE** | Owner sees exact net credit from deposit. |
 | **Wallet Ledgers / Payout Fees** | **HIDDEN** | **VISIBLE** | **VISIBLE** | Payout provider fee is Owner-borne. Minimum payout is 500 EGP. |
+| **Taxes / VAT / E-Invoicing** | **HIDDEN** | **HIDDEN** | **OPEN / NOT YET GOVERNED** | **TAX_VAT_E_INVOICING_MODEL: OPEN / NOT YET GOVERNED.** Canonical financial schema does not contain general tax contracts. System must not fabricate tax amounts or invent VAT calculations. |

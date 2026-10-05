@@ -1031,7 +1031,7 @@
           <div class="section-alert info-stale">
             <span style="font-size:16px;">ℹ️</span>
             <div style="flex:1;">
-              <strong>تعذر تحديث النتائج.</strong> يتم عرض آخر بيانات متوفرة بدون تحديث مباشر.
+              <strong>تعذر تحديث النتائج.</strong> قد تكون الأسعار والتوافر قد تغيرت. يتم عرض آخر بيانات محفوظة.
             </div>
             <button class="btn-secondary" style="min-height:32px; padding:4px 10px; font-size:12px;">تحديث</button>
           </div>
@@ -1046,7 +1046,10 @@
               <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-muted);">سيدي عبد الرحمن</div>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
                 <span style="font-size:calc(13px * var(--scale-factor)); color:var(--text-secondary);">4 غرف نوم • 8 ضيوف</span>
-                <span style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">3,500 ج.م <span style="font-size:11px; font-weight:500;">/ ليلة</span></span>
+                <div style="text-align:left;">
+                  <div style="font-size:calc(13px * var(--scale-factor)); font-weight:700; color:var(--text-secondary);">آخر سعر معروف: 3,500 ج.م</div>
+                  <div style="font-size:calc(11px * var(--scale-factor)); color:#DC2626; font-weight:600;">(يحتاج تحديث)</div>
+                </div>
               </div>
             </div>
           </div>
@@ -1162,7 +1165,7 @@
 
     function getCustomerBookingsApproved() {
       if (currentCandidate === 'cand-a') {
-        // Candidate A: Badge-Centric (Chip soup / multiple pills)
+        // Candidate A: Badge-Centric (Chip soup / multiple pills with truthful facts)
         return `
           <div class="app-bar">
             <div class="bar-title">حجوزاتي (مرشح A)</div>
@@ -1174,8 +1177,8 @@
             <div class="struct-card">
               <div class="candidate-badge-row">
                 <span class="status-badge action-required">موافقة المالك</span>
-                <span class="status-badge info">سداد العربون</span>
-                <span class="status-badge danger">مهلة 24 ساعة</span>
+                <span class="status-badge info">سداد العربون مطلوب</span>
+                <span class="status-badge muted">لتأكيد الحجز</span>
                 <span class="status-badge muted" dir="ltr">BK-183223</span>
               </div>
               <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">فيلا خاصة بحمام سباحة — مارينا 5</div>
@@ -1192,7 +1195,7 @@
           ${renderCustomerNav('bookings', true)}
         `;
       } else if (currentCandidate === 'cand-b') {
-        // Candidate B: Message-Centric (Heavy boxed banner clutter)
+        // Candidate B: Message-Centric (Neutral boxed banner testing containment without false warnings)
         return `
           <div class="app-bar">
             <div class="bar-title">حجوزاتي (مرشح B)</div>
@@ -1206,9 +1209,9 @@
                 <span style="font-size:12px; font-weight:700; color:var(--text-muted); font-family:monospace;" dir="ltr">BK-183223</span>
               </div>
               <div class="candidate-box-banner">
-                <strong style="color:#0F172A; display:block; margin-bottom:4px;">⚠️ تنبيه: تمت موافقة المالك على طلبك</strong>
+                <strong style="color:#0F172A; display:block; margin-bottom:4px;">إجراء مطلوب: تمت موافقة المالك على طلبك</strong>
                 <p style="font-size:12px; color:#475569; line-height:1.4;">
-                  تمت مراجعة الطلب والموافقة عليه بنجاح. يرجى المتابعة وسداد عربون الليلة الأولى لتأكيد الحجز قبل انتهاء المهلة المحددة.
+                  تمت مراجعة الطلب والموافقة عليه بنجاح. سداد عربون الليلة الأولى مطلوب لتأكيد الحجز.
                 </p>
               </div>
               <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">فيلا خاصة بحمام سباحة — مارينا 5</div>
@@ -1237,13 +1240,14 @@
           </div>
 
           <div class="struct-card" style="border-color:#0F172A; border-width:1.5px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span class="status-badge action-required">تمت الموافقة — مطلوب سداد العربون</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+              <span class="status-badge action-required">تمت الموافقة — سداد العربون مطلوب</span>
               <span style="font-size:12px; font-weight:700; color:var(--text-muted); font-family:monospace;" dir="ltr">BK-183223</span>
             </div>
 
             <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">فيلا خاصة بحمام سباحة — مارينا 5</div>
             <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary);">20 أغسطس 2026 — 25 أغسطس 2026</div>
+            <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary); margin-top:2px;">سدّد العربون لتأكيد الحجز.</div>
 
             <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
               <span style="font-size:calc(13px * var(--scale-factor)); font-weight:600;">عربون الليلة الأولى:</span>
@@ -1325,7 +1329,7 @@
           </div>
 
           <div class="action-row" style="display:flex; gap:10px; margin-top:auto;">
-            <button class="btn-primary" style="flex:1;">موافقة على السعر الجديد والمتابعة</button>
+            <button class="btn-primary" style="flex:1;">موافق على السعر الجديد وإرسال الطلب</button>
             <button class="btn-secondary">إلغاء والعودة</button>
           </div>
         </div>
@@ -1573,7 +1577,7 @@
           <div class="struct-card" style="border-color:#059669; background:#F0FDF4;">
             <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700; color:#065F46;">الرصيد المتاح للسحب</span>
             <div style="font-size:calc(24px * var(--scale-factor)); font-weight:800; color:#065F46;">2,400 ج.م</div>
-            <div style="font-size:calc(11px * var(--scale-factor)); color:#047857;">مؤهل للتحويل البنكي الفوري (الحد الأدنى 500 ج.م)</div>
+            <div style="font-size:calc(11px * var(--scale-factor)); color:#047857;">متاح لطلب السحب (الحد الأدنى 500 ج.م)</div>
           </div>
 
           <!-- Pending Balance Card (24h Canon Rule) -->

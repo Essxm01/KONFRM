@@ -48,10 +48,11 @@ Server-authoritative entity lifecycle enums (defined by Business Canon, presente
 - **Property**: `DRAFT`, `PENDING_REVIEW`, `PUBLISHED`, `REJECTED`, `PAUSED`
 - **Booking**: `PENDING_OWNER_APPROVAL`, `APPROVED_PENDING_PAYMENT`, `CONFIRMED`, `REJECTED`, `CANCELLED`, `EXPIRED`
 - **Payment**: `INITIATED`, `PENDING`, `SUCCEEDED`, `FAILED`
-- **Wallet / Payout**: `PENDING`, `AVAILABLE`, `RESERVED`, `HELD`, `PROCESSING`, `COMPLETED`, `REJECTED`
-- **Identity / KYC**: `UNVERIFIED`, `PENDING_VERIFICATION`, `VERIFIED`, `REJECTED`
+- **Owner Wallet Balance Buckets (`owner_wallets`)**: `AVAILABLE`, `PENDING` (releases 24h after check-in), `HELD`, `RESERVED_FOR_PAYOUT`
+- **Payout Request Lifecycle (`payout_requests`, Migration 008)**: `PENDING_ADMIN_PROCESSING`, `PROCESSING`, `COMPLETED`, `UNKNOWN`, `FAILED`, `REJECTED`, `CANCELLED_BY_OWNER` (Owner presentation mapping: `PENDING`, `PROCESSING`, `COMPLETED`, `REJECTED`, `CANCELLED`)
+- **Identity & Verification**: Owner KYC: `UNVERIFIED`, `PENDING_VERIFICATION`, `VERIFIED`, `REJECTED`. Customer Auth V2: specific verified contact attributes only; generic customer trust badge is not authorized (`CUSTOMER_IDENTITY_TRUST_BADGE: NOT_AUTHORIZED`).
 
-*Governing Rule:* Process states (`PENDING_OWNER_APPROVAL`, `PENDING_REVIEW`, `PENDING`) are normal operational stages and **MUST NOT** be presented with warning/alarm visual semantics.
+*Governing Rule:* Process states (`PENDING_OWNER_APPROVAL`, `PENDING_REVIEW`, `Wallet PENDING`) are normal operational stages and **MUST NOT** be presented with warning/alarm visual semantics. Zero yellow/amber boxed UI (Founder Rule MR-17).
 
 ---
 
@@ -104,6 +105,7 @@ Every state presentation must answer up to four questions:
 - **Founder Rule:** NO yellow/amber/orange boxed UI for stale notices.
 - **Stale Visual Contract:** Neutral or soft-blue informational surface (`bg-slate-50 border-slate-200` or `bg-blue-50/50 border-blue-100`). Blue or neutral retry button.
 - **Transactional Boundary:** Availability and money truth cannot be presented as "safely stale". If fresh availability cannot be verified, booking submission MUST fail closed.
+- **Decision-Critical Data Contract:** Stale cached discovery cards may preserve recognition context (title, photos), but decision-critical data (prices, dates) must NOT appear freshly verified. Stale prices must be clearly marked non-current (e.g. *"آخر سعر معروف: 3,500 ج.م (يحتاج تحديث)"*) or withheld until refresh. Proceeding to detail or quote re-fetches canonical server truth fail-closed.
 
 ### 3.5 Conflict / Changed Truth Grammar
 - **Trigger:** Server revalidation returns a price change, availability block, or status shift between initial review and submission.

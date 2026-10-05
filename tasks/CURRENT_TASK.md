@@ -1,34 +1,43 @@
-# Active Task — PHASE_4F_NAVIGATION_OVERLAY_SYSTEM
+# Active Task — PHASE_4G_CONTENT_STATE_PRESENTATION
 
-TASK_ID: PHASE_4F_NAVIGATION_OVERLAY_SYSTEM
+TASK_ID: PHASE_4G_CONTENT_STATE_PRESENTATION
 TASK_CLASS: DESIGN_SYSTEM_FOUNDATION_PHASE
-STATUS: READY_FOR_PUBLICATION
+STATUS: ACTIVE
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: ff4ac0b4322b8a7c50273dd7a459a93dcf090551
-BRANCH: design/navigation-overlay-pilot-01
-SCOPE: Phase 4F Navigation & Overlay System — Discovery, authority reconciliation, role navigation architecture, app bar / back / close grammar, bottom navigation, nested navigation, bottom sheets, dialogs, sticky action surfaces, safe-area behavior, visual pilot, stress testing, Design Court v1 deliberation, self-correction, Founder decision gate preparation if material.
+BASE_MAIN_SHA: 2385cd13a078aedc1f40769af5b394eed1210c00
+BRANCH: design/content-state-pilot-01
+SCOPE: Phase 4G Content & State Presentation System — Discovery, state-truth inventory, product-status reconciliation, role-aware content grammar, loading / empty / error / offline / disabled / unauthorized / stale / partial / conflict / submission / success / feedback / recovery, domain status presentation, microcopy system, visual pilot, stress testing, Design Court v1 deliberation, self-correction, Founder decision gate preparation if material.
 
 ## Boundaries
-- Does NOT start Phase 4G (Content & State Presentation).
+- Does NOT start Phase 4H (Component Specification & Assembly).
 - Does NOT modify production applications (`customer-app/`, `owner-app/`, `admin-app/`).
 - Does NOT modify token files (`DESIGN_SYSTEM/TOKENS/*.json`) or backend/database/API contracts.
 - Does NOT initialize Flutter workspace.
-- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E).
-- Hard architecture locks: Customer 4 top-level destinations (Explore, Favorites, Bookings, Account; Screen 16 Notification Center as governed Account shell child exception per Master Rule MR-17); Owner dashboard-style nested routing WITHOUT bottom navigation; Auth V2 sequential full-screen route flow (08 -> 09 -> 10); Admin desktop web table/audit workspace.
+- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E), Role-Aware Contextual Navigation & Overlays + 16px Sheet Radius + 12px Dialog Radius + DF2 v1.5 + CHANGELOG 2.1.10 (4F).
+- Preserves non-negotiables: ERROR MUST NEVER MASQUERADE AS EMPTY; stale transactional truth must not appear newly verified; critical error cannot live only in a toast; prior-account data cannot appear as current-account data; server-authoritative state remains authoritative; safe preserved data may remain visible only when honestly marked stale; NO yellow/amber/orange boxed UI by default (MR-17); exact semantic colors remain OPEN.
 
 ## Closure Gates
-- [x] Navigation & overlay discovery documented (`NAVIGATION_OVERLAY_DISCOVERY.md`).
-- [x] Route-surface matrix documented (`ROUTE_SURFACE_MATRIX.md`).
-- [x] Multi-role visual pilot implemented (`DESIGN_SYSTEM/PILOTS/navigation-overlay-pilot-01/`).
-- [x] Multi-viewport visual evidence captured and inspected (360px, 390px, 430px, true 200% text scale, safe-area/clearance tests, RTL back, Admin desktop 1280px & 1440px).
+- [x] State discovery documented (`STATE_DISCOVERY.md`).
+- [x] State taxonomy & status truth matrix documented (`STATE_TAXONOMY.md`, `STATUS_TRUTH_MATRIX.md`).
+- [x] Candidate systems documented and evaluated (`CONTENT_STATE_EVALUATION.md`).
+- [x] Multi-role visual pilot implemented (`DESIGN_SYSTEM/PILOTS/content-state-pilot-01/`).
+- [x] Visual evidence captured and inspected (True Empty vs Error pairs, Partial, Stale, Conflict, Unauthorized, 200% scale, 360/390/430 viewports, Admin 1280/1440).
 - [x] Design Court v1 deliberation completed (`FULL_COURT` mode, `DESIGN_COURT_REPORT.md`).
 - [x] Self-correction and red team verification completed.
 - [x] Founder decision gate prepared if material, or verdict reached if clear.
-- [x] Authority formalization synchronized to shared Design System specifications.
 - [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `node scripts/test-design-court-contract.mjs`, `git diff --check`).
-- [x] Publication PR #96 created and final publication evidence patch verified for Bridge final review.
 
 ---
+
+## Closed Upstream Dependency — Phase 4F Navigation & Overlay System
+- **PHASE_4F_STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#96`
+- **MERGE_COMMIT:** `2385cd13a078aedc1f40769af5b394eed1210c00`
+- **Architecture Model:** `ROLE_AWARE_CONTEXTUAL` (Customer 4-tab roots + Screen 16 Account-shell exception; Owner action-first nested with no bottom nav).
+- **Bottom Sheet Top Radius:** `16px` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **Dialog Surface Radius:** `12px` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **DF2:** `v1.5`
+- **CHANGELOG:** `2.1.10`
 
 ## Closed Upstream Dependency — Phase 4E Structural System
 - **PHASE_4E_STATUS:** `CLOSED / MERGED / PUBLISHED`
@@ -61,8 +70,8 @@ SCOPE: Phase 4F Navigation & Overlay System — Discovery, authority reconciliat
 - **Primary Button Radius:** `6px` (`PRIMARY_ONLY`).
 - **Primary Color:** Stable Black `#000000`.
 
-## Next Roadmap Dependency (after 4F)
-- **PHASE_4G_CONTENT_STATE_PRESENTATION**
+## Next Roadmap Dependency (after 4G)
+- **PHASE_4H_COMPONENT_SPECIFICATION_ASSEMBLY**
   - **STATUS:** `NOT_STARTED`
   - **EXECUTION_STARTED:** `NO`
 

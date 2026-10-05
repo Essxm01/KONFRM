@@ -1,10 +1,10 @@
 # Current project state
 
 **Last updated:** 2026-10-05
-**Merge checkpoint:** `ff4ac0b4322b8a7c50273dd7a459a93dcf090551` (PR #95)
-**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `CLOSED / MERGED / PUBLISHED` (PR #95); Phase 4F Navigation & Overlay System substantive evaluation complete, authority formalized, publication pending PR merge (`READY_FOR_PUBLICATION`); Phase 4G Content & State Presentation is `NOT_STARTED` (`EXECUTION_STARTED: NO`).
+**Merge checkpoint:** `2385cd13a078aedc1f40769af5b394eed1210c00` (PR #96)
+**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `CLOSED / MERGED / PUBLISHED` (PR #95); Phase 4F Navigation & Overlay System is `CLOSED / MERGED / PUBLISHED` (PR #96); Phase 4G Content & State Presentation is `ACTIVE` (`EXECUTION_STARTED: YES`).
 **Cross-cutting governance infrastructure:** `DESIGN_COURT_V1` — `CLOSED / MERGED / PUBLISHED` (PR #93, merge checkpoint `674194e675731985b347d241d046f6acc48cf785`; 14 governed design skills, 8 internal; available as cross-cutting design-decision system).
-**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System); PR #92 merged (Phase 4D Form & Selection Primitives); PR #93 merged (Design Court v1 Governance Infrastructure); PR #95 merged (Phase 4E Structural System).
+**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System); PR #92 merged (Phase 4D Form & Selection Primitives); PR #93 merged (Design Court v1 Governance Infrastructure); PR #95 merged (Phase 4E Structural System); PR #96 merged (Phase 4F Navigation & Overlay System).
 
 ## Current status
 
@@ -48,7 +48,7 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
   - Relational Spacing Scale: Canonical relational hierarchy `TIER_1 < TIER_2 < TIER_3 < TIER_4`; **`4 / 8 / 12 / 16 / 24 / 32 px`** (`SYSTEM-EVALUATED PROVISIONAL NUMERIC MAPPING`; 40/48px sizing clearances observed in Web pilots are not part of formal spacing scale).
   - Surface Elevation: Flat elevation default with subtle neutral border; shadow/elevation reserved exclusively for floating/modal surfaces (`ELEVATION_RESERVED_FOR_OVERLAYS`).
   - Open variables preserved: Exact Neutrals (`OPEN`; Phase 4E pilot hex values are `CONTROLLED_WEB_PILOT_RENDERING_REFERENCE` only), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Native Stroke Width (`OPEN` / `DEFERRED_TO_4I`), Global Shape System (`OPEN`, Phase 4F/4I scope), Native Component Acceptance (`DEFERRED TO 4I`).
-- **Phase 4F (Navigation & Overlay System):** `READY_FOR_PUBLICATION` (substantive evaluation complete, Design Court v1 deliberation completed with `STRONG_CONSENSUS` and `HIGH` confidence recommending Candidate C, authority formalized, publication pending PR merge; branch `design/navigation-overlay-pilot-01`, base checkpoint `ff4ac0b4322b8a7c50273dd7a459a93dcf090551`). Design-System documentation and authority formalization only; zero changes to production apps, backend, database, or token JSON.
+- **Phase 4F (Navigation & Overlay System):** `CLOSED / MERGED / PUBLISHED` (PR #96, merge commit `2385cd13a078aedc1f40769af5b394eed1210c00`; branch `design/navigation-overlay-pilot-01`, base checkpoint `ff4ac0b4322b8a7c50273dd7a459a93dcf090551`). Substantive evaluation complete, Design Court v1 deliberation completed with `STRONG_CONSENSUS` and `HIGH` confidence recommending Candidate C, authority formalized. Design-System documentation and authority formalization only; zero changes to production apps, backend, database, or token JSON.
   - Architecture Model: **Candidate C — Role-Aware Contextual Navigation & Overlay System** (`SYSTEM-EVALUATED PROVISIONAL`).
   - Customer Navigation: Exactly 4 persistent root destinations (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`). Bottom navigation is visible by default on top-level roots; hidden on nested entity screens, dedicated transactional reviews, and auth routes. Screen 16 (Notification Center) is the governed `ACCOUNT_SHELL_CHILD_EXCEPTION` (Master Rule MR-17) where Bottom Navigation remains visible with the Account tab active (`customer_notifications_390.png`).
   - Dedicated Transactional Review: Booking Request Review (Screen 07) is a dedicated full-screen transactional review component (`FULL_PAGE_NESTED / DEDICATED_FULL_SCREEN_TRANSACTIONAL_REVIEW`, implementing C4_FINAL_DESIGN_SPEC), bottom nav hidden, RTL Back returning to Property Detail / booking context. Screen 07 is never a BottomSheet.
@@ -61,6 +61,8 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
   - Elevation & Scrim: Flat structural content by default. Restrained elevation for overlays. Exact shadow parameters and scrim opacity/blur values remain `OPEN / CONTROLLED_WEB_PILOT_RENDERING_REFERENCE`.
   - Safe-Area Contract: Page insets (16px) != platform safe areas != persistent control clearance.
   - Context Restoration Contract: UX contract defined (`CUSTOMER_CONTEXT_RESTORATION: UX_CONTRACT_DEFINED_RUNTIME_DEFERRED`). Returning from detail or sheet restores underlying discovery state; auth interruption preserves continuation intent; runtime implementation deferred to Phase 4I.
+  - DF2: `v1.5`
+  - CHANGELOG: `2.1.10`
   - Open variables preserved: Exact Blue (`OPEN`), Exact Neutrals (`OPEN`), Exact Overlay Shadow Parameters (`OPEN`), Exact Scrim Values (`OPEN`), Native Touch Target Acceptance / Gestures / Detents (`DEFERRED_TO_4I`).
 - **Design Court v1 (cross-cutting governance infrastructure):** `CLOSED / MERGED / PUBLISHED` (PR #93, merge commit `674194e675731985b347d241d046f6acc48cf785`). Adds `konfrm-design-court` as the 8th internal governed skill (14 governed skill directories). Available as cross-cutting design-decision system.
 
@@ -110,18 +112,17 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
 
 **Active Roadmap Phase & Governance Continuity**
 
-- **Phase 4E (Structural System):** `CLOSED / MERGED / PUBLISHED` (PR #95, merge commit `ff4ac0b4322b8a7c50273dd7a459a93dcf090551`).
-  - Structural Model: `ROLE_AWARE_HYBRID`
-  - Customer: `OPEN_EDITORIAL_DEFAULT`
-  - Owner: `OPERATIONAL_GROUPING_WHEN_SEMANTIC`
-  - Structural Container Radius: `12PX SYSTEM-EVALUATED PROVISIONAL`
-  - Mobile Page Inset: `16PX SYSTEM-EVALUATED PROVISIONAL`
-  - Spacing Mapping: `4/8/12/16/24/32 SYSTEM-EVALUATED PROVISIONAL`
-  - DF2: `v1.4`
-  - CHANGELOG: `2.1.9`
-- **Active Phase:** **Phase 4F — Navigation & Overlay System**
+- **Phase 4F (Navigation & Overlay System):** `CLOSED / MERGED / PUBLISHED` (PR #96, merge commit `2385cd13a078aedc1f40769af5b394eed1210c00`).
+  - Architecture Model: `ROLE_AWARE_CONTEXTUAL`
+  - Customer: `FOUR_TAB_ROOTS_PLUS_SCREEN_16_EXCEPTION`
+  - Owner: `ACTION_FIRST_NESTED_NO_BOTTOM_NAV`
+  - Bottom Sheet Radius: `16PX SYSTEM-EVALUATED PROVISIONAL`
+  - Dialog Radius: `12PX SYSTEM-EVALUATED PROVISIONAL`
+  - DF2: `v1.5`
+  - CHANGELOG: `2.1.10`
+- **Active Phase:** **Phase 4G — Content & State Presentation**
   - **Status:** `ACTIVE`
   - **Execution Started:** `YES`
-  - **Branch:** `design/navigation-overlay-pilot-01`
-  - **Base Checkpoint:** `ff4ac0b4322b8a7c50273dd7a459a93dcf090551`
-- **Next roadmap dependency:** Phase 4G — Content & State Presentation (`STATUS: NOT_STARTED`, `EXECUTION_STARTED: NO`).
+  - **Branch:** `design/content-state-pilot-01`
+  - **Base Checkpoint:** `2385cd13a078aedc1f40769af5b394eed1210c00`
+- **Next roadmap dependency:** Phase 4H — Component Specification & Assembly (`STATUS: NOT_STARTED`, `EXECUTION_STARTED: NO`).

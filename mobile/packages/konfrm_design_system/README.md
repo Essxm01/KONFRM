@@ -8,17 +8,17 @@ The sole Cairo binary and SIL Open Font License are in `assets/fonts/`. The pack
 
 ## Public API
 
-- `konfrmLightTheme`, `KonfrmTypography`, `KonfrmColors`, `ValidationReferenceOnly`
+- `konfrmLightTheme`, `KonfrmTypography`, `KonfrmColors`
 - Actions: `PrimaryButton`, `SecondaryButton`, `IconActionButton`, `ActionPhase`
 - Inputs: `InputField`, `PhoneField`, `SearchField`
-- Presentation: `StatusBadge`, `StatusFamily`, `StatusTone`, `StateView`, `StateKind`, `SectionAlert`, `StructuralContainer`, `OwnerActionScenario`
+- Presentation: `StatusBadge`, `StatusTone`, `StateView`, `StateKind`, `SectionAlert`, `StructuralContainer`
 - Navigation/composition: `CustomerBottomNavigation`, `customerDestinations`, `StickyActionSurface`
-- Direction helpers: `isolateLtr`, `ltrText`, `formatLabMoney`
+- Direction helpers: `isolateLtr`, `ltrText`
 
-Open exact colors and secondary geometry are centralized under `ValidationReferenceOnly`; they must not be consumed as final design tokens. Native field height/focus, iOS behavior, runtime SafeArea/keyboard/back, BottomSheet/Dialog and device acceptance remain integration work.
+Open exact colors and secondary geometry are centralized under the package-internal `ValidationReferenceOnly`; it is intentionally absent from the public barrel. Owner examples and money formatting belong to the validation app, not the shared package. Native field height/focus, iOS behavior, runtime SafeArea/keyboard/back, BottomSheet/Dialog and device acceptance remain integration work.
 
 Interactive hit sizing uses 48 logical units on Android. The platform-selected 44 logical-unit iOS sizing exists only as `IOS_LAYOUT_PREVIEW_ONLY`; it is not iOS native acceptance.
 
 ## Validation
 
-Run package commands from this directory: `flutter pub get`, `flutter analyze`, and `flutter test`. The package tests exercise role contracts, package-font asset resolution, semantics, geometry, touch bounds, RTL and 200% scaling.
+Run package commands from this directory: `flutter pub get`, `flutter analyze`, and `flutter test`. The package tests exercise role contracts, package-font asset resolution, semantics, geometry, Android destination touch sizing, RTL direction contracts and representative 200% scaling.

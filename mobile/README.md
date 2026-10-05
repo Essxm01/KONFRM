@@ -47,9 +47,10 @@ Codex branches directly from the Mission A baseline commit and implements within
 | Surface | Path in `mobile/packages/konfrm_design_system/` | Description |
 |---|---|---|
 | **Theme & Typography** | `lib/src/theme/konfrm_theme.dart` | Cairo Profile B roles; open colors separately labeled validation-only |
-| **Actions and Inputs** | `lib/src/components/primitives.dart` | Primary (6px), representative Secondary (radius lab-only), IconAction, Input/Phone/Search fields |
-| **Status and Structure** | `lib/src/components/primitives.dart` | 8-domain StatusBadge families, StateView, SectionAlert, StructuralContainer (12px provisional) |
-| **Navigation and scenarios** | `lib/src/components/primitives.dart`, validation app `lib/main.dart` | Four-destination Customer nav and separate StickyActionSurface / Owner grouping scenario |
+| **Actions** | `lib/src/components/actions/` | Primary (6px), representative Secondary (radius lab-only), IconAction |
+| **Inputs** | `lib/src/components/inputs/input_field.dart` | Input/Phone/Search fields |
+| **Status and Structure** | `lib/src/components/status/`, `states/`, `feedback/`, `structure/` | StatusBadge with harness-only domain examples, StateView, SectionAlert, StructuralContainer (12px provisional) |
+| **Navigation and scenarios** | `lib/src/components/navigation/`, validation app `lib/scenarios/` | Four-destination Customer nav and separate StickyActionSurface / Owner grouping scenario |
 | **RTL / Bidi Helpers** | `lib/src/utils/` | Directional alignment helpers, bidi isolation utilities |
 | **Semantics** | Within component files | Accessible roles, labels, and traits |
 | **Widget Tests** | `test/` | Component widget tests, semantics, and contract tests |

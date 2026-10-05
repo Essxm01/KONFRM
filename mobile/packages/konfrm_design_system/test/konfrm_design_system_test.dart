@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:konfrm_design_system/konfrm_design_system.dart';
+import 'package:konfrm_design_system/src/theme/konfrm_theme.dart'
+    show ValidationReferenceOnly;
 
 Widget host(
   Widget child, {
@@ -54,11 +56,6 @@ void main() {
       );
       expect(style.fontFamily, KonfrmTypography.fontFamily, reason: entry.key);
     }
-  });
-
-  test('RTL helper and lab money formatter preserve literal examples', () {
-    expect(formatLabMoney(1600), '1,600 ج.م');
-    expect(formatLabMoney(1234567), '1,234,567 ج.م');
   });
 
   testWidgets('LTR inline isolates stay directional inside Arabic layout', (
@@ -191,7 +188,8 @@ void main() {
           matching: find.byType(Icon),
         ),
       );
-      expect(icon.icon, Icons.arrow_forward);
+      expect(icon.icon, Icons.arrow_back);
+      expect(icon.textDirection, TextDirection.rtl);
     },
   );
 
@@ -230,6 +228,66 @@ void main() {
       expect(tester.getSize(iosTargetBox), const Size(44, 44));
     },
   );
+
+  testWidgets('directional and media-neutral icon direction contracts', (
+    tester,
+  ) async {
+    const back = IconActionButton(
+      icon: Icons.arrow_back,
+      semanticLabel: 'رجوع',
+      onPressed: _noop,
+      directional: true,
+    );
+    await tester.pumpWidget(host(back, direction: TextDirection.ltr));
+    var icon = tester.widget<Icon>(find.byType(Icon));
+    expect(icon.icon, Icons.arrow_back);
+    expect(icon.textDirection, TextDirection.ltr);
+
+    await tester.pumpWidget(host(back, direction: TextDirection.rtl));
+    icon = tester.widget<Icon>(find.byType(Icon));
+    expect(icon.icon, Icons.arrow_back, reason: 'same logical Back icon');
+    expect(icon.textDirection, TextDirection.rtl);
+
+    await tester.pumpWidget(
+      host(
+        const IconActionButton(
+          icon: Icons.close,
+          semanticLabel: 'إغلاق',
+          onPressed: _noop,
+        ),
+        direction: TextDirection.ltr,
+      ),
+    );
+    final closeLtr = tester.widget<Icon>(find.byType(Icon));
+    await tester.pumpWidget(
+      host(
+        const IconActionButton(
+          icon: Icons.close,
+          semanticLabel: 'إغلاق',
+          onPressed: _noop,
+        ),
+        direction: TextDirection.rtl,
+      ),
+    );
+    final closeRtl = tester.widget<Icon>(find.byType(Icon));
+    expect(closeLtr.icon, Icons.close);
+    expect(closeRtl.icon, Icons.close);
+    expect(closeLtr.textDirection, closeRtl.textDirection);
+
+    await tester.pumpWidget(
+      host(
+        const IconActionButton(
+          icon: Icons.arrow_back,
+          semanticLabel: 'رمز ثابت',
+          onPressed: _noop,
+        ),
+        direction: TextDirection.rtl,
+      ),
+    );
+    final neutral = tester.widget<Icon>(find.byType(Icon));
+    expect(neutral.icon, Icons.arrow_back);
+    expect(neutral.textDirection, TextDirection.ltr);
+  });
 
   testWidgets(
     'fields expose labels, helper/error, disabled/read-only and field-only radius',
@@ -319,13 +377,12 @@ void main() {
     'badge text, eight lifecycle distinctions, recovery and alert are exposed semantically',
     (tester) async {
       expect(StateKind.values.length, 8);
-      expect(StatusFamily.values.length, 8);
       await tester.pumpWidget(
         host(
           const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              StatusBadge(label: 'قيد المراجعة', family: StatusFamily.booking),
+              StatusBadge(label: 'قيد المراجعة'),
               StateView(
                 kind: StateKind.error,
                 heading: 'تعذر التحميل',
@@ -364,6 +421,62 @@ void main() {
       }
     },
   );
+
+  testWidgets('StatusBadge wraps a long Arabic label at 200 percent', (
+    tester,
+  ) async {
+    const compactLabel = 'قيد المراجعة';
+    const label = 'تمت الموافقة — العربون مطلوب';
+    tester.view.physicalSize = const Size(360, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      host(
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: StatusBadge(label: compactLabel),
+          ),
+        ),
+      ),
+    );
+    final normalSize = tester.getSize(find.byType(StatusBadge));
+    expect(normalSize.width, lessThan(360));
+    expect(normalSize.height, lessThan(50));
+    expect(find.text(compactLabel), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await tester.pumpWidget(
+      host(
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 220),
+            child: const StatusBadge(label: label),
+          ),
+        ),
+        scale: 2,
+      ),
+    );
+    await tester.pump();
+
+    final badgeSize = tester.getSize(find.byType(StatusBadge));
+    expect(badgeSize.width, lessThanOrEqualTo(220));
+    expect(badgeSize.height, greaterThan(50));
+    expect(find.text(label), findsOneWidget);
+    expect(
+      Directionality.of(tester.element(find.text(label))),
+      TextDirection.rtl,
+    );
+    expect(
+      tester.getSemantics(find.byType(StatusBadge)),
+      matchesSemantics(label: label),
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets(
     'structural container uses provisional 12 radius without elevation',
@@ -407,8 +520,51 @@ void main() {
             .isSelected,
         Tristate.isTrue,
       );
+      for (var i = 0; i < customerDestinations.length; i++) {
+        final size = tester.getSize(find.byKey(Key('customer-destination-$i')));
+        expect(size.width, greaterThanOrEqualTo(48));
+        expect(size.height, greaterThanOrEqualTo(48));
+      }
     },
   );
+
+  testWidgets('state recovery and sticky long action reflow at 200 percent', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 720);
+    tester.view.devicePixelRatio = 1;
+    await tester.pumpWidget(
+      host(
+        const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StateView(
+              kind: StateKind.error,
+              heading: 'تعذر استكمال المعاينة',
+              explanation: 'يمكن إعادة المحاولة بعد التحقق من الاتصال.',
+              recoveryLabel: 'إعادة المحاولة الآن',
+              onRecovery: _noop,
+            ),
+            StickyActionSurface(
+              child: PrimaryButton(
+                label: 'متابعة إلى الخطوة التالية مع تكبير النص',
+                onPressed: _noop,
+              ),
+            ),
+          ],
+        ),
+        scale: 2,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getSize(find.text('إعادة المحاولة الآن')).height,
+      greaterThan(0),
+    );
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+  });
 
   testWidgets('Arabic content reflows at 200 percent without render overflow', (
     tester,

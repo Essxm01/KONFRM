@@ -13,6 +13,17 @@
 library;
 
 export 'src/constants.dart';
-export 'src/theme/konfrm_theme.dart';
+export 'src/theme/konfrm_theme.dart'
+    show KonfrmTypography, KonfrmColors, konfrmLightTheme;
 export 'src/utils/bidi.dart';
-export 'src/components/primitives.dart';
+export 'src/components/actions/action_phase.dart';
+export 'src/components/actions/primary_button.dart';
+export 'src/components/actions/secondary_button.dart';
+export 'src/components/actions/icon_action_button.dart';
+export 'src/components/inputs/input_field.dart';
+export 'src/components/status/status_badge.dart';
+export 'src/components/states/state_view.dart';
+export 'src/components/feedback/section_alert.dart';
+export 'src/components/structure/structural_container.dart';
+export 'src/components/navigation/customer_bottom_navigation.dart';
+export 'src/components/navigation/sticky_action_surface.dart';

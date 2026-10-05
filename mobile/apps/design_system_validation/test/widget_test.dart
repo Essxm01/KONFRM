@@ -63,14 +63,82 @@ void main() {
     },
   );
 
-  testWidgets('text scaling can be selected through 200 percent', (
+  testWidgets('Bidi scenario renders actual LTR-isolated lab values', (
     tester,
   ) async {
     await tester.pumpWidget(const KonfrmValidationApp());
-    await tester.tap(find.text('200%'));
+    await tester.tap(find.widgetWithText(ChoiceChip, 'RTL وBidi'));
     await tester.pumpAndSettle();
-    final media = tester.widget<MediaQuery>(find.byType(MediaQuery).at(1));
-    expect(media.data.textScaler.scale(10), 20);
-    expect(tester.takeException(), isNull);
+
+    for (final value in [
+      '+20 100 123 4567',
+      'user@example.test',
+      'BK-183223',
+      'PR-0091',
+      '1,600 ج.م',
+      'KONFRM system',
+    ]) {
+      final valueFinder = find.text(value);
+      expect(valueFinder, findsOneWidget, reason: value);
+      expect(
+        Directionality.of(tester.element(valueFinder)),
+        TextDirection.ltr,
+        reason: '$value is isolated in the rendered widget tree',
+      );
+    }
+  });
+
+  testWidgets('eight domain examples remain harness data', (tester) async {
+    await tester.pumpWidget(const KonfrmValidationApp());
+    await tester.tap(find.widgetWithText(ChoiceChip, 'الحالات'));
+    // The selected state scenario intentionally contains an indeterminate
+    // loading indicator, so process only the section-change frame.
+    await tester.pump();
+    expect(find.byType(StatusBadge), findsNWidgets(8));
+  });
+
+  testWidgets('200 percent scale persists across every diagnostic section', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1;
+    await tester.pumpWidget(const KonfrmValidationApp());
+    await tester.tap(find.text('200%'));
+    await tester.pump();
+
+    final sections = <(String, Finder)>[
+      ('النص', find.text('العربية الواضحة تبدأ من التسلسل الهرمي')),
+      ('الإجراءات', find.text('متابعة')),
+      ('الحقول', find.text('الاسم')),
+      ('RTL وBidi', find.text('اتصل على')),
+      ('الحالات', find.text('تعذر تحميل المحتوى')),
+      ('التجميع', find.text('ما الذي يحتاج مني تصرفًا الآن؟')),
+      ('تنقل العميل', find.byType(CustomerBottomNavigation)),
+      ('الإجراء الثابت', find.byType(StickyActionSurface)),
+    ];
+    final catalogScrollable = find.byType(Scrollable).first;
+    final catalogPosition = tester
+        .state<ScrollableState>(catalogScrollable)
+        .position;
+    for (final entry in sections) {
+      catalogPosition.jumpTo(catalogPosition.minScrollExtent);
+      await tester.pump();
+      final sectionChip = find.widgetWithText(ChoiceChip, entry.$1).first;
+      await tester.ensureVisible(sectionChip);
+      await tester.pump();
+      await tester.tap(sectionChip);
+      await tester.pump();
+      await tester.ensureVisible(entry.$2.first);
+      await tester.pump();
+      expect(entry.$2, findsWidgets, reason: entry.$1);
+      expect(
+        MediaQuery.of(tester.element(entry.$2.first)).textScaler.scale(10),
+        20,
+        reason: 'scale remains selected in ${entry.$1}',
+      );
+      expect(tester.takeException(), isNull, reason: entry.$1);
+    }
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
   });
 }

@@ -10,7 +10,3 @@ Widget ltrText(String value, {TextStyle? style, TextAlign? textAlign}) =>
       textDirection: TextDirection.ltr,
       child: Text(value, style: style, textAlign: textAlign),
     );
-
-/// Uses the canonical Western digits and currency ordering in this example.
-String formatLabMoney(int amount) =>
-    '${amount.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => ',')} ج.م';

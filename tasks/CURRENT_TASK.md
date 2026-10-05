@@ -14,7 +14,7 @@ SCOPE: Phase 4I Mission B — governed shared Flutter typography/primitives, acc
 ## Boundaries
 - Does NOT build Customer or Owner production Flutter applications.
 - Does NOT start Phase 5 or Phase 6.
-- Does NOT implement the full Phase 4I component set (reserved for Codex Mission B).
+- Mission B implements only the representative Phase 4I native-validation subset, not every future mobile Design System component or production application.
 - Does NOT modify production applications (`customer-app/`, `owner-app/`, `admin-app/`).
 - Does NOT modify backend business logic, database schema, Supabase, Cloudflare, API contracts, or token JSON.
 - Z Code is not used and no dependency/workflow may rely on it.

@@ -129,7 +129,7 @@ LIMITATION:           Design reasoning synthesis; physical user testing deferred
 ## 4. Resolution of the 12 Governed Court Questions
 
 1. **Customer Bottom Nav Visibility:**
-   **RESOLVED:** Visible **strictly on the four top-level root destinations** (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`). Hidden on all nested entity screens (e.g. Property Detail, Booking Detail), transactional flows, and full-screen auth routes.
+   **RESOLVED:** Visible **by default on the four top-level root destinations** (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`). Hidden by default on nested entity screens (e.g. Property Detail, Booking Detail), transactional flows, and full-screen auth routes. Screen 16 (Notification Center) is the governed **`ACCOUNT_SHELL_CHILD_EXCEPTION`** (Master Rule MR-17) where Bottom Navigation remains **VISIBLE** and the Account tab remains **ACTIVE** (`customer_notifications_390.png`).
 2. **Customer Nested Hierarchy Grammar:**
    **RESOLVED:** Dedicated full page with contextual App Bar featuring an explicit RTL Back button (arrow pointing right [➔]). Top-level bottom nav is hidden and replaced contextually by the Sticky Decision Surface when forward action is required.
 3. **Owner Dashboard / Nested Navigation Model (No Bottom Nav):**

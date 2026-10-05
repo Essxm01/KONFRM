@@ -16,8 +16,9 @@
 ### Future Mobile Authority (Phase 4F Formalization)
 - **Customer Mobile Navigation:**
   - Exactly four persistent root destinations: `استكشف` (Explore, `Compass`), `المفضلة` (Favorites, `Heart`), `حجوزاتي` (Bookings, `CalendarDays`), and `الحساب` (Account, `UserRound`).
-  - Bottom navigation is visible **STRICTLY on these four top-level roots**.
-  - On any nested screen (Property Detail, Booking Detail, Screen 07 Booking Request Review, deep workflows, or Auth V2), bottom navigation is **HIDDEN**.
+  - Bottom navigation is visible **by default on these four top-level roots**.
+  - On nested screens (Property Detail, Booking Detail, Screen 07 Booking Request Review, deep workflows, or Auth V2), bottom navigation is **hidden by default**.
+  - **Screen 16 Governed Exception (Master Rule MR-17):** Notification Center (Screen 16) is a governed `ACCOUNT_SHELL_CHILD_EXCEPTION` where Bottom Navigation remains **VISIBLE** and the Account tab remains **ACTIVE**.
   - Active tab uses the **restrained interaction-accent semantic role** (pilot candidate `#276EF1`; exact blue remains **`OPEN`**). Inactive state uses neutral slate.
 - **Owner Mobile Navigation:**
   - Operates as an **Action-First Operational Hub** with dashboard-style nested stack routing.

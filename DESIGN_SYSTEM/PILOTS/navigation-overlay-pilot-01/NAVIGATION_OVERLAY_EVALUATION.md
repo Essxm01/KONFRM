@@ -27,7 +27,7 @@ The evaluation rigorously tested three candidate hypotheses:
 
 ### 2.1 Customer Top-Level & Nested Navigation
 - **Top-Level Root:** Exactly four persistent destinations (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`). Explore header combines standalone brand mark (`konfrm-symbol-black.svg`) with single account affordance; zero notification bell clutter.
-- **Nested Screens:** On Property Detail, dedicated transactional review (Booking Request Review Screen 07), and deep workflows, top-level bottom navigation is conditionally **HIDDEN**. This completely eliminates the dual bottom chrome defect demonstrated in Candidate A (`candidate_a_customer_detail_390.png` vs `candidate_c_customer_detail_390.png`).
+- **Nested Screens:** On Property Detail, dedicated transactional review (Booking Request Review Screen 07), and deep workflows, top-level bottom navigation is hidden by default. This completely eliminates the dual bottom chrome defect demonstrated in Candidate A (`candidate_a_customer_detail_390.png` vs `candidate_c_customer_detail_390.png`). Screen 16 (Notification Center) is the governed `ACCOUNT_SHELL_CHILD_EXCEPTION` (Master Rule MR-17) where Bottom Navigation remains visible with the Account tab active (`customer_notifications_390.png`).
 - **Return Path:** Contextual app bar features an explicit RTL Back button pointing right (➔).
 - **Context Restoration Contract:** Defined (`CUSTOMER_CONTEXT_RESTORATION: CONTRACT_DEFINED_RUNTIME_DEFERRED`). Returning to Explore preserves active scroll position and search filter parameters; runtime state restoration is deferred to native Flutter Phase 4I.
 

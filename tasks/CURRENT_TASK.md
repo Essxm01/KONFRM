@@ -14,19 +14,19 @@ SCOPE: Phase 4F Navigation & Overlay System — Discovery, authority reconciliat
 - Does NOT modify token files (`DESIGN_SYSTEM/TOKENS/*.json`) or backend/database/API contracts.
 - Does NOT initialize Flutter workspace.
 - Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E).
-- Hard architecture locks: Customer 4 top-level destinations (Explore, Favorites, Bookings, Account); Owner dashboard-style nested routing WITHOUT bottom navigation; Auth V2 sequential full-screen route flow (08 -> 09 -> 10); Admin desktop web table/audit workspace.
+- Hard architecture locks: Customer 4 top-level destinations (Explore, Favorites, Bookings, Account; Screen 16 Notification Center as governed Account shell child exception per Master Rule MR-17); Owner dashboard-style nested routing WITHOUT bottom navigation; Auth V2 sequential full-screen route flow (08 -> 09 -> 10); Admin desktop web table/audit workspace.
 
 ## Closure Gates
 - [x] Navigation & overlay discovery documented (`NAVIGATION_OVERLAY_DISCOVERY.md`).
 - [x] Route-surface matrix documented (`ROUTE_SURFACE_MATRIX.md`).
 - [x] Multi-role visual pilot implemented (`DESIGN_SYSTEM/PILOTS/navigation-overlay-pilot-01/`).
-- [x] Multi-viewport visual evidence captured and inspected (360px, 390px, 430px, true 200% text scale, safe-area/clearance tests, RTL back, Admin desktop).
+- [x] Multi-viewport visual evidence captured and inspected (360px, 390px, 430px, true 200% text scale, safe-area/clearance tests, RTL back, Admin desktop 1280px & 1440px).
 - [x] Design Court v1 deliberation completed (`FULL_COURT` mode, `DESIGN_COURT_REPORT.md`).
 - [x] Self-correction and red team verification completed.
 - [x] Founder decision gate prepared if material, or verdict reached if clear.
 - [x] Authority formalization synchronized to shared Design System specifications.
 - [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `node scripts/test-design-court-contract.mjs`, `git diff --check`).
-- [ ] Publication PR created and verified for Bridge final review.
+- [x] Publication PR #96 created and final publication evidence patch verified for Bridge final review.
 
 ---
 

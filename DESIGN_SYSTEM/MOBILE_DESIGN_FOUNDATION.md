@@ -432,7 +432,7 @@ Rules:
 
 CANONICAL principles (implementation lives in Gate 3B go_router decisions):
 
-1. Navigation grammar is **role-specific** (UX-NAV-01): Customer bottom-tab destination model; Owner dashboard-style operational model; Admin out of scope.
+1. Navigation grammar is **role-specific** (UX-NAV-01): Customer bottom-tab destination model (4 roots visible by default, nested screens hidden by default, Screen 16 Notification Center as governed Account shell child exception retaining visible bottom nav with Account active per Master Rule MR-17); Owner dashboard-style operational model (no customer-style bottom nav); Admin out of scope (desktop web).
 2. Screen-family consistency (UX-NAV-03): auth surfaces, top-level surfaces, nested entity surfaces, transactional surfaces, and terminal-result surfaces each follow one consistent header/transition grammar within their family.
 3. Auth gates are driven by observable session state; protected context restoration after authentication is a product behavior, not a styling detail (Gate 3B session model).
 4. Full-screen flows for identity-critical sequences (Auth V2); sheets for contained tasks; platform-appropriate presentation (§22).
@@ -605,7 +605,7 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 7. Native Flutter typography acceptance of Cairo Profile B — deferred to Phase 4I.
 8. Field/control exact native dimensions, neutral border hex, stroke width, and native focus treatments (§18, §21) — provisional 8px field radius, outline-led baseline, and restrained interaction-accent focus direction recorded in §18.
 9. Overlay surface radii: Mobile BottomSheet top radius 16px (`SYSTEM-EVALUATED PROVISIONAL`) and Dialog surface radius 12px (`SYSTEM-EVALUATED PROVISIONAL`) recorded in §14.
-10. Customer 4-tab top-level bottom navigation destinations (Explore, Favorites, Bookings, Account) and Owner 3-column operational domain grid recorded in §17.
+10. Customer 4-tab top-level bottom navigation destinations (Explore, Favorites, Bookings, Account; Screen 16 Notification Center governed Account shell child exception per Master Rule MR-17) and Owner 3-column operational domain grid recorded in §17.
 
 ## 28. DEFERRED / OPEN
 

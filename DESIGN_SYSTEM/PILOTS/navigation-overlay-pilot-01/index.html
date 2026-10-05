@@ -58,6 +58,44 @@
     /* Scaling support for true 200% text scale tests */
     body.scale-200 { --scale-factor: 2.0; }
 
+    body.scale-200 .sticky-action-surface {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      height: auto;
+    }
+
+    body.scale-200 .sticky-action-surface .price-quote-block {
+      align-items: flex-start;
+    }
+
+    body.scale-200 .sticky-action-surface .btn-primary-action {
+      width: 100%;
+    }
+
+    body.scale-200 .sheet-footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    body.scale-200 .sheet-footer button {
+      width: 100%;
+    }
+
+    body.scale-200 .app-bar {
+      min-height: var(--app-bar-height);
+      height: auto;
+      padding: 8px var(--mobile-page-inset);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    body.scale-200 .app-bar .bar-title {
+      white-space: normal;
+      word-break: break-word;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -295,7 +333,9 @@
       justify-content: center;
       cursor: pointer;
       color: var(--text-secondary);
-      font-size: calc(14px * var(--scale-factor));
+      font-size: 16px;
+      overflow: hidden;
+      flex-shrink: 0;
     }
 
     .app-bar .back-btn {
@@ -657,6 +697,7 @@
       <select id="sel-screen" onchange="updateView()">
         <optgroup label="العميل (Customer)">
           <option value="cust-explore">1. استكشف — المستوى الأعلى (Explore Top-Level)</option>
+          <option value="cust-notifications">1.1 مركز الإشعارات (Screen 16 — Account Shell Child Exception)</option>
           <option value="cust-detail">2. تفاصيل الوحدة — المتداخل (Property Detail Nested)</option>
           <option value="cust-sheet">3. ورقة تصفية البحث (Search Filter Bottom Sheet)</option>
           <option value="cust-auth">4. المصادقة الكاملة (Auth V2 Full-Screen Route)</option>
@@ -670,7 +711,7 @@
           <option value="owner-dialog">10. حوار رفض الطلب (Reject Consequence Dialog)</option>
         </optgroup>
         <optgroup label="لوحة الإدارة (Admin)">
-          <option value="admin-queue">11. مراجعة الوحدات المكتبية (Admin 1440 Desktop Boundary)</option>
+          <option value="admin-queue">11. مراجعة الوحدات المكتبية (Admin Desktop Boundary)</option>
         </optgroup>
       </select>
 
@@ -679,7 +720,8 @@
         <option value="390">390 × 844 (iPhone 14/15 Baseline)</option>
         <option value="360">360 × 800 (Android Compact)</option>
         <option value="430">430 × 932 (Pro Max Large)</option>
-        <option value="1440">1440 × 900 (Admin Desktop)</option>
+        <option value="1280">1280 × 900 (Admin Desktop 1280)</option>
+        <option value="1440">1440 × 900 (Admin Desktop 1440)</option>
       </select>
 
       <label class="control-label">حجم النص:</label>
@@ -771,8 +813,8 @@
 
       const frame = document.getElementById('viewport-frame');
       if (!state.embed) {
-        if (state.viewport === 1440) {
-          frame.style.width = '1000px';
+        if (state.viewport === 1440 || state.viewport === 1280) {
+          frame.style.width = (state.viewport === 1280 ? '900px' : '1000px');
           frame.style.height = '680px';
         } else {
           frame.style.width = state.viewport + 'px';
@@ -879,6 +921,55 @@
         `;
       }
 
+      // SCREEN 1.1: Customer Notification Center (Screen 16 — Account Shell Child Exception, Master Rule MR-17)
+      else if (state.screen === 'cust-notifications') {
+        html = `
+          ${statusBar}
+          <header class="app-bar">
+            <button class="back-btn" title="رجوع إلى الحساب">➔</button>
+            <span class="bar-title">مركز الإشعارات</span>
+            <div class="bar-actions">
+              <span style="font-size:12px; color:var(--text-muted); font-weight:600;">تحديد الكل كمقروء</span>
+            </div>
+          </header>
+          <div class="screen-content" style="padding-bottom: 24px;">
+            <div style="font-size:12px; color:var(--text-muted); font-weight:700; margin-bottom:4px;">اليوم</div>
+            <div class="card-container" style="padding:12px 16px; border-right: 3px solid var(--accent-blue);">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                  <h4 style="font-size:14px; font-weight:700; color:var(--text-main);">تمت الموافقة على طلب الحجز</h4>
+                  <p style="font-size:12px; color:var(--text-secondary); margin-top:2px;">وافق المالك على حجز فيلا الشاطئ (#1048). انتقل لدفع العربون لتأكيد الحجز.</p>
+                </div>
+                <span style="font-size:11px; color:var(--text-muted); white-space:nowrap;">منذ 10 د</span>
+              </div>
+            </div>
+
+            <div class="card-container" style="padding:12px 16px; border-right: 3px solid var(--border-subtle);">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                  <h4 style="font-size:14px; font-weight:700; color:var(--text-main);">تأكيد استلام الطلب</h4>
+                  <p style="font-size:12px; color:var(--text-secondary); margin-top:2px;">تم إرسال طلب حجز فيلا الشاطئ إلى المالك للمراجعة.</p>
+                </div>
+                <span style="font-size:11px; color:var(--text-muted); white-space:nowrap;">منذ ساعتين</span>
+              </div>
+            </div>
+
+            <div style="font-size:12px; color:var(--text-muted); font-weight:700; margin-top:8px; margin-bottom:4px;">سابقًا</div>
+            <div class="card-container" style="padding:12px 16px; border-right: 3px solid var(--border-subtle);">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                  <h4 style="font-size:14px; font-weight:700; color:var(--text-main);">مرحبًا بك في كونفرم</h4>
+                  <p style="font-size:12px; color:var(--text-secondary); margin-top:2px;">ابدأ باستكشاف وحدات الساحل الشمالي المعتمدة بأمان وموثوقية.</p>
+                </div>
+                <span style="font-size:11px; color:var(--text-muted); white-space:nowrap;">أمس</span>
+              </div>
+            </div>
+          </div>
+          ${customerBottomNav('ACCOUNT')}
+          ${homeIndicator}
+        `;
+      }
+
       // SCREEN 2: Customer Property Detail (Nested)
       else if (state.screen === 'cust-detail') {
         const showDualChrome = (state.candidate === 'A'); // Candidate A defect demonstration
@@ -952,7 +1043,7 @@
               <div class="sheet-body">
                 <div>
                   <label style="font-size:13px; font-weight:700; color:var(--text-main); display:block; margin-bottom:8px;">المنطقة في الساحل</label>
-                  <div style="display:flex; gap:8px;">
+                  <div style="display:flex; gap:8px; flex-wrap:wrap;">
                     <span style="padding:6px 12px; background:var(--accent-blue-soft); color:var(--accent-blue); border-radius:6px; font-size:12px; font-weight:700;">الكل</span>
                     <span style="padding:6px 12px; background:var(--bg-surface-subtle); border-radius:6px; font-size:12px;">سيدي عبد الرحمن</span>
                     <span style="padding:6px 12px; background:var(--bg-surface-subtle); border-radius:6px; font-size:12px;">رأس الحكمة</span>
@@ -970,7 +1061,7 @@
                 </div>
                 <div>
                   <label style="font-size:13px; font-weight:700; color:var(--text-main); display:block; margin-bottom:8px;">عدد الغرف</label>
-                  <div style="display:flex; gap:8px;">
+                  <div style="display:flex; gap:8px; flex-wrap:wrap;">
                     <span style="padding:6px 14px; border:1px solid var(--border-subtle); border-radius:6px; font-size:13px;">1</span>
                     <span style="padding:6px 14px; border:1px solid var(--border-subtle); border-radius:6px; font-size:13px;">2</span>
                     <span style="padding:6px 14px; background:var(--primary-black); color:#FFFFFF; border-radius:6px; font-size:13px; font-weight:700;">3+</span>

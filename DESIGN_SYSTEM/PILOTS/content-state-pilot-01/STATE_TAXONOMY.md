@@ -1,8 +1,8 @@
 # Phase 4G — State Taxonomy & Content Grammar
 
-**Document Version:** 1.0.0  
-**Phase:** Phase 4G — Content & State Presentation System  
-**Status:** `PILOT_TAXONOMY_DRAFT`  
+**Document Version:** 1.0.0
+**Phase:** Phase 4G — Content & State Presentation System
+**Status:** `PILOT_TAXONOMY_DRAFT`
 **Purpose:** Precise four-category taxonomy and content grammar governing state presentation across KONFRM.
 
 ---
@@ -87,16 +87,16 @@ Every state presentation must answer up to four questions:
 - **Context Preservation:** Loading a filter or refreshing a list must never blank out existing safe content if it can remain visible with an overlay indicator.
 
 ### 3.2 Empty vs Search Zero Results Grammar
-- **Marketplace Empty (No Properties Exist):** Indicates genuine inventory absence.  
+- **Marketplace Empty (No Properties Exist):** Indicates genuine inventory absence.
   *Copy:* *"لا توجد إقامات منشورة حالياً"* / *"يتم إضافة وحدات جديدة باستمرار، تفقد التطبيق لاحقاً."*
-- **Search Zero Results (Filters Too Restrictive):** Indicates mismatch with search criteria.  
-  *Copy:* *"لا توجد نتائج تطابق بحثك"* / *"جرّب تغيير الوجهة، أو تعديل التواريخ، أو إزالة بعض الفلاتر لعرض خيارات أكثر."*  
+- **Search Zero Results (Filters Too Restrictive):** Indicates mismatch with search criteria.
+  *Copy:* *"لا توجد نتائج تطابق بحثك"* / *"جرّب تغيير الوجهة، أو تعديل التواريخ، أو إزالة بعض الفلاتر لعرض خيارات أكثر."*
   *Action:* `[إعادة ضبط الفلاتر]` (Primary Action).
 
 ### 3.3 Error Grammar (Scope & Hierarchy)
-- **Screen-Blocking Error:** Used only when the primary payload of the screen failed completely and no safe prior data exists.  
+- **Screen-Blocking Error:** Used only when the primary payload of the screen failed completely and no safe prior data exists.
   *Structure:* Centered card / surface; clear plain Arabic headline; explanation of failure without technical jargon; prominent `[إعادة المحاولة]` button.
-- **Section-Level Error:** Used when a subordinate query fails (e.g. Owner Wallet summary fails on Home, but Booking queue succeeded).  
+- **Section-Level Error:** Used when a subordinate query fails (e.g. Owner Wallet summary fails on Home, but Booking queue succeeded).
   *Structure:* Scoped inline alert inside the failed container. The rest of the screen remains fully interactive.
 - **Zero Technical Leaks:** Forbidden phrases on Customer/Owner surfaces: `HTTP 500`, `Supabase`, `PostgreSQL`, `RPC`, `REST`, `fetch failed`, `exception`, `timeout error`.
 

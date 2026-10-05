@@ -1,8 +1,8 @@
 # Phase 4G — Content & State Presentation System Evaluation
 
-**Document Version:** 1.0.0  
-**Phase:** Phase 4G — Content & State Presentation System  
-**Status:** `PILOT_EVALUATION_DRAFT`  
+**Document Version:** 1.0.0
+**Phase:** Phase 4G — Content & State Presentation System
+**Status:** `PILOT_EVALUATION_DRAFT`
 **Purpose:** Comparative architectural evaluation of candidate state presentation systems against KONFRM Business Canon, Founder Rules, and Multi-Role UX Requirements.
 
 ---

@@ -5,12 +5,12 @@
 > All data displayed in this pilot (names, booking IDs, property records, queues, pricing, and dates) is synthetic scenario data for layout and presentation testing only.
 > `LAB_SCENARIO_DATA ≠ production evidence`.
 
-**CASE_ID:** `DC-4G-001`  
-**DATE:** 2026-10-05  
-**PHASE:** Phase 4G — Content & State Presentation System  
-**PILOT:** `content-state-pilot-01`  
-**MODE:** `FULL_COURT`  
-**DELIBERATION_TOPOLOGY:** `SINGLE_AGENT_STRUCTURED_PANEL`  
+**CASE_ID:** `DC-4G-001`
+**DATE:** 2026-10-05
+**PHASE:** Phase 4G — Content & State Presentation System
+**PILOT:** `content-state-pilot-01`
+**MODE:** `FULL_COURT`
+**DELIBERATION_TOPOLOGY:** `SINGLE_AGENT_STRUCTURED_PANEL`
 *(Deliberation executed sequentially with sealed role briefs by a structured single-agent panel; consensus reflects structured role alignment, not independent autonomous agents).*
 
 ---
@@ -140,20 +140,20 @@ LIMITATION:           Desktop browser emulation; physical device touch lab testi
 > **SYNTHETIC PERSONA OPINION ≠ USER RESEARCH EVIDENCE**
 > The following represents structured perspective simulation to identify blind spots; it does NOT constitute real empirical user testing.
 
-- **`TRUST_SENSITIVE_FIRST_TIME_CUSTOMER` (Synthetic Lens):**  
-  *Observation:* Highly vulnerable to feeling misled by booking progress.  
+- **`TRUST_SENSITIVE_FIRST_TIME_CUSTOMER` (Synthetic Lens):**
+  *Observation:* Highly vulnerable to feeling misled by booking progress.
   *Assessment:* Candidate C provides deep reassurance: Screen 11 clearly confirms *"طلبك وصل للمالك"* without claiming the booking is confirmed, and My Bookings clearly states that deposit payment only happens after the Owner approves (zero invented deadlines). Rejects Candidate A's chip soup as confusing and Candidate B's alert boxes as alarming.
-- **`RETURNING_CUSTOMER` (Synthetic Lens):**  
-  *Observation:* Values fast, unhindered navigation and clear price changes.  
+- **`RETURNING_CUSTOMER` (Synthetic Lens):**
+  *Observation:* Values fast, unhindered navigation and clear price changes.
   *Assessment:* Candidate C's quote conflict state (`customer_quote_conflict_390.png`) highlights the exact price delta in a clean review card matching C4 Screen 07 authority, allowing rapid comprehension and decision-making without obscure error codes.
-- **`OPERATIONAL_OWNER` (Synthetic Lens):**  
-  *Observation:* Highly focused on net income, payout eligibility, and immediate action items.  
+- **`OPERATIONAL_OWNER` (Synthetic Lens):**
+  *Observation:* Highly focused on net income, payout eligibility, and immediate action items.
   *Assessment:* Strongly endorses Candidate C's Wallet presentation (`owner_wallet_loaded_390.png`): Available balance is clearly distinguished from 24-hour Pending deposit funds, the disabled payout button clearly states the 500 EGP threshold without promising instant bank delivery, eliminating support inquiries.
-- **`QUEUE_OPERATOR_ADMIN` (Synthetic Lens):**  
-  *Observation:* Needs fast throughput and total trust in queue counts.  
+- **`QUEUE_OPERATOR_ADMIN` (Synthetic Lens):**
+  *Observation:* Needs fast throughput and total trust in queue counts.
   *Assessment:* Strongly supports Candidate C's refusal to render fake 0 metrics upon overview query failure (`admin_overview_error_1440.png`). Acknowledges that truthful error reporting protects operational integrity.
-- **`EXCEPTION_AUDIT_ADMIN` (Synthetic Lens):**  
-  *Observation:* Demands strict separation between user-facing marketing claims and canonical verification data.  
+- **`EXCEPTION_AUDIT_ADMIN` (Synthetic Lens):**
+  *Observation:* Demands strict separation between user-facing marketing claims and canonical verification data.
   *Assessment:* Confirms that Candidate C preserves `VERIFIED` as an internal compliance state rather than an unverified marketing trust badge.
 
 ---
@@ -183,35 +183,35 @@ The Visual QA Prosecutor and Red Team attacked Candidate C across 14 failure axe
 
 ## 6. Answers to the 15 Specific Court Questions (Section 60)
 
-1. **Default Hierarchy for State Delivery:**  
+1. **Default Hierarchy for State Delivery:**
    Strict 4-tier layer: Subtle Badge (Identify) → Inline Typography (Explain Process) → Scoped Section/Screen Alert (Recover/Action) → Toast (Transient Confirmation). High-stakes consequential decisions invoke governed Phase 4F dialog overlays.
-2. **When is a Badge Enough?**  
+2. **When is a Badge Enough?**
    When canonical state recognition is self-sufficient and requires no immediate user decision (e.g. `CONFIRMED` in a history list, `PUBLISHED` unit).
-3. **When is Inline Text Enough?**  
+3. **When is Inline Text Enough?**
    For normal procedural guidance (e.g. *"طلبك وصل للمالك وبانتظار قراره"*). Relies on natural surface contrast without box borders. Zero response SLA is promised.
-4. **When is a Persistent Alert Required?**  
+4. **When is a Persistent Alert Required?**
    When a user action is actively blocked, an independent section query fails, or revalidation requires explicit user review before proceeding.
-5. **When is a Full-Screen State Appropriate?**  
+5. **When is a Full-Screen State Appropriate?**
    When top-level data cannot load at all, or a clean zero-data state requires dedicated redirection (e.g. Guest state, first-run empty properties).
-6. **When is a Toast Allowed?**  
+6. **When is a Toast Allowed?**
    Reserved strictly for transient confirmation of completed, low-risk actions. Exact duration is OPEN / component-and-platform-gated (transient, long enough to perceive/read, deferred to Phase 4H / native accessibility validation). Critical errors, financial warnings, and mandatory decisions must never rely solely on toasts.
-7. **How Normal Pending Differs from Warning:**  
+7. **How Normal Pending Differs from Warning:**
    Normal process (`PENDING_OWNER_APPROVAL`, `PENDING_REVIEW`, `Wallet PENDING`) uses soft neutral or soft-blue styling (`#F1F5F9`, `#334155`). Warning/Attention is reserved for genuine caution, consequential risk, or action requiring elevated attention when supported by canonical context (not routine pending process).
-8. **How Error Differs from Empty:**  
+8. **How Error Differs from Empty:**
    Empty explains normal data absence with positive exploration guidance. Error identifies failure scope with plain-language explanation and a clear `[إعادة المحاولة]` button.
-9. **How Partial Differs from Error:**  
+9. **How Partial Differs from Error:**
    Successful sections remain fully interactive; failed sections display a scoped alert with retry. The screen never collapses completely.
-10. **How Stale Safe Data is Presented:**  
+10. **How Stale Safe Data is Presented:**
     Retains safe cached content with a neutral or soft-blue informational notice and retry button. Decision-critical prices and availability are marked non-current or withheld until refresh; transactional quote/booking actions re-verify server truth fail-closed. Zero yellow/amber boxed styling (MR-17).
-11. **How Unauthorized Differs from Error:**  
+11. **How Unauthorized Differs from Error:**
     Fails closed, clears private session data, explains that authentication is required/expired, and provides a direct `[تسجيل الدخول]` action.
-12. **How Conflict / Changed Quote is Explained:**  
+12. **How Conflict / Changed Quote is Explained:**
     Aligned exactly with Screen 07 C4 authority: disables submission CTA, displays strikethrough old price and highlighted new price, and requires explicit user review and acceptance (`[موافق على السعر الجديد وإرسال الطلب]`) before proceeding.
-13. **How Role Tone Differs:**  
+13. **How Role Tone Differs:**
     Customer is reassuring and simple; Owner is operational, action-focused, and financially certain; Admin is precise, structured, and audit-focused.
-14. **Rejected Web Behaviors:**  
+14. **Rejected Web Behaviors:**
     Rejected legacy amber session-expired card (Screen 12); rejected silent `.catch(() => [])` fallbacks in Owner payout metadata; rejected chip soup and routine alert box clutter.
-15. **Open Semantic Colors:**  
+15. **Open Semantic Colors:**
     All exact semantic hex colors (green, red, blue, neutral, amber) remain **OPEN / token-gated**. Phase 4G establishes semantic roles and visual contracts only.
 
 ---

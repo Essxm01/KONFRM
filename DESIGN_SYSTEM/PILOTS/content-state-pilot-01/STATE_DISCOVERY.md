@@ -1,8 +1,8 @@
 # Phase 4G — Content & State Presentation System Discovery
 
-**Document Version:** 1.0.0  
-**Phase:** Phase 4G — Content & State Presentation System  
-**Status:** `PILOT_DISCOVERY_DRAFT`  
+**Document Version:** 1.0.0
+**Phase:** Phase 4G — Content & State Presentation System
+**Status:** `PILOT_DISCOVERY_DRAFT`
 **Context:** Empirical inventory of real state presentation patterns across `customer-app/`, `owner-app/`, and `admin-app/`.
 
 ---

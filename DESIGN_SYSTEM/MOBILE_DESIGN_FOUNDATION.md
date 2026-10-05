@@ -1,4 +1,4 @@
-# KONFRM Mobile Design Foundation — v1.4
+# KONFRM Mobile Design Foundation — v1.5
 
 **Status:** CANONICAL SPECIFICATION — DF2
 Independent platform/accessibility/design-system review and final Bridge verification completed. DF2 is canonical.
@@ -6,6 +6,7 @@ Independent platform/accessibility/design-system review and final Bridge verific
 **Amendment v1.2 (Phase 4C Action System synchronization):** records independently reviewed SYSTEM-VALIDATED PROVISIONAL Action System mappings inside the canonical foundation without promoting exact provisional component values to final native Canon. Native component and accessibility acceptance remains strictly deferred to Phase 4I. The canonical document is authoritative about STATUS, SEMANTIC ROLES, and ARCHITECTURAL DIRECTION, not falsely about final native token acceptance.
 **Amendment v1.3 (Phase 4D Form & Selection Primitives synchronization):** records independently evaluated and Founder-approved SYSTEM-VALIDATED PROVISIONAL Form & Selection primitive directions (Outline-led field baseline, 8px mobile field radius for field-shaped controls, explicit top-label hierarchy, semantic restrained interaction-accent focus emphasis, Owner-evidenced checkbox, toggle deferred) inside the canonical foundation without promoting provisional component values to final native Canon. Exact neutrals, stroke width, blue candidate (`#276EF1`), focus geometry, and platform component mappings remain OPEN / IMPLEMENTATION CANDIDATE. Native component and accessibility acceptance remains strictly deferred to Phase 4I. Admin remains Web.
 **Amendment v1.4 (Phase 4E Structural System synchronization):** records Founder-approved SYSTEM-VALIDATED PROVISIONAL Phase 4E Structural System direction (Option C — Role-Aware Hybrid Structural System: Customer open/editorial default, Owner operational grouped-content direction, Admin desktop boundary preserved, spacing relationship hierarchy, semantic container/card criteria, flat structural elevation default). Evaluates 12px structural-container radius as SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS based on controlled evidence, while exact neutrals (#FFFFFF, #E2E8F0, #F8FAFC) remain OPEN implementation candidates. Native component and accessibility acceptance remains strictly deferred to Phase 4I. Navigation, app bars, sheets, dialogs, and overlay architecture remain deferred to Phase 4F.
+**Amendment v1.5 (Phase 4F Navigation & Overlay System synchronization):** records independently evaluated and Founder-compliant SYSTEM-VALIDATED PROVISIONAL Phase 4F Navigation & Overlay System direction (Role-Aware Contextual Navigation: Customer 4-tab top-level root destinations [Explore, Favorites, Bookings, Account]; Owner action-first operational hub with dashboard-style nested routing and NO Customer-style bottom navigation; Auth V2 sequential full-screen route flow [08 → 09 → 10]; Screen 07 dedicated full-screen transactional review; mutual exclusivity of persistent bottom navigation and sticky actions [dual bottom chrome prohibited]; BottomSheet semantics with explicit close control required, optional drag handle, conditional backdrop dismissal, and 16px provisional top radius; Dialog semantics with 12px provisional surface radius for consequential confirmation; semantic safe-area and context-restoration contracts defined). Exact neutrals, exact blue candidate (`#276EF1`), exact overlay shadow parameters, and exact scrim values remain OPEN / IMPLEMENTATION CANDIDATE. Native component, gesture, detent, and safe-area acceptance remains strictly deferred to Phase 4I. Admin remains Web.
 **Scope:** The design foundation governing future `mobile/customer_app`, `mobile/owner_app`, mobile design tokens, canonical mobile primitives, AI design Skills, visual QA and the controlled pilot.
 **Upstream authority (not reopened here):**
 
@@ -309,6 +310,13 @@ The relational spacing family evaluated in Phase 4E:
 - **elevated/overlay container** — floating above content.
 - **modal/sheet surface** — task-focused blocking surface.
 
+### Overlay Shape & Elevation Discipline (SYSTEM-EVALUATED PROVISIONAL PHASE_4F_OVERLAY_GEOMETRY)
+
+Phase 4F established the shape, radius, and elevation rules for floating and overlay surfaces:
+- **Mobile BottomSheet Top Radius:** **16px** (`SYSTEM-EVALUATED PROVISIONAL BOTTOM_SHEET_TOP_RADIUS`). Controlled visual comparison across 12px, 16px, and 20px confirms 16px provides balanced curvature against 12px structural containers and 8px inputs. Distinct from button (6px), input (8px), container (12px), and dialog (12px) radii.
+- **Mobile Dialog Surface Radius:** **12px** (`SYSTEM-EVALUATED PROVISIONAL DIALOG_RADIUS`). Controlled visual comparison across 10px, 12px, and 16px confirms 12px aligns harmoniously with Phase 4E structural containers without excess roundness.
+- **Overlay Elevation & Scrim:** Structural page content is flat by default (`FLAT_BY_DEFAULT`). Elevation is reserved strictly for floating/overlay layers (app bars, sticky decision bars, bottom sheets, dialogs). Exact shadow parameters (`0 -4px 24px...`, `0 12px 36px...`) and scrim opacity/blur values are controlled Web pilot rendering references; exact tokens remain **OPEN / IMPLEMENTATION CANDIDATE**; native rendering acceptance is deferred to Phase 4I.
+
 ### Structural System Model (FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE_4E_STRUCTURAL_MODEL)
 Founder approved **Option C: Role-Aware Hybrid Structural System**.
 
@@ -581,6 +589,10 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 13. External references/Skills are subordinate to Canon (§24).
 14. Anti-patterns (§25).
 15. The decision-classification discipline itself (§26–§28).
+16. RTL Back (arrow right [➔]) vs Close (X / Cancel) semantic distinction (§17).
+17. Dual bottom chrome prohibition: persistent bottom navigation and sticky action surfaces are mutually exclusive (§17).
+18. Owner mobile architecture lock: Action-First Operational Hub with nested routing; Customer-style bottom navigation is prohibited (§17).
+19. Safe-area separation contract: page insets != platform safe areas != persistent control clearance (§17).
 
 ## 27. IMPLEMENTATION CANDIDATES
 
@@ -592,6 +604,8 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 6. Exact state-surface compositions (skeletons, empty/error art) per state grammar (§16).
 7. Native Flutter typography acceptance of Cairo Profile B — deferred to Phase 4I.
 8. Field/control exact native dimensions, neutral border hex, stroke width, and native focus treatments (§18, §21) — provisional 8px field radius, outline-led baseline, and restrained interaction-accent focus direction recorded in §18.
+9. Overlay surface radii: Mobile BottomSheet top radius 16px (`SYSTEM-EVALUATED PROVISIONAL`) and Dialog surface radius 12px (`SYSTEM-EVALUATED PROVISIONAL`) recorded in §14.
+10. Customer 4-tab top-level bottom navigation destinations (Explore, Favorites, Bookings, Account) and Owner 3-column operational domain grid recorded in §17.
 
 ## 28. DEFERRED / OPEN
 
@@ -604,6 +618,8 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 7. Icon family for mobile (Lucide-family strategy open; §24 governs).
 8. Dark-surface special products (none planned; none authorized).
 9. Admin mobile anything (Admin remains Web).
+10. Exact overlay shadow parameters, blur values, and scrim opacity/RGBA values (§14).
+11. Native mobile detent behaviors, gestures, and native safe-area implementation (§17, Phase 4I).
 
 ## 29. Validation Required Before Token Canonicalization
 

@@ -135,9 +135,9 @@ LIMITATION:           Design reasoning synthesis; physical user testing deferred
 3. **Owner Dashboard / Nested Navigation Model (No Bottom Nav):**
    **RESOLVED:** Action-First Home hub as operational command center. Direct, high-visibility domain entry cards on Home for Bookings, Properties, and Wallet. Nested screens use clear stack routing with an RTL Back button returning to Home or parent queue. Zero bottom navigation bar.
 4. **Owner Frequent Destination Discoverability (No Hamburger Dumping Ground):**
-   **RESOLVED:** Operational triage (pending booking requests, upcoming stays) is directly prominent on Home. High-frequency domains (Bookings, Properties, Wallet) are accessible via a dedicated 3-column domain grid on Home. Contextual access paths are governed for other recognized destinations: Calendar/Availability via Property operations/Detail; Messages via eligible booking context; Profile/Notifications via account/header affordances. Zero hidden hamburger menu.
+   **RESOLVED:** Operational triage (pending booking requests, upcoming stays) is directly prominent on Home. High-frequency domains (Bookings, Properties, Wallet) are accessible via a dedicated 3-column domain grid on Home. Contextual access paths are governed for other recognized destinations: Calendar/Availability via Property operations/Detail; Messages via eligible booking context when product policy allows (eligibility OPEN); Profile/Notifications via account/header affordances; Disputes via contextual support entry (presentation deferred). Zero hidden hamburger menu.
 5. **BottomSheet vs Full Page & Dismiss Grammar:**
-   **RESOLVED:** BottomSheet is reserved strictly for short contextual tasks, search/refine filters, pickers, and transient confirmations (preserving underlying context). Full Page is mandatory for meaningful destinations, full entity evaluation (Property Detail), multi-step wizards, and Auth V2 (`08 → 09 → 10`). BottomSheet is never a full-screen navigation substitute.
+   **RESOLVED:** BottomSheet is reserved strictly for short contextual tasks, search/refine filters, pickers, and transient confirmations (preserving underlying context). Full Page is mandatory for meaningful destinations, full entity evaluation (Property Detail), dedicated transactional review (Booking Request Review Screen 07), multi-step wizards, and Auth V2 (`08 → 09 → 10`). BottomSheet is never a full-screen navigation substitute.
    - **Dismiss Grammar:** Explicit dismiss control (Close X icon or Cancel text) is **REQUIRED**. Drag handle is **OPTIONAL** (governed only when the sheet is draggable and supported by platform). Backdrop tap dismiss is **CONDITIONAL** on low-risk tasks (never on unsaved consequential inputs). Swipe-to-dismiss is **CONDITIONAL**.
    - **Height Geometry:** Controlled Web pilot max-height (~85%) is a reference only; exact native height/detent behavior is `DEFERRED_TO_4I`.
 6. **Dialog vs Sheet:**
@@ -148,6 +148,7 @@ LIMITATION:           Design reasoning synthesis; physical user testing deferred
    **RESOLVED:** Exactly six governed screen families:
    - `TOP_LEVEL_CUSTOMER`: Standalone brand mark + account affordance on Explore; semantic title on other tabs; no Bell icon.
    - `NESTED_CUSTOMER`: RTL Back + Page title + optional contextual actions.
+   - `NESTED_TRANSACTIONAL_CUSTOMER`: RTL Back + Transactional review title (Screen 07 Booking Request Review).
    - `TOP_LEVEL_OWNER`: Owner identity + verification pill + operational alert affordance.
    - `NESTED_OWNER`: RTL Back + Operational queue/entity title + status badge.
    - `TEMPORARY_LAYER_HEADER`: Sheet title + Close X; Dialog title.

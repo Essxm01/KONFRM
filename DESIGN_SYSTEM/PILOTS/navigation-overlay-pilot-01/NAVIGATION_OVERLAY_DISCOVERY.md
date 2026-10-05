@@ -124,9 +124,9 @@ Before formulating candidate systems, all prior specifications, components, and 
 - **Action-Priority Banner:** Displays urgent pending operational items (e.g. "طلب حجز جديد بانتظار ردك"); strictly omits unapproved SLAs (e.g. 4-hour countdowns).
 - **Domain Access Path:** 3-column operational domain grid directly on Home (`الطلبات`, `الوحدات`, `المحفظة`).
   - Calendar / Availability: nested from Property operations / Property Detail.
-  - Messages: booking-contextual (entered from eligible booking context).
+  - Messages: booking-contextual (entered from eligible booking context when product policy allows; eligibility OPEN).
   - Profile & Notifications: entered from top app bar affordances.
-  - Disputes: contextual support/operational destination.
+  - Disputes: contextual support/operational destination; presentation details deferred.
 - **Back Pattern:** NONE (top-level hub).
 - **Close Pattern:** NONE.
 - **Temp Layer Type:** NONE.
@@ -200,7 +200,8 @@ Before formulating candidate systems, all prior specifications, components, and 
 │ - Admin: Desktop Operations Workspace                    │
 ├──────────────────────────────────────────────────────────┤
 │ LAYER 2: NESTED ENTITY / FLOW (Full Page)                │
-│ - Customer: Property Detail, Booking Detail, Stay Hub     │
+│ - Customer: Property Detail, Booking Request Review (07), │
+│   Booking Detail, Stay Hub                                │
 │ - Owner: Bookings Queue, Property Ops, Payouts, Calendar  │
 │ - Auth V2: Sequential Full-Screen Route Flow (08→09→10)  │
 ├──────────────────────────────────────────────────────────┤

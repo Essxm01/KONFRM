@@ -2,7 +2,7 @@
 
 TASK_ID: PHASE_4F_NAVIGATION_OVERLAY_SYSTEM
 TASK_CLASS: DESIGN_SYSTEM_FOUNDATION_PHASE
-STATUS: ACTIVE
+STATUS: READY_FOR_PUBLICATION
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: ff4ac0b4322b8a7c50273dd7a459a93dcf090551
 BRANCH: design/navigation-overlay-pilot-01
@@ -24,7 +24,9 @@ SCOPE: Phase 4F Navigation & Overlay System — Discovery, authority reconciliat
 - [x] Design Court v1 deliberation completed (`FULL_COURT` mode, `DESIGN_COURT_REPORT.md`).
 - [x] Self-correction and red team verification completed.
 - [x] Founder decision gate prepared if material, or verdict reached if clear.
+- [x] Authority formalization synchronized to shared Design System specifications.
 - [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `node scripts/test-design-court-contract.mjs`, `git diff --check`).
+- [ ] Publication PR created and verified for Bridge final review.
 
 ---
 

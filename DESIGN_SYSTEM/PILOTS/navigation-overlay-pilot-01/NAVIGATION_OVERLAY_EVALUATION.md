@@ -27,7 +27,7 @@ The evaluation rigorously tested three candidate hypotheses:
 
 ### 2.1 Customer Top-Level & Nested Navigation
 - **Top-Level Root:** Exactly four persistent destinations (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`). Explore header combines standalone brand mark (`konfrm-symbol-black.svg`) with single account affordance; zero notification bell clutter.
-- **Nested Screens:** On Property Detail and deep workflows, top-level bottom navigation is conditionally **HIDDEN**. This completely eliminates the dual bottom chrome defect demonstrated in Candidate A (`candidate_a_customer_detail_390.png` vs `candidate_c_customer_detail_390.png`).
+- **Nested Screens:** On Property Detail, dedicated transactional review (Booking Request Review Screen 07), and deep workflows, top-level bottom navigation is conditionally **HIDDEN**. This completely eliminates the dual bottom chrome defect demonstrated in Candidate A (`candidate_a_customer_detail_390.png` vs `candidate_c_customer_detail_390.png`).
 - **Return Path:** Contextual app bar features an explicit RTL Back button pointing right (➔).
 - **Context Restoration Contract:** Defined (`CUSTOMER_CONTEXT_RESTORATION: CONTRACT_DEFINED_RUNTIME_DEFERRED`). Returning to Explore preserves active scroll position and search filter parameters; runtime state restoration is deferred to native Flutter Phase 4I.
 
@@ -36,7 +36,8 @@ The evaluation rigorously tested three candidate hypotheses:
 - **Discoverability:** High-priority operational triage (pending booking requests, upcoming check-ins) is directly prominent on Home without deadline invention (`owner_home_390.png`). High-frequency domains (Bookings, Properties, Wallet) are accessible via a high-contrast 3-column domain grid.
 - **Contextual Destination Access:** Other recognized destinations have governed access paths without creating a hidden hamburger dumping ground:
   - *Calendar / Availability:* Contextual access from Property operations / Property Detail.
-  - *Messages:* Booking-contextual access from eligible booking states.
+  - *Messages:* Booking-contextual access from eligible booking states when product policy allows (`CHAT_CONTEXT: BOOKING_CONTEXTUAL`, `CHAT_ELIGIBILITY: OPEN / DEFERRED_TO_PHASE_12_PRODUCT_POLICY`).
+  - *Disputes:* Contextual support/operational destination (`NAVIGATION_ALLOCATION: NO_PERSISTENT_TOP_LEVEL_SLOT`, presentation deferred to Phase 13).
   - *Profile / Notifications:* Operational identity and notification affordances in header/account context.
 - **Deep Views:** Bookings Queue and Property Operations feature structured stack routing with an RTL Back button returning directly to Home.
 
@@ -48,6 +49,7 @@ The evaluation rigorously tested three candidate hypotheses:
 - **BottomSheet:** Anchored to bottom, preserving underlying contextual view.
   - *Dismiss Grammar:* Explicit dismiss control (Close X icon or Cancel text) is **REQUIRED**. Drag handle is **OPTIONAL** (governed only when draggable and supported by platform). Backdrop tap dismissal is **CONDITIONAL** on low-risk tasks (never on unsaved consequential inputs).
   - *Height Geometry:* Controlled Web pilot max-height (~85%) is a reference only; exact native height/detent behavior is `DEFERRED_TO_4I`.
+  - *Scope Exclusion:* BottomSheet is never for Auth V2, Property Detail, Booking Request Review (Screen 07), or multi-step wizards.
   - *Evaluated Top Radii:* 16px is closed as system-evaluated provisional candidate (`sheet_radius_16_390.png`); 12px is a valid close container-aligned alternative; 20px rejected as overly round.
 - **Dialog:** Centered modal overlay, reserved strictly for short consequential confirmation, high-stakes acknowledgement, and destructive irreversible decisions (e.g. Owner reject booking request).
   - *Truthful Consequence Copy:* Explicit plain Arabic consequence without invented SLA or policy claims: *"سيتم رفض طلب الحجز ولن ينتقل هذا الطلب إلى خطوة دفع العربون"*.

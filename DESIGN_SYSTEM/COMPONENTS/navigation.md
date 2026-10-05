@@ -1,78 +1,110 @@
-# Tabs, SegmentedControl, BottomNavigation and Header
+# Navigation & App Bar Contracts
 
-- **Tabs:** switch peer views; active state uses `brand.primary`/selected surface, visible focus and an accessible relationship to the panel.
-- **SegmentedControl:** compact mutually exclusive filter or mode control; selected state has text and surface/border distinction.
+## 1. Authority & Classification
 
----
-
-## BottomNavigation Architecture & Authority
-
-### Current Web Authority (Prototype Evidence)
-- **Web Status:** `WEB_BEHAVIORAL_EVIDENCE_ONLY`.
-- In the legacy React web prototype, Customer and Owner both physically contain a bottom navigation bar.
-- Tab icons use a unified `strokeWidth={2.2}`. Legacy active state was rendered as Blue icon + Blue label (`#0059FF`) with slate-400 inactive state.
-- This historical web implementation is preserved for web prototype continuity but **must NOT** be treated as canonical native mobile authority.
-
-### Future Mobile Authority (Phase 4F Formalization)
-- **Customer Mobile Navigation:**
-  - Exactly four persistent root destinations: `استكشف` (Explore, `Compass`), `المفضلة` (Favorites, `Heart`), `حجوزاتي` (Bookings, `CalendarDays`), and `الحساب` (Account, `UserRound`).
-  - Bottom navigation is visible **by default on these four top-level roots**.
-  - On nested screens (Property Detail, Booking Detail, Screen 07 Booking Request Review, deep workflows, or Auth V2), bottom navigation is **hidden by default**.
-  - **Screen 16 Governed Exception (Master Rule MR-17):** Notification Center (Screen 16) is a governed `ACCOUNT_SHELL_CHILD_EXCEPTION` where Bottom Navigation remains **VISIBLE** and the Account tab remains **ACTIVE**.
-  - Active tab uses the **restrained interaction-accent semantic role** (pilot candidate `#276EF1`; exact blue remains **`OPEN`**). Inactive state uses neutral slate.
-- **Owner Mobile Navigation:**
-  - Operates as an **Action-First Operational Hub** with dashboard-style nested stack routing.
-  - **Customer-style bottom navigation is PROHIBITED BY CANONICAL MOBILE ARCHITECTURE.**
-  - Frequent operations are directly discoverable on Home via a high-contrast 3-column domain grid (`الطلبات`, `الوحدات`, `المحفظة`).
-  - Contextual access paths are governed for other recognized destinations: Calendar (nested from Property operations), Messages (booking-contextual; eligibility OPEN), Profile/Notifications (top app bar affordances), and Disputes (contextual; presentation deferred).
-  - Zero hidden hamburger dumping ground.
-- **Dual Bottom Chrome Prohibition:**
-  - Persistent bottom navigation and persistent sticky decision bars must **NEVER** coexist on the same screen simultaneously.
-  - When navigating into a nested transactional screen requiring sticky action, the bottom navigation is hidden, and the sticky bar occupies the bottom area with reserved content clearance.
-- **Touch Target & Sizing Guidance:**
-  - Platform-appropriate guidance: iOS ~44pt, Android ~48dp.
-  - Physical mobile acceptance is **`DEFERRED_TO_4I`**.
+- **Governance Level:** `GOVERNED_CANONICAL_SPECIFICATION`
+- **Surface Reality:** React 19 / TypeScript Web baseline (`CONTROLLED_WEB_PILOT_REFERENCE`); native mobile architecture governed for Flutter target (`PHASE_4I_TARGET`).
+- **Governed Structural Invariants:**
+  - Customer Navigation: Exactly 4 persistent root destinations (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`).
+  - Screen 16 Governed Exception (`MR-17`): Notification Center is an `ACCOUNT_SHELL_CHILD_EXCEPTION` where Bottom Navigation remains **VISIBLE** and the Account tab remains **ACTIVE**.
+  - Owner Navigation: Action-First Operational Hub with nested stack routing. **Customer-style bottom navigation is PROHIBITED BY CANONICAL MOBILE ARCHITECTURE.**
+  - Dual Bottom Chrome Prohibition: Bottom navigation and sticky action surfaces must **NEVER** coexist on the same screen.
+  - Header Families: Exactly 7 governed app bar screen configurations.
+- **Open Parameters:** Exact blue accent hex (`OPEN / CANDIDATE #276EF1`), shadow elevation parameters (`OPEN`), and physical touch target sizing in native mobile (`DEFERRED_TO_4I`). iOS ~44pt / Android ~48dp guidance.
 
 ---
 
-## Header & App Bar Screen Families
+## 2. Component Taxonomy & Subcontracts
 
-Light `surface.primary` or canvas-adjacent surface, page context, limited actions, and no standard dark/navy app-header variant.
-
-Header and navigation grammar is governed by **screen families**, not a single universal header:
-
-1. **`TOP_LEVEL_CUSTOMER`:**
-   - Standalone KONFRM mark (32px, `alt="KONFRM"`) + single account/identity affordance on Explore:
-     - *Guest Explore:* `UserRoundPlus` icon button (44px touch target, 40px `rounded-xl` visual surface, `aria-label="تسجيل الدخول أو إنشاء حساب"`, routes to Auth V2).
-     - *Authenticated Explore:* Truthful identity affordance routing to Account (`avatarUrl` → initials → `UserRound`).
-     - *Notifications:* No Bell icon in Explore header; Notification Center is accessed via Account.
-   - Other root tabs (Favorites, Bookings, Account) display semantic page title; zero Bell icon.
-2. **`NESTED_CUSTOMER`:**
-   - Contextual header for browsing detail: RTL Back button (arrow pointing right [➔]) + Page title + optional contextual actions (Share, Favorite).
-3. **`NESTED_TRANSACTIONAL_CUSTOMER`:**
-   - Header for dedicated transactional review (Screen 07 Booking Request Review): RTL Back button (➔) + Review title ("مراجعة طلب الحجز"). Bottom nav hidden; sticky submission CTA at bottom.
-4. **`AUTH_FULL_SCREEN_HEADER`:**
-   - Minimal flow header for Auth V2 (`08 → 09 → 10`): Brand mark / step indicator + Back arrow / Cancel text.
-5. **`TOP_LEVEL_OWNER`:**
-   - Operational hub header: Owner identity + verification pill + operational alert affordance.
-6. **`NESTED_OWNER`:**
-   - Stack header for operational queues and entities: RTL Back button (➔) + Queue/Entity title + status badge.
-7. **`TEMPORARY_LAYER_HEADER`:**
-   - Header for contextual overlays: Sheet title + Close X; centered Dialog title.
+| Subcontract | Role & Purpose | Target Surface & Governance |
+|---|---|---|
+| `CustomerBottomNavigation` | Root destination switching for Customer | Exactly 4 tabs: Explore, Favorites, Bookings, Account. Hidden on nested screens except Screen 16. |
+| `OwnerOperationalHub` | Action-first operational entry for Owner | 3-column domain grid on Home (`الطلبات`, `الوحدات`, `المحفظة`). No bottom nav. |
+| `AppBar` | Screen header with context and navigation | 7 governed configurations across Customer, Owner, Admin. |
+| `StickyActionSurface` | Transactional bottom decision bar | Bottom-anchored surface with safe clearance. Never coexists with Bottom Navigation. |
+| `NavigationGrammar` | Stack return and overlay dismiss semantics | Back (➔) vs Close (X) strict distinction; context restoration contract. |
 
 ---
 
-## Navigation Grammar & Return Paths
+## 3. Subcontract Details
 
-1. **Back vs Close Semantic Distinction:**
-   - **BACK (Arrow pointing Right in RTL [➔]):** Represents hierarchical return up a navigation stack (e.g. Property Detail → Explore, Booking Detail → Bookings Queue). Never use an X to navigate backward.
-   - **CLOSE (X icon or Cancel text):** Represents dismissing a temporary overlay layer (Bottom Sheet or Dialog) without mutating underlying stack. Never use a Back arrow merely to dismiss a temporary sheet.
-2. **Modal vs Full Page Discipline:**
-   - **Full Page Nested:** Mandatory for meaningful destinations, full entity evaluation (Property Detail), dedicated transactional review (Booking Request Review Screen 07), multi-step wizards, and Auth V2 (`08 → 09 → 10`).
-   - **BottomSheet:** Reserved strictly for short contextual tasks, search/refine filters, pickers, and transient confirmations. Never a full-screen navigation substitute.
-   - **Dialog:** Reserved strictly for short consequential confirmation, high-stakes acknowledgement, and destructive irreversible decisions (e.g. Owner reject booking request).
-   - **Inline Expansion:** Reserved for secondary details within current entity (accordions, expandable rows).
-3. **Context Restoration Contract:**
-   - Returning via Back from detail or sheet preserves active query, filter criteria, and scroll position.
-   - Auth interruption preserves continuation intent and target context without premature submission.
-   - Runtime implementation is **`DEFERRED_TO_4I`**.
+### 3.1 CustomerBottomNavigation
+- **Root Tabs:**
+  1. `استكشف` (Explore, `Compass` icon)
+  2. `المفضلة` (Favorites, `Heart` icon)
+  3. `حجوزاتي` (Bookings, `CalendarDays` icon)
+  4. `الحساب` (Account, `UserRound` icon)
+- **Active State:** Restrained interaction-accent role (candidate `#276EF1`). Label in `11px font-bold text-blue-600`.
+- **Inactive State:** Neutral slate (`#64748B`). Label in `11px font-medium text-slate-500`.
+- **Visibility Logic:**
+  - Visible on top-level tabs.
+  - Hidden on nested browsing, transactional review (Screen 07), and full-screen flows (Auth V2).
+  - **Screen 16 Exception:** Visible on Notification Center; Account tab remains highlighted.
+
+### 3.2 OwnerOperationalHub
+- **Architecture:** Zero bottom navigation. Operates as an Action-First Operational Hub with dashboard-style nested stack routing.
+- **Home Surface:**
+  - High-contrast 3-column domain grid (`الطلبات`, `الوحدات`, `المحفظة`) for direct operational triage.
+  - Contextual access paths: Calendar (nested under Property operations), Messages (booking-contextual), Profile/Notifications (app bar affordances).
+  - Prohibits hidden hamburger menus.
+
+### 3.3 AppBar (7 Governed Screen Configurations)
+1. `TOP_LEVEL_CUSTOMER`: Standalone KONFRM mark (32px, `alt="KONFRM"`) + single account/identity affordance on Explore:
+   - Guest: `UserRoundPlus` icon button (44px target, routes to Auth V2).
+   - Authenticated: Avatar / initials / `UserRound` routing to Account.
+   - Notifications: Zero Bell icon on Explore; Notification Center is inside Account.
+2. `NESTED_CUSTOMER`: Contextual header for browsing detail: RTL Back button (arrow pointing right [➔]) + Page title + optional actions (Share, Favorite).
+3. `NESTED_TRANSACTIONAL_CUSTOMER`: Review header (Screen 07): RTL Back button (➔) + Review title ("مراجعة طلب الحجز"). Bottom nav hidden; sticky submission CTA at bottom.
+4. `AUTH_FULL_SCREEN_HEADER`: Flow header for Auth V2 (`08 → 09 → 10`): Brand mark / step indicator + Back arrow / Cancel text.
+5. `TOP_LEVEL_OWNER`: Operational hub header: Owner identity + verification pill + operational alert affordance.
+6. `NESTED_OWNER`: Stack header for operational queues and entities: RTL Back button (➔) + Queue/Entity title + status badge.
+7. `TEMPORARY_LAYER_HEADER`: Contextual overlay header: Sheet title + Close X; centered Dialog title.
+
+### 3.4 StickyActionSurface
+- **Role:** Anchored bottom surface for irreversible or contractual user decisions (e.g. "إرسال طلب الحجز", "قبول الطلب").
+- **Clearance:** Scrollable page content reserves bottom clearance padding (`pb-24` or equivalent) to prevent content occlusion.
+- **Mutual Exclusion:** Persistent bottom navigation and persistent sticky decision bars must **NEVER** coexist on the same screen simultaneously.
+
+---
+
+## 4. State Matrix
+
+| State | Customer Bottom Nav | Owner Operational Hub | AppBar Actions |
+|---|---|---|---|
+| `IDLE / ROOT` | Visible (4 tabs); active tab highlighted. | High-contrast 3-column grid active. | Root branding / profile affordance. |
+| `NESTED` | Hidden (except Screen 16 Account shell). | Stack navigation; Back button active. | Back button (➔) + contextual title. |
+| `INTERACTING / SCROLL` | Anchored at bottom; elevation separates from feed. | Hub scrolls naturally with page. | Elevated app bar with subtle border. |
+| `OVERLAY_ACTIVE` | Scrim covers bottom chrome. | Scrim covers operational surfaces. | Overlay header replaces screen app bar. |
+
+---
+
+## 5. Role Differences
+
+- **Customer:** Tab-based exploration with 4 root destinations and deep detail nesting.
+- **Owner:** Action-First Operational Hub with domain cards and nested stack queues; zero bottom navigation.
+- **Admin:** Desktop web sidebar / topbar navigation (`CONTROLLED_WEB_BOUNDARY_REFERENCE`). Zero mobile bottom navigation.
+
+---
+
+## 6. RTL & Bidirectional Layout Rules
+
+- **Back Arrow Direction:** In RTL, the Back affordance points **RIGHT** (`➔`), returning the user backward up the chronological stack.
+- **Chevrons in ListRows:** Forward navigation chevrons point **LEFT** (`←`), indicating forward depth into a child screen.
+- **Title Alignment:** App bar titles align start (Right) or center depending on platform conventions.
+- **Action Icons:** Leading affordance (Back button) on the right; trailing affordances (Share, Favorite, Close X) on the left.
+
+---
+
+## 7. Accessibility & Touch Discipline
+
+- **Touch Targets:** Minimum **44 × 44 pt** (iOS) / **48 × 48 dp** (Android) for all tab items, back buttons, and header actions.
+- **Screen Reader Roles:** Bottom navigation uses `<nav aria-label="التنقل الرئيسي">` with `aria-current="page"` on the active tab.
+- **Keyboard Navigation:** Left/Right arrow keys navigate tabs; Enter/Space activates.
+
+---
+
+## 8. Composition Invariants & Anti-Patterns
+
+1. **Dual Bottom Chrome Prohibition:** Bottom navigation and sticky decision bars must never coexist.
+2. **Back vs Close Distinction:** Back (➔) for hierarchical return; Close (X) for dismissing temporary overlays. Never mix them.
+3. **No Bottom Nav for Owner:** Owner application must never implement Customer-style bottom tab navigation.

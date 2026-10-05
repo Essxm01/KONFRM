@@ -1,16 +1,27 @@
 # Button and IconButton
 
-**Governance Status:** `AUTHORITY SCOPED SPECIFICATION`  
-**Phase Integration:** Phase 4C Stage 3B (Targeted Shared Governance Synchronization)  
+**Governance Status:** `CANONICAL COMPONENT CONTRACT — PHASE 4H`
+**Phase Integration:** Phase 4C (Action System) / Phase 4H (Contract Formalization)
 **Native Mobile Status:** `Native Component & Accessibility Acceptance: DEFERRED TO PHASE 4I`
 
 ---
 
-## 1. Document Scope and Governance Boundaries
+## 1. Component Contract Overview
+
+- **Purpose:** Trigger immediate actions, state mutations, or navigation transitions across all roles.
+- **Use When:** User must commit an action (e.g. submit booking request, confirm payout, accept request).
+- **Do Not Use When:** Regular destination link without state mutation (use Link / ListRow).
+- **Forbidden Combinations:** Yellow/amber primary button; competing Decision Primaries in a single decision unit; disabled button concealing recoverable failure without retry copy.
+- **Governed Values:** Mobile Primary Button Radius: **`6px`** (`FOUNDER-SELECTED PROVISIONAL PRIMARY_ONLY`); Mobile Primary Brand Black: **`#000000`** (`SYSTEM-VALIDATED PROVISIONAL`).
+- **Open Values:** Secondary button radius, exact neutral fill/border hex, exact destructive red hex, exact focus halo.
+
+---
+
+## 2. Document Scope and Governance Boundaries
 
 This document defines the component contract for Buttons and IconButtons across KONFRM platforms:
-1. **Current React / Web Applications (`customer-app`, `owner-app`, `admin-app`):** Retain their active Web Design System tokens, CSS variables, and runtime behavior as defined in Section 2 (`CURRENT WEB IMPLEMENTATION / TOKEN AUTHORITY`). Mobile values do not alter Web tokens.
-2. **Mobile Target (Future Flutter Architecture):** Governed by the semantic and behavioral contract defined in Section 3 (`MOBILE PHASE 4C PROVISIONAL ACTION MAPPING`). These values are **system-validated provisional** and do not mutate active Web token JSON files.
+1. **Current React / Web Applications (`customer-app`, `owner-app`, `admin-app`):** Retain their active Web Design System tokens, CSS variables, and runtime behavior as defined in Section 3 (`CURRENT WEB IMPLEMENTATION / TOKEN AUTHORITY`). Mobile values do not alter Web tokens.
+2. **Mobile Target (Future Flutter Architecture):** Governed by the semantic and behavioral contract defined in Section 4 (`MOBILE PHASE 4C PROVISIONAL ACTION MAPPING`). These values are **system-validated provisional** and do not mutate active Web token JSON files.
 3. **Native Acceptance Boundary:** Web prototype and simulation evidence does not constitute native Flutter acceptance. Native component implementation, VoiceOver/TalkBack audits, and dynamic text scaling acceptance remain strictly deferred to Phase 4I.
 
 ---

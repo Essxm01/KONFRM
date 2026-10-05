@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONFRM Phase 4H — Component Contract & Reference Catalog</title>
+  <style>
+    @font-face {
+      font-family: 'Cairo';
+      src: url('./fonts/Cairo-VariableFont.ttf') format('truetype-variations');
+      font-weight: 200 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --color-black: #000000;
+      --color-white: #FFFFFF;
+      --color-canvas: #F8FAFC;
+      --color-surface-secondary: #F1F5F9;
+      --color-border-subtle: #E2E8F0;
+      --color-border-strong: #CBD5E1;
+      --color-border-outline: #8E8E93;
+      --color-accent-blue: #276EF1;
+      --color-accent-blue-soft: #EFF6FF;
+      --color-danger-solid: #DC2626;
+      --color-danger-soft: #FEF2F2;
+      --color-danger-border: #FECACA;
+      --color-success-solid: #16A34A;
+      --color-success-soft: #F0FDF4;
+      --color-success-border: #BBF7D0;
+      --color-text-primary: #0F172A;
+      --color-text-secondary: #475569;
+      --color-text-muted: #64748B;
+      --color-text-inverse: #FFFFFF;
+      
+      --radius-btn-primary: 6px;
+      --radius-field: 8px;
+      --radius-container: 12px;
+      --radius-dialog: 12px;
+      --radius-sheet: 16px;
+      --page-inset: 16px;
+      
+      --font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: #0F172A;
+      color: var(--color-text-primary);
+      min-height: 100vh;
+      padding: 24px 16px 64px;
+      direction: rtl;
+    }
+
+    /* Top Catalog Header */
+    .catalog-header {
+      max-width: 1480px;
+      margin: 0 auto 24px;
+      background: var(--color-white);
+      border-radius: var(--radius-container);
+      padding: 20px 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      border: 1px solid var(--color-border-subtle);
+    }
+
+    .catalog-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 1px solid var(--color-border-subtle);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: var(--color-black);
+      color: var(--color-white);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -0.5px;
+    }
+
+    .catalog-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .meta-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--color-surface-secondary);
+      color: var(--color-text-secondary);
+      border: 1px solid var(--color-border-subtle);
+    }
+
+    .meta-tag.provisional {
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border-color: #BFDBFE;
+    }
+
+    .meta-tag.governed {
+      background: #F0FDF4;
+      color: #15803D;
+      border-color: #BBF7D0;
+    }
+
+    /* Catalog Role Navigation Tabs */
+    .role-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .role-tab-btn {
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--color-border-subtle);
+      background: var(--color-white);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .role-tab-btn:hover {
+      background: var(--color-surface-secondary);
+      color: var(--color-text-primary);
+    }
+
+    .role-tab-btn.active {
+      background: var(--color-black);
+      color: var(--color-white);
+      border-color: var(--color-black);
+    }
+
+    /* Main Container & Layouts */
+    .catalog-main {
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
+    .catalog-section {
+      display: none;
+      margin-bottom: 32px;
+    }
+
+    .catalog-section.active {
+      display: block;
+    }
+
+    .section-banner {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius-container);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      border-right: 4px solid var(--color-accent-blue);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-text-primary);
+    }
+
+    .section-desc {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Device Viewport Frames */
+    .viewport-grid {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    .device-frame-390 {
+      width: 390px;
+      min-height: 844px;
+      background: var(--color-canvas);
+      border-radius: 36px;
+      border: 8px solid #334155;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .device-frame-admin-1440 {
+      width: 100%;
+      max-width: 1440px;
+      min-height: 820px;
+      background: #F8FAFC;
+      border-radius: 12px;
+      border: 1px solid var(--color-border-subtle);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Mobile Status Bar Simulation */
+    .mobile-status-bar {
+      height: 44px;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      background: var(--color-white);
+      z-index: 10;
+    }
+
+    /* Component Spec Card Wrapper */
+    .spec-block {
+      background: var(--color-white);
+      border-radius: var(--radius-container);
+      padding: 16px;
+      margin: 12px 16px;
+      border: 1px solid var(--color-border-subtle);
+    }
+
+    .spec-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #F1F5F9;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    .spec-badge.radius-6 {
+      background: #EFF6FF;
+      color: #1D4ED8;
+    }
+
+    .spec-badge.radius-8 {
+      background: #F0FDF4;
+      color: #166534;
+    }
+
+    .spec-badge.radius-12 {
+      background: #FAF5FF;
+      color: #6B21A8;
+    }
+
+    .spec-badge.radius-16 {
+      background: #FFF7ED;
+      color: #C2410C;
+    }
+
+    /* Button System Styling (Phase 4C) */
+    .btn-group-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-primary-decision {
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+      background: var(--color-black);
+      color: var(--color-white);
+      border: none;
+      border-radius: var(--radius-btn-primary); /* 6px */
+      min-height: 48px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn-secondary-subtle {
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+      background: var(--color-surface-secondary);
+      color: var(--color-text-primary);
+      border: none;
+      border-radius: 8px;
+      min-height: 48px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn-secondary-outline {
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+      background: transparent;
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border-outline);
+      border-radius: 8px;
+      min-height: 48px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn-destructive-outline {
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+      background: transparent;
+      color: var(--color-danger-solid);
+      border: 1px solid var(--color-danger-solid);
+      border-radius: 8px;
+      min-height: 48px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn-ghost {
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 600;
+      background: transparent;
+      color: var(--color-text-secondary);
+      border: none;
+      min-height: 40px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* Field Primitives Styling (Phase 4D) */
+    .field-unit {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--color-text-secondary);
+    }
+
+    .field-control {
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.5;
+      background: var(--color-white);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border-outline);
+      border-radius: var(--radius-field); /* 8px */
+      min-height: 48px;
+      padding: 10px 14px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .field-control:focus {
+      border-color: var(--color-accent-blue);
+      box-shadow: 0 0 0 3px rgba(39, 110, 241, 0.2);
+    }
+
+    .field-control.error {
+      border-color: var(--color-danger-solid);
+    }
+
+    .field-supporting {
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--color-text-muted);
+    }
+
+    .field-error-msg {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--color-danger-solid);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .ltr-field {
+      direction: ltr;
+      text-align: right;
+      unicode-bidi: isolate;
+    }
+
+    /* Checkbox Unit */
+    .checkbox-unit {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      cursor: pointer;
+    }
+
+    .checkbox-box {
+      width: 20px;
+      height: 20px;
+      border: 1.5px solid var(--color-border-outline);
+      border-radius: 4px;
+      background: var(--color-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .checkbox-box.checked {
+      background: var(--color-black);
+      border-color: var(--color-black);
+      color: var(--color-white);
+    }
+
+    .checkbox-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      line-height: 1.4;
+    }
+
+    /* StatusBadge System (Phase 4G) */
+    .badge-showcase {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      line-height: 1.3;
+    }
+
+    .status-badge.process {
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #CBD5E1;
+    }
+
+    .status-badge.info {
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+    }
+
+    .status-badge.success {
+      background: #F0FDF4;
+      color: #15803D;
+      border: 1px solid #BBF7D0;
+    }
+
+    .status-badge.danger {
+      background: #FEF2F2;
+      color: #B91C1C;
+      border: 1px solid #FECACA;
+    }
+
+    .status-badge.muted {
+      background: #F8FAFC;
+      color: #64748B;
+      border: 1px solid #E2E8F0;
+    }
+
+    .status-badge.attention {
+      background: #F8FAFC;
+      color: #0F172A;
+      border: 1px solid #94A3B8;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* SectionAlert & Feedback */
+    .section-alert {
+      border-radius: var(--radius-container);
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: 1px solid transparent;
+    }
+
+    .section-alert.info {
+      background: #EFF6FF;
+      border-color: #BFDBFE;
+      color: #1E3A8A;
+    }
+
+    .section-alert.danger {
+      background: #FEF2F2;
+      border-color: #FECACA;
+      color: #991B1B;
+    }
+
+    .section-alert.neutral {
+      background: #F8FAFC;
+      border-color: #E2E8F0;
+      color: #334155;
+    }
+
+    .alert-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .alert-body {
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .alert-action-btn {
+      align-self: flex-start;
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid currentColor;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    /* Toast Simulation */
+    .toast-pill {
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 10px 16px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    }
+
+    /* Customer PropertyCard (Phase 5 / Screen 03) */
+    .property-card {
+      background: var(--color-white);
+      border-radius: var(--radius-container);
+      overflow: hidden;
+      border: 1px solid var(--color-border-subtle);
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+
+    .property-image-box {
+      width: 100%;
+      aspect-ratio: 1.4 / 1;
+      background: #E2E8F0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748B;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .fav-heart-btn {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      width: 38px;
+      height: 38px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      color: #0F172A;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .fav-heart-btn.active {
+      color: var(--color-accent-blue);
+    }
+
+    .property-card-body {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .property-title {
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.35;
+      color: var(--color-text-primary);
+    }
+
+    .property-location {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+
+    .property-facts {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      margin: 4px 0;
+    }
+
+    .property-price {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-text-primary);
+      margin-top: 4px;
+    }
+
+    .price-unit {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+
+    /* Owner Action-First Hub Primitives */
+    .owner-domain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 0 16px;
+      margin-bottom: 16px;
+    }
+
+    .domain-tile {
+      background: var(--color-white);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-container);
+      padding: 12px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .domain-tile-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+    }
+
+    .domain-tile-val {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-text-primary);
+    }
+
+    .open-grouped-container {
+      background: var(--color-white);
+      border-radius: var(--radius-container);
+      border: 1px solid var(--color-border-subtle);
+      margin: 0 16px 16px;
+      overflow: hidden;
+    }
+
+    .grouped-row {
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+
+    .grouped-row:last-child {
+      border-bottom: none;
+    }
+
+    .grouped-row-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+
+    .grouped-row-desc {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    /* Bottom Navigation Bar (Customer) */
+    .bottom-nav-bar {
+      margin-top: auto;
+      height: 64px;
+      background: var(--color-white);
+      border-top: 1px solid var(--color-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 8px;
+      z-index: 20;
+    }
+
+    .nav-tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .nav-tab-item.active {
+      color: var(--color-accent-blue);
+      font-weight: 700;
+    }
+
+    .nav-tab-icon {
+      font-size: 18px;
+    }
+
+    /* Sticky Action Bar */
+    .sticky-action-surface {
+      margin-top: auto;
+      background: var(--color-white);
+      border-top: 1px solid var(--color-border-subtle);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      z-index: 25;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.04);
+    }
+
+    .sticky-price-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sticky-price-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+    }
+
+    .sticky-price-val {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--color-text-primary);
+    }
+
+    /* Overlay Dialog Simulation */
+    .dialog-backdrop-mock {
+      background: rgba(15, 23, 42, 0.55);
+      border-radius: 28px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 380px;
+    }
+
+    .dialog-card {
+      background: var(--color-white);
+      border-radius: var(--radius-dialog); /* 12px */
+      padding: 20px;
+      width: 100%;
+      max-width: 340px;
+      box-shadow: 0 12px 36px rgba(15,23,42,0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .dialog-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--color-text-primary);
+    }
+
+    .dialog-consequence {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--color-text-secondary);
+    }
+
+    .dialog-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* BottomSheet Simulation */
+    .bottom-sheet-mock {
+      background: var(--color-white);
+      border-radius: var(--radius-sheet) var(--radius-sheet) 0 0; /* 16px top */
+      padding: 16px;
+      border-top: 1px solid var(--color-border-subtle);
+      box-shadow: 0 -6px 24px rgba(15,23,42,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: auto;
+    }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: #CBD5E1;
+      border-radius: 2px;
+      margin: 0 auto 4px;
+    }
+
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sheet-title {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .sheet-close-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--color-text-muted);
+      padding: 4px;
+    }
+
+    /* Skeleton Loading Simulation */
+    .skeleton-box {
+      background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* 200% Text Scaling Container */
+    .scaled-200-frame {
+      font-size: 200%;
+    }
+
+    .scaled-200-frame * {
+      /* Simulates native Dynamic Type scaling */
+    }
+
+    /* App Bar Simulation */
+    .app-bar {
+      height: 52px;
+      background: var(--color-white);
+      border-bottom: 1px solid var(--color-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .app-bar-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--color-text-primary);
+    }
+
+    .back-arrow-rtl {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-text-primary);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Catalog Header & Master Navigation -->
+  <header class="catalog-header">
+    <div class="catalog-title-row">
+      <div class="brand-mark">
+        <div class="brand-logo">K</div>
+        <div>
+          <h1 style="font-size: 20px; font-weight: 800; letter-spacing: -0.3px;">KONFRM / كونفرم</h1>
+          <p style="font-size: 12px; color: var(--color-text-muted); margin-top: 2px;">Phase 4H — Component Contract & Reference Catalog</p>
+        </div>
+      </div>
+      <div class="catalog-meta">
+        <span class="meta-tag governed">DF2 v1.6 CANONICAL SPEC</span>
+        <span class="meta-tag provisional">CAIRO PROFILE B</span>
+        <span class="meta-tag provisional">PRIMARY BLACK #000000 (6px)</span>
+        <span class="meta-tag provisional">FIELD RADIUS 8px</span>
+        <span class="meta-tag provisional">CONTAINER 12px</span>
+        <span class="meta-tag provisional">SHEET 16px / DIALOG 12px</span>
+      </div>
+    </div>
+
+    <!-- Role View Switching Tabs -->
+    <nav class="role-tabs" aria-label="Catalog Roles">
+      <button class="role-tab-btn active" onclick="showSection('customer')">الضيف (Customer 390px)</button>
+      <button class="role-tab-btn" onclick="showSection('owner')">المالك (Owner 390px)</button>
+      <button class="role-tab-btn" onclick="showSection('admin')">الإدارة (Admin 1440px)</button>
+      <button class="role-tab-btn" onclick="showSection('states')">حالات النظام والتغذية الراجعة (States & Alerts)</button>
+      <button class="role-tab-btn" onclick="showSection('overlays')">الطبقات العلوية والتأكيد (Overlays & Dialogs)</button>
+      <button class="role-tab-btn" onclick="showSection('reflow')">اختبار التكبير 200% (200% Reflow Proof)</button>
+    </nav>
+  </header>
+
+  <!-- Main Inspection Surfaces -->
+  <main class="catalog-main">
+
+    <!-- ============================================================== -->
+    <!-- SECTION 1: CUSTOMER VIEW (Mobile 390px) -->
+    <!-- ============================================================== -->
+    <section id="section-customer" class="catalog-section active">
+      <div class="section-banner">
+        <div>
+          <h2 class="section-title">بيئة تجربة الضيف (Customer Mobile 390px)</h2>
+          <p class="section-desc">المظهر التحريري الهادئ (Open Editorial)، استكشاف الوحدات، شريط التنقل السفلي الرباعي (4-Tab Bottom Nav)، والزر الإجرائي الأساسي الثابت.</p>
+        </div>
+        <span class="meta-tag provisional">ROLE_AWARE_CONTEXTUAL</span>
+      </div>
+
+      <div class="viewport-grid">
+        <!-- Frame 1: Explore & PropertyCard -->
+        <div class="device-frame-390" id="customer-explore-viewport">
+          <div class="mobile-status-bar">
+            <span>9:41</span>
+            <span>5G 100%</span>
+          </div>
+
+          <!-- Top Level Header -->
+          <div class="app-bar">
+            <span style="font-weight: 800; font-size: 18px; letter-spacing: -0.5px;">KONFRM</span>
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: #F1F5F9; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">
+              حسابي
+            </div>
+          </div>
+
+          <!-- Scrollable Body -->
+          <div style="padding: 16px; overflow-y: auto; flex: 1;">
+            <!-- Search & Filter Unit -->
+            <div class="field-unit">
+              <input type="text" class="field-control" placeholder="ابحث بالوجهة، المنتجع، أو القرية..." value="الساحل الشمالي">
+            </div>
+
+            <!-- Customer PropertyCard (Screen 03) -->
+            <div class="property-card">
+              <div class="property-image-box">
+                [صورة معتمدة حقيقية 1.4:1]
+                <button class="fav-heart-btn active" title="المفضلة" aria-label="حفظ في المفضلة">♥</button>
+              </div>
+              <div class="property-card-body">
+                <div class="property-title">فيلا الشروق الفاخرة — مارينا 4</div>
+                <div class="property-location">الساحل الشمالي، مارينا العلمين</div>
+                <div class="property-facts">6 ضيوف · 3 غرف · 2 حمام</div>
+                <div class="property-price">1,600 ج.م <span class="price-unit">/ ليلة</span></div>
+              </div>
+            </div>
+
+            <!-- Booking Status Card (Screen 12) -->
+            <div class="spec-block" style="margin: 0 0 16px 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 13px; font-weight: 700;">حجز شاليه أمواج</span>
+                <span class="status-badge success"><span class="badge-dot"></span> الحجز مؤكد</span>
+              </div>
+              <p style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 12px;">15 يوليو — 18 يوليو 2026 (3 ليالٍ)</p>
+              <button class="btn-secondary-subtle" style="min-height: 40px; font-size: 13px;">عرض تفاصيل الإقامة</button>
+            </div>
+          </div>
+
+          <!-- 4-Tab Customer Bottom Navigation -->
+          <nav class="bottom-nav-bar" aria-label="Customer Navigation">
+            <div class="nav-tab-item active">
+              <span class="nav-tab-icon">🧭</span>
+              <span>استكشف</span>
+            </div>
+            <div class="nav-tab-item">
+              <span class="nav-tab-icon">♥</span>
+              <span>المفضلة</span>
+            </div>
+            <div class="nav-tab-item">
+              <span class="nav-tab-icon">📅</span>
+              <span>حجوزاتي</span>
+            </div>
+            <div class="nav-tab-item">
+              <span class="nav-tab-icon">👤</span>
+              <span>الحساب</span>
+            </div>
+          </nav>
+        </div>
+
+        <!-- Frame 2: Booking Review (Screen 07) & Sticky Action -->
+        <div class="device-frame-390" id="customer-screen07-viewport">
+          <div class="mobile-status-bar">
+            <span>9:41</span>
+            <span>5G 100%</span>
+          </div>
+
+          <!-- Transactional Customer App Bar -->
+          <div class="app-bar">
+            <span class="back-arrow-rtl" title="الرجوع">➔</span>
+            <span class="app-bar-title">مراجعة طلب الحجز</span>
+            <div style="width: 20px;"></div>
+          </div>
+
+          <!-- Body with Reserved Clearance -->
+          <div style="padding: 16px; overflow-y: auto; flex: 1; padding-bottom: 96px;">
+            <div style="background: var(--color-white); border-radius: var(--radius-container); border: 1px solid var(--color-border-subtle); padding: 16px; margin-bottom: 16px;">
+              <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 6px;">فيلا الشروق الفاخرة</h3>
+              <p style="font-size: 12px; color: var(--color-text-muted); margin-bottom: 12px;">مارينا 4، الساحل الشمالي</p>
+              
+              <div style="border-top: 1px solid var(--color-border-subtle); padding-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: var(--color-text-secondary);">3 ليالٍ × 1,600 ج.م</span>
+                  <span style="font-weight: 700;">4,800 ج.م</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: var(--color-text-secondary);">العربون المطلوب دفعه</span>
+                  <span style="font-weight: 800; color: #166534;">1,600 ج.م</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                  <span style="color: var(--color-text-secondary);">المبلغ المتبقي</span>
+                  <span style="font-weight: 700;">3,200 ج.م</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Identity Input -->
+            <div class="spec-block" style="margin: 0;">
+              <div class="field-unit">
+                <label class="field-label">رقم الهاتف لتأكيد الطلب</label>
+                <input type="text" class="field-control ltr-field" value="+20 100 123 4567" readonly>
+                <span class="field-supporting">رقم الهاتف مؤكد عبر الرسائل النصية القصيرة</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sticky Action Surface (Screen 07) -->
+          <div class="sticky-action-surface">
+            <div class="sticky-price-block">
+              <span class="sticky-price-label">العربون المستحق</span>
+              <span class="sticky-price-val">1,600 ج.م</span>
+            </div>
+            <button class="btn-primary-decision" style="width: auto; min-width: 170px;">إرسال طلب الحجز</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SECTION 2: OWNER VIEW (Mobile 390px) -->
+    <!-- ============================================================== -->
+    <section id="section-owner" class="catalog-section">
+      <div class="section-banner">
+        <div>
+          <h2 class="section-title">بيئة تجربة المالك (Owner Mobile 390px)</h2>
+          <p class="section-desc">التوجيه العملي الفوري (Action-First Hub)، شبكة المجالات الثلاثية، التجميع البنائي الموحد (Open Grouped Content)، بدون شريط تنقل سفلي.</p>
+        </div>
+        <span class="meta-tag governed">NO_CUSTOMER_BOTTOM_NAV</span>
+      </div>
+
+      <div class="viewport-grid">
+        <!-- Frame 1: Owner Operational Hub -->
+        <div class="device-frame-390" id="owner-home-viewport">
+          <div class="mobile-status-bar">
+            <span>9:41</span>
+            <span>5G 100%</span>
+          </div>
+
+          <!-- Top Level Owner App Bar -->
+          <div class="app-bar">
+            <div>
+              <span style="font-size: 16px; font-weight: 800;">مركز المالك</span>
+              <span class="status-badge success" style="font-size: 9px; padding: 2px 6px; margin-right: 6px;">هوية موثقة</span>
+            </div>
+            <div style="font-size: 16px;">🔔</div>
+          </div>
+
+          <div style="padding: 16px 0; overflow-y: auto; flex: 1;">
+            <!-- 3-Column Domain Grid -->
+            <div class="owner-domain-grid">
+              <div class="domain-tile">
+                <span class="domain-tile-label">الطلبات</span>
+                <span class="domain-tile-val" style="color: #1D4ED8;">2</span>
+              </div>
+              <div class="domain-tile">
+                <span class="domain-tile-label">الوحدات</span>
+                <span class="domain-tile-val">4</span>
+              </div>
+              <div class="domain-tile">
+                <span class="domain-tile-label">المحفظة</span>
+                <span class="domain-tile-val" style="font-size: 14px;">14,200 ج.م</span>
+              </div>
+            </div>
+
+            <!-- Booking Request Decision Unit -->
+            <div style="padding: 0 16px; margin-bottom: 16px;">
+              <div style="background: var(--color-white); border-radius: var(--radius-container); border: 1px solid var(--color-border-subtle); padding: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <span style="font-size: 14px; font-weight: 800;">طلب حجز جديد</span>
+                  <span class="status-badge process"><span class="badge-dot"></span> بانتظار موافقتك</span>
+                </div>
+                <p style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">فيلا الشروق — 4 ليالٍ (10 إلى 14 أغسطس)</p>
+                <p style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 14px;">العربون: 1,600 ج.م · مستحقاتك الصافية: 1,280 ج.م (80%)</p>
+
+                <!-- Action Pair -->
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn-primary-decision" style="flex: 2; min-height: 42px; font-size: 14px;">قبول الطلب</button>
+                  <button class="btn-destructive-outline" style="flex: 1; min-height: 42px; font-size: 14px;">رفض</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Open Grouped Container: Unit Settings & Preferences -->
+            <div class="open-grouped-container">
+              <div class="grouped-row">
+                <div>
+                  <div class="grouped-row-title">إشعارات الحجز المباشرة</div>
+                  <div class="grouped-row-desc">تنبيهات فورية عند وصول طلبات حجز جديدة</div>
+                </div>
+                <div class="checkbox-box checked">✓</div>
+              </div>
+              <div class="grouped-row">
+                <div>
+                  <div class="grouped-row-title">الحساب البنكي لتحويل المستحقات</div>
+                  <div class="grouped-row-desc">البنك الأهلي المصري (مكتمل)</div>
+                </div>
+                <span style="font-size: 14px; color: var(--color-text-muted);">←</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Frame 2: Owner Wallet & Payout Breakdown -->
+        <div class="device-frame-390" id="owner-wallet-viewport">
+          <div class="mobile-status-bar">
+            <span>9:41</span>
+            <span>5G 100%</span>
+          </div>
+
+          <div class="app-bar">
+            <span class="back-arrow-rtl">➔</span>
+            <span class="app-bar-title">المحفظة والمستحقات</span>
+            <div style="width: 20px;"></div>
+          </div>
+
+          <div style="padding: 16px; overflow-y: auto; flex: 1;">
+            <!-- Wallet Buckets Card -->
+            <div style="background: var(--color-white); border-radius: var(--radius-container); border: 1px solid var(--color-border-subtle); padding: 16px; margin-bottom: 16px;">
+              <span style="font-size: 12px; font-weight: 600; color: var(--color-text-muted);">الرصيد المتاح للسحب</span>
+              <div style="font-size: 26px; font-weight: 800; margin: 4px 0 12px; color: var(--color-text-primary);">8,400 ج.م</div>
+              
+              <div style="border-top: 1px solid var(--color-border-subtle); padding-top: 12px; display: flex; justify-content: space-between; font-size: 13px;">
+                <span style="color: var(--color-text-secondary);">معلق (يتاح بعد 24 ساعة من الوصول):</span>
+                <span style="font-weight: 700;">5,800 ج.م</span>
+              </div>
+            </div>
+
+            <!-- Payout CTA -->
+            <button class="btn-primary-decision" style="margin-bottom: 16px;">طلب سحب المستحقات (الحد الأدنى 500 ج.م)</button>
+
+            <!-- Payout Request History Row -->
+            <div class="open-grouped-container" style="margin: 0;">
+              <div class="grouped-row">
+                <div>
+                  <div class="grouped-row-title">طلب سحب رقم #9812</div>
+                  <div class="grouped-row-desc">3,500 ج.م · 1 أكتوبر 2026</div>
+                </div>
+                <span class="status-badge success">تم التحويل بنجاح</span>
+              </div>
+              <div class="grouped-row">
+                <div>
+                  <div class="grouped-row-title">طلب سحب رقم #9904</div>
+                  <div class="grouped-row-desc">4,200 ج.م · اليوم</div>
+                </div>
+                <span class="status-badge process">قيد المراجعة</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SECTION 3: ADMIN VIEW (Desktop 1440px) -->
+    <!-- ============================================================== -->
+    <section id="section-admin" class="catalog-section">
+      <div class="section-banner">
+        <div>
+          <h2 class="section-title">بيئة مراجعة الإدارة (Admin Web 1440px)</h2>
+          <p class="section-desc">مساحة عمل مكتبية تشغيلية كثيفة (Desktop Operational Workspace) وقوائم فحص FIFO مع عدم تلفيق النتائج في حالات الفشل.</p>
+        </div>
+        <span class="meta-tag governed">DESKTOP_WEB_PRESERVED</span>
+      </div>
+
+      <div class="device-frame-admin-1440">
+        <!-- Admin Header -->
+        <div style="background: var(--color-white); border-bottom: 1px solid var(--color-border-subtle); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="brand-logo" style="width: 32px; height: 32px; font-size: 16px;">K</div>
+            <span style="font-weight: 800; font-size: 16px;">لوحة تدقيق العمليات والوحدات — كونفرم</span>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <span class="status-badge success">النظام متصل</span>
+            <span style="font-size: 13px; font-weight: 600;">مسؤول المراجعة: أحمد سامي</span>
+          </div>
+        </div>
+
+        <!-- Admin Table Body -->
+        <div style="padding: 24px; flex: 1;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="font-size: 16px; font-weight: 800;">طابور مراجعة الوحدات الجديدة (FIFO Queue)</h3>
+            <span style="font-size: 13px; color: var(--color-text-muted);">إجمالي الطلبات المعلقة: 3 وحدات</span>
+          </div>
+
+          <div style="background: var(--color-white); border-radius: var(--radius-container); border: 1px solid var(--color-border-subtle); overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 13px;">
+              <thead>
+                <tr style="background: #F8FAFC; border-bottom: 1px solid var(--color-border-subtle);">
+                  <th style="padding: 12px 16px; font-weight: 700;">معرف الوحدة</th>
+                  <th style="padding: 12px 16px; font-weight: 700;">اسم العقار والموقع</th>
+                  <th style="padding: 12px 16px; font-weight: 700;">المالك</th>
+                  <th style="padding: 12px 16px; font-weight: 700;">حالة التوثيق</th>
+                  <th style="padding: 12px 16px; font-weight: 700;">حالة النشر</th>
+                  <th style="padding: 12px 16px; font-weight: 700;">إجراء الفحص</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--color-border-subtle);">
+                  <td style="padding: 12px 16px; font-family: monospace;">prop_8912a</td>
+                  <td style="padding: 12px 16px; font-weight: 600;">شاليه فاخر برؤية بحرية — هاسيندا وايت</td>
+                  <td style="padding: 12px 16px;">م. خالد عبد الرحمن</td>
+                  <td style="padding: 12px 16px;"><span class="status-badge process">قيد الفحص</span></td>
+                  <td style="padding: 12px 16px;"><span class="status-badge process">قيد المراجعة</span></td>
+                  <td style="padding: 12px 16px;"><button class="btn-primary-decision" style="min-height: 32px; padding: 4px 12px; font-size: 12px; width: auto;">بدء الفحص</button></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--color-border-subtle);">
+                  <td style="padding: 12px 16px; font-family: monospace;">prop_7731b</td>
+                  <td style="padding: 12px 16px; font-weight: 600;">فيلا مطلة على البحيرة — مراسي</td>
+                  <td style="padding: 12px 16px;">د. سارة إبراهيم</td>
+                  <td style="padding: 12px 16px;"><span class="status-badge success">موثق</span></td>
+                  <td style="padding: 12px 16px;"><span class="status-badge success">منشورة</span></td>
+                  <td style="padding: 12px 16px;"><button class="btn-secondary-subtle" style="min-height: 32px; padding: 4px 12px; font-size: 12px; width: auto;">عرض السجل</button></td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 16px; font-family: monospace;">prop_6620c</td>
+                  <td style="padding: 12px 16px; font-weight: 600;">بنتهاوس تشطيب فندقي — بورتو جولف</td>
+                  <td style="padding: 12px 16px;">أ. طارق محمود</td>
+                  <td style="padding: 12px 16px;"><span class="status-badge danger">مرفوض</span></td>
+                  <td style="padding: 12px 16px;"><span class="status-badge muted">مسودة</span></td>
+                  <td style="padding: 12px 16px;"><button class="btn-secondary-subtle" style="min-height: 32px; padding: 4px 12px; font-size: 12px; width: auto;">أسباب الرفض</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SECTION 4: STATES & FEEDBACK VIEW -->
+    <!-- ============================================================== -->
+    <section id="section-states" class="catalog-section">
+      <div class="section-banner">
+        <div>
+          <h2 class="section-title">حالات النظام والتغذية الراجعة (States & Feedback)</h2>
+          <p class="section-desc">نموذج الطبقات الأربع (Four-Layer State Delivery): الشارة، الشرح، التعافي/الحظر، والإشعار العابر، مع حظر المربعات الصفراء.</p>
+        </div>
+        <span class="meta-tag governed">MR-17_NO_YELLOW_BOXES</span>
+      </div>
+
+      <div class="viewport-grid">
+        <!-- Frame 1: True Empty vs Error Invariants -->
+        <div class="device-frame-390" id="states-invariants-viewport">
+          <div class="mobile-status-bar">
+            <span>9:41</span>
+            <span>5G 100%</span>
+          </div>
+
+          <div class="app-bar">
+            <span class="app-bar-title">اختبار حالات العرض</span>
+          </div>
+
+          <div style="padding: 16px; overflow-y: auto; flex: 1;">
+            <!-- True Empty State -->
+            <div class="spec-block" style="text-align: center; padding: 24px 16px; margin: 0 0 16px 0;">
+              <span class="spec-badge">الحالة: فارغ حقيقي (True Empty)</span>
+              <div style="font-size: 32px; margin: 8px 0;">🔍</div>
+              <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 4px;">لا توجد نتائج بحث مطابقة</h4>
+              <p style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 12px;">جرب تغيير التواريخ أو توسيع نطاق البحث في قرى مجاورة.</p>
+              <button class="btn-secondary-subtle" style="min-height: 38px; font-size: 13px;">إعادة ضبط الفلاتر</button>
+            </div>
+
+            <!-- Network Error State (ERROR != EMPTY) -->
+            <div class="spec-block" style="padding: 16px; margin: 0 0 16px 0; border-color: #FECACA; background: #FEF2F2;">
+              <span class="spec-badge" style="background: #FEE2E2; color: #991B1B;">الحالة: تعذر الاتصال (ERROR != EMPTY)</span>
+              <h4 style="font-size: 14px; font-weight: 800; color: #991B1B; margin-bottom: 4px;">تعذر تحميل قائمة الوحدات</h4>
+              <p style="font-size: 12px; color: #7F1D1D; line-height: 1.4; margin-bottom: 10px;">حدث خطأ أثناء الاتصال بالخادم. لم يتم فقدان أي بيانات محفوظة.</p>
+              <button class="alert-action-btn" style="color: #991B1B; border-color: #991B1B;">إعادة المحاولة</button>
+            </div>
+
+            <!-- Stale Data Notice -->
+            <div class="section-alert info">
+              <div class="alert-header">
+                <span>ℹ️ بيانات محفوظة مؤقتاً (غير محدثة)</span>
+              </div>
+              <div class="alert-body">
+                آخر سعر معروف: 3,500 ج.م / ليلة. قد تكون الأسعار أو التوفر قد تغيرت.
+              </div>
+              <button class="alert-action-btn">تحديث الأسعار الآن</button>
+            </div>
+
+            <!-- Toast Example -->
+            <div style="text-align: center; margin-top: 16px;">
+              <div class="toast-pill">✓ تم حفظ التغييرات بنجاح</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Frame 2: Canonical Status Badge Showcase -->
+        <div class="device-frame-390" id="states-badges-viewport">
+          <div class="mobile-status-bar">
+            <span>9:41</span>
+            <span>5G 100%</span>
+          </div>
+
+          <div class="app-bar">
+            <span class="app-bar-title">شارات الحالة المعتمدة (8 عائلات)</span>
+          </div>
+
+          <div style="padding: 16px; overflow-y: auto; flex: 1;">
+            <div class="spec-block" style="margin: 0 0 12px 0;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px;">حالة العقار (properties.status)</div>
+              <div class="badge-showcase">
+                <span class="status-badge success">منشورة</span>
+                <span class="status-badge process">قيد المراجعة</span>
+                <span class="status-badge muted">مسودة</span>
+                <span class="status-badge muted">موقوفة</span>
+              </div>
+            </div>
+
+            <div class="spec-block" style="margin: 0 0 12px 0;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px;">توثيق العقار (properties.verification_status)</div>
+              <div class="badge-showcase">
+                <span class="status-badge success">موثق</span>
+                <span class="status-badge process">قيد الفحص</span>
+                <span class="status-badge danger">مرفوض</span>
+              </div>
+            </div>
+
+            <div class="spec-block" style="margin: 0 0 12px 0;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px;">دورة الحجز (bookings.status)</div>
+              <div class="badge-showcase">
+                <span class="status-badge success">الحجز مؤكد</span>
+                <span class="status-badge process">بانتظار موافقة المالك</span>
+                <span class="status-badge info">العربون مطلوب</span>
+                <span class="status-badge danger">مرفوض من المالك</span>
+              </div>
+            </div>
+
+            <div class="spec-block" style="margin: 0 0 12px 0;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px;">توثيق هوية المالك (owners.verification_status)</div>
+              <div class="badge-showcase">
+                <span class="status-badge success">موثق</span>
+                <span class="status-badge process">قيد المراجعة</span>
+                <span class="status-badge danger">تعذر التوثيق</span>
+                <span class="status-badge muted">غير موثق</span>
+              </div>
+            </div>
+
+            <div class="spec-block" style="margin: 0 0 12px 0;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px;">مستندات التوثيق (owner_verification_documents)</div>
+              <div class="badge-showcase">
+                <span class="status-badge success">مستند معتمد</span>
+                <span class="status-badge process">قيد الفحص</span>
+                <span class="status-badge danger">مستند مرفوض</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SECTION 5: OVERLAYS & DIALOGS -->
+    <!-- ============================================================== -->
+    <section id="section-overlays" class="catalog-section">
+      <div class="section-banner">
+        <div>
+          <h2 class="section-title">الطبقات العلوية والتأكيد (Overlays & Dialogs)</h2>
+          <p class="section-desc">فصل صريح بين الورقة السفلية للسياق المهامي (BottomSheet 16px) ومربع التأكيد للقرارات المصيرية (ConfirmationDialog 12px).</p>
+        </div>
+        <span class="meta-tag provisional">PHASE_4F_GOVERNED</span>
+      </div>
+
+      <div class="viewport-grid">
+        <!-- Frame 1: BottomSheet (16px radius) -->
+        <div class="device-frame-390" id="overlays-sheet-viewport">
+          <div class="mobile-status-bar">
+            <span>9:41</span>
+            <span>5G 100%</span>
+          </div>
+
+          <div style="padding: 16px; background: #F8FAFC; flex: 1; display: flex; flex-direction: column;">
+            <p style="font-size: 12px; color: var(--color-text-muted); margin-bottom: auto;">خلفية معتمة تحت الورقة السفلية...</p>
+            
+            <!-- Bottom Sheet -->
+            <div class="bottom-sheet-mock">
+              <div class="sheet-handle"></div>
+              <div class="sheet-header">
+                <span class="sheet-title">تصفية نتائج البحث</span>
+                <button class="sheet-close-btn" title="إغلاق" aria-label="إغلاق">✕</button>
+              </div>
+
+              <div class="field-unit">
+                <label class="field-label">نطاق السعر في الليلة</label>
+                <input type="text" class="field-control" value="1,000 ج.م — 4,000 ج.م" readonly>
+              </div>
+
+              <div class="field-unit">
+                <label class="field-label">نوع العقار</label>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn-primary-decision" style="min-height: 38px; font-size: 13px;">شاليه</button>
+                  <button class="btn-secondary-subtle" style="min-height: 38px; font-size: 13px;">فيلا</button>
+                </div>
+              </div>
+
+              <button class="btn-primary-decision" style="margin-top: 8px;">تطبيق الفلاتر (42 وحدة)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Frame 2: ConfirmationDialog (12px radius) -->
+        <div class="device-frame-390" id="overlays-dialog-viewport">
+          <div class="mobile-status-bar">
+            <span>9:41</span>
+            <span>5G 100%</span>
+          </div>
+
+          <div class="dialog-backdrop-mock">
+            <div class="dialog-card">
+              <div class="dialog-title">تأكيد رفض طلب الحجز</div>
+              <div class="dialog-consequence">
+                سيتم رفض طلب الحجز ولن ينتقل هذا الطلب إلى خطوة دفع العربون. لا يمكن التراجع عن هذا القرار بعد تأكيده.
+              </div>
+              <div class="dialog-actions">
+                <button class="btn-secondary-subtle" style="flex: 1; min-height: 42px; font-size: 13px;">تراجع</button>
+                <button class="btn-primary-decision" style="flex: 1; min-height: 42px; font-size: 13px; background: #DC2626;">تأكيد الرفض</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- SECTION 6: 200% REFLOW PROOF -->
+    <!-- ============================================================== -->
+    <section id="section-reflow" class="catalog-section">
+      <div class="section-banner">
+        <div>
+          <h2 class="section-title">اختبار التكبير الشديد 200% (200% Reflow Proof)</h2>
+          <p class="section-desc">إثبات عدم قص النصوص، التمدد الرأسي الطبيعي للحاويات والأزرار، وتدفق المحتوى دون تمرير أفقي غير مقصود.</p>
+        </div>
+        <span class="meta-tag governed">ZERO_HORIZONTAL_CLIPPING</span>
+      </div>
+
+      <div class="viewport-grid">
+        <div class="device-frame-390 scaled-200-frame" style="overflow-y: auto; height: 844px; padding: 16px; background: var(--color-canvas);">
+          <div style="background: var(--color-white); border-radius: var(--radius-container); border: 1px solid var(--color-border-subtle); padding: 16px; margin-bottom: 16px;">
+            <div style="font-size: 16px; font-weight: 800; line-height: 1.4; margin-bottom: 8px;">مراجعة طلب الحجز — فيلا الشروق الفاخرة</div>
+            <div class="status-badge process" style="margin-bottom: 12px;"><span class="badge-dot"></span> بانتظار موافقة المالك</div>
+            
+            <p style="font-size: 13px; line-height: 1.5; color: var(--color-text-secondary); margin-bottom: 12px;">
+              إجمالي الإقامة: 4,800 ج.م (3 ليالٍ). العربون المطلوب يمثل قيمة الليلة الأولى فقط (1,600 ج.م).
+            </p>
+
+            <button class="btn-primary-decision" style="font-size: 14px; min-height: 52px; white-space: normal;">
+              إرسال طلب الحجز إلى المالك
+            </button>
+          </div>
+
+          <!-- Alert Reflow at 200% -->
+          <div class="section-alert info" style="font-size: 13px; line-height: 1.5;">
+            <div class="alert-header" style="font-size: 14px;">ℹ️ تنبيه التحديث</div>
+            <div class="alert-body">
+              قد تتغير الأسعار إذا لم يكتمل دفع العربون خلال الفترة المحددة بعد موافقة المالك.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    function showSection(sectionId) {
+      document.querySelectorAll('.catalog-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.role-tab-btn').forEach(b => b.classList.remove('active'));
+      
+      const target = document.getElementById('section-' + sectionId);
+      if (target) {
+        target.classList.add('active');
+      }
+      
+      const activeBtn = Array.from(document.querySelectorAll('.role-tab-btn')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(sectionId));
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const section = params.get('section');
+      if (section) {
+        showSection(section);
+      }
+    });
+  </script>
+</body>
+</html>

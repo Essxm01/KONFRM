@@ -1,37 +1,49 @@
-# Active Task — PHASE_4G_CONTENT_STATE_PRESENTATION
+# Active Task — PHASE_4H_COMPONENT_CONTRACT_CATALOG
 
-TASK_ID: PHASE_4G_CONTENT_STATE_PRESENTATION
+TASK_ID: PHASE_4H_COMPONENT_CONTRACT_CATALOG
 TASK_CLASS: DESIGN_SYSTEM_FOUNDATION_PHASE
-STATUS: READY_FOR_PUBLICATION
-PR: #97
+STATUS: ACTIVE
+PR: NONE
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: 2385cd13a078aedc1f40769af5b394eed1210c00
-BRANCH: design/content-state-pilot-01
-SCOPE: Phase 4G Content & State Presentation System — Discovery, state-truth inventory, product-status reconciliation, role-aware content grammar, loading / empty / error / offline / disabled / unauthorized / stale / partial / conflict / submission / success / feedback / recovery, domain status presentation, microcopy system, visual pilot, stress testing, Design Court v1 deliberation, self-correction, Founder decision gate preparation if material.
+BASE_MAIN_SHA: bb4534fc9edbb3b44ab6431c259f115220e7fbf9
+BRANCH: design/component-contract-catalog-01
+SCOPE: Phase 4H Component Contract & Reference Catalog — Turn validated Phase 4A–4G decisions into consumable, role-aware component contracts with state matrix, RTL/Bidi behavior, accessibility behavior, role differences, reference catalog, and permitted/open values register.
 
 ## Boundaries
-- Does NOT start Phase 4H (Component Specification & Assembly).
+- Does NOT start Phase 4I (Native Flutter Foundation).
+- Does NOT implement Flutter components or initialize Flutter workspace.
 - Does NOT modify production applications (`customer-app/`, `owner-app/`, `admin-app/`).
 - Does NOT modify token files (`DESIGN_SYSTEM/TOKENS/*.json`) or backend/database/API contracts.
-- Does NOT initialize Flutter workspace.
-- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E), Role-Aware Contextual Navigation & Overlays + 16px Sheet Radius + 12px Dialog Radius + DF2 v1.5 + CHANGELOG 2.1.10 (4F).
-- Preserves non-negotiables: ERROR MUST NEVER MASQUERADE AS EMPTY; stale transactional truth must not appear newly verified; critical error cannot live only in a toast; prior-account data cannot appear as current-account data; server-authoritative state remains authoritative; safe preserved data may remain visible only when honestly marked stale; NO yellow/amber/orange boxed UI by default (MR-17); exact semantic colors remain OPEN.
+- Does NOT invent Product behavior, financial rules, or status enums.
+- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E), Role-Aware Contextual Navigation & Overlays + 16px Sheet Radius + 12px Dialog Radius + DF2 v1.5 + CHANGELOG 2.1.10 (4F), Role-Aware Layered State System + Four-Layer State Delivery + Canonical Domain Status Mappings + DF2 v1.6 + CHANGELOG 2.1.11 (4G).
+- Preserves non-negotiables: ERROR != EMPTY; FAILED_QUERY != FAKE_ZERO; NORMAL_PENDING != WARNING; STALE != CURRENT; UNAUTHORIZED != GENERIC_ERROR; CONFLICT != SILENT_SUBMISSION; CRITICAL_FAILURE != TOAST_ONLY; DUAL_BOTTOM_CHROME PROHIBITED; OWNER_BOTTOM_NAV PROHIBITED; exact semantic colors OPEN; exact neutrals OPEN; exact blue OPEN; exact shadows OPEN; toast duration OPEN; native acceptance DEFERRED TO 4I.
 
 ## Closure Gates
-- [x] State discovery documented (`STATE_DISCOVERY.md`).
-- [x] State taxonomy & status truth matrix documented (`STATE_TAXONOMY.md`, `STATUS_TRUTH_MATRIX.md`).
-- [x] Candidate systems documented and evaluated (`CONTENT_STATE_EVALUATION.md`).
-- [x] Multi-role visual pilot implemented (`DESIGN_SYSTEM/PILOTS/content-state-pilot-01/`).
-- [x] Visual evidence captured and inspected (True Empty vs Error pairs, Partial, Stale, Conflict, Unauthorized, 200% scale, 360/390/430 viewports, Admin 1280/1440).
-- [x] Design Court v1 deliberation completed (`FULL_COURT` mode, `DESIGN_COURT_REPORT.md`).
-- [x] Final Court Logic Integrity verified (Gate 12 STATE_EXPLANATION_AND_RECOVERY_CONTRACT fails Candidate A; Candidate B NO_HARD_GATE_FAILURE; 4-tier state delivery hierarchy).
-- [x] Phase 4G shared authority formalized (`badges.md`, `alerts.md`, `states.md`, `SCREEN_STATES.md`, `CONTENT_AND_MICROCOPY.md`, `MOBILE_DESIGN_FOUNDATION.md` v1.6, `CHANGELOG.md` 2.1.11).
-- [x] Self-correction and red team verification completed.
-- [x] Founder decision gate prepared if material, or verdict reached if clear (`FOUNDER_DECISION_REQUIRED: NO`).
+- [x] Component inventory & gap analysis documented (`COMPONENT_INVENTORY.md`, `CONTRACT_GAP_ANALYSIS.md`).
+- [x] Component contract schema & master matrix documented (`COMPONENT_CONTRACT_MATRIX.md`, `OPEN_VALUES_REGISTER.md`).
+- [x] Master component state matrix & product truth dependency matrix documented.
+- [x] Role difference matrix & RTL / Accessibility contracts documented.
+- [x] Reference catalog built (`DESIGN_SYSTEM/PILOTS/component-contract-catalog-01/index.html`).
+- [x] Visual evidence captured and inspected (`EVIDENCE_MANIFEST.md`, `evidence/*.png`).
+- [x] Cross-component consistency audit completed.
+- [x] Phase 4I native validation handoff matrix defined.
+- [x] Shared component contracts reconciled / formalized in `DESIGN_SYSTEM/COMPONENTS/`.
 - [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `node scripts/test-design-court-contract.mjs`, `git diff --check`).
-- [x] Phase 4H status remains strictly `NOT_STARTED`.
+- [ ] Publication PR created.
+- [x] Phase 4I status remains strictly `NOT_STARTED`.
 
 ---
+
+## Closed Upstream Dependency — Phase 4G Content & State Presentation System
+- **PHASE_4G_STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#97`
+- **MERGE_COMMIT:** `bb4534fc9edbb3b44ab6431c259f115220e7fbf9`
+- **Architecture Model:** `ROLE_AWARE_LAYERED_STATE_SYSTEM` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **State Delivery:** `FOUR_LAYER` (Identify: StatusBadge; Explain: InlineText; Recover/Block: SectionAlert/ScreenState; Transient Confirm: Toast).
+- **Core Invariants:** `ERROR != EMPTY`, `FAILED_QUERY != FAKE_ZERO`, `NORMAL_PENDING != WARNING`, `STALE != CURRENT`, `CONFLICT != SILENT_SUBMISSION`, `CRITICAL_FAILURE != TOAST_ONLY`.
+- **Domain Status Mappings:** Property lifecycle, Property verification, Booking lifecycle, Payment transactions, Wallet balance buckets, Payout requests, Owner KYC Identity (`owners.verification_status`), Owner verification documents (`owner_verification_documents.status`).
+- **DF2:** `v1.6`
+- **CHANGELOG:** `2.1.11`
 
 ## Closed Upstream Dependency — Phase 4F Navigation & Overlay System
 - **PHASE_4F_STATUS:** `CLOSED / MERGED / PUBLISHED`
@@ -74,8 +86,8 @@ SCOPE: Phase 4G Content & State Presentation System — Discovery, state-truth i
 - **Primary Button Radius:** `6px` (`PRIMARY_ONLY`).
 - **Primary Color:** Stable Black `#000000`.
 
-## Next Roadmap Dependency (after 4G)
-- **PHASE_4H_COMPONENT_SPECIFICATION_ASSEMBLY**
+## Next Roadmap Dependency (after 4H)
+- **PHASE_4I_NATIVE_FLUTTER_FOUNDATION**
   - **STATUS:** `NOT_STARTED`
   - **EXECUTION_STARTED:** `NO`
 

@@ -1,4 +1,16 @@
-# StatusBadge contract
+# StatusBadge Contract
+
+## 1. Authority & Classification
+
+- **Governance Level:** `GOVERNED_CANONICAL_SPECIFICATION`
+- **Surface Reality:** React 19 / TypeScript Web baseline (`CONTROLLED_WEB_PILOT_REFERENCE`); native mobile architecture governed for Flutter target (`PHASE_4I_TARGET`).
+- **Governed Structural Invariants:**
+  - Semantic Presentation of Canonical Truth: Identifies server status; never substitutes for required explanatory copy or recovery actions (`STATE_EXPLANATION_AND_RECOVERY_CONTRACT`).
+  - No Marketing Trust Badges: Customer Auth V2 phone/email verification does not authorize synthetic trust badges ("إقامة موثقة" / "حساب موثق").
+  - Actor Causality Invariant: `CANCELLED_BY_OWNER` and `CANCELLED_BY_GUEST` must preserve actor causality.
+  - Verification Truth vs Lifecycle Enum: Property rejection is `properties.verification_status = 'REJECTED'`, returning lifecycle to `DRAFT`.
+  - Normal Process != Warning: `PENDING` states are healthy progress; never map to amber/yellow warnings (`MR-17`).
+- **Open Parameters:** Exact badge border/background token hexes (`OPEN / DEFERRED_TO_4I`).
 
 A `StatusBadge` is a semantic presentation of a canonical status, not an independently styled screen chip. It uses the corresponding semantic background, text and border token; an icon or dot is optional and cannot be the only signal.
 

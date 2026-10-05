@@ -299,7 +299,7 @@
 
     .btn-primary-decision {
       font-family: var(--font-family);
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       line-height: 1.2;
       background: var(--color-black);
@@ -581,11 +581,11 @@
       align-items: center;
       gap: 8px;
       font-weight: 700;
-      font-size: 13px;
+      font-size: 14px;
     }
 
     .alert-body {
-      font-size: 12px;
+      font-size: 13px;
       line-height: 1.45;
     }
 
@@ -926,13 +926,57 @@
       100% { background-position: -200% 0; }
     }
 
-    /* 200% Text Scaling Container */
+    /* 200% Text Scaling Container & Reflow Proof */
     .scaled-200-frame {
       font-size: 200%;
     }
 
-    .scaled-200-frame * {
-      /* Simulates native Dynamic Type scaling */
+    .scaled-200-frame .reflow-title {
+      font-size: 32px !important;
+      line-height: 1.35 !important;
+      margin-bottom: 12px !important;
+      font-weight: 800 !important;
+    }
+
+    .scaled-200-frame .reflow-badge {
+      font-size: 22px !important;
+      padding: 6px 14px !important;
+      line-height: 1.3 !important;
+      margin-bottom: 16px !important;
+    }
+
+    .scaled-200-frame .reflow-badge .badge-dot {
+      width: 10px !important;
+      height: 10px !important;
+    }
+
+    .scaled-200-frame .reflow-body {
+      font-size: 26px !important;
+      line-height: 1.45 !important;
+      color: var(--color-text-secondary) !important;
+      margin-bottom: 16px !important;
+    }
+
+    .scaled-200-frame .reflow-button {
+      font-size: 28px !important;
+      min-height: 64px !important;
+      padding: 16px 20px !important;
+      white-space: normal !important;
+      line-height: 1.35 !important;
+      text-align: center !important;
+      width: 100% !important;
+    }
+
+    .scaled-200-frame .reflow-alert-header {
+      font-size: 28px !important;
+      margin-bottom: 8px !important;
+      line-height: 1.35 !important;
+      font-weight: 700 !important;
+    }
+
+    .scaled-200-frame .reflow-alert-body {
+      font-size: 26px !important;
+      line-height: 1.45 !important;
     }
 
     /* App Bar Simulation */
@@ -974,7 +1018,7 @@
       </div>
       <div class="catalog-meta">
         <span class="meta-tag provisional">DF2 v1.7 COMPONENT CONTRACT CATALOG — PROVISIONAL MOBILE CONTRACTS</span>
-        <span class="meta-tag" style="background: #FEF3C7; color: #92400E; border-color: #FDE68A;">بيانات تجريبية — LAB_SCENARIO_DATA ≠ أدلة إنتاجية</span>
+        <span class="meta-tag">بيانات تجريبية — LAB_SCENARIO_DATA ≠ أدلة إنتاجية</span>
         <span class="meta-tag provisional">CAIRO PROFILE B</span>
         <span class="meta-tag provisional">PRIMARY BLACK #000000 (6px)</span>
         <span class="meta-tag provisional">FIELD RADIUS 8px</span>
@@ -1050,7 +1094,7 @@
             <div class="spec-block" style="margin: 0 0 16px 0;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <span style="font-size: 13px; font-weight: 700;">حجز شاليه أمواج</span>
-                <span class="status-badge success"><span class="badge-dot"></span> الحجز مؤكد</span>
+                <span class="status-badge success" id="baseline-badge"><span class="badge-dot"></span> الحجز مؤكد</span>
               </div>
               <p style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 12px;">15 يوليو — 18 يوليو 2026 (3 ليالٍ)</p>
               <button class="btn-secondary-subtle" style="min-height: 40px; font-size: 13px;">عرض تفاصيل الإقامة</button>
@@ -1088,7 +1132,7 @@
           <!-- Transactional Customer App Bar -->
           <div class="app-bar">
             <span class="back-arrow-rtl" title="الرجوع">➔</span>
-            <span class="app-bar-title">مراجعة طلب الحجز</span>
+            <span class="app-bar-title" id="baseline-title">مراجعة طلب الحجز</span>
             <div style="width: 20px;"></div>
           </div>
 
@@ -1100,7 +1144,7 @@
               
               <div style="border-top: 1px solid var(--color-border-subtle); padding-top: 12px; display: flex; flex-direction: column; gap: 8px;">
                 <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                  <span style="color: var(--color-text-secondary);">3 ليالٍ × 1,600 ج.م</span>
+                  <span style="color: var(--color-text-secondary); font-size: 13px;" id="baseline-body">3 ليالٍ × 1,600 ج.م</span>
                   <span style="font-weight: 700;">4,800 ج.م</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 13px;">
@@ -1130,7 +1174,7 @@
               <span class="sticky-price-label">العربون المستحق</span>
               <span class="sticky-price-val">1,600 ج.م</span>
             </div>
-            <button class="btn-primary-decision" style="width: auto; min-width: 170px;">إرسال طلب الحجز</button>
+            <button class="btn-primary-decision" id="baseline-button" style="width: auto; min-width: 170px;">إرسال طلب الحجز</button>
           </div>
         </div>
       </div>
@@ -1390,10 +1434,10 @@
 
             <!-- Stale Data Notice -->
             <div class="section-alert info">
-              <div class="alert-header">
+              <div class="alert-header" id="baseline-alert-title">
                 <span>ℹ️ بيانات محفوظة مؤقتاً (غير محدثة)</span>
               </div>
-              <div class="alert-body">
+              <div class="alert-body" id="baseline-alert-body">
                 آخر سعر معروف: 3,500 ج.م / ليلة. قد تكون الأسعار أو التوفر قد تغيرت.
               </div>
               <button class="alert-action-btn">تحديث الأسعار الآن</button>
@@ -1417,9 +1461,10 @@
             <span class="app-bar-title">شارات الحالة المعتمدة (8 عائلات)</span>
           </div>
 
-          <div style="padding: 16px; overflow-y: auto; flex: 1;">
-            <div class="spec-block" style="margin: 0 0 12px 0;">
-              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px;">حالة العقار (properties.status)</div>
+          <div style="padding: 14px 16px; overflow-y: auto; flex: 1;">
+            <!-- 1. Property Lifecycle -->
+            <div class="spec-block" style="margin: 0 0 8px 0; padding: 8px 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 5px;">1. دورة حياة العقار (properties.status)</div>
               <div class="badge-showcase">
                 <span class="status-badge success">منشورة</span>
                 <span class="status-badge process">قيد المراجعة</span>
@@ -1428,17 +1473,20 @@
               </div>
             </div>
 
-            <div class="spec-block" style="margin: 0 0 12px 0;">
-              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px;">توثيق العقار (properties.verification_status)</div>
+            <!-- 2. Property Verification -->
+            <div class="spec-block" style="margin: 0 0 8px 0; padding: 8px 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 5px;">2. توثيق العقار (properties.verification_status)</div>
               <div class="badge-showcase">
                 <span class="status-badge success">موثق</span>
                 <span class="status-badge process">قيد الفحص</span>
                 <span class="status-badge danger">مرفوض</span>
+                <span class="status-badge muted">غير موثق</span>
               </div>
             </div>
 
-            <div class="spec-block" style="margin: 0 0 12px 0;">
-              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px;">دورة الحجز (bookings.status)</div>
+            <!-- 3. Booking Lifecycle -->
+            <div class="spec-block" style="margin: 0 0 8px 0; padding: 8px 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 5px;">3. دورة حياة الحجز (bookings.status)</div>
               <div class="badge-showcase">
                 <span class="status-badge success">الحجز مؤكد</span>
                 <span class="status-badge process">بانتظار موافقة المالك</span>
@@ -1447,8 +1495,42 @@
               </div>
             </div>
 
-            <div class="spec-block" style="margin: 0 0 12px 0;">
-              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px;">توثيق هوية المالك (owners.verification_status)</div>
+            <!-- 4. Payment Transactions -->
+            <div class="spec-block" style="margin: 0 0 8px 0; padding: 8px 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 5px;">4. معاملات الدفع (payment_transactions.status)</div>
+              <div class="badge-showcase">
+                <span class="status-badge success">تم الدفع بنجاح</span>
+                <span class="status-badge process">قيد المعالجة</span>
+                <span class="status-badge danger">فشل الدفع</span>
+              </div>
+            </div>
+
+            <!-- 5. Wallet Balance Buckets -->
+            <div class="spec-block" style="margin: 0 0 8px 0; padding: 8px 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 5px;">5. أرصدة محفظة المالك (owner_wallets)</div>
+              <div class="badge-showcase">
+                <span class="status-badge success">متاح للسحب</span>
+                <span class="status-badge process">معلق</span>
+                <span class="status-badge attention">محتجز مؤقتاً</span>
+                <span class="status-badge info">محجوز لطلب سحب</span>
+              </div>
+            </div>
+
+            <!-- 6. Payout Request Lifecycle -->
+            <div class="spec-block" style="margin: 0 0 8px 0; padding: 8px 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 5px;">6. دورة طلب السحب (payout_requests.status)</div>
+              <div class="badge-showcase">
+                <span class="status-badge success">تم التحويل بنجاح</span>
+                <span class="status-badge process">قيد المراجعة</span>
+                <span class="status-badge info">قيد التحويل</span>
+                <span class="status-badge process">قيد التحقق من حالة التحويل</span>
+                <span class="status-badge danger">فشل التحويل</span>
+              </div>
+            </div>
+
+            <!-- 7. Owner KYC Identity -->
+            <div class="spec-block" style="margin: 0 0 8px 0; padding: 8px 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 5px;">7. توثيق هوية المالك (owners.verification_status)</div>
               <div class="badge-showcase">
                 <span class="status-badge success">موثق</span>
                 <span class="status-badge process">قيد المراجعة</span>
@@ -1457,8 +1539,9 @@
               </div>
             </div>
 
-            <div class="spec-block" style="margin: 0 0 12px 0;">
-              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px;">مستندات التوثيق (owner_verification_documents)</div>
+            <!-- 8. Owner Verification Document -->
+            <div class="spec-block" style="margin: 0 0 8px 0; padding: 8px 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 5px;">8. مستندات توثيق المالك (owner_verification_documents)</div>
               <div class="badge-showcase">
                 <span class="status-badge success">مستند معتمد</span>
                 <span class="status-badge process">قيد الفحص</span>
@@ -1555,25 +1638,25 @@
       </div>
 
       <div class="viewport-grid">
-        <div class="device-frame-390 scaled-200-frame" style="overflow-y: auto; height: 844px; padding: 16px; background: var(--color-canvas);">
+        <div class="device-frame-390 scaled-200-frame" id="reflow-viewport" style="overflow-y: auto; height: 844px; padding: 16px; background: var(--color-canvas);">
           <div style="background: var(--color-white); border-radius: var(--radius-container); border: 1px solid var(--color-border-subtle); padding: 16px; margin-bottom: 16px;">
-            <div style="font-size: 16px; font-weight: 800; line-height: 1.4; margin-bottom: 8px;">مراجعة طلب الحجز — فيلا الشروق الفاخرة</div>
-            <div class="status-badge process" style="margin-bottom: 12px;"><span class="badge-dot"></span> بانتظار موافقة المالك</div>
+            <div class="reflow-title" id="reflow-200-title">مراجعة طلب الحجز — فيلا الشروق الفاخرة</div>
+            <div class="status-badge process reflow-badge" id="reflow-200-badge"><span class="badge-dot"></span> بانتظار موافقة المالك</div>
             
-            <p style="font-size: 13px; line-height: 1.5; color: var(--color-text-secondary); margin-bottom: 12px;">
+            <p class="reflow-body" id="reflow-200-body">
               إجمالي الإقامة: 4,800 ج.م (3 ليالٍ). العربون المطلوب يمثل قيمة الليلة الأولى فقط (1,600 ج.م).
             </p>
 
-            <button class="btn-primary-decision" style="font-size: 14px; min-height: 52px; white-space: normal;">
+            <button class="btn-primary-decision reflow-button" id="reflow-200-button">
               إرسال طلب الحجز إلى المالك
             </button>
           </div>
 
           <!-- Alert Reflow at 200% -->
-          <div class="section-alert info" style="font-size: 13px; line-height: 1.5;">
-            <div class="alert-header" style="font-size: 14px;">ℹ️ تنبيه التحديث</div>
-            <div class="alert-body">
-              قد تتغير الأسعار إذا لم يكتمل دفع العربون خلال الفترة المحددة بعد موافقة المالك.
+          <div class="section-alert info" style="padding: 16px;">
+            <div class="alert-header reflow-alert-header" id="reflow-200-alert-title">ℹ️ تنبيه التحديث</div>
+            <div class="alert-body reflow-alert-body" id="reflow-200-alert-body">
+              سيتم التحقق من السعر والتوفر مرة أخرى قبل أي خطوة دفع لاحقة.
             </div>
           </div>
         </div>

@@ -93,6 +93,6 @@ The following 6 bounded screenshots are captured from the catalog using Puppetee
 1. `component_catalog_customer_390.png`: Customer mobile shell, Explore feed (Frame 1) and Review Shell (Frame 2), PropertyCard, 4-tab Bottom Nav, Sticky Action Surface.
 2. `component_catalog_owner_390.png`: Owner mobile hub, 3-column domain grid, OpenGroupedContainer with internal dividers, Triage Booking Request Card, Checkbox preferences.
 3. `component_catalog_admin_1440.png`: Admin desktop workspace, StatusBadges, operational queue table, audit modal inspector.
-4. `component_catalog_states_390.png`: Loading skeleton, True Empty vs Error comparison, Stale price update notice, Conflict delta card.
+4. `component_catalog_states_390.png`: True Empty vs Network Error comparison (ERROR != EMPTY), Stale price notice with [تحديث] CTA, Toast confirmation, and Canonical StatusBadge showcase (all 8 domain families visually evidenced).
 5. `component_catalog_overlays_390.png`: BottomSheet (16px radius) and ConfirmationDialog (12px radius with plain Arabic consequence).
-6. `component_catalog_200_customer_390.png`: Controlled 200% scaling reflow showing zero clipping and multiline wrapping.
+6. `component_catalog_200_customer_390.png`: Controlled Web 200% scaling reflow showing 2.0x computed text scaling, zero horizontal clipping, natural multiline wrapping, and CTA preservation.

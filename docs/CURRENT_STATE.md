@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-10-05
 **Merge checkpoint:** `2385cd13a078aedc1f40769af5b394eed1210c00` (PR #96)
-**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `CLOSED / MERGED / PUBLISHED` (PR #95); Phase 4F Navigation & Overlay System is `CLOSED / MERGED / PUBLISHED` (PR #96); Phase 4G Content & State Presentation is `ACTIVE` (`EXECUTION_STARTED: YES`).
+**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `CLOSED / MERGED / PUBLISHED` (PR #95); Phase 4F Navigation & Overlay System is `CLOSED / MERGED / PUBLISHED` (PR #96); Phase 4G Content & State Presentation is `SUBSTANTIVE_EVALUATION_COMPLETE / GOVERNANCE_SYNCHRONIZED / READY_FOR_PUBLICATION / PR_PENDING`.
 **Cross-cutting governance infrastructure:** `DESIGN_COURT_V1` — `CLOSED / MERGED / PUBLISHED` (PR #93, merge checkpoint `674194e675731985b347d241d046f6acc48cf785`; 14 governed design skills, 8 internal; available as cross-cutting design-decision system).
 **Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System); PR #92 merged (Phase 4D Form & Selection Primitives); PR #93 merged (Design Court v1 Governance Infrastructure); PR #95 merged (Phase 4E Structural System); PR #96 merged (Phase 4F Navigation & Overlay System).
 
@@ -64,6 +64,19 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
   - DF2: `v1.5`
   - CHANGELOG: `2.1.10`
   - Open variables preserved: Exact Blue (`OPEN`), Exact Neutrals (`OPEN`), Exact Overlay Shadow Parameters (`OPEN`), Exact Scrim Values (`OPEN`), Native Touch Target Acceptance / Gestures / Detents (`DEFERRED_TO_4I`).
+- **Phase 4G (Content & State Presentation):** `READY_FOR_PUBLICATION` (PR PENDING; branch `design/content-state-pilot-01`, base checkpoint `2385cd13a078aedc1f40769af5b394eed1210c00`). Substantive evaluation complete, Design Court v1 deliberation completed with `STRONG_CONSENSUS` and `HIGH` confidence recommending Candidate C, authority formalized. Design-System documentation and authority formalization only; zero changes to production apps, backend, database, or token JSON.
+  - Architecture Model: **Candidate C — Role-Aware Layered State System** (`SYSTEM-EVALUATED PROVISIONAL`).
+  - Four-Tier State Delivery Hierarchy: Layer 1 Identify (`STATUS_BADGE`), Layer 2 Explain (`INLINE_TEXT`), Layer 3 Recover/Block (`SECTION_ALERT` / `SCREEN_STATE`), Layer 4 Transient Confirm (`TOAST`).
+  - Consequential Decisions: Invoke governed Phase 4F Dialog overlays (`DIALOG_CONSEQUENCE`). Dialog is an existing overlay mechanism, not a fifth state-delivery layer.
+  - Candidate B Preserved: `VALID_ALTERNATIVE_NOT_SELECTED` (passes all Hard Gates including MR-17 with neutral slate containers, but rejected as global default due to box fatigue, Customer Open Editorial mismatch, Owner operational density cost, and alert salience dilution).
+  - Candidate A Rejected on Hard Gate: Eliminated on `STATE_EXPLANATION_AND_RECOVERY_CONTRACT: FAIL` (global badge-only architecture cannot answer the four critical state questions for Error, Conflict, Unauthorized, or consequential failure).
+  - State Invariants Formalized: `ERROR != EMPTY`, `FAILED_QUERY != FAKE_ZERO`, `NORMAL_PENDING != WARNING` (no yellow/amber boxed UI per MR-17), `STALE != CURRENT` (neutral/soft-blue notices, retry, non-current price disclosure), `UNAUTHORIZED != GENERIC_ERROR` (fails closed, clears private data, dedicated re-auth CTA), `CONFLICT != SILENT_SUBMISSION` (submission blocked until changed truth explicitly accepted), `CRITICAL_FAILURE != TOAST_ONLY`.
+  - Owner Wallet Balance Buckets: `AVAILABLE`, `PENDING` (releases 24h after check-in), `HELD`, `RESERVED_FOR_PAYOUT` separated from payout request lifecycle (`payout_requests`). Minimum payout 500 EGP; payout fees Owner-borne; no instant bank transfer promise.
+  - Customer Financial Presentation: Total, deposit, remaining balance (total - deposit). Remaining balance collection method `OPEN / UNDECIDED`. No generic customer trust badge authorized (`CUSTOMER_IDENTITY_TRUST_BADGE: NOT_AUTHORIZED`).
+  - DF2: `v1.6`
+  - CHANGELOG: `2.1.11`
+  - Controlled Web Reflow Pass: Verified 200% scaling reflow with zero horizontal clipping. Native mobile component and accessibility acceptance strictly `DEFERRED_TO_4I`.
+  - Open variables preserved: Exact Semantic Colors (`OPEN`), Exact Toast Duration (`OPEN`), Native Mobile Acceptance (`DEFERRED_TO_4I`).
 - **Design Court v1 (cross-cutting governance infrastructure):** `CLOSED / MERGED / PUBLISHED` (PR #93, merge commit `674194e675731985b347d241d046f6acc48cf785`). Adds `konfrm-design-court` as the 8th internal governed skill (14 governed skill directories). Available as cross-cutting design-decision system.
 
 The connected property vertical slice through Phase 3 remains live-verified on production. Phase 4 develops the design foundations through controlled empirical pilots before native mobile integration.
@@ -121,7 +134,8 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
   - DF2: `v1.5`
   - CHANGELOG: `2.1.10`
 - **Active Phase:** **Phase 4G — Content & State Presentation**
-  - **Status:** `ACTIVE`
+  - **Status:** `READY_FOR_PUBLICATION`
+  - **PR:** `PENDING`
   - **Execution Started:** `YES`
   - **Branch:** `design/content-state-pilot-01`
   - **Base Checkpoint:** `2385cd13a078aedc1f40769af5b394eed1210c00`

@@ -57,13 +57,12 @@ Server-authoritative entity lifecycle enums (defined by Business Canon, presente
 ---
 
 ### Category D: Feedback / Message Delivery Method
-The UI surface chosen to deliver state information:
-1. **`INLINE_MESSAGE`**: Scoped helper text or status caption placed immediately adjacent to an input or data point.
-2. **`SECTION_ALERT`**: Persistent panel scoped to an individual card or section. Used when a section fails or needs actionable context without blocking the whole screen.
-3. **`SCREEN_STATE`**: Full-screen or full-container view replacing the main body. Used for initial loading, whole-screen blocking error, or top-level empty states.
-4. **`TOAST`**: Transient floating notification (2–4 seconds) confirming routine, completed low-risk actions. **Critical errors and mandatory actions must never rely solely on toasts.**
-5. **`DIALOG_CONSEQUENCE`**: Centered modal overlay for high-stakes, irreversible decisions requiring explicit verbal consequence acknowledgement.
-6. **`STATUS_BADGE`**: Compact label identifying canonical entity status. Badges identify state; they do not substitute for explanatory copy.
+The UI surface chosen to deliver state information (governed by the strict 4-layer state delivery hierarchy, with consequential decisions invoking Phase 4F Dialog overlays):
+1. **Layer 1 — `STATUS_BADGE`**: Compact label identifying canonical entity status. Badges identify state; they do not substitute for required explanatory copy.
+2. **Layer 2 — `INLINE_MESSAGE` / `OPEN_TYPOGRAPHY`**: Scoped helper text or status caption placed immediately adjacent to an input or data point on natural surfaces for normal process milestones.
+3. **Layer 3 — `SECTION_ALERT` / `SCREEN_STATE`**: Persistent panel scoped to an individual card or full screen. Used when a section fails, an action is blocked, or explicit revalidation/recovery is required.
+4. **Layer 4 — `TOAST`**: Transient floating notification (exact duration OPEN / component-and-platform-gated) confirming routine, completed low-risk actions. **Critical errors and mandatory actions must never rely solely on toasts.**
+- *Consequential Decisions:* Irreversible, high-consequence decisions invoke the already-governed Phase 4F `DIALOG` overlay surface. Dialogs are an existing overlay mechanism, not a fifth state-delivery layer in Phase 4G.
 
 ---
 

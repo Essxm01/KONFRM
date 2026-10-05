@@ -22,11 +22,11 @@ flowchart TD
     subgraph Candidate B [Candidate B: Message-Centric System]
         B1["Every status rendered as an alert box / banner"]
         B2["Highly descriptive; heavy vertical footprint"]
-        B3["Risk: Box Clutter, Alert Fatigue, MR-17 Violation"]
+        B3["Risk: Box Clutter, Vertical Bloat, Alert Dilution, Owner Density Cost"]
     end
 
     subgraph Candidate C [Candidate C: Role-Aware Layered System]
-        C1["Layered Hierarchy:\nBadge (Identify) → Inline (Explain) → Section/Screen (Recover)"]
+        C1["Layered Hierarchy:\nBadge (Identify) → Inline (Explain) → Section/Screen (Recover) → Toast (Transient Confirm)"]
         C2["Role-Tuned:\nCustomer (Editorial/Reassuring) | Owner (Action-Priority) | Admin (Audit Truth)"]
         C3["Strict Restraint: No Amber Boxes, No Chip Soup, Truthful Failure"]
     end
@@ -39,8 +39,8 @@ flowchart TD
   - *Explanatory Integrity & Recovery Failure:* High-stakes states (e.g. rejected booking, payment failure, changed quote) cannot fit necessary explanatory copy into a compact badge. A badge alone cannot satisfy the recovery contract.
   - *Status-Chip Soup:* Screens accumulate multiple colored pills (e.g. Property status + Payment status + Booking status + Verification badge) creating chaotic visual noise (a major system design quality defect).
   - *Color Over-Dependence:* Users must decipher subtle color distinctions between badges to understand urgency.
-  - *Empirical 200% Scaling Impact:* Under true 200% text scaling (`candidate_a_customer_bookings_200.png`), badges wrap into 3 vertical rows, creating fragmented pill stacks without providing actionable explanation.
-  - **Verdict:** **FAILS HARD GATES** (`EXPLANATORY_INTEGRITY`, `RECOVERY_CONTRACT`).
+  - *Empirical 200% Scaling Impact:* Under true 200% text scaling (`candidate_a_customer_bookings_200.png`), badges wrap into 3 vertical rows without horizontal clipping, but the dense pill wrapping degrades readability without providing actionable explanation.
+  - **Verdict:** **FAILS HARD GATE** (`STATE_EXPLANATION_AND_RECOVERY_CONTRACT: FAIL`). A global badge-only architecture cannot represent the four critical state questions for Error, Conflict, Unauthorized, or consequential failure.
 
 ---
 
@@ -52,22 +52,22 @@ flowchart TD
   - *Role Fit & Structural Congruence Failure:* Stacking boxed alert containers on routine Customer states contradicts the approved Open Editorial structural model (Phase 4E).
   - *Useful Density Degradation:* On Owner operational hubs, boxed message banners consume excessive vertical space, pushing urgent operational queue items off-screen.
   - *Alert Salience Dilution:* When normal procedural milestones (e.g. approved pending payment) look like large alert banners, truly critical alerts lose perceptual prominence.
-  - **Verdict:** **VALID_ALTERNATIVE (MATERIALLY INFERIOR)** — Fails structural congruence, useful density, and alert hierarchy.
+  - **Verdict:** **VALID_ALTERNATIVE_NOT_SELECTED (NO HARD GATE FAILURE)** — Passes all Hard Gates including MR-17 with neutral slate containers, but rejected as global default due to Customer Open Editorial contradiction, Owner useful density loss, box fatigue, and alert salience dilution.
 
 ---
 
 ### Candidate C: Role-Aware Layered State System
-- **Core Concept:** A disciplined, multi-layered delivery hierarchy governed by the information density, consequence, and role context:
-  1. **Tier 1 — Identification (`STATUS_BADGE` / `LABEL`):** Used when the user simply needs to recognize a canonical state (e.g. a confirmed booking in a list, a published property). Uses subtle neutral or semantic tones; never overused.
-  2. **Tier 2 — Contextual Explanation (`INLINE_TEXT` / `OPEN_TYPOGRAPHY`):** Used for normal process guidance (e.g. *"طلبك وصل للمالك وبانتظار قراره"*). Relies on clean typography on natural surfaces without box wrappers. Zero response SLA is promised.
-  3. **Tier 3 — Actionable Recovery (`SECTION_ALERT` / `SCREEN_STATE`):** Used only when an operation fails, data is unavailable, or a user decision is required to proceed. Includes plain Arabic consequence and retry.
-  4. **Tier 4 — Transient Confirmation (`TOAST`):** Reserved exclusively for routine, completed, low-risk actions (e.g. *"تم حفظ التغييرات"*). Critical errors never use toasts.
-  5. **Tier 5 — Consequential Confirmation (`DIALOG`):** Centered modal overlay reserved for irreversible decisions with truthful verbal consequence.
+- **Core Concept:** A disciplined, multi-layered delivery hierarchy governed by information density, consequence, and role context:
+  1. **Layer 1 — Identification (`STATUS_BADGE` / `LABEL`):** Used when the user simply needs to recognize a canonical state (e.g. a confirmed booking in a list, a published property). Uses subtle neutral or semantic tones; never overused.
+  2. **Layer 2 — Contextual Explanation (`INLINE_TEXT` / `OPEN_TYPOGRAPHY`):** Used for normal process guidance (e.g. *"طلبك وصل للمالك وبانتظار قراره"*). Relies on clean typography on natural surfaces without box wrappers. Zero response SLA is promised.
+  3. **Layer 3 — Actionable Recovery (`SECTION_ALERT` / `SCREEN_STATE`):** Used only when an operation fails, data is unavailable, or a user decision is required to proceed. Includes plain Arabic consequence and retry.
+  4. **Layer 4 — Transient Confirmation (`TOAST`):** Reserved exclusively for routine, completed, low-risk actions (e.g. *"تم حفظ التغييرات"*). Exact duration is OPEN / component-and-platform-gated. Critical errors never use toasts.
+  - *Consequential Decisions:* Irreversible, high-consequence decisions invoke the already-governed Phase 4F Dialog overlay surface. Dialogs are an existing overlay mechanism, not a fifth state-delivery layer in Phase 4G.
 - **Role Alignment:**
   - *Customer:* Reassuring, editorial, open whitespace, calm status indicators.
   - *Owner:* Action-priority, high density, clear separation of pending vs available money.
   - *Admin:* Audit truth, structured data tables, failure fails closed with zero fake zero metrics.
-- **Verdict:** **RECOMMENDED (STRONG CONSENSUS)** — Fully compliant with Canon, MR-17, Open Editorial architecture, and Accessibility standards.
+- **Verdict:** **RECOMMENDED (STRONG CONSENSUS)** — Fully compliant with Canon, MR-17, Open Editorial architecture, and controlled Web reflow standards.
 
 ---
 
@@ -75,20 +75,20 @@ flowchart TD
 
 | # | Question | Candidate A (Badge) | Candidate B (Message) | Candidate C (Layered - Recommended) |
 | :-: | :--- | :--- | :--- | :--- |
-| **1** | Default hierarchy for identifying vs explaining vs recovering? | Single flat badge layer for all. | Boxed alert banner for everything. | **Strict 4-tier layer:** Subtle Badge (Identify) → Inline Text (Explain) → Section/Screen Alert (Recover) → Toast (Transient Confirm). |
+| **1** | Default hierarchy for identifying vs explaining vs recovering? | Single flat badge layer for all. | Boxed alert banner for everything. | **Strict 4-tier layer:** Subtle Badge (Identify) → Inline Text (Explain) → Section/Screen Alert (Recover) → Toast (Transient Confirm). Consequential decisions invoke Phase 4F Dialog overlays. |
 | **2** | When is badge enough? | Everywhere (Excessive). | Rarely (Replaced by boxes). | **When state identification is self-sufficient** (e.g. `CONFIRMED` in history list, `PUBLISHED` unit). |
 | **3** | When is inline text enough? | Never (Forces badge). | Rarely (Forces box). | **For normal process progression** (e.g. booking request sent, wallet 24h payout eligibility notice). |
 | **4** | When is persistent alert required? | Overflows badge space. | Used constantly. | **When an action is blocked, a section fails, or revalidation requires user attention.** |
 | **5** | When is full-screen state appropriate? | Avoided improperly. | Overused. | **When top-level data cannot load at all, or a clean zero-data state requires dedicated redirection.** |
-| **6** | When is toast allowed? | Overused for errors. | Deprecated. | **Only for transient confirmation of low-risk, completed actions** (2–4s). Never for critical errors. |
-| **7** | How should normal Pending differ from Warning? | Same yellow badge. | Same alert box. | **Normal Pending is neutral/soft-blue process state.** Warning is reserved for actionable deadlines or failures. |
+| **6** | When is toast allowed? | Overused for errors. | Deprecated. | **Only for transient confirmation of low-risk, completed actions.** Exact duration is OPEN / component-and-platform-gated. Never for critical errors. |
+| **7** | How should normal Pending differ from Warning? | Badge-only presentation compresses normal process and caution into same delivery mechanism. | Same alert box. | **Normal Pending is neutral/soft-blue process state.** Warning is reserved for genuine caution, consequential risk, or action requiring elevated attention when supported by canonical context. |
 | **8** | How should Error differ visually from Empty? | Similar badges. | Similar boxes. | **Empty explains normal absence with positive next action. Error explains failure with honest retry.** |
 | **9** | How should Partial differ from Error? | Obscured. | Dual alert boxes. | **Successful sections stay interactive; failed section shows scoped alert + retry.** |
 | **10** | How should Stale safe data be presented? | Stale badge. | Boxed informational banner. | **Retains safe content with neutral/soft-blue informational notice and retry.** (No amber box). |
 | **11** | How should Unauthorized differ from Error? | Auth error badge. | Generic error box. | **Fails closed, clears private data, states session expiration, offers re-authentication CTA.** |
-| **12** | How should Conflict / changed quote be explained? | Red badge. | Generic error banner. | **Dedicated review notice highlighting changed values, blocking submission until accepted.** |
+| **12** | How should Conflict / changed quote be explained? | Generic status badge. | Generic error banner. | **Dedicated review notice highlighting changed values, blocking submission until accepted.** |
 | **13** | How should each role's tone differ? | Identical badges. | Identical banners. | **Customer: Reassuring. Owner: Action-priority / financial certainty. Admin: Structured audit truth.** |
-| **14** | Which current Web behaviors must be rejected? | Chip soup. | Box fatigue / alert dilution. | **Reject amber session expired box (Screen 12); reject silent `.catch(() => [])` in Owner payout metadata.** |
+| **14** | Which current Web behaviors must be rejected? | Chip soup. | Box fatigue / alert dilution. | **Reject amber session expired box (Screen 12); reject silent `.catch(() => [])` in Owner payout metadata; reject routine alert box clutter.** |
 | **15** | Which exact semantic colors remain open? | Presumes colors. | Presumes colors. | **All exact semantic colors remain OPEN / token-gated.** Phase 4G governs semantic roles only. |
 
 ---
@@ -127,7 +127,7 @@ The visual distinction between genuine data absence and server failure was teste
   - *Action:* `[موافق على السعر الجديد وإرسال الطلب]` and `[إلغاء والعودة]` (aligned exactly with Screen 07 C4 authority).
 
 ### 3.5 Accessibility & 200% Text Scaling Verification (Section 53, 55)
-- All states reflow vertically when root typography is scaled to 200%.
+- Controlled Web pilot reflow passes across all states when root typography is scaled to 200%; native mobile accessibility acceptance is deferred to Phase 4I.
 - Empirical candidate comparison at true 200% (`candidate_a/b/c_customer_bookings_200.png`):
   - *Candidate A:* Badges wrap into 3 vertical lines (`موافقة المالك`, `سداد العربون مطلوب`, `لتأكيد الحجز`, `BK-183223`), creating visual clutter without providing contextual explanation.
   - *Candidate B:* Explanatory box expands dramatically, consuming significant vertical height and pushing property card content down.

@@ -1,4 +1,4 @@
-# KONFRM Mobile Design Foundation — v1.5
+# KONFRM Mobile Design Foundation — v1.6
 
 **Status:** CANONICAL SPECIFICATION — DF2
 Independent platform/accessibility/design-system review and final Bridge verification completed. DF2 is canonical.
@@ -7,6 +7,7 @@ Independent platform/accessibility/design-system review and final Bridge verific
 **Amendment v1.3 (Phase 4D Form & Selection Primitives synchronization):** records independently evaluated and Founder-approved SYSTEM-VALIDATED PROVISIONAL Form & Selection primitive directions (Outline-led field baseline, 8px mobile field radius for field-shaped controls, explicit top-label hierarchy, semantic restrained interaction-accent focus emphasis, Owner-evidenced checkbox, toggle deferred) inside the canonical foundation without promoting provisional component values to final native Canon. Exact neutrals, stroke width, blue candidate (`#276EF1`), focus geometry, and platform component mappings remain OPEN / IMPLEMENTATION CANDIDATE. Native component and accessibility acceptance remains strictly deferred to Phase 4I. Admin remains Web.
 **Amendment v1.4 (Phase 4E Structural System synchronization):** records Founder-approved SYSTEM-VALIDATED PROVISIONAL Phase 4E Structural System direction (Option C — Role-Aware Hybrid Structural System: Customer open/editorial default, Owner operational grouped-content direction, Admin desktop boundary preserved, spacing relationship hierarchy, semantic container/card criteria, flat structural elevation default). Evaluates 12px structural-container radius as SYSTEM-EVALUATED PROVISIONAL STRUCTURAL_CONTAINER_RADIUS based on controlled evidence, while exact neutrals (#FFFFFF, #E2E8F0, #F8FAFC) remain OPEN implementation candidates. Native component and accessibility acceptance remains strictly deferred to Phase 4I. Navigation, app bars, sheets, dialogs, and overlay architecture remain deferred to Phase 4F.
 **Amendment v1.5 (Phase 4F Navigation & Overlay System synchronization):** records independently evaluated and Founder-compliant SYSTEM-VALIDATED PROVISIONAL Phase 4F Navigation & Overlay System direction (Role-Aware Contextual Navigation: Customer 4-tab top-level root destinations [Explore, Favorites, Bookings, Account]; Owner action-first operational hub with dashboard-style nested routing and NO Customer-style bottom navigation; Auth V2 sequential full-screen route flow [08 → 09 → 10]; Screen 07 dedicated full-screen transactional review; mutual exclusivity of persistent bottom navigation and sticky actions [dual bottom chrome prohibited]; BottomSheet semantics with explicit close control required, optional drag handle, conditional backdrop dismissal, and 16px provisional top radius; Dialog semantics with 12px provisional surface radius for consequential confirmation; semantic safe-area and context-restoration contracts defined). Exact neutrals, exact blue candidate (`#276EF1`), exact overlay shadow parameters, and exact scrim values remain OPEN / IMPLEMENTATION CANDIDATE. Native component, gesture, detent, and safe-area acceptance remains strictly deferred to Phase 4I. Admin remains Web.
+**Amendment v1.6 (Phase 4G Content & State Presentation System synchronization):** records independently evaluated SYSTEM-EVALUATED PROVISIONAL Phase 4G Content & State Presentation System direction (Role-Aware Layered State System: Candidate C — strict 4-layer state delivery hierarchy: Layer 1 Identify [Badge/Label], Layer 2 Explain [Inline Text/Open Typography], Layer 3 Recover/Block [Section Alert/Screen State], Layer 4 Transient Confirm [Toast]; Consequential Decisions invoke governed Phase 4F Dialog overlays; Candidate B preserved as VALID_ALTERNATIVE_NOT_SELECTED; Candidate A rejected on global State Explanation & Recovery Contract failure; core truth-first invariants formalized: ERROR ≠ EMPTY, FAILED_QUERY ≠ FAKE_ZERO, NORMAL_PENDING ≠ WARNING [neutral/process styling, no yellow/amber boxes per MR-17], STALE ≠ CURRENT [neutral/soft-blue notices, retry, non-current price disclosure], UNAUTHORIZED ≠ GENERIC_ERROR [fails closed, clears private data, dedicated re-auth CTA], CONFLICT ≠ SILENT_SUBMISSION [submission blocked until changed truth explicitly accepted], CRITICAL_FAILURE ≠ TOAST_ONLY; distinct wallet balance buckets [Available, 24h Pending, Held, Reserved] separated from payout request lifecycle; no instant bank transfer promise; Customer sees total/deposit/remaining balance without commission/internal split leakage; remaining balance collection method remains OPEN / UNDECIDED). Exact semantic hex colors and exact toast duration remain OPEN / token-and-platform-gated. Controlled Web pilot reflow passes at 200% text scale; native component, screen reader semantics, and accessibility acceptance remain strictly deferred to Phase 4I. Admin remains Web.
 **Scope:** The design foundation governing future `mobile/customer_app`, `mobile/owner_app`, mobile design tokens, canonical mobile primitives, AI design Skills, visual QA and the controlled pilot.
 **Upstream authority (not reopened here):**
 
@@ -420,12 +421,30 @@ A shared state grammar for every data surface. CANONICAL distinctions:
 | WARNING | genuine caution, copy-first, no boxed amber (§9) | SUCCESS |
 | DESTRUCTIVE / FAILURE | destructive confirmation or failure consequence | SUCCESS |
 
+### Four-Tier State Delivery Hierarchy (Phase 4G)
+State information is delivered through a disciplined four-layer hierarchy:
+1. **Layer 1 — Identification (`STATUS_BADGE` / `LABEL`):** Used when canonical state recognition is self-sufficient. Badges identify status; they do not substitute for required explanation.
+2. **Layer 2 — Contextual Explanation (`INLINE_TEXT` / `OPEN_TYPOGRAPHY`):** Used for normal process milestones on natural surfaces without box borders. Zero response SLA is promised.
+3. **Layer 3 — Actionable Recovery (`SECTION_ALERT` / `SCREEN_STATE`):** Persistent, actionable feedback used when an action is blocked, a query fails, or revalidation requires user attention. Always includes scope, plain-language explanation, and retry/recovery action.
+4. **Layer 4 — Transient Confirmation (`TOAST`):** Reserved exclusively for transient confirmation of completed, low-risk actions. Exact toast duration is **OPEN / component-and-platform-gated**. Critical errors and mandatory actions never use toasts alone.
+- *Consequential Decisions:* Irreversible decisions invoke the already-governed Phase 4F `DIALOG` overlay surface (`DIALOG_CONSEQUENCE`). Dialogs are an existing overlay mechanism, not a fifth state-delivery layer.
+
+### The Four Critical State Questions
+Every non-trivial state presentation answers:
+1. WHAT HAPPENED? (Plain-language statement)
+2. WHAT IS STILL TRUE? (Safe preserved context)
+3. WHAT IS UNKNOWN / NOT CURRENT? (Honest boundary of knowledge)
+4. WHAT CAN THE USER DO NEXT? (Explicit recovery path)
+
 Rules:
 
 - **MISSING DATA ≠ ZERO.** A missing value is never rendered as a credible zero.
+- **ERROR ≠ EMPTY.** Failed queries never masquerade as empty lists or zero results.
+- **NORMAL PENDING ≠ WARNING.** Ordinary process statuses (`PENDING_OWNER_APPROVAL`, `PENDING_REVIEW`, `Wallet PENDING`, `PENDING_VERIFICATION`) map to neutral/process styling, not warnings. No yellow/amber/orange boxed UI (Founder Rule MR-17).
+- **STALE ≠ CURRENT.** Safe cached data is preserved with neutral/soft-blue notices and retry; decision-critical data (prices, availability) is marked non-current or withheld fail-closed.
 - **No raw backend error message is UI copy.** Feature layers map stable canonical error codes to localized product copy, with a safe fallback for unexpected errors (matches the Gate 3B error architecture).
-- Status never relies on color alone — text label and/or icon + accessible name always accompany it (§21).
-- Financial states remain server-authoritative; the client presents, never computes authority (Gate 3B).
+- Status never relies on color alone — text label and/or icon + accessible name always accompany it (§21). Exact semantic hex colors remain OPEN / token-gated.
+- Financial states remain server-authoritative; the client presents, never computes authority (Gate 3B). Customer sees total/deposit/remaining balance without internal commission leakage. Remaining balance collection method remains OPEN / UNDECIDED.
 - Each surface declares its full state set before implementation (screen-states discipline from `EXPERIENCE/SCREEN_STATES.md`).
 
 ## 17. Navigation Principles
@@ -593,6 +612,8 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 17. Dual bottom chrome prohibition: persistent bottom navigation and sticky action surfaces are mutually exclusive (§17).
 18. Owner mobile architecture lock: Action-First Operational Hub with nested routing; Customer-style bottom navigation is prohibited (§17).
 19. Safe-area separation contract: page insets != platform safe areas != persistent control clearance (§17).
+20. Four-layer state delivery hierarchy: Layer 1 Identify (Badge/Label), Layer 2 Explain (Inline/Typography), Layer 3 Recover/Block (Section Alert/Screen State), Layer 4 Transient Confirm (Toast); consequential decisions invoke governed Phase 4F Dialog overlays (§16).
+21. Core state truth invariants: ERROR ≠ EMPTY, FAILED_QUERY ≠ FAKE_ZERO, NORMAL_PENDING ≠ WARNING (no yellow/amber boxed UI per MR-17), STALE ≠ CURRENT, UNAUTHORIZED ≠ GENERIC_ERROR, CONFLICT ≠ SILENT_SUBMISSION, CRITICAL_FAILURE ≠ TOAST_ONLY (§16).
 
 ## 27. IMPLEMENTATION CANDIDATES
 
@@ -606,6 +627,7 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 8. Field/control exact native dimensions, neutral border hex, stroke width, and native focus treatments (§18, §21) — provisional 8px field radius, outline-led baseline, and restrained interaction-accent focus direction recorded in §18.
 9. Overlay surface radii: Mobile BottomSheet top radius 16px (`SYSTEM-EVALUATED PROVISIONAL`) and Dialog surface radius 12px (`SYSTEM-EVALUATED PROVISIONAL`) recorded in §14.
 10. Customer 4-tab top-level bottom navigation destinations (Explore, Favorites, Bookings, Account; Screen 16 Notification Center governed Account shell child exception per Master Rule MR-17) and Owner 3-column operational domain grid recorded in §17.
+11. Role-Aware Layered State System (Candidate C) evaluated as SYSTEM-EVALUATED PROVISIONAL STATE_PRESENTATION_SYSTEM (§16); Candidate B preserved as VALID_ALTERNATIVE_NOT_SELECTED.
 
 ## 28. DEFERRED / OPEN
 
@@ -620,6 +642,8 @@ Hard prohibitions (each violation is a defect regardless of visual appeal):
 9. Admin mobile anything (Admin remains Web).
 10. Exact overlay shadow parameters, blur values, and scrim opacity/RGBA values (§14).
 11. Native mobile detent behaviors, gestures, and native safe-area implementation (§17, Phase 4I).
+12. Exact semantic hex colors and exact toast duration remain OPEN / token-and-platform-gated (§16).
+13. Native mobile accessibility acceptance (TalkBack/VoiceOver screen reader trees, native focus order) deferred to Phase 4I.
 
 ## 29. Validation Required Before Token Canonicalization
 

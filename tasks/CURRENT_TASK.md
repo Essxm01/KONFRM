@@ -2,7 +2,8 @@
 
 TASK_ID: PHASE_4G_CONTENT_STATE_PRESENTATION
 TASK_CLASS: DESIGN_SYSTEM_FOUNDATION_PHASE
-STATUS: ACTIVE
+STATUS: READY_FOR_PUBLICATION
+PR: PENDING
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: 2385cd13a078aedc1f40769af5b394eed1210c00
 BRANCH: design/content-state-pilot-01
@@ -23,9 +24,12 @@ SCOPE: Phase 4G Content & State Presentation System — Discovery, state-truth i
 - [x] Multi-role visual pilot implemented (`DESIGN_SYSTEM/PILOTS/content-state-pilot-01/`).
 - [x] Visual evidence captured and inspected (True Empty vs Error pairs, Partial, Stale, Conflict, Unauthorized, 200% scale, 360/390/430 viewports, Admin 1280/1440).
 - [x] Design Court v1 deliberation completed (`FULL_COURT` mode, `DESIGN_COURT_REPORT.md`).
+- [x] Final Court Logic Integrity verified (Gate 12 STATE_EXPLANATION_AND_RECOVERY_CONTRACT fails Candidate A; Candidate B NO_HARD_GATE_FAILURE; 4-tier state delivery hierarchy).
+- [x] Phase 4G shared authority formalized (`badges.md`, `alerts.md`, `states.md`, `SCREEN_STATES.md`, `CONTENT_AND_MICROCOPY.md`, `MOBILE_DESIGN_FOUNDATION.md` v1.6, `CHANGELOG.md` 2.1.11).
 - [x] Self-correction and red team verification completed.
-- [x] Founder decision gate prepared if material, or verdict reached if clear.
+- [x] Founder decision gate prepared if material, or verdict reached if clear (`FOUNDER_DECISION_REQUIRED: NO`).
 - [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `node scripts/test-design-court-contract.mjs`, `git diff --check`).
+- [x] Phase 4H status remains strictly `NOT_STARTED`.
 
 ---
 

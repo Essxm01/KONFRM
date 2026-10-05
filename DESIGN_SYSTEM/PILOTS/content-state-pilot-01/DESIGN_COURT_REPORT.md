@@ -38,22 +38,23 @@ Before open deliberation, the Evidence Clerk subjected all three candidate syste
 
 | Hard Gate | Governing Authority | Candidate A | Candidate B | Candidate C |
 | :--- | :--- | :--- | :--- | :--- |
-| **GATE 1: PRODUCT_TRUTH** | `docs/BUSINESS_RULES.md` | **FAIL** (Cannot convey full causal consequence in compact badges; fails explanatory recovery contract) | **PASS** (Explicit text conveys consequence) | **PASS** (Plain Arabic consequence; cancellation distinct from rejection; truthful data bounds) |
+| **GATE 1: PRODUCT_TRUTH** | `docs/BUSINESS_RULES.md` | **PASS** (Displays identical canonical booking/quote/payout status and synthetic scenario truth without inventing facts) | **PASS** (Explicit text conveys canonical scenario truth without inventing facts) | **PASS** (Plain Arabic consequence; cancellation distinct from rejection; truthful data bounds; zero invented deadlines) |
 | **GATE 2: BUSINESS_CANON** | Master Rules MR-11, MR-12, MR-13 | **PASS** | **PASS** | **PASS** (Booking request-based; no premature confirmation; availability fails closed) |
-| **GATE 3: FINANCIAL_TRUTH** | Master Rules MR-13, MR-16 | **FAIL** (Badges obscure 24h deposit pending vs available boundary) | **PASS** | **PASS** (Zero customer leakage of 80/20 split; Owner pending vs available explicitly distinguished; 500 EGP minimum enforced) |
+| **GATE 3: FINANCIAL_TRUTH** | Master Rules MR-13, MR-16 | **PASS** (Displays identical canonical financial amounts and balance buckets; badge density creates presentation friction but does not make a false financial assertion) | **PASS** (Explicit message surfaces present distinct balance buckets and minimum threshold) | **PASS** (Zero customer leakage of 80/20 split; Owner pending vs available explicitly distinguished; 500 EGP minimum enforced; no instant bank transfer promise) |
 | **GATE 4: AUTHORITY_AND_PRIVACY** | Master Rules MR-09, MR-10 | **PASS** | **PASS** | **PASS** (Fails closed on 401/403; private data cleared immediately; session expired state offers safe re-auth) |
 | **GATE 5: ERROR_NOT_EMPTY** | Master Rule MR-07, `states.md` §1 | **WARN** (Badges can blend into list without clear failure boundary) | **PASS** | **PASS** (Strict separation: Error never renders as Empty; zero fallback metrics prohibited) |
 | **GATE 6: FAIL_CLOSED_BOUNDARIES** | Master Rules MR-12, MR-16 | **PASS** | **PASS** | **PASS** (Transactional money and availability fail closed on disconnect/failure; no offline mutation queue) |
-| **GATE 7: NO_FAKE_TRUST_OR_URGENCY** | `badges.md` §2, `alerts.md` §1 | **FAIL** (Promotes chip soup with pseudo-trust status tags) | **WARN** (Heavy boxes on routine milestones dilute critical alert salience) | **PASS** (Zero fake ratings, scarcity, or verified-stay marketing claims; process states are calm) |
-| **GATE 8: FOUNDER_MR_17_NO_AMBER_BOXES** | Master Rule MR-17 (`FOUNDER_VISUAL_RULE_2026_09_27`) | **WARN** (Relies on yellow pills for normal process) | **PASS** (Uses neutral slate containers `#F1F5F9`/`#CBD5E1`; does not violate MR-17) | **PASS** (Zero amber/yellow box containers; neutral/soft-blue for stale; open typography for process) |
-| **GATE 9: ACCESSIBILITY_AND_REFLOW** | WCAG 2.2 AA / Platform Guidance | **FAIL** (Badges wrap into 3 vertical rows under true 200% scale without providing explanation) | **WARN** (Heavy vertical footprint pushes card content down under 200% scale) | **PASS** (Clean vertical reflow under true 200% scale; non-color indicators; zero horizontal clipping) |
+| **GATE 7: NO_FAKE_TRUST_OR_URGENCY** | `badges.md` §2, `alerts.md` §1 | **PASS** (Corrected evidence contains no unsupported marketing claims or fake urgency; chip soup is a visual density issue, not a fake-trust claim) | **PASS** (Box containment on routine milestones is neutral/slate; does not fabricate fake trust or urgency) | **PASS** (Zero fake ratings, scarcity, or verified-stay marketing claims; process states are calm) |
+| **GATE 8: FOUNDER_MR_17_NO_AMBER_BOXES** | Master Rule MR-17 (`FOUNDER_VISUAL_RULE_2026_09_27`) | **PASS** (Corrected comparator evidence uses dark, blue, and neutral/light badges; no yellow or amber container fills) | **PASS** (Uses neutral slate containers `#F1F5F9`/`#CBD5E1`; does not violate MR-17) | **PASS** (Zero amber/yellow box containers; neutral/soft-blue for stale; open typography for process) |
+| **GATE 9: ACCESSIBILITY_AND_REFLOW** | WCAG 2.2 AA / Platform Guidance (Controlled Web Pilot Reflow) | **PASS_WITH_DENSITY_DEGRADATION** (Badges wrap across multiple rows at 200% scale without horizontal clipping, but density degrades readability) | **PASS_WITH_VERTICAL_DENSITY_COST** (Message containers reflow vertically without horizontal clipping, but heavy vertical expansion pushes content down) | **PASS** (Clean vertical reflow under true 200% scale; non-color indicators; zero horizontal clipping. Note: Native mobile accessibility acceptance deferred to Phase 4I) |
 | **GATE 10: RTL_CORRECTNESS** | `MOBILE_DESIGN_FOUNDATION.md` §11–§12 | **PASS** | **PASS** | **PASS** (Logical start/end; Western Arabic numerals 0-9; canonical money format `1,600 ج.م`) |
-| **GATE 11: ROLE_SPECIFIC_UX** | Master Rule MR-02, `SCREEN_STATES.md` | **FAIL** (Imposes identical badge soup across all three roles) | **FAIL** (Contradicts Customer Open Editorial architecture; degrades Owner useful density) | **PASS** (Customer editorial, Owner operational, Admin audit/table boundaries strictly preserved) |
+| **GATE 11: ROLE_SPECIFIC_UX** | Master Rule MR-02, `SCREEN_STATES.md` | **DEGRADED** (Uniform badge soup flattens role-specific tasks; Customer reassurance and Owner operational urgency compressed into identical pills) | **PASS_WITH_ROLE_FIT_COST** (Heavily boxed presentation contradicts Customer Open Editorial architecture and degrades Owner operational queue density) | **PASS** (Customer editorial, Owner operational, Admin audit/table boundaries strictly preserved) |
+| **GATE 12: STATE_EXPLANATION_AND_RECOVERY_CONTRACT** | `states.md`, `alerts.md` | **FAIL** (Global badge-only architecture cannot represent required 4 critical state questions: what happened, what remains true, what is unknown, what user can do next for Error / Conflict / Unauthorized / consequential failure without escaping badge-only system) | **PASS** (Explicit message boxes convey full explanation and recovery paths) | **PASS** (Four-tier layered architecture: identifies with badge, explains with inline typography, recovers with scoped alert / screen state, transiently confirms with toast) |
 
 **Gate Result:**
-- **Candidate A is `ELIMINATED_BY_HARD_GATE`** (Failed Explanatory Integrity, Recovery Contract, and 200% reflow discipline). Classified as `REJECTED_COMPARATOR`.
-- **Candidate B is `VALID_ALTERNATIVE_NOT_SELECTED`** (Passes MR-17 using neutral slate containers, but materially inferior due to Customer Open Editorial contradiction, Owner useful density loss, and alert salience dilution). Classified as `VALID_ALTERNATIVE`.
-- **Candidate C is `RECOMMENDED`** as the superior architecture satisfying all Hard Gates, Open Editorial requirements, and operational density standards. Deliberation proceeds on Candidate C.
+- **Candidate A is `ELIMINATED_BY_HARD_GATE`** (`STATE_EXPLANATION_AND_RECOVERY_CONTRACT: FAIL`). An all-badge presentation model cannot answer the four critical state questions (what happened, what is still true, what is unknown, what can user do next) for high-consequence failure, conflict, or unauthorized states. Classified as `REJECTED_COMPARATOR`.
+- **Candidate B has `NO_HARD_GATE_FAILURE` and is `VALID_ALTERNATIVE_NOT_SELECTED`** (Passes all Hard Gates including MR-17 with neutral slate containers, but rejected as global default due to box fatigue, Customer Open Editorial mismatch, Owner operational density cost, and alert salience dilution). Classified as `VALID_ALTERNATIVE`.
+- **Candidate C is `RECOMMENDED`** as the superior architecture satisfying all Hard Gates, Open Editorial requirements, and operational density standards without box clutter or chip soup. Deliberation proceeds on Candidate C.
 
 ---
 
@@ -101,8 +102,8 @@ STATUS:               CONSULTED
 CONSULTATION_SOURCE:  docs/ai/skills/konfrm-accessibility/SKILL.md
 SOURCE_ANCHOR:        §1 Contrast Ratios & Legibility Framework & §2 Text Scaling & Reflow
 APPLIED_PRINCIPLE:    Color must never be the sole carrier of semantic meaning; critical errors must not live only in toasts; all state surfaces must accommodate true 200% text scale without clipping, horizontal scrolling, or overlapping actions.
-POSITION:             CANDIDATE_C (Passes 200% text scaling and non-color semantic validation).
-EVIDENCE:             `stress_true_200_customer_error_390.png`, `stress_true_200_customer_conflict_390.png`, and `stress_true_200_owner_wallet_390.png` prove complete vertical reflow with zero horizontal clipping.
+POSITION:             CANDIDATE_C (Controlled Web pilot reflow and non-color semantic pass; native mobile accessibility acceptance deferred to Phase 4I).
+EVIDENCE:             `stress_true_200_customer_error_390.png`, `stress_true_200_customer_conflict_390.png`, and `stress_true_200_owner_wallet_390.png` prove complete vertical reflow with zero horizontal clipping. Controlled Web pilot reflow passes; native TalkBack / VoiceOver audit deferred to Phase 4I.
 CONFIDENCE:           HIGH
 LIMITATION:           Screen reader accessibility attributes evaluated via semantic HTML; native TalkBack / VoiceOver audit deferred to Phase 4I.
 ```
@@ -183,7 +184,7 @@ The Visual QA Prosecutor and Red Team attacked Candidate C across 14 failure axe
 ## 6. Answers to the 15 Specific Court Questions (Section 60)
 
 1. **Default Hierarchy for State Delivery:**  
-   Subtle Badge (Identify) → Inline Typography (Explain Process) → Scoped Section/Screen Alert (Recover/Action) → Toast (Transient Confirmation).
+   Strict 4-tier layer: Subtle Badge (Identify) → Inline Typography (Explain Process) → Scoped Section/Screen Alert (Recover/Action) → Toast (Transient Confirmation). High-stakes consequential decisions invoke governed Phase 4F dialog overlays.
 2. **When is a Badge Enough?**  
    When canonical state recognition is self-sufficient and requires no immediate user decision (e.g. `CONFIRMED` in a history list, `PUBLISHED` unit).
 3. **When is Inline Text Enough?**  
@@ -193,9 +194,9 @@ The Visual QA Prosecutor and Red Team attacked Candidate C across 14 failure axe
 5. **When is a Full-Screen State Appropriate?**  
    When top-level data cannot load at all, or a clean zero-data state requires dedicated redirection (e.g. Guest state, first-run empty properties).
 6. **When is a Toast Allowed?**  
-   Reserved strictly for transient confirmation of completed, low-risk actions (2–4s). Critical errors, financial warnings, and mandatory decisions must never rely solely on toasts.
+   Reserved strictly for transient confirmation of completed, low-risk actions. Exact duration is OPEN / component-and-platform-gated (transient, long enough to perceive/read, deferred to Phase 4H / native accessibility validation). Critical errors, financial warnings, and mandatory decisions must never rely solely on toasts.
 7. **How Normal Pending Differs from Warning:**  
-   Normal process (`PENDING_OWNER_APPROVAL`, `PENDING_REVIEW`, `Wallet PENDING`) uses soft neutral or soft-blue styling (`#F1F5F9`, `#334155`). Warning/Attention is reserved for actionable deadlines or consequential failures.
+   Normal process (`PENDING_OWNER_APPROVAL`, `PENDING_REVIEW`, `Wallet PENDING`) uses soft neutral or soft-blue styling (`#F1F5F9`, `#334155`). Warning/Attention is reserved for genuine caution, consequential risk, or action requiring elevated attention when supported by canonical context (not routine pending process).
 8. **How Error Differs from Empty:**  
    Empty explains normal data absence with positive exploration guidance. Error identifies failure scope with plain-language explanation and a clear `[إعادة المحاولة]` button.
 9. **How Partial Differs from Error:**  
@@ -209,7 +210,7 @@ The Visual QA Prosecutor and Red Team attacked Candidate C across 14 failure axe
 13. **How Role Tone Differs:**  
     Customer is reassuring and simple; Owner is operational, action-focused, and financially certain; Admin is precise, structured, and audit-focused.
 14. **Rejected Web Behaviors:**  
-    Rejected legacy amber session-expired card (Screen 12); rejected silent `.catch(() => [])` fallbacks in Owner payout metadata; rejected chip soup and alert box clutter.
+    Rejected legacy amber session-expired card (Screen 12); rejected silent `.catch(() => [])` fallbacks in Owner payout metadata; rejected chip soup and routine alert box clutter.
 15. **Open Semantic Colors:**  
     All exact semantic hex colors (green, red, blue, neutral, amber) remain **OPEN / token-gated**. Phase 4G establishes semantic roles and visual contracts only.
 
@@ -226,4 +227,4 @@ The Visual QA Prosecutor and Red Team attacked Candidate C across 14 failure axe
 
 ### Founder Decision Gate Determination (Section 64)
 - **`FOUNDER_DECISION_REQUIRED:`** **`NO`**
-- **Rationale:** Candidate C is the superior system on objective architectural, density, and role-fit criteria. Candidate B is a valid alternative using neutral slate containers (complying with MR-17), but is materially inferior due to Customer Open Editorial contradiction, Owner useful density loss, and alert salience dilution. Candidate A is eliminated on Explanatory Integrity and Recovery Contract grounds. The residual differences are objective architectural defects and role-fit decisions, not subjective aesthetic trade-offs. No material Founder dilemma remains unresolved.
+- **Rationale:** Candidate C is the superior system on objective architectural, density, and role-fit criteria. Candidate B has NO hard gate failure and is a valid alternative using neutral slate containers (complying with MR-17), but is rejected as global default due to Customer Open Editorial contradiction, Owner useful density loss, and alert salience dilution. Candidate A is eliminated on Hard Gate: State Explanation & Recovery Contract grounds. The residual differences are objective architectural defects and role-fit decisions, not subjective aesthetic trade-offs. No material Founder dilemma remains unresolved.

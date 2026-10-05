@@ -2,9 +2,9 @@
 
 **Last updated:** 2026-10-05
 **Merge checkpoint:** `bb4534fc9edbb3b44ab6431c259f115220e7fbf9` (PR #97)
-**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `CLOSED / MERGED / PUBLISHED` (PR #95); Phase 4F Navigation & Overlay System is `CLOSED / MERGED / PUBLISHED` (PR #96); Phase 4G Content & State Presentation is `CLOSED / MERGED / PUBLISHED` (PR #97); Phase 4H Component Contract & Reference Catalog is `ACTIVE`.
+**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `CLOSED / MERGED / PUBLISHED` (PR #95); Phase 4F Navigation & Overlay System is `CLOSED / MERGED / PUBLISHED` (PR #96); Phase 4G Content & State Presentation is `CLOSED / MERGED / PUBLISHED` (PR #97); Phase 4H Component Contract & Reference Catalog is `READY_FOR_BRIDGE_REVIEW` (PR #98).
 **Cross-cutting governance infrastructure:** `DESIGN_COURT_V1` — `CLOSED / MERGED / PUBLISHED` (PR #93, merge checkpoint `674194e675731985b347d241d046f6acc48cf785`; 14 governed design skills, 8 internal; available as cross-cutting design-decision system).
-**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System); PR #92 merged (Phase 4D Form & Selection Primitives); PR #93 merged (Design Court v1 Governance Infrastructure); PR #95 merged (Phase 4E Structural System); PR #96 merged (Phase 4F Navigation & Overlay System); PR #97 merged (Phase 4G Content & State Presentation System).
+**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System); PR #92 merged (Phase 4D Form & Selection Primitives); PR #93 merged (Design Court v1 Governance Infrastructure); PR #95 merged (Phase 4E Structural System); PR #96 merged (Phase 4F Navigation & Overlay System); PR #97 merged (Phase 4G Content & State Presentation System); PR #98 opened (Phase 4H Component Contract & Reference Catalog).
 
 ## Current status
 
@@ -76,7 +76,7 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
   - DF2: `v1.6`
   - CHANGELOG: `2.1.11`
   - Controlled Web Reflow Pass: Verified 200% scaling reflow with zero horizontal clipping. Native mobile component and accessibility acceptance strictly `DEFERRED_TO_4I`.
-  - Open variables preserved: Exact Semantic Colors (`OPEN`), Exact Toast Duration (`OPEN`), Native Mobile Acceptance (`DEFERRED_TO_4I`).
+- **Phase 4H (Component Contract & Reference Catalog):** `READY_FOR_BRIDGE_REVIEW` (PR #98, branch `design/component-contract-catalog-01`, base checkpoint `bb4534fc9edbb3b44ab6431c259f115220e7fbf9`). Full component contract reconciliation and reference catalog across 24 component families. Shared authority formalized in `DESIGN_SYSTEM/COMPONENTS/`, reference catalog in `DESIGN_SYSTEM/PILOTS/component-contract-catalog-01/index.html`, and evidence in `evidence/`. DF2 v1.7, CHANGELOG 2.1.12. Zero production apps, backend, database, or token JSON changes. Phase 4I strictly NOT_STARTED.
 - **Design Court v1 (cross-cutting governance infrastructure):** `CLOSED / MERGED / PUBLISHED` (PR #93, merge commit `674194e675731985b347d241d046f6acc48cf785`). Adds `konfrm-design-court` as the 8th internal governed skill (14 governed skill directories). Available as cross-cutting design-decision system.
 
 The connected property vertical slice through Phase 3 remains live-verified on production. Phase 4 develops the design foundations through controlled empirical pilots before native mobile integration.
@@ -141,7 +141,7 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
   - DF2: `v1.6`
   - CHANGELOG: `2.1.11`
 - **Active Phase:** **Phase 4H — Component Contract & Reference Catalog**
-  - **Status:** `ACTIVE`
+  - **Status:** `READY_FOR_BRIDGE_REVIEW` (PR #98)
   - **Execution Started:** `YES`
   - **Branch:** `design/component-contract-catalog-01`
   - **Base Checkpoint:** `bb4534fc9edbb3b44ab6431c259f115220e7fbf9`

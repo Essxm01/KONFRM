@@ -1,43 +1,50 @@
-# Active Task — PHASE_4H_COMPONENT_CONTRACT_CATALOG
+# Active Task — PHASE_4I_NATIVE_BOOTSTRAP_BASELINE
 
-TASK_ID: PHASE_4H_COMPONENT_CONTRACT_CATALOG
-TASK_CLASS: DESIGN_SYSTEM_FOUNDATION_PHASE
-STATUS: READY_FOR_BRIDGE_REVIEW
-PR: #98
+TASK_ID: PHASE_4I_NATIVE_BOOTSTRAP_BASELINE
+TASK_CLASS: NATIVE_MOBILE_INTEGRATION_BASELINE
+STATUS: IN_PROGRESS
+PR: NONE (MISSION_A_BASELINE)
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: bb4534fc9edbb3b44ab6431c259f115220e7fbf9
-BRANCH: design/component-contract-catalog-01
-SCOPE: Phase 4H Component Contract & Reference Catalog — Turn validated Phase 4A–4G decisions into consumable, role-aware component contracts with state matrix, RTL/Bidi behavior, accessibility behavior, role differences, reference catalog, and permitted/open values register.
+BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
+BRANCH: phase4i/native-bootstrap-baseline
+SCOPE: Phase 4I Mission A — Minimum Native Flutter Validation Foundation, minimum mobile/ repository boundary, validation harness app, konfrm_design_system package skeleton, Android toolchain validation, and stable Codex interface contract.
 
 ## Boundaries
-- Does NOT start Phase 4I (Native Flutter Foundation).
-- Does NOT implement Flutter components or initialize Flutter workspace.
+- Does NOT build Customer or Owner production Flutter applications.
+- Does NOT start Phase 5 or Phase 6.
+- Does NOT implement the full Phase 4I component set (reserved for Codex Mission B).
 - Does NOT modify production applications (`customer-app/`, `owner-app/`, `admin-app/`).
-- Does NOT modify token files (`DESIGN_SYSTEM/TOKENS/*.json`) or backend/database/API contracts.
-- Does NOT invent Product behavior, financial rules, or status enums.
-- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E), Role-Aware Contextual Navigation & Overlays + 16px Sheet Radius + 12px Dialog Radius + DF2 v1.5 + CHANGELOG 2.1.10 (4F), Role-Aware Layered State System + Four-Layer State Delivery + Canonical Domain Status Mappings + DF2 v1.6 + CHANGELOG 2.1.11 (4G).
-- Preserves non-negotiables: ERROR != EMPTY; FAILED_QUERY != FAKE_ZERO; NORMAL_PENDING != WARNING; STALE != CURRENT; UNAUTHORIZED != GENERIC_ERROR; CONFLICT != SILENT_SUBMISSION; CRITICAL_FAILURE != TOAST_ONLY; DUAL_BOTTOM_CHROME PROHIBITED; OWNER_BOTTOM_NAV PROHIBITED; exact semantic colors OPEN; exact neutrals OPEN; exact blue OPEN; exact shadows OPEN; toast duration OPEN; native acceptance DEFERRED TO 4I.
+- Does NOT modify backend business logic, database schema, Supabase, Cloudflare, API contracts, or token JSON.
+- Z Code is not used and no dependency/workflow may rely on it.
+- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E), Role-Aware Contextual Navigation & Overlays + 16px Sheet Radius + 12px Dialog Radius + DF2 v1.5 + CHANGELOG 2.1.10 (4F), Role-Aware Layered State System + Four-Layer State Delivery + Canonical Domain Status Mappings + DF2 v1.6 + CHANGELOG 2.1.11 (4G), Component Contract Catalog + DF2 v1.7 + CHANGELOG 2.1.12 (4H).
 
-## Closure Gates
-- [x] Component inventory & gap analysis documented (`COMPONENT_INVENTORY.md`, `CONTRACT_GAP_ANALYSIS.md`).
-- [x] Component contract schema & master matrix documented (`COMPONENT_CONTRACT_MATRIX.md`, `OPEN_VALUES_REGISTER.md`).
-- [x] Master component state matrix & product truth dependency matrix documented.
-- [x] Role difference matrix & RTL / Accessibility contracts documented.
-- [x] Reference catalog built (`DESIGN_SYSTEM/PILOTS/component-contract-catalog-01/index.html`).
-- [x] Visual evidence captured and inspected (`EVIDENCE_MANIFEST.md`, `evidence/*.png`).
-- [x] Cross-component consistency audit completed.
-- [x] Phase 4I native validation handoff matrix defined.
-- [x] Shared component contracts reconciled / formalized in `DESIGN_SYSTEM/COMPONENTS/`.
-- [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `node scripts/test-design-court-contract.mjs`, `git diff --check`).
-- [x] Publication PR created (`#98`).
-- [x] Phase 4I status remains strictly `NOT_STARTED`.
+## Closure Gates — Mission A
+- [x] Canonical starting base independently verified (`9c908d2756fba0d421e67959ecfbc13d0ca35f9b`).
+- [x] Minimum `mobile/` boundary created (`mobile/packages/konfrm_design_system`, `mobile/apps/design_system_validation`).
+- [x] Validation app created with Arabic RTL shell (`design_system_validation`).
+- [x] `konfrm_design_system` package created with clean entrypoint.
+- [x] Customer production Flutter app has NOT been created.
+- [x] Owner production Flutter app has NOT been created.
+- [x] Codex ownership paths and interface documented (`mobile/README.md`).
+- [x] Approved Cairo font asset wired from repository source (`assets/fonts/`).
+- [x] Dependencies resolve (`flutter pub get` on package and app).
+- [x] Formatting clean (`dart format`).
+- [x] Static analysis clean (`flutter analyze` on package and app: zero issues).
+- [x] Legitimate tests pass (`flutter test` on package and app: 100% pass).
+- [x] Android debug build succeeds (`flutter build apk --debug`).
+- [x] Current State reflects merged Phase 4H and started Phase 4I.
+- [ ] Clean Git status and immutable baseline commit SHA produced.
 
 ---
 
-## Closed Upstream Dependency — Phase 4G Content & State Presentation System
-- **PHASE_4G_STATUS:** `CLOSED / MERGED / PUBLISHED`
-- **PR:** `#97`
-- **MERGE_COMMIT:** `bb4534fc9edbb3b44ab6431c259f115220e7fbf9`
+## Closed Upstream Dependency — Phase 4H Component Contract & Reference Catalog
+- **PHASE_4H_STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#98`
+- **MERGE_COMMIT:** `9c908d2756fba0d421e67959ecfbc13d0ca35f9b`
+- **Component Contracts:** 24 component families reconciled; shared authority formalized in `DESIGN_SYSTEM/COMPONENTS/`.
+- **Reference Catalog:** Arabic RTL reference catalog published at `DESIGN_SYSTEM/PILOTS/component-contract-catalog-01/index.html`.
+- **DF2:** `v1.7`
+- **CHANGELOG:** `2.1.12`
 - **Architecture Model:** `ROLE_AWARE_LAYERED_STATE_SYSTEM` (`SYSTEM-EVALUATED PROVISIONAL`).
 - **State Delivery:** `FOUR_LAYER` (Identify: StatusBadge; Explain: InlineText; Recover/Block: SectionAlert/ScreenState; Transient Confirm: Toast).
 - **Core Invariants:** `ERROR != EMPTY`, `FAILED_QUERY != FAKE_ZERO`, `NORMAL_PENDING != WARNING`, `STALE != CURRENT`, `CONFLICT != SILENT_SUBMISSION`, `CRITICAL_FAILURE != TOAST_ONLY`.

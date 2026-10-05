@@ -7,6 +7,7 @@ PR: NONE (MISSION_B_BRANCH; NO PR TO MAIN)
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
 BASE_MISSION_A_SHA: 9f24b2bea5130faeaa05e39b204ef4c8abc7b464
+MISSION_B_IMPLEMENTATION_COMMIT: f933900
 BRANCH: phase4i/mobile-primitives-and-scenarios
 SCOPE: Phase 4I Mission B — governed shared Flutter typography/primitives, accessibility/RTL semantics, representative validation scenarios and tests, and bounded Mission A/B documentation reconciliation.
 
@@ -30,7 +31,7 @@ SCOPE: Phase 4I Mission B — governed shared Flutter typography/primitives, acc
 - [x] Package owns the single Cairo font source and validation app consumes it by package font semantics.
 - [x] Flutter primitives, semantics, RTL/bidi, scaling tests, and catalog scenarios match Phase 4H contracts.
 - [x] Production/backend/database/API/token JSON/Phase 5/6 forbidden paths remain untouched.
-- [ ] Changes are committed and pushed only to `phase4i/mobile-primitives-and-scenarios`; final HEAD recorded.
+- [x] Mission B implementation `f933900` is committed and pushed only to `phase4i/mobile-primitives-and-scenarios`. This task-contract closure update is committed and pushed in the same branch; see final branch HEAD in the review handoff.
 
 ---
 

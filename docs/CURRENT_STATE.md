@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-10-05
 **Merge checkpoint:** `2385cd13a078aedc1f40769af5b394eed1210c00` (PR #96)
-**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `CLOSED / MERGED / PUBLISHED` (PR #95); Phase 4F Navigation & Overlay System is `CLOSED / MERGED / PUBLISHED` (PR #96); Phase 4G Content & State Presentation is `SUBSTANTIVE_EVALUATION_COMPLETE / GOVERNANCE_SYNCHRONIZED / READY_FOR_PUBLICATION / PR_PENDING`.
+**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `CLOSED / MERGED / PUBLISHED` (PR #95); Phase 4F Navigation & Overlay System is `CLOSED / MERGED / PUBLISHED` (PR #96); Phase 4G Content & State Presentation is `SUBSTANTIVE_EVALUATION_COMPLETE / GOVERNANCE_SYNCHRONIZED / READY_FOR_PUBLICATION / PR_#97`.
 **Cross-cutting governance infrastructure:** `DESIGN_COURT_V1` — `CLOSED / MERGED / PUBLISHED` (PR #93, merge checkpoint `674194e675731985b347d241d046f6acc48cf785`; 14 governed design skills, 8 internal; available as cross-cutting design-decision system).
 **Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System); PR #92 merged (Phase 4D Form & Selection Primitives); PR #93 merged (Design Court v1 Governance Infrastructure); PR #95 merged (Phase 4E Structural System); PR #96 merged (Phase 4F Navigation & Overlay System).
 
@@ -64,7 +64,7 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
   - DF2: `v1.5`
   - CHANGELOG: `2.1.10`
   - Open variables preserved: Exact Blue (`OPEN`), Exact Neutrals (`OPEN`), Exact Overlay Shadow Parameters (`OPEN`), Exact Scrim Values (`OPEN`), Native Touch Target Acceptance / Gestures / Detents (`DEFERRED_TO_4I`).
-- **Phase 4G (Content & State Presentation):** `READY_FOR_PUBLICATION` (PR PENDING; branch `design/content-state-pilot-01`, base checkpoint `2385cd13a078aedc1f40769af5b394eed1210c00`). Substantive evaluation complete, Design Court v1 deliberation completed with `STRONG_CONSENSUS` and `HIGH` confidence recommending Candidate C, authority formalized. Design-System documentation and authority formalization only; zero changes to production apps, backend, database, or token JSON.
+- **Phase 4G (Content & State Presentation):** `READY_FOR_PUBLICATION` (PR #97; branch `design/content-state-pilot-01`, base checkpoint `2385cd13a078aedc1f40769af5b394eed1210c00`). Substantive evaluation complete, Design Court v1 deliberation completed with `STRONG_CONSENSUS` and `HIGH` confidence recommending Candidate C, authority formalized. Design-System documentation and authority formalization only; zero changes to production apps, backend, database, or token JSON.
   - Architecture Model: **Candidate C — Role-Aware Layered State System** (`SYSTEM-EVALUATED PROVISIONAL`).
   - Four-Tier State Delivery Hierarchy: Layer 1 Identify (`STATUS_BADGE`), Layer 2 Explain (`INLINE_TEXT`), Layer 3 Recover/Block (`SECTION_ALERT` / `SCREEN_STATE`), Layer 4 Transient Confirm (`TOAST`).
   - Consequential Decisions: Invoke governed Phase 4F Dialog overlays (`DIALOG_CONSEQUENCE`). Dialog is an existing overlay mechanism, not a fifth state-delivery layer.
@@ -135,7 +135,7 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
   - CHANGELOG: `2.1.10`
 - **Active Phase:** **Phase 4G — Content & State Presentation**
   - **Status:** `READY_FOR_PUBLICATION`
-  - **PR:** `PENDING`
+  - **PR:** `#97`
   - **Execution Started:** `YES`
   - **Branch:** `design/content-state-pilot-01`
   - **Base Checkpoint:** `2385cd13a078aedc1f40769af5b394eed1210c00`

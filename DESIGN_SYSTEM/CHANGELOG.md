@@ -1,5 +1,42 @@
 # KONFRM Design System Changelog
 
+## 2.1.11 — 2026-10-05
+
+### Phase 4G Content & State Presentation System governance synchronization
+
+- Formalized Candidate C: Role-Aware Layered State System (`SYSTEM-EVALUATED PROVISIONAL PHASE_4G_STATE_SYSTEM`).
+- Design Court v1 Deliberation: Completed with `STRONG_CONSENSUS` and `HIGH` confidence recommending Candidate C (`DC-4G-001`, `FOUNDER_DECISION_REQUIRED: NO`).
+- Candidate B Preserved as Valid Alternative: `VALID_ALTERNATIVE_NOT_SELECTED` (passes all Hard Gates including MR-17 with neutral slate containers, but rejected as global default due to box fatigue, Customer Open Editorial mismatch, Owner operational density cost, and alert salience dilution).
+- Candidate A Rejected on Hard Gate: Eliminated on `STATE_EXPLANATION_AND_RECOVERY_CONTRACT: FAIL` (global badge-only architecture cannot answer the four critical state questions for Error, Conflict, Unauthorized, or consequential failure).
+- Four-Tier State Delivery Hierarchy formalized:
+  1. Layer 1 — Identification (`STATUS_BADGE` / `LABEL`): Used when canonical state recognition is self-sufficient. Badges identify status; they do not substitute for required explanation.
+  2. Layer 2 — Contextual Explanation (`INLINE_TEXT` / `OPEN_TYPOGRAPHY`): Used for normal process milestones on natural surfaces without box borders. Zero response SLA is promised.
+  3. Layer 3 — Actionable Recovery (`SECTION_ALERT` / `SCREEN_STATE`): Persistent, actionable feedback when an action is blocked, a query fails, or revalidation requires user attention. Includes scope, plain Arabic explanation, and retry/recovery action.
+  4. Layer 4 — Transient Confirmation (`TOAST`): Reserved exclusively for transient confirmation of completed, low-risk actions. Exact toast duration is `OPEN / COMPONENT_AND_PLATFORM_GATED`. Critical errors, financial warnings, and mandatory decisions never use toasts alone.
+  - Consequential Decisions invoke governed Phase 4F Dialog overlays (`DIALOG_CONSEQUENCE`). Dialog is an existing overlay mechanism, not a fifth state-delivery layer.
+- Core Truth-First Invariants formalized:
+  - `ERROR_NEVER_MASQUERADES_AS_EMPTY`: genuine absence distinct from failed queries.
+  - `FAILED_QUERY_NEVER_BECOMES_FAKE_ZERO`: missing data never renders as credible 0 count or zero balance.
+  - `NORMAL_PENDING_IS_NOT_AUTOMATICALLY_WARNING`: process states (`PENDING_OWNER_APPROVAL`, `PENDING_REVIEW`, `Wallet PENDING`, `PENDING_VERIFICATION`) map to neutral/process styling, not warnings; zero yellow/amber boxed UI (Founder Rule MR-17).
+  - `STALE_DATA_MUST_BE_EXPLICITLY_NON_CURRENT`: safe cached discovery preserved with neutral/soft-blue notices and retry; stale prices marked non-current (`آخر سعر معروف: 3,500 ج.م (يحتاج تحديث)`); transactional actions fail closed.
+  - `UNAUTHORIZED_IS_DISTINCT_FROM_GENERIC_ERROR`: fails closed, clears private data, provides dedicated re-authentication CTA, preserves safe intent where governed.
+  - `CONFLICT_REQUIRES_REVIEW_OF_CHANGED_TRUTH`: submission blocked until user explicitly reviews and accepts newly canonical server truth (aligned with Screen 07 C4 authority).
+  - `CRITICAL_FAILURE_NEVER_TOAST_ONLY`: durable errors require persistent section/screen alerts.
+  - `SUCCESS_ONLY_AFTER_CANONICAL_COMPLETION`: no fake success animations before server confirmation.
+- Domain Status Presentation & Financial Truth boundaries formalized:
+  - Customer financial presentation: total, deposit, remaining balance (total - deposit). Customer never sees internal commission, 80/20 split, or platform accounting.
+  - Remaining balance collection method remains `OPEN / UNDECIDED`.
+  - Approved pending payment has no invented payment deadlines.
+  - Owner wallet balance buckets (`AVAILABLE`, `PENDING` [releases 24h after check-in], `HELD`, `RESERVED_FOR_PAYOUT`) separated from payout request lifecycle (`payout_requests`). Minimum payout 500 EGP; payout fees Owner-borne; no instant bank transfer promise.
+  - Customer Auth V2 phone/email verification does not authorize generic customer trust badge (`CUSTOMER_IDENTITY_TRUST_BADGE: NOT_AUTHORIZED`).
+- Updated Mobile Design Foundation to DF2 v1.6 (`DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md`).
+- Synchronized component state, alert, badge, and experience authority (`DESIGN_SYSTEM/COMPONENTS/states.md`, `DESIGN_SYSTEM/COMPONENTS/alerts.md`, `DESIGN_SYSTEM/COMPONENTS/badges.md`, `DESIGN_SYSTEM/EXPERIENCE/SCREEN_STATES.md`, `DESIGN_SYSTEM/EXPERIENCE/CONTENT_AND_MICROCOPY.md`).
+- Phase 4H Boundary Preserved: Component Specification & Assembly remains strictly `NOT_STARTED`.
+- Controlled Web Reflow Pass: Verified 200% scaling reflow with zero horizontal clipping. Native mobile component and accessibility acceptance strictly `DEFERRED_TO_4I`.
+- No token JSON changes.
+- No runtime production changes.
+- No backend/database changes.
+
 ## 2.1.10 — 2026-10-05
 
 ### Phase 4F Navigation & Overlay System governance synchronization

@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONFRM Phase 4G — Content & State Presentation System Pilot</title>
+  <style>
+    @font-face {
+      font-family: 'Cairo';
+      src: url('./fonts/Cairo-VariableFont.ttf') format('truetype');
+      font-weight: 200 900;
+      font-style: normal;
+    }
+
+    :root {
+      /* Typography — Cairo Profile B (4B System-Validated Provisional) */
+      --konfrm-font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      --scale-factor: 1;
+
+      /* Foundations */
+      --primary-black: #000000;
+      --button-primary-radius: 6px; /* Phase 4C PRIMARY_ONLY */
+      --field-radius: 8px;          /* Phase 4D Field-shaped controls */
+      --struct-container-radius: 12px; /* Phase 4E Structural container provisional */
+      --mobile-page-inset: 16px;    /* Phase 4E Page Inset provisional */
+
+      /* Colors (Exact values are Web pilot references; semantic roles govern) */
+      --accent-blue: #276EF1;       /* Restrained interaction accent candidate */
+      --accent-blue-soft: #EAF1FF;
+      --bg-canvas-light: #F8FAFC;
+      --bg-surface-white: #FFFFFF;
+      --bg-surface-subtle: #F1F5F9;
+      --text-main: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --border-subtle: #E2E8F0;
+      --border-field: #8E8E93;
+      --border-divider: #F1F5F9;
+
+      /* Semantic Status Roles */
+      --status-success: #059669;
+      --status-success-bg: #ECFDF5;
+      --status-success-border: #A7F3D0;
+      --status-info: #276EF1;
+      --status-info-bg: #EFF6FF;
+      --status-info-border: #BFDBFE;
+      --status-neutral: #475569;
+      --status-neutral-bg: #F8FAFC;
+      --status-neutral-border: #E2E8F0;
+      --status-danger: #DC2626;
+      --status-danger-bg: #FEF2F2;
+      --status-danger-border: #FECACA;
+
+      /* Phase 4F Overlay & Navigation Geometry */
+      --sheet-radius: 16px;
+      --dialog-radius: 12px;
+      --nav-height: 60px;
+      --app-bar-height: 56px;
+      --sticky-action-height: 72px;
+      --safe-area-bottom: 24px;
+      --safe-area-top: 44px;
+      --overlay-shadow: 0 -4px 24px rgba(15, 23, 42, 0.10);
+      --dialog-shadow: 0 12px 36px rgba(15, 23, 42, 0.16);
+    }
+
+    /* Scaling support for true 200% text scale tests */
+    body.scale-200 { --scale-factor: 2.0; }
+
+    body.scale-200 .metric-grid,
+    body.scale-200 .stats-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    body.scale-200 .action-row,
+    body.scale-200 .card-action-bar,
+    body.scale-200 .alert-action-row {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 10px !important;
+    }
+
+    body.scale-200 .action-row button,
+    body.scale-200 .card-action-bar button,
+    body.scale-200 .alert-action-row button {
+      width: 100% !important;
+    }
+
+    body.scale-200 .app-bar {
+      min-height: var(--app-bar-height);
+      height: auto !important;
+      padding: 8px var(--mobile-page-inset) !important;
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+    }
+
+    body.scale-200 .app-bar .bar-title {
+      white-space: normal !important;
+      word-break: break-word !important;
+    }
+
+    body.scale-200 .table-cell {
+      padding: 8px 6px !important;
+    }
+
+    body.scale-200 .toast-box {
+      max-width: 90% !important;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--konfrm-font-family);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: #0B0F17;
+      color: var(--text-main);
+      direction: rtl;
+      text-align: right;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* Embedded mode when captured by automated screenshot tools */
+    body.embedded {
+      background-color: transparent !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      display: block !important;
+      min-height: 100% !important;
+      width: 100% !important;
+      overflow-x: hidden !important;
+    }
+
+    body.embedded .pilot-toolbar {
+      display: none !important;
+    }
+
+    body.embedded .viewport-stage {
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 100% !important;
+      display: block !important;
+    }
+
+    body.embedded .viewport-frame {
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      margin: 0 auto !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-height: 100vh !important;
+    }
+
+    /* Pilot Controls Toolbar */
+    .pilot-toolbar {
+      background: #1E293B;
+      color: #F8FAFC;
+      padding: 14px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #334155;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #94A3B8;
+    }
+
+    .toolbar-select, .toolbar-btn {
+      background: #0F172A;
+      color: #F8FAFC;
+      border: 1px solid #475569;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .toolbar-btn.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #FFFFFF;
+    }
+
+    /* Viewport Stage */
+    .viewport-stage {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .viewport-frame {
+      background-color: var(--bg-canvas-light);
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #334155;
+    }
+
+    /* Viewport presets */
+    .viewport-frame.vp-360 { width: 360px; min-height: 800px; border-radius: 36px; }
+    .viewport-frame.vp-390 { width: 390px; min-height: 844px; border-radius: 40px; }
+    .viewport-frame.vp-430 { width: 430px; min-height: 932px; border-radius: 44px; }
+    .viewport-frame.vp-1280 { width: 1280px; min-height: 900px; border-radius: 12px; }
+    .viewport-frame.vp-1440 { width: 1440px; min-height: 900px; border-radius: 12px; }
+
+    /* Top App Bar */
+    .app-bar {
+      height: var(--app-bar-height);
+      min-height: var(--app-bar-height);
+      background-color: var(--bg-surface-white);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--mobile-page-inset);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .app-bar .bar-title {
+      font-size: calc(17px * var(--scale-factor));
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .app-bar .bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface-white);
+      cursor: pointer;
+      color: var(--text-main);
+      font-size: calc(14px * var(--scale-factor));
+      transition: background 0.15s;
+    }
+
+    /* Screen Main Content */
+    .screen-content {
+      flex: 1;
+      padding: var(--mobile-page-inset);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    /* Customer Bottom Nav Bar (Phase 4F Standard) */
+    .customer-bottom-nav {
+      height: var(--nav-height);
+      background: var(--bg-surface-white);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      position: sticky;
+      bottom: 0;
+      z-index: 20;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .nav-tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: calc(11px * var(--scale-factor));
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 8px;
+      position: relative;
+    }
+
+    .nav-tab-item.active {
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    .nav-tab-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-blue);
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 10px;
+    }
+
+    /* Structural Containers & Cards (Phase 4E Standard: 12px) */
+    .struct-card {
+      background: var(--bg-surface-white);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--struct-container-radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: calc(12px * var(--scale-factor));
+      font-weight: 700;
+      line-height: 1.2;
+      width: fit-content;
+    }
+
+    .status-badge.neutral-process {
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #CBD5E1;
+    }
+
+    .status-badge.info {
+      background: var(--accent-blue-soft);
+      color: var(--accent-blue);
+      border: 1px solid #BFDBFE;
+    }
+
+    .status-badge.action-required {
+      background: #0F172A;
+      color: #FFFFFF;
+      border: 1px solid #0F172A;
+    }
+
+    .status-badge.success {
+      background: var(--status-success-bg);
+      color: var(--status-success);
+      border: 1px solid var(--status-success-border);
+    }
+
+    .status-badge.danger {
+      background: var(--status-danger-bg);
+      color: var(--status-danger);
+      border: 1px solid var(--status-danger-border);
+    }
+
+    .status-badge.muted {
+      background: #F8FAFC;
+      color: #64748B;
+      border: 1px solid #E2E8F0;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: var(--primary-black);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--button-primary-radius);
+      padding: 10px 18px;
+      font-size: calc(14px * var(--scale-factor));
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      transition: background 0.15s;
+    }
+
+    .btn-primary:hover {
+      background: #1E293B;
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface-subtle);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--button-primary-radius);
+      padding: 10px 18px;
+      font-size: calc(14px * var(--scale-factor));
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+    }
+
+    .btn-danger-outline {
+      background: transparent;
+      color: var(--status-danger);
+      border: 1px solid var(--status-danger-border);
+      border-radius: var(--button-primary-radius);
+      padding: 10px 18px;
+      font-size: calc(14px * var(--scale-factor));
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+    }
+
+    .btn-disabled {
+      background: #E2E8F0 !important;
+      color: #94A3B8 !important;
+      border: 1px solid #CBD5E1 !important;
+      cursor: not-allowed !important;
+    }
+
+    /* Skeleton Loading Elements */
+    .skeleton-box {
+      background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+      background-size: 200% 100%;
+      animation: skeleton-pulse 1.6s infinite ease-in-out;
+      border-radius: 6px;
+    }
+
+    @keyframes skeleton-pulse {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Screen State Views: Empty, Error, Stale, Conflict */
+    .state-screen-box {
+      background: var(--bg-surface-white);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--struct-container-radius);
+      padding: 32px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      margin: auto 0;
+    }
+
+    .state-icon-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .state-icon-circle.neutral { background: #F1F5F9; color: #475569; }
+    .state-icon-circle.info { background: #EFF6FF; color: var(--accent-blue); }
+    .state-icon-circle.danger { background: #FEF2F2; color: var(--status-danger); }
+    .state-icon-circle.success { background: #ECFDF5; color: var(--status-success); }
+
+    .state-title {
+      font-size: calc(17px * var(--scale-factor));
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .state-description {
+      font-size: calc(13px * var(--scale-factor));
+      font-weight: 500;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      max-width: 320px;
+    }
+
+    /* Section Alert Boxes (Founder MR-17 Compliant: No Amber Boxes) */
+    .section-alert {
+      border-radius: var(--struct-container-radius);
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: calc(13px * var(--scale-factor));
+      line-height: 1.5;
+    }
+
+    .section-alert.info-stale {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      color: #334155;
+    }
+
+    .section-alert.danger-error {
+      background: #FEF2F2;
+      border: 1px solid var(--status-danger-border);
+      color: #991B1B;
+    }
+
+    .section-alert.conflict-alert {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      color: #1E3A8A;
+    }
+
+    /* Candidate Variations Styling */
+    /* Candidate A: Badge-Centric (Heavy pills) */
+    body.cand-a .candidate-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    body.cand-a .candidate-badge-row .status-badge {
+      padding: 6px 12px;
+      font-size: calc(13px * var(--scale-factor));
+      border-radius: 9999px;
+    }
+
+    /* Candidate B: Message-Centric (Every status has a boxed banner) */
+    body.cand-b .candidate-box-banner {
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    /* Candidate C: Role-Aware Layered (Clean, disciplined) */
+    body.cand-c .layered-process-text {
+      color: var(--text-secondary);
+      font-size: calc(13px * var(--scale-factor));
+      font-weight: 500;
+    }
+
+    /* Admin Table Styling */
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: calc(13px * var(--scale-factor));
+      background: #FFFFFF;
+      border-radius: var(--struct-container-radius);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .admin-table th {
+      background: #F8FAFC;
+      padding: 12px 14px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: right;
+    }
+
+    .admin-table td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border-divider);
+      color: var(--text-main);
+    }
+
+    .admin-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Toast Notification (Candidate C: Transient Confirmation Only) */
+    .toast-overlay {
+      position: absolute;
+      bottom: calc(var(--nav-height) + 16px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      pointer-events: none;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 0 16px;
+    }
+
+    .toast-box {
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: calc(13px * var(--scale-factor));
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body class="cand-c" id="pilot-body">
+
+  <!-- Interactive Controls Toolbar (Hidden in automated screenshots) -->
+  <div class="pilot-toolbar">
+    <div class="toolbar-group">
+      <span class="toolbar-label">الدور:</span>
+      <select id="role-select" class="toolbar-select" onchange="onRoleChange()">
+        <option value="customer">Customer (الضيف)</option>
+        <option value="owner">Owner (المالك)</option>
+        <option value="admin">Admin (الإدارة)</option>
+      </select>
+
+      <span class="toolbar-label">الحالة المعروضة:</span>
+      <select id="state-select" class="toolbar-select" onchange="onStateChange()">
+        <!-- Populated dynamically based on role -->
+      </select>
+    </div>
+
+    <div class="toolbar-group">
+      <span class="toolbar-label">النظام المرشح:</span>
+      <button class="toolbar-btn" id="btn-cand-a" onclick="setCandidate('cand-a')">A: شارات فقط</button>
+      <button class="toolbar-btn" id="btn-cand-b" onclick="setCandidate('cand-b')">B: رسائل معلبة</button>
+      <button class="toolbar-btn active" id="btn-cand-c" onclick="setCandidate('cand-c')">C: نظام طبقي واعي (المقترح)</button>
+    </div>
+
+    <div class="toolbar-group">
+      <span class="toolbar-label">العرض:</span>
+      <button class="toolbar-btn" id="vp-360-btn" onclick="setViewport('360')">360px</button>
+      <button class="toolbar-btn active" id="vp-390-btn" onclick="setViewport('390')">390px</button>
+      <button class="toolbar-btn" id="vp-430-btn" onclick="setViewport('430')">430px</button>
+      <button class="toolbar-btn" id="vp-1280-btn" onclick="setViewport('1280')">1280px</button>
+      <button class="toolbar-btn" id="vp-1440-btn" onclick="setViewport('1440')">1440px</button>
+
+      <span class="toolbar-label">الخط:</span>
+      <button class="toolbar-btn active" id="scale-100-btn" onclick="setScale(100)">100%</button>
+      <button class="toolbar-btn" id="scale-200-btn" onclick="setScale(200)">200%</button>
+    </div>
+  </div>
+
+  <!-- Viewport Stage -->
+  <div class="viewport-stage">
+    <div class="viewport-frame vp-390" id="viewport-frame">
+      <!-- Container rendered dynamically by JavaScript -->
+      <div id="app-container" style="display:flex; flex-direction:column; min-height:100%; width:100%;"></div>
+    </div>
+  </div>
+
+  <script>
+    // State Options per Role
+    const roleStates = {
+      customer: [
+        { id: 'cust-explore-loading', label: 'Explore: تحميل هيكلي (Skeleton)' },
+        { id: 'cust-explore-empty', label: 'Explore: بحث صفر نتائج (Zero Search Matches)' },
+        { id: 'cust-explore-error', label: 'Explore: خطأ شبكة/خادم (Error with Retry)' },
+        { id: 'cust-explore-stale', label: 'Explore: بيانات صالحة غير محدثة (Stale Safe Data)' },
+        { id: 'cust-favorites-empty', label: 'Favorites: قائمة مفضلة فارغة (True Empty)' },
+        { id: 'cust-bookings-guest', label: 'Bookings: مستخدم غير مسجل (Guest State)' },
+        { id: 'cust-bookings-empty', label: 'Bookings: لا توجد حجوزات (True Empty)' },
+        { id: 'cust-bookings-expired', label: 'Bookings: انتهاء الجلسة (Session Expired - No Amber)' },
+        { id: 'cust-bookings-pending', label: 'Bookings: بانتظار موافقة المالك (Normal Process)' },
+        { id: 'cust-bookings-approved', label: 'Bookings: مطلوب سداد العربون (Action Required)' },
+        { id: 'cust-bookings-confirmed', label: 'Bookings: حجز مؤكد (Stable Success)' },
+        { id: 'cust-booking-conflict', label: 'Detail/Review: تعارض وتغير السعر (Price Conflict)' },
+        { id: 'cust-booking-submitting', label: 'Checkout: إرسال الطلب قيد التنفيذ (Submitting)' },
+        { id: 'cust-booking-success', label: 'Screen 11: تم إرسال الطلب بنجاح (Request Sent Success)' }
+      ],
+      owner: [
+        { id: 'owner-home-loading', label: 'Home: تحميل هيكلي للمؤشرات (Skeleton)' },
+        { id: 'owner-home-empty', label: 'Home: لا توجد طلبات تحتاج قرارك (Clean Empty)' },
+        { id: 'owner-home-partial', label: 'Home: فشل جزئي لقسم المحفظة (Partial Failure)' },
+        { id: 'owner-bookings-queue', label: 'Bookings: طلب حجز جديد بانتظار القرار (Queue Item)' },
+        { id: 'owner-bookings-submitting', label: 'Bookings: تسجيل القرار قيد التنفيذ (Submitting)' },
+        { id: 'owner-properties-empty', label: 'Properties: لا توجد وحدات مسجلة (First-Run Empty)' },
+        { id: 'owner-properties-review', label: 'Properties: وحدة قيد المراجعة (Normal Process)' },
+        { id: 'owner-wallet-loaded', label: 'Wallet: رصيد متاح ومعلق (24h Canon Distinct)' },
+        { id: 'owner-wallet-error', label: 'Wallet: خطأ تحميل الأرصدة (Scoped Error)' },
+        { id: 'owner-wallet-disabled', label: 'Wallet: زر السحب غير نشط (Disabled with Reason)' }
+      ],
+      admin: [
+        { id: 'admin-overview-loading', label: 'Overview: تحميل المؤشرات التشغيلية (Skeleton)' },
+        { id: 'admin-overview-error', label: 'Overview: خطأ تحميل بدون أرقام صفرية زائفة (Truthful Error)' },
+        { id: 'admin-queue-empty', label: 'Queue: قائمة مراجعة مكتملة (Clean Empty Queue)' },
+        { id: 'admin-queue-error', label: 'Queue: خطأ جلب قاعدة البيانات (Table Error with Retry)' },
+        { id: 'admin-queue-loaded', label: 'Queue: جدول مراجعة الوحدات (Active Review Items)' },
+        { id: 'admin-session-expired', label: 'Session: انتهاء جلسة الإدارة (Unauthorized Gate)' }
+      ]
+    };
+
+    let currentRole = 'customer';
+    let currentState = 'cust-explore-loading';
+    let currentCandidate = 'cand-c';
+    let currentViewport = '390';
+    let currentScale = 100;
+
+    function init() {
+      // Parse URL parameters for automated test harness
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('embedded') === 'true') {
+        document.body.classList.add('embedded');
+      }
+      if (params.get('role')) {
+        currentRole = params.get('role');
+        document.getElementById('role-select').value = currentRole;
+      }
+      if (params.get('candidate')) {
+        setCandidate(params.get('candidate'));
+      }
+      if (params.get('viewport')) {
+        setViewport(params.get('viewport'));
+      }
+      if (params.get('scale') === '200') {
+        setScale(200);
+      }
+
+      populateStateSelect();
+
+      if (params.get('state')) {
+        currentState = params.get('state');
+        document.getElementById('state-select').value = currentState;
+      }
+
+      renderCurrentView();
+    }
+
+    function onRoleChange() {
+      currentRole = document.getElementById('role-select').value;
+      if (currentRole === 'admin') {
+        setViewport('1440');
+      } else if (currentViewport === '1280' || currentViewport === '1440') {
+        setViewport('390');
+      }
+      populateStateSelect();
+      currentState = roleStates[currentRole][0].id;
+      renderCurrentView();
+    }
+
+    function onStateChange() {
+      currentState = document.getElementById('state-select').value;
+      renderCurrentView();
+    }
+
+    function populateStateSelect() {
+      const select = document.getElementById('state-select');
+      select.innerHTML = '';
+      roleStates[currentRole].forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.id;
+        opt.textContent = item.label;
+        select.appendChild(opt);
+      });
+      currentState = roleStates[currentRole][0].id;
+    }
+
+    function setCandidate(cand) {
+      currentCandidate = cand;
+      document.body.className = document.body.className.replace(/cand-[abc]/g, '');
+      document.body.classList.add(cand);
+      ['btn-cand-a', 'btn-cand-b', 'btn-cand-c'].forEach(id => {
+        document.getElementById(id).classList.remove('active');
+      });
+      document.getElementById('btn-' + cand).classList.add('active');
+      renderCurrentView();
+    }
+
+    function setViewport(vp) {
+      currentViewport = vp;
+      const frame = document.getElementById('viewport-frame');
+      frame.className = frame.className.replace(/vp-\d+/g, '');
+      frame.classList.add('vp-' + vp);
+      ['vp-360-btn', 'vp-390-btn', 'vp-430-btn', 'vp-1280-btn', 'vp-1440-btn'].forEach(id => {
+        document.getElementById(id).classList.remove('active');
+      });
+      document.getElementById('vp-' + vp + '-btn').classList.add('active');
+    }
+
+    function setScale(scale) {
+      currentScale = scale;
+      if (scale === 200) {
+        document.body.classList.add('scale-200');
+        document.getElementById('scale-200-btn').classList.add('active');
+        document.getElementById('scale-100-btn').classList.remove('active');
+      } else {
+        document.body.classList.remove('scale-200');
+        document.getElementById('scale-100-btn').classList.add('active');
+        document.getElementById('scale-200-btn').classList.remove('active');
+      }
+      renderCurrentView();
+    }
+
+    function renderCurrentView() {
+      const container = document.getElementById('app-container');
+      container.innerHTML = '';
+
+      switch (currentState) {
+        // Customer Explore Views
+        case 'cust-explore-loading':
+          container.innerHTML = getCustomerExploreLoading();
+          break;
+        case 'cust-explore-empty':
+          container.innerHTML = getCustomerExploreEmpty();
+          break;
+        case 'cust-explore-error':
+          container.innerHTML = getCustomerExploreError();
+          break;
+        case 'cust-explore-stale':
+          container.innerHTML = getCustomerExploreStale();
+          break;
+
+        // Customer Bookings Views
+        case 'cust-favorites-empty':
+          container.innerHTML = getCustomerFavoritesEmpty();
+          break;
+        case 'cust-bookings-guest':
+          container.innerHTML = getCustomerBookingsGuest();
+          break;
+        case 'cust-bookings-empty':
+          container.innerHTML = getCustomerBookingsEmpty();
+          break;
+        case 'cust-bookings-expired':
+          container.innerHTML = getCustomerBookingsExpired();
+          break;
+        case 'cust-bookings-pending':
+          container.innerHTML = getCustomerBookingsPending();
+          break;
+        case 'cust-bookings-approved':
+          container.innerHTML = getCustomerBookingsApproved();
+          break;
+        case 'cust-bookings-confirmed':
+          container.innerHTML = getCustomerBookingsConfirmed();
+          break;
+
+        // Customer Detail / Review Views
+        case 'cust-booking-conflict':
+          container.innerHTML = getCustomerBookingConflict();
+          break;
+        case 'cust-booking-submitting':
+          container.innerHTML = getCustomerBookingSubmitting();
+          break;
+        case 'cust-booking-success':
+          container.innerHTML = getCustomerBookingSuccess();
+          break;
+
+        // Owner Views
+        case 'owner-home-loading':
+          container.innerHTML = getOwnerHomeLoading();
+          break;
+        case 'owner-home-empty':
+          container.innerHTML = getOwnerHomeEmpty();
+          break;
+        case 'owner-home-partial':
+          container.innerHTML = getOwnerHomePartial();
+          break;
+        case 'owner-bookings-queue':
+          container.innerHTML = getOwnerBookingsQueue();
+          break;
+        case 'owner-bookings-submitting':
+          container.innerHTML = getOwnerBookingsSubmitting();
+          break;
+        case 'owner-properties-empty':
+          container.innerHTML = getOwnerPropertiesEmpty();
+          break;
+        case 'owner-properties-review':
+          container.innerHTML = getOwnerPropertiesReview();
+          break;
+        case 'owner-wallet-loaded':
+          container.innerHTML = getOwnerWalletLoaded();
+          break;
+        case 'owner-wallet-error':
+          container.innerHTML = getOwnerWalletError();
+          break;
+        case 'owner-wallet-disabled':
+          container.innerHTML = getOwnerWalletDisabled();
+          break;
+
+        // Admin Views
+        case 'admin-overview-loading':
+          container.innerHTML = getAdminOverviewLoading();
+          break;
+        case 'admin-overview-error':
+          container.innerHTML = getAdminOverviewError();
+          break;
+        case 'admin-queue-empty':
+          container.innerHTML = getAdminQueueEmpty();
+          break;
+        case 'admin-queue-error':
+          container.innerHTML = getAdminQueueError();
+          break;
+        case 'admin-queue-loaded':
+          container.innerHTML = getAdminQueueLoaded();
+          break;
+        case 'admin-session-expired':
+          container.innerHTML = getAdminSessionExpired();
+          break;
+        default:
+          container.innerHTML = '<div style="padding:40px; text-align:center;">اختر حالة من القائمة أعلاه</div>';
+      }
+    }
+
+    // Customer Navigation Bar Helper
+    function renderCustomerNav(activeTab = 'explore', hasAttentionDot = false) {
+      return `
+        <div class="customer-bottom-nav">
+          <div class="nav-tab-item ${activeTab === 'explore' ? 'active' : ''}">
+            <span>استكشف</span>
+          </div>
+          <div class="nav-tab-item ${activeTab === 'favorites' ? 'active' : ''}">
+            <span>المفضلة</span>
+          </div>
+          <div class="nav-tab-item ${activeTab === 'bookings' ? 'active' : ''}">
+            ${hasAttentionDot ? '<span class="nav-tab-dot"></span>' : ''}
+            <span>حجوزاتي</span>
+          </div>
+          <div class="nav-tab-item ${activeTab === 'account' ? 'active' : ''}">
+            <span>الحساب</span>
+          </div>
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       TEMPLATE RENDERERS — CUSTOMER
+       ========================================================================= */
+
+    function getCustomerExploreLoading() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">كونفرم — استكشف الإقامات</div>
+          <div class="bar-actions">
+            <button class="icon-btn" aria-label="بحث">🔍</button>
+          </div>
+        </div>
+        <div class="screen-content">
+          <div style="font-size:calc(13px * var(--scale-factor)); color:var(--text-muted); font-weight:600;">
+            جارٍ تحميل الإقامات المتاحة...
+          </div>
+          <!-- 3 Structure-Preserving Skeleton Cards matching 1.4:1 ratio -->
+          ${[1, 2].map(() => `
+            <div class="struct-card" style="padding:0; overflow:hidden;">
+              <div class="skeleton-box" style="width:100%; aspect-ratio:1.4/1;"></div>
+              <div style="padding:14px; display:flex; flex-direction:column; gap:8px;">
+                <div class="skeleton-box" style="height:16px; width:70%;"></div>
+                <div class="skeleton-box" style="height:12px; width:45%;"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                  <div class="skeleton-box" style="height:14px; width:30%;"></div>
+                  <div class="skeleton-box" style="height:18px; width:25%;"></div>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        ${renderCustomerNav('explore')}
+      `;
+    }
+
+    function getCustomerExploreEmpty() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">نتائج البحث</div>
+          <div class="bar-actions">
+            <button class="icon-btn" aria-label="تعديل الفلاتر">⚙️</button>
+          </div>
+        </div>
+        <div class="screen-content">
+          <div class="state-screen-box">
+            <div class="state-icon-circle neutral">🧭</div>
+            <div class="state-title">لا توجد نتائج تطابق بحثك</div>
+            <div class="state-description">
+              لم نعثر على إقامات متاحة للتواريخ أو الفلاتر المحددة. جرب تغيير المدينة أو توسيع نطاق البحث.
+            </div>
+            <button class="btn-primary" style="margin-top:8px;">إعادة ضبط الفلاتر</button>
+          </div>
+        </div>
+        ${renderCustomerNav('explore')}
+      `;
+    }
+
+    function getCustomerExploreError() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">استكشف الإقامات</div>
+        </div>
+        <div class="screen-content">
+          <div class="state-screen-box" style="border-color:var(--status-danger-border);">
+            <div class="state-icon-circle danger">⚠️</div>
+            <div class="state-title">تعذر تحميل أماكن الإقامة</div>
+            <div class="state-description">
+              واجهنا مشكلة في الاتصال بالخدمة. يرجى التحقق من اتصالك بالإنترنت وإعادة المحاولة.
+            </div>
+            <button class="btn-primary" style="margin-top:8px;">إعادة المحاولة</button>
+          </div>
+        </div>
+        ${renderCustomerNav('explore')}
+      `;
+    }
+
+    function getCustomerExploreStale() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">استكشف الإقامات</div>
+        </div>
+        <div class="screen-content">
+          <!-- Founder Rule MR-17 Compliant: Neutral / Soft-Blue Informational Notice (No Amber) -->
+          <div class="section-alert info-stale">
+            <span style="font-size:16px;">ℹ️</span>
+            <div style="flex:1;">
+              <strong>تعذر تحديث النتائج.</strong> قد تكون الأسعار والتوافر قد تغيرت. يتم عرض آخر بيانات محفوظة.
+            </div>
+            <button class="btn-secondary" style="min-height:32px; padding:4px 10px; font-size:calc(12px * var(--scale-factor));">تحديث</button>
+          </div>
+
+          <!-- Safe Last-Known Cached Card -->
+          <div class="struct-card" style="padding:0; overflow:hidden;">
+            <div style="background:#CBD5E1; height:180px; display:flex; align-items:center; justify-content:center; color:#475569; font-weight:700;">
+              فيلا المرجان — الساحل الشمالي
+            </div>
+            <div style="padding:14px; display:flex; flex-direction:column; gap:6px;">
+              <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">فيلا فاخرة صف أول على البحر</div>
+              <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-muted);">سيدي عبد الرحمن</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                <span style="font-size:calc(13px * var(--scale-factor)); color:var(--text-secondary);">4 غرف نوم • 8 ضيوف</span>
+                <div style="text-align:left;">
+                  <div style="font-size:calc(13px * var(--scale-factor)); font-weight:700; color:var(--text-secondary);">آخر سعر معروف: 3,500 ج.م</div>
+                  <div style="font-size:calc(11px * var(--scale-factor)); color:#DC2626; font-weight:600;">(يحتاج تحديث)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        ${renderCustomerNav('explore')}
+      `;
+    }
+
+    function getCustomerFavoritesEmpty() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">المفضلة</div>
+        </div>
+        <div class="screen-content">
+          <div class="state-screen-box">
+            <div class="state-icon-circle neutral">🤍</div>
+            <div class="state-title">قائمة المفضلة فارغة</div>
+            <div class="state-description">
+              احفظ الإقامات التي تعجبك أثناء التصفح للرجوع إليها ومقارنتها بسهولة في أي وقت.
+            </div>
+            <button class="btn-primary" style="margin-top:8px;">استكشف الإقامات</button>
+          </div>
+        </div>
+        ${renderCustomerNav('favorites')}
+      `;
+    }
+
+    function getCustomerBookingsGuest() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">حجوزاتي</div>
+        </div>
+        <div class="screen-content">
+          <div class="state-screen-box">
+            <div class="state-icon-circle info">🔒</div>
+            <div class="state-title">سجّل الدخول لعرض حجوزاتك</div>
+            <div class="state-description">
+              قم بتسجيل الدخول لمتابعة حالة طلبات الحجز، سداد العربون، واستعراض تفاصيل إقاماتك القادمة.
+            </div>
+            <button class="btn-primary" style="margin-top:8px;">تسجيل الدخول</button>
+          </div>
+        </div>
+        ${renderCustomerNav('bookings')}
+      `;
+    }
+
+    function getCustomerBookingsEmpty() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">حجوزاتي</div>
+        </div>
+        <div class="screen-content">
+          <div class="state-screen-box">
+            <div class="state-icon-circle neutral">🧳</div>
+            <div class="state-title">لا توجد حجوزات بعد</div>
+            <div class="state-description">
+              عند تقديم طلب حجز لأي إقامة ساحلية، ستظهر هنا جميع التفاصيل ومراحل الموافقة والسداد.
+            </div>
+            <button class="btn-primary" style="margin-top:8px;">استكشف الإقامات المتاحة</button>
+          </div>
+        </div>
+        ${renderCustomerNav('bookings')}
+      `;
+    }
+
+    function getCustomerBookingsExpired() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">حجوزاتي</div>
+        </div>
+        <div class="screen-content">
+          <!-- Founder Rule MR-17 Compliant: Neutral / Soft-Blue Card (Replaces legacy amber box) -->
+          <div class="state-screen-box" style="border-color:#BFDBFE; background:#F8FAFC;">
+            <div class="state-icon-circle info">⏱️</div>
+            <div class="state-title">انتهت جلسة تسجيل الدخول</div>
+            <div class="state-description">
+              لحماية خصوصية وأمان بياناتك، يرجى إعادة تسجيل الدخول لمتابعة حجوزاتك الحالية.
+            </div>
+            <button class="btn-primary" style="margin-top:8px;">تسجيل الدخول مجددًا</button>
+          </div>
+        </div>
+        ${renderCustomerNav('bookings')}
+      `;
+    }
+
+    function getCustomerBookingsPending() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">حجوزاتي</div>
+        </div>
+        <div class="screen-content">
+          <div style="font-size:calc(13px * var(--scale-factor)); color:var(--text-secondary); font-weight:700;">
+            الطلبات الحالية
+          </div>
+
+          <div class="struct-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="status-badge neutral-process">بانتظار موافقة المالك</span>
+              <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700; color:var(--text-muted); font-family:monospace;" dir="ltr">BK-908747</span>
+            </div>
+
+            <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">شاليه فاخر بإطلالة مباشرة على اللاجون</div>
+            <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary);">15 يوليو 2026 — 18 يوليو 2026 (3 ليالٍ)</div>
+
+            <div style="background:var(--bg-surface-subtle); border-radius:8px; padding:10px; font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary); line-height:1.5;">
+              طلبك وصل للمالك وسيتم إشعارك فور الرد. لا يتم سداد أي مبالغ قبل موافقة المالك.
+            </div>
+          </div>
+        </div>
+        ${renderCustomerNav('bookings')}
+      `;
+    }
+
+    function getCustomerBookingsApproved() {
+      if (currentCandidate === 'cand-a') {
+        // Candidate A: Badge-Centric (Chip soup / multiple pills with truthful facts)
+        return `
+          <div class="app-bar">
+            <div class="bar-title">حجوزاتي (مرشح A)</div>
+          </div>
+          <div class="screen-content">
+            <div style="font-size:calc(13px * var(--scale-factor)); color:var(--text-secondary); font-weight:700;">
+              يحتاج إجراء منك
+            </div>
+            <div class="struct-card">
+              <div class="candidate-badge-row">
+                <span class="status-badge action-required">موافقة المالك</span>
+                <span class="status-badge info">سداد العربون مطلوب</span>
+                <span class="status-badge muted">لتأكيد الحجز</span>
+                <span class="status-badge muted" dir="ltr">BK-183223</span>
+              </div>
+              <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">فيلا خاصة بحمام سباحة — مارينا 5</div>
+              <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary);">20 أغسطس 2026 — 25 أغسطس 2026</div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
+                <span style="font-size:calc(13px * var(--scale-factor)); font-weight:600;">عربون الليلة الأولى:</span>
+                <span style="font-size:calc(17px * var(--scale-factor)); font-weight:700; color:var(--text-main);">1,600 ج.م</span>
+              </div>
+              <div class="card-action-bar" style="display:flex; gap:10px; margin-top:6px;">
+                <button class="btn-primary" style="flex:1;">متابعة إلى الدفع</button>
+              </div>
+            </div>
+          </div>
+          ${renderCustomerNav('bookings', true)}
+        `;
+      } else if (currentCandidate === 'cand-b') {
+        // Candidate B: Message-Centric (Neutral boxed banner testing containment without false warnings)
+        return `
+          <div class="app-bar">
+            <div class="bar-title">حجوزاتي (مرشح B)</div>
+          </div>
+          <div class="screen-content">
+            <div style="font-size:calc(13px * var(--scale-factor)); color:var(--text-secondary); font-weight:700;">
+              يحتاج إجراء منك
+            </div>
+            <div class="struct-card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700; color:var(--text-muted); font-family:monospace;" dir="ltr">BK-183223</span>
+              </div>
+              <div class="candidate-box-banner">
+                <strong style="color:#0F172A; display:block; margin-bottom:4px;">إجراء مطلوب: تمت موافقة المالك على طلبك</strong>
+                <p style="font-size:calc(12px * var(--scale-factor)); color:#475569; line-height:1.4;">
+                  تمت مراجعة الطلب والموافقة عليه بنجاح. سداد عربون الليلة الأولى مطلوب لتأكيد الحجز.
+                </p>
+              </div>
+              <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">فيلا خاصة بحمام سباحة — مارينا 5</div>
+              <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary);">20 أغسطس 2026 — 25 أغسطس 2026</div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
+                <span style="font-size:calc(13px * var(--scale-factor)); font-weight:600;">عربون الليلة الأولى:</span>
+                <span style="font-size:calc(17px * var(--scale-factor)); font-weight:700; color:var(--text-main);">1,600 ج.م</span>
+              </div>
+              <div class="card-action-bar" style="display:flex; gap:10px; margin-top:6px;">
+                <button class="btn-primary" style="flex:1;">متابعة إلى الدفع</button>
+              </div>
+            </div>
+          </div>
+          ${renderCustomerNav('bookings', true)}
+        `;
+      }
+
+      // Candidate C: Role-Aware Layered (Clean, disciplined)
+      return `
+        <div class="app-bar">
+          <div class="bar-title">حجوزاتي</div>
+        </div>
+        <div class="screen-content">
+          <div style="font-size:calc(13px * var(--scale-factor)); color:var(--text-secondary); font-weight:700;">
+            يحتاج إجراء منك
+          </div>
+
+          <div class="struct-card" style="border-color:#0F172A; border-width:1.5px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+              <span class="status-badge action-required">تمت الموافقة — سداد العربون مطلوب</span>
+              <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700; color:var(--text-muted); font-family:monospace;" dir="ltr">BK-183223</span>
+            </div>
+
+            <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">فيلا خاصة بحمام سباحة — مارينا 5</div>
+            <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary);">20 أغسطس 2026 — 25 أغسطس 2026</div>
+            <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary); margin-top:2px;">سدّد العربون لتأكيد الحجز.</div>
+
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
+              <span style="font-size:calc(13px * var(--scale-factor)); font-weight:600;">عربون الليلة الأولى:</span>
+              <span style="font-size:calc(17px * var(--scale-factor)); font-weight:700; color:var(--text-main);">1,600 ج.م</span>
+            </div>
+
+            <div class="card-action-bar" style="display:flex; gap:10px; margin-top:6px;">
+              <button class="btn-primary" style="flex:1;">متابعة إلى الدفع</button>
+            </div>
+          </div>
+        </div>
+        ${renderCustomerNav('bookings', true)}
+      `;
+    }
+
+    function getCustomerBookingsConfirmed() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">حجوزاتي</div>
+        </div>
+        <div class="screen-content">
+          <div style="font-size:calc(13px * var(--scale-factor)); color:var(--text-secondary); font-weight:700;">
+            الإقامات المؤكدة
+          </div>
+
+          <div class="struct-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="status-badge success">حجز مؤكد</span>
+              <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700; color:var(--text-muted); font-family:monospace;" dir="ltr">BK-442190</span>
+            </div>
+
+            <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">شقة مصيفية فاخرة — سيدي حنيش</div>
+            <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary);">10 سبتمبر 2026 — 14 سبتمبر 2026</div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-divider); padding-top:10px;">
+              <span style="font-size:calc(12px * var(--scale-factor)); color:var(--status-success); font-weight:700;">تم سداد العربون وتثبيت الموعد</span>
+              <button class="btn-secondary" style="min-height:36px; padding:4px 12px; font-size:calc(12px * var(--scale-factor));">تفاصيل الإقامة</button>
+            </div>
+          </div>
+        </div>
+        ${renderCustomerNav('bookings')}
+      `;
+    }
+
+    function getCustomerBookingConflict() {
+      return `
+        <div class="app-bar">
+          <button class="icon-btn">➔</button>
+          <div class="bar-title">مراجعة طلب الحجز</div>
+          <div style="width:36px;"></div>
+        </div>
+        <div class="screen-content">
+          <!-- Conflict Alert Notice -->
+          <div class="section-alert conflict-alert">
+            <span style="font-size:20px;">⚠️</span>
+            <div style="flex:1;">
+              <strong>تم تحديث سعر الإقامة من قبل المالك</strong><br>
+              السعر المعروض سابقاً لم يعد متاحاً. يرجى مراجعة القيمة الجديدة قبل إرسال الطلب.
+            </div>
+          </div>
+
+          <div class="struct-card">
+            <div style="font-size:calc(14px * var(--scale-factor)); font-weight:700;">تفاصيل الحسبة المحدثة</div>
+
+            <div style="display:flex; justify-content:space-between; font-size:calc(13px * var(--scale-factor)); color:var(--text-muted);">
+              <span>السعر السابق:</span>
+              <span style="text-decoration:line-through;">3,200 ج.م</span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; font-size:calc(14px * var(--scale-factor)); font-weight:700; color:var(--text-main);">
+              <span>السعر الجديد المؤكد:</span>
+              <span>3,500 ج.م</span>
+            </div>
+
+            <div style="border-top:1px solid var(--border-divider); padding-top:10px; display:flex; justify-content:space-between; align-items:baseline;">
+              <span style="font-size:calc(13px * var(--scale-factor)); font-weight:700;">عربون الليلة الأولى الجديد:</span>
+              <span style="font-size:calc(16px * var(--scale-factor)); font-weight:800; color:var(--accent-blue);">1,750 ج.م</span>
+            </div>
+          </div>
+
+          <div class="action-row" style="display:flex; gap:10px; margin-top:auto;">
+            <button class="btn-primary" style="flex:1;">موافق على السعر الجديد وإرسال الطلب</button>
+            <button class="btn-secondary">إلغاء والعودة</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function getCustomerBookingSubmitting() {
+      return `
+        <div class="app-bar">
+          <button class="icon-btn">➔</button>
+          <div class="bar-title">مراجعة طلب الحجز</div>
+          <div style="width:36px;"></div>
+        </div>
+        <div class="screen-content">
+          <div class="struct-card">
+            <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">ملخص الطلب</div>
+            <div style="font-size:calc(13px * var(--scale-factor)); color:var(--text-secondary);">3 ليالٍ • 6 ضيوف</div>
+            <div style="font-size:calc(15px * var(--scale-factor)); font-weight:800; margin-top:8px;">إجمالي الإقامة: 4,800 ج.م</div>
+          </div>
+
+          <!-- Sticky action bar with submitting state -->
+          <div style="margin-top:auto; padding-top:16px;">
+            <button class="btn-primary btn-disabled" style="width:100%;" disabled>
+              <span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span>
+              <span>جارٍ إرسال طلب الحجز إلى المالك...</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function getCustomerBookingSuccess() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">تأكيد الإرسال</div>
+        </div>
+        <div class="screen-content">
+          <div class="state-screen-box">
+            <div class="state-icon-circle success">✓</div>
+            <div class="state-title">تم إرسال طلب الحجز بنجاح</div>
+            <div class="state-description">
+              وصل طلبك للمالك وسيتم إشعارك فور اتخاذ قراره. عند الموافقة، ستتمكن من سداد العربون لتأكيد الحجز نهائياً.
+            </div>
+            <div style="font-size:calc(12px * var(--scale-factor)); font-weight:700; color:var(--text-muted); font-family:monospace; margin-top:4px;" dir="ltr">
+              رقم المرجع: BK-591023
+            </div>
+            <button class="btn-primary" style="margin-top:12px;">متابعة الطلب في حجوزاتي</button>
+          </div>
+        </div>
+        ${renderCustomerNav('bookings')}
+      `;
+    }
+
+    /* =========================================================================
+       TEMPLATE RENDERERS — OWNER
+       ========================================================================= */
+
+    function getOwnerHomeLoading() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">لوحة التحكم — المالك</div>
+          <div class="bar-actions">
+            <button class="icon-btn">🔔</button>
+          </div>
+        </div>
+        <div class="screen-content">
+          <div class="stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="struct-card"><div class="skeleton-box" style="height:48px;"></div></div>
+            <div class="struct-card"><div class="skeleton-box" style="height:48px;"></div></div>
+          </div>
+          <div class="struct-card">
+            <div class="skeleton-box" style="height:20px; width:40%;"></div>
+            <div class="skeleton-box" style="height:80px; width:100%;"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getOwnerHomeEmpty() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">لوحة التحكم — المالك</div>
+        </div>
+        <div class="screen-content">
+          <!-- Action Hub Top Grid -->
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; text-align:center;">
+            <div class="struct-card" style="padding:12px 8px; cursor:pointer;">
+              <span style="font-size:20px;">📋</span>
+              <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700;">الطلبات</span>
+            </div>
+            <div class="struct-card" style="padding:12px 8px; cursor:pointer;">
+              <span style="font-size:20px;">🏡</span>
+              <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700;">الوحدات</span>
+            </div>
+            <div class="struct-card" style="padding:12px 8px; cursor:pointer;">
+              <span style="font-size:20px;">💳</span>
+              <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700;">المحفظة</span>
+            </div>
+          </div>
+
+          <!-- Empty Queue Operational Card -->
+          <div class="struct-card" style="text-align:center; padding:28px 16px;">
+            <div class="state-icon-circle neutral" style="margin:0 auto 8px auto;">📅</div>
+            <div class="state-title">لا توجد طلبات تحتاج قرارك حالياً</div>
+            <div class="state-description" style="margin:0 auto;">
+              جميع طلبات الحجز السابقة تمت معالجتها. ستظهر هنا الطلبات الجديدة فور تقديمها من الضيوف.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getOwnerHomePartial() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">لوحة التحكم — المالك</div>
+        </div>
+        <div class="screen-content">
+          <!-- Successful Section: Bookings Queue -->
+          <div class="struct-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="status-badge action-required">طلب جديد</span>
+              <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700;" dir="ltr">BK-771902</span>
+            </div>
+            <div style="font-size:calc(14px * var(--scale-factor)); font-weight:700;">طلب حجز شاليه سيدي عبد الرحمن</div>
+            <div class="action-row" style="display:flex; gap:8px; margin-top:4px;">
+              <button class="btn-primary" style="flex:1;">قبول الطلب</button>
+              <button class="btn-danger-outline">رفض</button>
+            </div>
+          </div>
+
+          <!-- Failed Section: Wallet Summary (Partial failure; does not take down Home) -->
+          <div class="struct-card" style="border-color:var(--status-danger-border);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:calc(14px * var(--scale-factor)); font-weight:700;">ملخص المحفظة</span>
+              <span class="status-badge danger">تعذر التحديث</span>
+            </div>
+            <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary);">
+              لم نتمكن من جلب الأرصدة المالية المؤكدة من الخادم. لم تُعرض أي أرقام بديلة.
+            </div>
+            <button class="btn-secondary" style="min-height:36px; padding:4px 12px; font-size:calc(12px * var(--scale-factor)); width:fit-content;">
+              إعادة محاولة جلب المحفظة
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function getOwnerBookingsQueue() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">طلبات الحجز (1)</div>
+        </div>
+        <div class="screen-content">
+          <div class="struct-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="status-badge action-required">يحتاج قرارك</span>
+              <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700; color:var(--text-muted);" dir="ltr">BK-882310</span>
+            </div>
+
+            <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">أحمد محمد — 4 ضيوف</div>
+            <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary);">12 أغسطس — 15 أغسطس (3 ليالٍ)</div>
+
+            <div style="background:var(--bg-surface-subtle); padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:calc(12px * var(--scale-factor)); font-weight:600;">صافي مستحقاتك المتوقعة:</span>
+              <span style="font-size:calc(15px * var(--scale-factor)); font-weight:800;">3,840 ج.م</span>
+            </div>
+
+            <div class="card-action-bar" style="display:flex; gap:10px; margin-top:6px;">
+              <button class="btn-primary" style="flex:1;">الموافقة على الطلب</button>
+              <button class="btn-danger-outline">رفض الطلب</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getOwnerBookingsSubmitting() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">طلبات الحجز</div>
+        </div>
+        <div class="screen-content">
+          <div class="struct-card">
+            <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">طلب حجز أحمد محمد</div>
+            <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary);">3 ليالٍ • صافي 3,840 ج.م</div>
+
+            <div style="display:flex; gap:10px; margin-top:12px;">
+              <button class="btn-primary btn-disabled" style="width:100%;" disabled>
+                <span>جارٍ تسجيل القرار على الخادم...</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getOwnerPropertiesEmpty() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">الوحدات العقارية</div>
+        </div>
+        <div class="screen-content">
+          <div class="state-screen-box">
+            <div class="state-icon-circle neutral">🏡</div>
+            <div class="state-title">أضف أول وحدة لك على كونفرم</div>
+            <div class="state-description">
+              سجل وحدتك الساحلية وابدأ في استقبال طلبات الحجز المباشرة مع نظام حماية المؤجر وتأكيد العربون.
+            </div>
+            <button class="btn-primary" style="margin-top:8px;">إضافة وحدة جديدة</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function getOwnerPropertiesReview() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">الوحدات العقارية (1)</div>
+        </div>
+        <div class="screen-content">
+          <div class="struct-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <!-- Normal process: NOT warning/amber -->
+              <span class="status-badge neutral-process">قيد المراجعة</span>
+              <span style="font-size:calc(12px * var(--scale-factor)); color:var(--text-muted);">مقدمة منذ يومين</span>
+            </div>
+
+            <div style="font-size:calc(15px * var(--scale-factor)); font-weight:700;">شاليه فاخر قرية مراسي</div>
+            <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-secondary);">
+              الوحدة قيد تدقيق فريق كونفرم للتأكد من اكتمال البيانات والصور. ستصلك رسالة فور الاعتماد.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getOwnerWalletLoaded() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">المحفظة والأرباح</div>
+        </div>
+        <div class="screen-content">
+          <!-- Available Balance Card -->
+          <div class="struct-card" style="border-color:#059669; background:#F0FDF4;">
+            <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700; color:#065F46;">الرصيد المتاح للسحب</span>
+            <div style="font-size:calc(24px * var(--scale-factor)); font-weight:800; color:#065F46;">2,400 ج.م</div>
+            <div style="font-size:calc(11px * var(--scale-factor)); color:#047857;">متاح لطلب السحب (الحد الأدنى 500 ج.م)</div>
+          </div>
+
+          <!-- Pending Balance Card (24h Canon Rule) -->
+          <div class="struct-card" style="border-color:#CBD5E1; background:#F8FAFC;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700; color:#334155;">الرصيد المعلق</span>
+              <span class="status-badge neutral-process">غير مؤهل للسحب حالياً</span>
+            </div>
+            <div style="font-size:calc(20px * var(--scale-factor)); font-weight:800; color:#0F172A;">4,800 ج.م</div>
+            <div style="font-size:calc(11px * var(--scale-factor)); color:#64748B; line-height:1.4;">
+              عربون إلكتروني معلق لحجوزات قائمة. يتحول إلى رصيد متاح تلقائياً بعد مرور 24 ساعة من موعد تسجيل دخول الضيف.
+            </div>
+          </div>
+
+          <button class="btn-primary" style="margin-top:auto;">طلب سحب الأرباح المتاحة</button>
+        </div>
+      `;
+    }
+
+    function getOwnerWalletError() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">المحفظة والأرباح</div>
+        </div>
+        <div class="screen-content">
+          <div class="state-screen-box" style="border-color:var(--status-danger-border);">
+            <div class="state-icon-circle danger">⚠️</div>
+            <div class="state-title">تعذر تحميل بيانات المحفظة</div>
+            <div class="state-description">
+              حدث خطأ أثناء الاتصال بسجل العمليات المالية. لحماية الدقة المحاسبية، لم تُعرض أي أرقام تقريبية.
+            </div>
+            <button class="btn-primary" style="margin-top:8px;">إعادة محاولة جلب البيانات</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function getOwnerWalletDisabled() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">المحفظة والأرباح</div>
+        </div>
+        <div class="screen-content">
+          <div class="struct-card">
+            <span style="font-size:calc(12px * var(--scale-factor)); font-weight:700; color:var(--text-muted);">الرصيد المتاح للسحب</span>
+            <div style="font-size:calc(22px * var(--scale-factor)); font-weight:800;">320 ج.م</div>
+          </div>
+
+          <div style="margin-top:auto; display:flex; flex-direction:column; gap:8px;">
+            <button class="btn-primary btn-disabled" disabled>طلب سحب الأرباح</button>
+            <div style="font-size:calc(12px * var(--scale-factor)); color:var(--text-muted); text-align:center;">
+              الزر غير نشط لأن الرصيد المتاح أقل من الحد الأدنى للسحب (500 ج.م).
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       TEMPLATE RENDERERS — ADMIN (Desktop Web 1280 / 1440)
+       ========================================================================= */
+
+    function getAdminOverviewLoading() {
+      return `
+        <div class="app-bar" style="background:#0F172A; color:#FFFFFF; border-bottom:1px solid #1E293B;">
+          <div class="bar-title" style="color:#FFFFFF;">لوحة الإشراف التشغيلي — كونفرم</div>
+        </div>
+        <div class="screen-content" style="max-width:1400px; margin:0 auto; width:100%;">
+          <div style="font-size:calc(14px * var(--scale-factor)); font-weight:700; color:#FFFFFF; margin-bottom:12px;">
+            جارٍ التحقق من المؤشرات التشغيلية...
+          </div>
+          <div class="stats-grid" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px;">
+            ${[1, 2, 3, 4].map(() => `
+              <div class="struct-card" style="background:#1E293B; border-color:#334155;">
+                <div class="skeleton-box" style="height:14px; width:60%; background:#334155;"></div>
+                <div class="skeleton-box" style="height:32px; width:40%; background:#475569; margin-top:8px;"></div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function getAdminOverviewError() {
+      return `
+        <div class="app-bar" style="background:#0F172A; color:#FFFFFF; border-bottom:1px solid #1E293B;">
+          <div class="bar-title" style="color:#FFFFFF;">لوحة الإشراف التشغيلي — كونفرم</div>
+        </div>
+        <div class="screen-content" style="max-width:1400px; margin:0 auto; width:100%;">
+          <!-- Fixed Defect A-02: Truthful Error without fake 0 metrics -->
+          <div class="state-screen-box" style="background:#1E293B; border-color:var(--status-danger-border); max-width:600px; margin:40px auto;">
+            <div class="state-icon-circle danger">⚠️</div>
+            <div class="state-title" style="color:#FFFFFF;">تعذر تحميل المؤشرات التشغيلية</div>
+            <div class="state-description" style="color:#94A3B8;">
+              لم يتم استلام بيانات موثوقة للنظرة العامة من الخادم. التزاماً بقواعد الصدق التشغيلي، لم تُعرض أي أرقام بديلة أو مؤشرات صفرية زائفة.
+            </div>
+            <button class="btn-primary" style="margin-top:12px;">إعادة المحاولة</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function getAdminQueueEmpty() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">قائمة مراجعة وتدقيق الوحدات</div>
+        </div>
+        <div class="screen-content" style="max-width:1400px; margin:0 auto; width:100%;">
+          <div class="state-screen-box" style="padding:48px 24px;">
+            <div class="state-icon-circle success">✓</div>
+            <div class="state-title">قائمة المراجعة مكتملة بالكامل</div>
+            <div class="state-description">
+              تمت مراجعة جميع الوحدات المقدمة من الملاك حتى الآن. لا توجد أي عناصر معلقة في طابور التدقيق.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getAdminQueueError() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">قائمة مراجعة وتدقيق الوحدات</div>
+        </div>
+        <div class="screen-content" style="max-width:1400px; margin:0 auto; width:100%;">
+          <div class="state-screen-box" style="border-color:var(--status-danger-border); padding:48px 24px;">
+            <div class="state-icon-circle danger">⚠️</div>
+            <div class="state-title">تعذر جلب قائمة مراجعة الوحدات</div>
+            <div class="state-description">
+              فشل استعلام قاعدة البيانات لقائمة المراجعة. لم يتم تفريغ الجدول أو اعتبار الطابور خالياً بشكل خاطئ.
+            </div>
+            <button class="btn-primary" style="margin-top:12px;">إعادة الاستعلام</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function getAdminQueueLoaded() {
+      return `
+        <div class="app-bar">
+          <div class="bar-title">قائمة مراجعة وتدقيق الوحدات (2 معلقة)</div>
+        </div>
+        <div class="screen-content" style="max-width:1400px; margin:0 auto; width:100%;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th class="table-cell">معرف الوحدة</th>
+                <th class="table-cell">اسم العقار</th>
+                <th class="table-cell">المالك</th>
+                <th class="table-cell">تاريخ التقديم</th>
+                <th class="table-cell">الحالة</th>
+                <th class="table-cell">الإجراء</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="table-cell" style="font-family:monospace;" dir="ltr">PR-992705</td>
+                <td class="table-cell"><strong>فيلا المرجان الشاطئية</strong></td>
+                <td class="table-cell">محمود السيد</td>
+                <td class="table-cell">04 أكتوبر 2026</td>
+                <td class="table-cell"><span class="status-badge neutral-process">قيد المراجعة</span></td>
+                <td class="table-cell"><button class="btn-primary" style="min-height:32px; padding:4px 10px; font-size:calc(12px * var(--scale-factor));">فتح للمعاينة والقرار</button></td>
+              </tr>
+              <tr>
+                <td class="table-cell" style="font-family:monospace;" dir="ltr">PR-331084</td>
+                <td class="table-cell"><strong>شاليه أمواج الساحلي</strong></td>
+                <td class="table-cell">سارة عادل</td>
+                <td class="table-cell">05 أكتوبر 2026</td>
+                <td class="table-cell"><span class="status-badge neutral-process">قيد المراجعة</span></td>
+                <td class="table-cell"><button class="btn-primary" style="min-height:32px; padding:4px 10px; font-size:calc(12px * var(--scale-factor));">فتح للمعاينة والقرار</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function getAdminSessionExpired() {
+      return `
+        <div class="app-bar" style="background:#0F172A; color:#FFFFFF;">
+          <div class="bar-title" style="color:#FFFFFF;">بوابة الإدارة المركزية</div>
+        </div>
+        <div class="screen-content" style="max-width:600px; margin:60px auto; width:100%;">
+          <div class="state-screen-box" style="border-color:#334155; background:#0F172A; color:#FFFFFF;">
+            <div class="state-icon-circle danger">🔒</div>
+            <div class="state-title" style="color:#FFFFFF;">انتهت صلاحية جلسة المشرف</div>
+            <div class="state-description" style="color:#94A3B8;">
+              تم إغلاق الجلسة لأسباب أمنية. يرجى إعادة تسجيل الدخول لمتابعة المهام الإشرافية.
+            </div>
+            <button class="btn-primary" style="background:var(--accent-blue); margin-top:12px;">تسجيل الدخول إلى لوحة الإدارة</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

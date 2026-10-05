@@ -1,5 +1,26 @@
 # KONFRM Design System Changelog
 
+## 2.1.12 — 2026-10-05
+
+### Phase 4H Component Contract & Reference Catalog governance synchronization
+
+- Completed full Component Contract reconciliation and Reference Catalog across 24 component families, formalizing consumable contracts for Customer, Owner, and Admin.
+- Reconciled core component boundaries:
+  - `forms.md` vs `inputs.md` split: `inputs.md` is the single authority for field-shaped primitives (`InputField`, `PhoneField`, `NumericField`, `SearchField`, `Textarea`, `SelectTrigger`, `Checkbox`); `forms.md` governs form composition, error orchestration, dirty state tracking, and submission mutex.
+  - `ConfirmationDialog` vs `DesktopModal`: Centered 12px `ConfirmationDialog` governs mobile high-consequence and destructive confirmations; `DesktopModal` governs Admin desktop web audit panels and tabular modals.
+  - Selection primitives: Checkbox is Owner-evidenced; Toggle is explicitly `DEFERRED_TO_LATER_PRODUCT_PHASE`.
+- Master Component State Matrix: Formalized 14 canonical lifecycle states across 22 component families in `DESIGN_SYSTEM/PILOTS/component-contract-catalog-01/COMPONENT_CONTRACT_MATRIX.md`.
+- Open Values Register: Established `DESIGN_SYSTEM/PILOTS/component-contract-catalog-01/OPEN_VALUES_REGISTER.md` rigorously classifying parameters into Governed Invariants, Founder-Selected Provisional, System-Evaluated Provisional, Open Candidates, and Deferred to Phase 4I.
+- Interactive Reference Catalog: Created Arabic RTL reference catalog at `DESIGN_SYSTEM/PILOTS/component-contract-catalog-01/index.html` with Cairo typography, multi-role views (Customer 390px, Owner 390px, Admin 1440px), overlays, and verified 200% reflow proof. Captured 6 required evidence screenshots in `evidence/` with matching `EVIDENCE_MANIFEST.md`.
+- Shared Component Authority Formalized: Updated `DESIGN_SYSTEM/COMPONENTS/` (`buttons.md`, `inputs.md`, `forms.md`, `cards.md`, `bottom-sheets.md`, `modals.md`, `navigation.md`, `states.md`, `alerts.md`, `badges.md`) to standard contract schema.
+- Mobile Design Foundation updated to DF2 v1.7 (`DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md`).
+- Strict Boundaries Maintained:
+  - Token JSON frozen (no edits to `DESIGN_SYSTEM/TOKENS/*.json`).
+  - Production apps untouched (`customer-app/`, `owner-app/`, `admin-app/`).
+  - Backend/database/API contracts untouched.
+  - Flutter workspace not initialized; Native component implementation strictly `DEFERRED_TO_4I`.
+  - Phase 4I status remains strictly `NOT_STARTED`.
+
 ## 2.1.11 — 2026-10-05
 
 ### Phase 4G Content & State Presentation System governance synchronization

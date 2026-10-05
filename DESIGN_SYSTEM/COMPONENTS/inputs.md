@@ -1,49 +1,115 @@
-# Input, Textarea, Select and Search
+# Field Primitives & Selection Controls Contract
 
-## Current Web Authority
+> [!NOTE]
+> **Component Maturity & Scope Disclaimer:** This specification defines shared component contracts across KONFRM's three roles (Customer, Owner, Admin). Web implementations (React 19 / TypeScript) serve as the current running baseline (`CONTROLLED_WEB_PILOT_REFERENCE`). Native mobile specifications establish contract boundaries for the future Flutter target (`PHASE_4I_TARGET`). Exact native mobile layout parameters and styling details are explicitly governed in Phase 4I.
 
-Web controls use `surface.primary`, `border.default`, `radius.control`, Cairo `label/body` roles and a 44px minimum touch target.
+- **Governance Status:** `CANONICAL COMPONENT CONTRACT — PHASE 4H`
+- **Phase Integration:** Phase 4H Component Contract & Reference Catalog
+- **Authority Boundary:** `inputs.md` governs **individual field controls** (`InputField`, `PhoneField`, `NumericField`, `SearchField`, `Textarea`, `SelectTrigger`, `Checkbox`). Multi-field composition, submission mutex, and layout spacing are governed by `forms.md`.
+- **Native Mobile Status:** `Native Component & Accessibility Acceptance: DEFERRED TO PHASE 4I`
 
-- **Input:** label, value, helper text and field-associated error are separate semantic elements.
-- **Textarea:** same contract; grows vertically without removing the label or error association.
-- **Select:** exposes current choice and keyboard focus; no custom visual variant per screen.
-- **Search:** is an Input with a labelled search affordance and clear action when content exists.
+---
 
-States are default, hover where appropriate, focus, filled, disabled, read-only, validation error and loading. Error uses text/icon plus semantic color; colour alone is insufficient. Direction-sensitive phone, ID and numeric input follows the RTL guideline.
+## 1. Component Family Scope
 
-## Mobile Phase 4D Provisional Direction
+This contract governs 7 distinct data-entry and selection primitives:
+1. `InputField`: Standard single-line textual entry.
+2. `PhoneField`: Localized phone input with country prefix and strict LTR number isolation.
+3. `NumericField`: Monetary and count input with tabular formatting and Western Arabic digits (`0–9`).
+4. `SearchField`: Discoverability field with leading search icon and trailing clear affordance.
+5. `Textarea`: Multiline expanding text input for descriptions and notes.
+6. `SelectTrigger`: Field-shaped trigger opening a governed BottomSheet picker.
+7. `Checkbox`: Binary selection primitive evidenced in Owner preferences.
+*(Toggle / Switch is explicitly `DEFERRED_TO_LATER_PRODUCT_PHASE` due to zero current canonical product evidence).*
 
-Governed by Phase 4D discovery and controlled visual evaluation across Customer and Owner mobile products (Admin remains Web operational):
+---
 
-- **Field Visual Strategy:** **Outline-Led Field Baseline** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). Standalone fields utilize a white field surface with a thin neutral outline, providing clear edge definition on light surfaces without relying on floating labels. Exact neutral palette hex values and native stroke widths remain `OPEN / IMPLEMENTATION CANDIDATE` (the Web pilot `1px` rendering reference does not constitute a final native stroke token).
-- **Mobile Field Radius:** **8px** (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`). Applies strictly to mobile field-shaped Form & Selection primitives: text input, phone field container, email field container, numeric/currency field container, search field container, multiline textarea, and select/picker trigger when rendered as a field-shaped control.
-  - *Boundary:* Does **not** apply to Primary Button (which retains 6px `PRIMARY_ONLY` provisional radius), secondary buttons, icon buttons, checkboxes, toggles, chips, segmented controls, steppers, cards, rows, sheets, dialogs, overlays, or global container shapes.
-  - *Semantic Differentiation:* Action / Primary Button = 6px; Data Entry / Field-Shaped Control = 8px. This is deliberate semantic differentiation.
-- **Typography Role Inheritance:** Fields inherit Cairo Profile B (`SYSTEM-VALIDATED PROVISIONAL`):
-  - Field label: `label` role (`12 / 600 / 1.35`).
-  - Helper & error copy: `supporting` role (`12 / 400 / 1.40`).
-  - Field input value: `body` role (`14 / 500 / 1.50`).
-  - Strong input value / active state: `bodyStrong` role (`14 / 700 / 1.50`).
-  - Numeric / monetary value: `numeric` role (`16 / 700 / 1.30`).
-  - No new typography tokens are invented.
-- **Label / Helper / Error Semantic Contract:**
-  - *Label:* Explicit, persistent top label positioned above the field container. Floating labels are **not selected** for this mobile direction due to Arabic descender clipping, translation expansion risks, and the requirement for persistent context.
-  - *Helper:* Separate supporting copy positioned adjacent to the control, explaining user-relevant context or consequence.
-  - *Error:* Field-associated textual error (adjacent to the field container, text-associated, announced to assistive technology, never color-only).
-- **RTL / Bidi Contract:**
-  - Arabic UI is RTL with semantic start/end alignment.
-  - Phone numbers and email addresses are LTR-isolated runs within RTL context.
-  - Numeric/financial inputs use Western Arabic digits (`0–9`).
-  - Customer-facing monetary display retains canonical `1,600 ج.م` format with tabular numeral intent.
-  - Search: search affordance at visual start (RTL right) and clear action (`×`) at visual end (RTL left) when content exists.
-- **Focus Semantic Direction:** **Semantic Restrained Interaction-Accent Emphasis** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). Obvious focus feedback without competing visually with the Stable Black Primary action button. Web pilot values (`#276EF1`, 1px accent field border + 3px outer halo) are rendering references only; exact native focus treatment remains `OPEN / DEFERRED TO PHASE 4I`.
-- **Select / Picker Primitive Boundary:**
-  - Phase 4D owns: field label, placeholder / empty value, selected value presentation, trigger affordance, disabled/error state, field semantics, and RTL alignment.
-  - Phase 4D does **not** define: bottom-sheet containers, dialog containers, overlay architecture, or container navigation (Phase 4F scope). Pilot overlays are `PILOT COMPOSITION ONLY / PHASE 4F AUTHORITY DEFERRED`.
-- **Selection Controls:**
-  - *Checkbox:* `OWNER PRODUCT-EVIDENCED CONTROL` (grounded in Owner notification/preference settings). Customer flows have zero terms-checkbox bureaucracy.
-  - *Toggle / Switch:* `DEFERRED / FUTURE BOUNDED CONTROL` (zero current canonical product evidence; no switch migration is manufactured).
-- **Touch Target & Platform Boundary:**
-  - Platform-appropriate accessible target sizing: iOS guidance is **44pt**, Android guidance is **48dp**.
-  - Visible field geometry is decoupled from interactive touch target bounds. No universal raw pixel dimension (e.g. 44px or 48px) is canonized as a native mobile rule.
-  - Controlled Web frame-width evidence (360px, 390px, 430px) represents Web simulation reference only. Native Flutter component and accessibility acceptance is strictly `DEFERRED TO PHASE 4I`.
+## 2. Shared Visual Strategy & Geometry
+
+- **Visual Baseline:** **Outline-Led Field Baseline** (`SYSTEM-VALIDATED PROVISIONAL SEMANTIC DIRECTION`). White field surface with a thin neutral perimeter outline (`#8E8E93` Web rendering reference).
+- **Mobile Field Radius:** **`8px`** (`FOUNDER-SELECTED PROVISIONAL FIELD_ONLY`). Applies strictly to mobile field-shaped controls. Does NOT apply to Primary Button (6px), cards, sheets, or dialogs.
+- **Field Height Baseline:**
+  - `WEB_FIELD_GEOMETRY_REFERENCE`: 48px controlled pilot reference.
+  - `NATIVE_FIELD_HEIGHT`: `OPEN / DEFERRED_TO_4I` (evaluated against platform typography and hit bounds; no invented numeric range).
+- **Top Label Hierarchy:** Explicit, persistent top label positioned above the field. **Floating labels are strictly PROHIBITED** to prevent Arabic font descender clipping and lost context.
+- **Helper & Error Hierarchy:** Positioned adjacent to and beneath the field. Helper copy clarifies business context; error copy explains the exact failure reason in plain Arabic. Errors are never color-only.
+
+---
+
+## 3. Typography & Role Inheritance (Cairo Profile B)
+
+Fields inherit Cairo Profile B roles without inventing new tokens:
+- **Field Label:** `label` role (`12 / 600 / 1.35`).
+- **Input Value:** `body` role (`14 / 500 / 1.50`).
+- **Active / Strong Value:** `bodyStrong` role (`14 / 700 / 1.50`).
+- **Helper & Error Copy:** `supporting` role (`12 / 400 / 1.40`).
+- **Numeric / Currency Value:** `numeric` role (`16 / 700 / 1.30`).
+
+---
+
+## 4. Interaction States
+
+> [!IMPORTANT]
+> **State Semantic Separation:** Form fields evaluate interaction states (`UNFILLED / NO_VALUE`, `FILLED`, `FOCUSED`, `ERROR`, `DISABLED`, `READ_ONLY`). They do **not** use the Phase 4G view-level `EMPTY` state. In Phase 4G, `EMPTY` applies strictly to data collections and views (e.g. zero search results, empty queue); an unpopulated field is simply `UNFILLED / NO_VALUE`.
+
+| Field State | Visual Presentation | Accessible Announcement |
+|---|---|---|
+| **Unfilled / No Value** | White surface, neutral outline, placeholder text. | Field role + accessible label announced. |
+| **Focused** | Restrained interaction-accent emphasis (candidate `#276EF1` border + subtle halo). | Active editing mode exposed. |
+| **Filled** | Text displayed in `body` or `numeric` role; clear action visible if applicable. | Current value exposed to screen reader. |
+| **Error** | Red perimeter border (`#DC2626` reference) + adjacent Arabic error text. | `aria-invalid="true"` / `Semantics(hasError)`; error message read aloud. |
+| **Disabled** | Muted surface (`#F1F5F9`), muted border, non-interactive cursor. | `aria-disabled="true"`; explanation copy provided where useful. |
+| **Read-Only** | Natural surface, clean border, text selectable but uneditable. | `aria-readonly="true"`. |
+
+---
+
+## 5. Primitive-Specific Contracts
+
+### 5.1 PhoneField (Auth V2 & Contact)
+- Direction: Container is RTL; phone number run is strictly **LTR-isolated** (`dir="ltr"`, `unicode-bidi: isolate`).
+- Formatting: Egyptian format `+20 100 123 4567` or `010 0123 4567`.
+- Validation: Exactly 11 digits for Egyptian mobile numbers.
+
+### 5.2 NumericField (Pricing & Guest Counts)
+- Digits: Strictly Western Arabic numerals (`0–9`).
+- Currency Suffix: Accompanied by canonical Egyptian currency unit (`ج.م`).
+- Thousand Separator: Comma separator (e.g. `1,600 ج.م`).
+
+### 5.3 SearchField (Explore & Queues)
+- Leading Slot (Visual Right): Non-directional search icon (`Search`).
+- Trailing Slot (Visual Left): Clear action (`X` icon button, minimum platform target) appears when query is non-empty.
+- Live Behavior: Debounced search query; submit on keyboard search action. Composes with view-level `EMPTY` state when zero search results are returned.
+
+### 5.4 Checkbox (Owner Preferences)
+- Target Bounds: Minimum 44pt (iOS) / 48dp (Android) interactive tap bounding box; Web pilot min 48px CSS.
+- Geometry & Styling: 20×20px box, 4px corner radius, monochrome-first black fill when checked (`WEB_REFERENCE_ONLY / OPEN / DEFERRED_TO_4I`).
+- Invariant: `SELECTED != SUCCESS` (Checking a box indicates preference selection, not transaction success).
+
+---
+
+## 6. Accessibility & Touch Discipline
+
+### 6.1 Platform-Agnostic Intent
+- **Visible Labeling:** Every field must provide a persistent visual label linked to the input control.
+- **Non-Color Error Communication:** Errors must include unambiguous written Arabic explanation copy; red outlines alone are insufficient.
+- **Target Bounds Separation:** Visual box size is decoupled from interactive tap hit testing to satisfy platform accessibility minimums without inflating visual field density.
+
+### 6.2 Current Web Mapping (`CONTROLLED_WEB_PILOT_REFERENCE`)
+- Explicit `<label for="...">` association.
+- Error association via `aria-describedby` pointing to error message container.
+- Invalid state indicated via `aria-invalid="true"`.
+- Keyboard accessible via sequential Tab order; Enter submits single-line inputs or activates Search.
+
+### 6.3 Future Native Mobile Acceptance (`DEFERRED_TO_PHASE_4I`)
+- Native input semantics (`Semantics(textField: true, label: ...)`).
+- Platform-native virtual keyboard invocation with appropriate input types (`TextInputType.phone`, `TextInputType.number`).
+- Traversal order verified under iOS VoiceOver and Android TalkBack.
+
+---
+
+## 7. Values Classification
+
+- **Founder-Selected Provisional:** Mobile Field Radius `8px` (`FIELD_ONLY`).
+- **System-Validated Provisional:** Outline-Led strategy, Cairo Profile B typography, Restrained interaction-accent focus emphasis.
+- **Open Values:** Exact neutral outline hex (`#8E8E93` reference), exact focus halo geometry, native field height (`DEFERRED_TO_4I`), exact Checkbox geometry and stroke width (`DEFERRED_TO_4I`).
+- **Deferred to Later Phase:** Toggle / Switch primitive (`DEFERRED_TO_LATER_PRODUCT_PHASE`).

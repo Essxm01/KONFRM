@@ -1,51 +1,57 @@
-# Active Task — PHASE_4E_STRUCTURAL_SYSTEM
+# Active Task — PHASE_4F_NAVIGATION_OVERLAY_SYSTEM
 
-TASK_ID: PHASE_4E_STRUCTURAL_SYSTEM
+TASK_ID: PHASE_4F_NAVIGATION_OVERLAY_SYSTEM
 TASK_CLASS: DESIGN_SYSTEM_FOUNDATION_PHASE
 STATUS: READY_FOR_PUBLICATION
-FOUNDER_AUTHORIZATION: APPROVED (Option C — Role-Aware Hybrid Structural System)
-BASE_MAIN_SHA: 674194e675731985b347d241d046f6acc48cf785
-BRANCH: design/structural-system-pilot-01
-PR_STATUS: PR #95 (PENDING_FOUNDER_MERGE_AUTHORIZATION)
-SCOPE: Phase 4E Structural System — Discovery, product evidence, realistic visual pilot, candidate structural systems, multi-viewport stress testing, Design Court v1 deliberation, self-correction, Founder decision formalization, and publication PR preparation. Owns spacing scale, content insets, vertical rhythm, section separation, open grouped content, cards, interactive rows, borders, dividers, surface hierarchy, shape roles, and elevation/shadow relationships across Customer, Owner, and Admin boundary.
+EXECUTION_STARTED: YES
+BASE_MAIN_SHA: ff4ac0b4322b8a7c50273dd7a459a93dcf090551
+BRANCH: design/navigation-overlay-pilot-01
+SCOPE: Phase 4F Navigation & Overlay System — Discovery, authority reconciliation, role navigation architecture, app bar / back / close grammar, bottom navigation, nested navigation, bottom sheets, dialogs, sticky action surfaces, safe-area behavior, visual pilot, stress testing, Design Court v1 deliberation, self-correction, Founder decision gate preparation if material.
 
 ## Boundaries
-- Does NOT start Phase 4F (Navigation & Surface System: app bars, bottom navigation, nested navigation, dialogs, bottom sheets, overlay architecture, sticky action architecture belong strictly to 4F).
+- Does NOT start Phase 4G (Content & State Presentation).
 - Does NOT modify production applications (`customer-app/`, `owner-app/`, `admin-app/`).
 - Does NOT modify token files (`DESIGN_SYSTEM/TOKENS/*.json`) or backend/database/API contracts.
-- Does NOT merge publication PR without explicit Founder merge authorization.
-- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D).
+- Does NOT initialize Flutter workspace.
+- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E).
+- Hard architecture locks: Customer 4 top-level destinations (Explore, Favorites, Bookings, Account; Screen 16 Notification Center as governed Account shell child exception per Master Rule MR-17); Owner dashboard-style nested routing WITHOUT bottom navigation; Auth V2 sequential full-screen route flow (08 -> 09 -> 10); Admin desktop web table/audit workspace.
 
 ## Closure Gates
-- [x] Structural discovery documented (`STRUCTURAL_DISCOVERY.md`).
-- [x] Multi-role visual pilot implemented (`DESIGN_SYSTEM/PILOTS/structural-system-pilot-01/`).
-- [x] Multi-viewport visual evidence captured and inspected (360px, 390px, 430px, 200% text scale, Admin desktop, and 6 radius comparison PNGs).
+- [x] Navigation & overlay discovery documented (`NAVIGATION_OVERLAY_DISCOVERY.md`).
+- [x] Route-surface matrix documented (`ROUTE_SURFACE_MATRIX.md`).
+- [x] Multi-role visual pilot implemented (`DESIGN_SYSTEM/PILOTS/navigation-overlay-pilot-01/`).
+- [x] Multi-viewport visual evidence captured and inspected (360px, 390px, 430px, true 200% text scale, safe-area/clearance tests, RTL back, Admin desktop 1280px & 1440px).
 - [x] Design Court v1 deliberation completed (`FULL_COURT` mode, `DESIGN_COURT_REPORT.md`).
-- [x] Founder decision recorded: Option C approved (`ROLE-AWARE HYBRID STRUCTURAL SYSTEM`).
-- [x] Reversible implementation detail closed: 12px structural container radius evaluated and closed via bounded evidence check.
-- [x] Mobile Foundation updated to DF2 v1.4, Experience authority created (`STRUCTURAL_SYSTEM.md`), cards component updated, AI skills synchronized, thin shims regenerated.
-- [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `git diff --check`).
-- [x] Publication PR created (PR #95).
-- [ ] Phase 4F remains strictly `NOT_STARTED`.
+- [x] Self-correction and red team verification completed.
+- [x] Founder decision gate prepared if material, or verdict reached if clear.
+- [x] Authority formalization synchronized to shared Design System specifications.
+- [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `node scripts/test-design-court-contract.mjs`, `git diff --check`).
+- [x] Publication PR #96 created and final publication evidence patch verified for Bridge final review.
 
 ---
+
+## Closed Upstream Dependency — Phase 4E Structural System
+- **PHASE_4E_STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#95`
+- **MERGE_COMMIT:** `ff4ac0b4322b8a7c50273dd7a459a93dcf090551`
+- **Structural Model:** `ROLE_AWARE_HYBRID` (Customer open editorial default; Owner operational grouping default).
+- **Mobile Structural Container Radius:** `12px` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **Mobile Page Horizontal Insets:** `16px` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **Relational Spacing Scale:** `4 / 8 / 12 / 16 / 24 / 32 px` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **Surface Elevation:** Flat default; elevation reserved for overlays.
 
 ## Closed Upstream Dependency — Design Court v1 (Governance Infrastructure)
 - **STATUS:** `CLOSED / MERGED / PUBLISHED`
 - **PR:** `#93`
 - **MERGE_COMMIT:** `674194e675731985b347d241d046f6acc48cf785`
-- **REVIEWED_HEAD:** `92c681fca5ac2c2e2e3a6c74cc34f483317b0365`
 - **Infrastructure:** `konfrm-design-court` is available as cross-cutting governance infrastructure (14 governed design skills, 8 internal).
 
 ## Closed Upstream Dependency — Phase 4D Form & Selection Primitives
 - **PHASE_4D_STATUS:** `CLOSED / MERGED / PUBLISHED`
 - **PR:** `#92`
 - **MERGE_COMMIT:** `0134f60984d5d52f3442ef49763bf6c75a564214`
-- **REVIEWED_HEAD:** `b3d7fb1b57ab8d4a8adb3e1941710ab68c6aefad`
 - **Field Strategy:** `OUTLINE_LED` (white surface, thin outline, explicit top label).
-- **Mobile Field Radius:** `8px` (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL PHASE 4D CANDIDATE`).
-- **Focus Semantic Direction:** `RESTRAINED_INTERACTION_ACCENT` (blue interaction accent role, `#276EF1` candidate comparator).
-- **Selection Controls:** Checkbox is `OWNER_PRODUCT_EVIDENCED`; Toggle is `DEFERRED_NO_CURRENT_PRODUCT_EVIDENCE`.
+- **Mobile Field Radius:** `8px` (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL`).
 
 ## Closed Upstream Dependency — Phase 4C Action System
 - **PHASE_4C_STATUS:** `CLOSED / MERGED`
@@ -55,8 +61,8 @@ SCOPE: Phase 4E Structural System — Discovery, product evidence, realistic vis
 - **Primary Button Radius:** `6px` (`PRIMARY_ONLY`).
 - **Primary Color:** Stable Black `#000000`.
 
-## Next Roadmap Dependency (after 4E)
-- **PHASE_4F_NAVIGATION_SURFACE_SYSTEM**
+## Next Roadmap Dependency (after 4F)
+- **PHASE_4G_CONTENT_STATE_PRESENTATION**
   - **STATUS:** `NOT_STARTED`
   - **EXECUTION_STARTED:** `NO`
 

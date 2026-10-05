@@ -1,5 +1,31 @@
 # KONFRM Design System Changelog
 
+## 2.1.10 — 2026-10-05
+
+### Phase 4F Navigation & Overlay System governance synchronization
+
+- Formalized Candidate C: Role-Aware Contextual Navigation & Overlay System (`SYSTEM-EVALUATED PROVISIONAL PHASE_4F_NAVIGATION_MODEL`).
+- Customer Navigation Model: Exactly 4 persistent top-level root destinations (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`). Bottom navigation is visible by default on these four roots; on any nested entity screen, transactional review, or auth route, bottom navigation is hidden by default. Screen 16 (Notification Center) is the governed `ACCOUNT_SHELL_CHILD_EXCEPTION` (Master Rule MR-17) where Bottom Navigation remains visible with the Account tab active. Active navigation uses the restrained interaction-accent semantic role (exact blue remains `OPEN`; `#0059FF` is historical web reference).
+- Owner Navigation Model: Action-First Operational Hub with dashboard-style nested routing. Customer-style bottom navigation is `PROHIBITED BY CANONICAL MOBILE ARCHITECTURE` (legacy React web prototype bottom navigation preserved as `WEB_BEHAVIORAL_EVIDENCE_ONLY`). High-frequency operations accessed via high-contrast 3-column domain grid on Home (`الطلبات`, `الوحدات`, `المحفظة`). Contextual access paths governed for Calendar (via Property ops), Messages (booking-contextual; eligibility `OPEN`), Profile/Notifications (via header affordances), and Disputes (contextual; presentation deferred). Zero hamburger dumping ground.
+- Dedicated Transactional Review (Screen 07): Reconciled Booking Request Review as a dedicated full-screen transactional review component (`FULL_PAGE_NESTED / DEDICATED_FULL_SCREEN_TRANSACTIONAL_REVIEW`, implementing C4_FINAL_DESIGN_SPEC). Bottom navigation is hidden; return path is RTL Back (➔) to Property Detail. Screen 07 is never a BottomSheet.
+- Auth V2 Navigation Lock: Sequential full-screen route flow (`08 → 09 → 10`) is mandatory; web modal auth superseded.
+- Dual Bottom Chrome Prohibition: Persistent bottom navigation and persistent sticky decision bars must never coexist on the same screen. On nested transactional screens requiring sticky action, the bottom navigation is hidden, reserving clearance padding for the sticky action + platform safe area.
+- Back vs Close Grammar: Back (RTL Arrow right [➔]) is strictly hierarchical return up a navigation stack. Close (X icon or Cancel text) strictly dismisses a temporary overlay layer (Sheet or Dialog) without mutating the underlying navigation stack.
+- BottomSheet Semantics & Geometry: Reserved strictly for short contextual tasks, search/refine filters, pickers, and transient confirmations. Top radius: 16px (`SYSTEM-EVALUATED PROVISIONAL BOTTOM_SHEET_TOP_RADIUS`; bounded evidence: 12px close alternative, 16px balanced provisional, 20px rejected as overly round). Explicit dismiss control is `REQUIRED`; drag handle is `OPTIONAL`; backdrop tap dismissal is `CONDITIONAL` on low-risk tasks (never on unsaved consequential inputs). Pilot max-height (~85%) is a controlled Web reference only; native detents deferred to Phase 4I.
+- Dialog Semantics & Geometry: Centered modal overlay reserved strictly for short consequential confirmation, high-stakes acknowledgement, and destructive irreversible decisions (e.g. Owner reject booking request). Surface radius: 12px (`SYSTEM-EVALUATED PROVISIONAL DIALOG_RADIUS`; bounded evidence: 10px sharper alternative, 12px container-aligned provisional, 16px excess softness). Truthful plain Arabic consequence required (*"سيتم رفض طلب الحجز ولن ينتقل هذا الطلب إلى خطوة دفع العربون"*); safe/destructive button pair; never relies on color alone. Customer cancellation dialog removed / reclassified as `DEFERRED_PRODUCT_POLICY`.
+- Elevation & Scrim: Flat structural content by default. Restrained elevation for overlays. Exact shadow parameters and scrim opacity/blur values remain `OPEN / CONTROLLED_WEB_PILOT_RENDERING_REFERENCE`.
+- Safe-Area Contract: Page insets (16px) != platform safe areas != persistent control clearance. Web formulas are reference implementations; native acceptance deferred to Phase 4I.
+- Context Restoration Contract: UX contract defined (`CUSTOMER_CONTEXT_RESTORATION: UX_CONTRACT_DEFINED_RUNTIME_DEFERRED`). Returning from detail or sheet restores underlying discovery state; auth interruption preserves continuation intent; runtime implementation deferred to Phase 4I.
+- Admin Boundary: Desktop operational Web preserved. Tabular data grids and review queues remain desktop-operational without mobile bottom nav or sheet contamination.
+- Updated Mobile Design Foundation to DF2 v1.5 (`DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md`).
+- Synchronized component navigation, sheet, and modal authority (`DESIGN_SYSTEM/COMPONENTS/navigation.md`, `DESIGN_SYSTEM/COMPONENTS/bottom-sheets.md`, `DESIGN_SYSTEM/COMPONENTS/modals.md`, `DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md`).
+- Phase 4G Boundary Preserved: Content & State Presentation remains strictly `NOT_STARTED`.
+- Native Acceptance: Physical mobile rendering, scaling, detents, gestures, and touch target acceptance remain strictly `DEFERRED_TO_4I`.
+- No token JSON changes.
+- No runtime production changes.
+- No backend/database changes.
+
+
 ## 2.1.9 — 2026-10-05
 
 ### Phase 4E Structural System governance synchronization

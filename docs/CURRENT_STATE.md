@@ -1,10 +1,10 @@
 # Current project state
 
 **Last updated:** 2026-10-05
-**Merge checkpoint:** `674194e675731985b347d241d046f6acc48cf785` (PR #93)
-**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `SUBSTANTIVE_COMPLETE / FOUNDER_DECISION_RECORDED / GOVERNANCE_SYNCHRONIZED / PUBLICATION_PENDING`.
+**Merge checkpoint:** `ff4ac0b4322b8a7c50273dd7a459a93dcf090551` (PR #95)
+**Phase status:** Phase 0–3 complete; Phase 4 is `ACTIVE`. Phase 4A is `CLOSED`; Phase 4B Typography Foundation is `CLOSED / MERGED`; Phase 4C Action System is `CLOSED / MERGED` (PR #90); Phase 4D Form & Selection Primitives is `CLOSED / MERGED / PUBLISHED` (PR #92); Phase 4E Structural System is `CLOSED / MERGED / PUBLISHED` (PR #95); Phase 4F Navigation & Overlay System substantive evaluation complete, authority formalized, publication pending PR merge (`READY_FOR_PUBLICATION`); Phase 4G Content & State Presentation is `NOT_STARTED` (`EXECUTION_STARTED: NO`).
 **Cross-cutting governance infrastructure:** `DESIGN_COURT_V1` — `CLOSED / MERGED / PUBLISHED` (PR #93, merge checkpoint `674194e675731985b347d241d046f6acc48cf785`; 14 governed design skills, 8 internal; available as cross-cutting design-decision system).
-**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System); PR #92 merged (Phase 4D Form & Selection Primitives); PR #93 merged (Design Court v1 Governance Infrastructure).
+**Publication evidence:** PR #19 merged (Phase 3); PR #86 merged (Phase 4A Primitive Pilot 01); PR #87 merged (Continuity & Roadmap); PR #88 merged (Phase 4B Cairo Typography Foundation); PR #90 merged (Phase 4C Action System); PR #92 merged (Phase 4D Form & Selection Primitives); PR #93 merged (Design Court v1 Governance Infrastructure); PR #95 merged (Phase 4E Structural System).
 
 ## Current status
 
@@ -38,7 +38,7 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
   - Selection Controls: Checkbox is **`OWNER_PRODUCT_EVIDENCED`** (notification preferences); Toggle is **`DEFERRED_NO_CURRENT_PRODUCT_EVIDENCE`** (zero product evidence; no switch migration).
   - Sizing & Touch Targets: iOS 44pt / Android 48dp guidance (no universal raw-pixel mobile rule).
   - Open variables preserved: Exact Neutrals (`OPEN`), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Native Focus Treatment (`OPEN`), Exact Native Stroke Width (`OPEN`), Global Shape System (`OPEN`), Native Acceptance (`DEFERRED TO 4I`).
-- **Phase 4E (Structural System):** `SUBSTANTIVE_COMPLETE / FOUNDER_DECISION_RECORDED / GOVERNANCE_SYNCHRONIZED / PUBLICATION_PENDING` (branch `design/structural-system-pilot-01`, base checkpoint `674194e675731985b347d241d046f6acc48cf785`). Controlled visual pilot (`DESIGN_SYSTEM/PILOTS/structural-system-pilot-01/`), Design Court v1 deliberation, and Founder gate complete. Design-System documentation/evidence publication only; zero changes to production apps, backend, database, or token JSON.
+- **Phase 4E (Structural System):** `CLOSED / MERGED / PUBLISHED` (PR #95, merge commit `ff4ac0b4322b8a7c50273dd7a459a93dcf090551`; branch `design/structural-system-pilot-01`, base checkpoint `674194e675731985b347d241d046f6acc48cf785`). Controlled visual pilot (`DESIGN_SYSTEM/PILOTS/structural-system-pilot-01/`), Design Court v1 deliberation, and Founder gate complete. Design-System documentation/evidence publication only; zero changes to production apps, backend, database, or token JSON.
   - Founder Decision: **Option C — Role-Aware Hybrid Structural System** (`APPROVED`).
   - Customer Grammar: `OPEN_EDITORIAL_DEFAULT` (unboxed facts, whitespace, restrained dividers / subtle hairline-style separation; cards restricted to independent discovery/quote units).
   - Owner Grammar: `OPERATIONAL_GROUPING_DEFAULT_WHEN_SEMANTIC` with `OPEN_GROUPED_CONTENT` (one outer 12px container, subtle internal dividers for homogeneous operational records; anti-card-soup; exact native stroke width `OPEN` / `DEFERRED_TO_4I`).
@@ -48,6 +48,20 @@ KONFRM is currently executing **Phase 4 — Unified Design System / UI/UX Progra
   - Relational Spacing Scale: Canonical relational hierarchy `TIER_1 < TIER_2 < TIER_3 < TIER_4`; **`4 / 8 / 12 / 16 / 24 / 32 px`** (`SYSTEM-EVALUATED PROVISIONAL NUMERIC MAPPING`; 40/48px sizing clearances observed in Web pilots are not part of formal spacing scale).
   - Surface Elevation: Flat elevation default with subtle neutral border; shadow/elevation reserved exclusively for floating/modal surfaces (`ELEVATION_RESERVED_FOR_OVERLAYS`).
   - Open variables preserved: Exact Neutrals (`OPEN`; Phase 4E pilot hex values are `CONTROLLED_WEB_PILOT_RENDERING_REFERENCE` only), Exact Blue (`OPEN`, candidate `#276EF1`), Exact Native Stroke Width (`OPEN` / `DEFERRED_TO_4I`), Global Shape System (`OPEN`, Phase 4F/4I scope), Native Component Acceptance (`DEFERRED TO 4I`).
+- **Phase 4F (Navigation & Overlay System):** `READY_FOR_PUBLICATION` (substantive evaluation complete, Design Court v1 deliberation completed with `STRONG_CONSENSUS` and `HIGH` confidence recommending Candidate C, authority formalized, publication pending PR merge; branch `design/navigation-overlay-pilot-01`, base checkpoint `ff4ac0b4322b8a7c50273dd7a459a93dcf090551`). Design-System documentation and authority formalization only; zero changes to production apps, backend, database, or token JSON.
+  - Architecture Model: **Candidate C — Role-Aware Contextual Navigation & Overlay System** (`SYSTEM-EVALUATED PROVISIONAL`).
+  - Customer Navigation: Exactly 4 persistent root destinations (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`). Bottom navigation is visible by default on top-level roots; hidden on nested entity screens, dedicated transactional reviews, and auth routes. Screen 16 (Notification Center) is the governed `ACCOUNT_SHELL_CHILD_EXCEPTION` (Master Rule MR-17) where Bottom Navigation remains visible with the Account tab active (`customer_notifications_390.png`).
+  - Dedicated Transactional Review: Booking Request Review (Screen 07) is a dedicated full-screen transactional review component (`FULL_PAGE_NESTED / DEDICATED_FULL_SCREEN_TRANSACTIONAL_REVIEW`, implementing C4_FINAL_DESIGN_SPEC), bottom nav hidden, RTL Back returning to Property Detail / booking context. Screen 07 is never a BottomSheet.
+  - Owner Navigation: Action-First Operational Hub with dashboard-style nested routing. Customer-style bottom navigation is `PROHIBITED BY CANONICAL MOBILE ARCHITECTURE` (legacy React web prototype bottom navigation preserved as `WEB_BEHAVIORAL_EVIDENCE_ONLY`). High-frequency operations accessed via high-contrast 3-column domain grid on Home (`الطلبات`, `الوحدات`, `المحفظة`). Contextual access paths for Calendar, Messages (eligibility `OPEN`), Profile/Notifications, and Disputes (presentation deferred).
+  - Auth V2 Navigation Lock: Sequential full-screen route flow (`08 → 09 → 10`) is mandatory; web modal auth superseded.
+  - Dual Bottom Chrome Prohibition: Persistent bottom navigation and persistent sticky decision bars must never coexist on the same screen.
+  - Back vs Close Grammar: Back (RTL Arrow right [➔]) is hierarchical return; Close (X or Cancel) dismisses temporary overlays.
+  - BottomSheet Semantics: 16px provisional top radius (`SYSTEM-EVALUATED PROVISIONAL BOTTOM_SHEET_TOP_RADIUS`). Explicit dismiss control is `REQUIRED`; drag handle is `OPTIONAL`; backdrop tap dismiss is `CONDITIONAL` on low-risk tasks. Pilot max-height (~85%) is a controlled Web reference only.
+  - Dialog Semantics: 12px provisional surface radius (`SYSTEM-EVALUATED PROVISIONAL DIALOG_RADIUS`). Truthful plain Arabic consequence required (*"سيتم رفض طلب الحجز ولن ينتقل هذا الطلب إلى خطوة دفع العربون"*); safe/destructive button pair; never relies on color alone. Customer cancellation dialog removed / reclassified as `DEFERRED_PRODUCT_POLICY`.
+  - Elevation & Scrim: Flat structural content by default. Restrained elevation for overlays. Exact shadow parameters and scrim opacity/blur values remain `OPEN / CONTROLLED_WEB_PILOT_RENDERING_REFERENCE`.
+  - Safe-Area Contract: Page insets (16px) != platform safe areas != persistent control clearance.
+  - Context Restoration Contract: UX contract defined (`CUSTOMER_CONTEXT_RESTORATION: UX_CONTRACT_DEFINED_RUNTIME_DEFERRED`). Returning from detail or sheet restores underlying discovery state; auth interruption preserves continuation intent; runtime implementation deferred to Phase 4I.
+  - Open variables preserved: Exact Blue (`OPEN`), Exact Neutrals (`OPEN`), Exact Overlay Shadow Parameters (`OPEN`), Exact Scrim Values (`OPEN`), Native Touch Target Acceptance / Gestures / Detents (`DEFERRED_TO_4I`).
 - **Design Court v1 (cross-cutting governance infrastructure):** `CLOSED / MERGED / PUBLISHED` (PR #93, merge commit `674194e675731985b347d241d046f6acc48cf785`). Adds `konfrm-design-court` as the 8th internal governed skill (14 governed skill directories). Available as cross-cutting design-decision system.
 
 The connected property vertical slice through Phase 3 remains live-verified on production. Phase 4 develops the design foundations through controlled empirical pilots before native mobile integration.
@@ -96,12 +110,18 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md), [DATABASE.md](./DATABASE.md), and [BU
 
 **Active Roadmap Phase & Governance Continuity**
 
-- **Phase 4D (Form & Selection Primitives):** `CLOSED / MERGED / PUBLISHED` (PR #92, merge commit `0134f60984d5d52f3442ef49763bf6c75a564214`).
-- **Design Court v1:** `CLOSED / MERGED / PUBLISHED` (PR #93, merge commit `674194e675731985b347d241d046f6acc48cf785`). Available as cross-cutting design-decision system.
-- **Active Phase:** **Phase 4E — Structural System** (spacing scale, content insets, section separation, open grouped content, cards, interactive rows, borders/dividers, surface hierarchy, shape roles, elevation/shadow relationships).
-  - **Status:** `SUBSTANTIVE_COMPLETE / FOUNDER_DECISION_RECORDED / GOVERNANCE_SYNCHRONIZED / PUBLICATION_PENDING`
+- **Phase 4E (Structural System):** `CLOSED / MERGED / PUBLISHED` (PR #95, merge commit `ff4ac0b4322b8a7c50273dd7a459a93dcf090551`).
+  - Structural Model: `ROLE_AWARE_HYBRID`
+  - Customer: `OPEN_EDITORIAL_DEFAULT`
+  - Owner: `OPERATIONAL_GROUPING_WHEN_SEMANTIC`
+  - Structural Container Radius: `12PX SYSTEM-EVALUATED PROVISIONAL`
+  - Mobile Page Inset: `16PX SYSTEM-EVALUATED PROVISIONAL`
+  - Spacing Mapping: `4/8/12/16/24/32 SYSTEM-EVALUATED PROVISIONAL`
+  - DF2: `v1.4`
+  - CHANGELOG: `2.1.9`
+- **Active Phase:** **Phase 4F — Navigation & Overlay System**
+  - **Status:** `ACTIVE`
   - **Execution Started:** `YES`
-  - **Branch:** `design/structural-system-pilot-01`
-  - **Base Checkpoint:** `674194e675731985b347d241d046f6acc48cf785`
-  - **PR:** #95 (`OPEN` / `PENDING_FOUNDER_MERGE_AUTHORIZATION`)
-- **Next roadmap dependency:** **Phase 4F — Navigation & Surface System** (`STATUS: NOT_STARTED`, `EXECUTION_STARTED: NO`).
+  - **Branch:** `design/navigation-overlay-pilot-01`
+  - **Base Checkpoint:** `ff4ac0b4322b8a7c50273dd7a459a93dcf090551`
+- **Next roadmap dependency:** Phase 4G — Content & State Presentation (`STATUS: NOT_STARTED`, `EXECUTION_STARTED: NO`).

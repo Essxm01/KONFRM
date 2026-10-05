@@ -12,6 +12,7 @@ KONFRM / كونفرم is a three-role vacation-rental product: Customer discover
 - Active task contract: `tasks/CURRENT_TASK.md`
 - Context router: `docs/CONTEXT_ROUTER.md`
 - Brain sync protocol: `docs/BRAIN_SYNC_PROTOCOL.md`
+- Agent execution/routing/resource policy: `docs/codex/KONFRM_AGENT_EXECUTION_ROUTING_POLICY.md`
 - Project continuity bootstrap: `KONFRM_PROJECT_CONTINUITY_BOOTSTRAP.md`
 
 ## Mandatory context refresh before every execution task
@@ -27,6 +28,8 @@ Before implementing any approved task, read the mandatory core sequence in exact
 Load this Mandatory Universal Core once at the beginning of a NEW TASK, NEW SESSION, or CONTEXT RESET. Refresh it if a relevant dynamic authority materially changes, and re-verify required closure authorities before final closure. Do NOT reload the entire core on every tool call or step inside an uninterrupted task.
 
 Then use `docs/CONTEXT_ROUTER.md` to load only the selective domain authorities matching the task. Do not load all documentation files at once; preserve token quotas for execution and verification.
+
+When assigning, transferring, or externally verifying work across Bridge, Antigravity, Codex, or Founder-assisted manual execution, follow `docs/codex/KONFRM_AGENT_EXECUTION_ROUTING_POLICY.md`. It is a selective operating authority rather than mandatory reading for every isolated implementation task; load it when agent routing, quota/resource use, cross-agent handoff, manual intervention, runtime ownership, or redundant-work control matters.
 
 For substantial or cross-system work, also review `docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md` and the applicable current-reality, conflict, completion-matrix, rescue-backlog, and quality-gate documents named by the index.
 

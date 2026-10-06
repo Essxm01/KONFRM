@@ -566,6 +566,32 @@ void main() {
     final searchField = tester.widget<TextField>(find.byType(TextField).last);
     expect(searchField.textDirection, TextDirection.rtl);
     expect(searchField.textInputAction, TextInputAction.search);
+    final searchSemanticsFinder = find.bySemanticsLabel('البحث');
+    expect(searchSemanticsFinder, findsOneWidget);
+    final searchSemantics = tester.getSemantics(searchSemanticsFinder);
+    expect(
+      searchSemantics,
+      matchesSemantics(label: 'البحث', isTextField: true),
+    );
+    expect(find.bySemanticsLabel('بحث'), findsNothing);
+
+    final clearActionFinder = find.bySemanticsLabel('مسح البحث');
+    expect(clearActionFinder, findsOneWidget);
+    final clearActionSemantics = tester.getSemantics(clearActionFinder);
+    expect(clearActionSemantics.id, isNot(searchSemantics.id));
+    expect(
+      clearActionSemantics,
+      matchesSemantics(
+        label: 'مسح البحث',
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasTapAction: true,
+        isFocusable: true,
+        hasFocusAction: true,
+        hasSelectedState: true,
+      ),
+    );
     const query = 'إقامة في القاهرة';
     await tester.enterText(find.byType(TextField).last, query);
     await tester.pump();
@@ -574,7 +600,7 @@ void main() {
     await tester.pump();
     expect(submittedQuery, query);
     expect(find.byTooltip('مسح البحث'), findsOneWidget);
-    await tester.tap(find.byTooltip('مسح البحث'));
+    await tester.tap(clearActionFinder);
     await tester.pump();
     expect(search.text, isEmpty);
     expect(changedQuery, isEmpty);

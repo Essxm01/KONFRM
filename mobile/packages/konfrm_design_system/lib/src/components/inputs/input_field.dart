@@ -184,10 +184,7 @@ class _SearchFieldState extends State<SearchField> {
           style: KonfrmTypography.body,
           decoration: InputDecoration(
             hintText: widget.placeholder,
-            prefixIcon: Semantics(
-              label: 'بحث',
-              child: const Icon(Icons.search),
-            ),
+            prefixIcon: const ExcludeSemantics(child: Icon(Icons.search)),
             suffixIcon: widget.loading
                 ? Padding(
                     padding: const EdgeInsets.all(14),

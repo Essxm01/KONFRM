@@ -2,15 +2,15 @@
 
 TASK_ID: PHASE_4I_NATIVE_VALIDATION_PUBLICATION
 TASK_CLASS: NATIVE_DESIGN_SYSTEM_INTEGRATION_CLOSURE
-STATUS: ANDROID_VALIDATION_ACCEPTED / READY_FOR_PR
-PR: PENDING (READY_FOR_PR_TO_MAIN)
+STATUS: ANDROID_FINAL_TREE_REVALIDATED / PR_100_OPEN / READY_FOR_FINAL_REVIEW
+PR: #100 (OPEN)
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
 BASE_MISSION_A_SHA: 9f24b2bea5130faeaa05e39b204ef4c8abc7b464
 BASE_MISSION_B_SHA: 82f98db300a15a9cf790dc8834e85c07670f38d4
-FINAL_REVIEWED_HEAD: e3fa755cd5f2636c4e10ac55d6651ed58ccc3932
+FINAL_RUNTIME_VALIDATED_SOURCE_HEAD: 97e09d80c6ccfb2c6dc863990042fe900319ac8e
 BRANCH: phase4i/android-runtime-validation
-SCOPE: Phase 4I Native Flutter Foundation integration closure and publication preparation — reconciling documentation state after Bridge acceptance of Mission A bootstrap, Mission B shared primitives/scenarios, and Mission C physical Android runtime validation (`NATIVE_ACCEPTED_ON_ANDROID`) on Samsung Galaxy A56 5G (Android 16 / API 36).
+SCOPE: Phase 4I Native Flutter Foundation integration closure and publication preparation — reconciling documentation state after Bridge acceptance of Mission A bootstrap, Mission B shared primitives/scenarios, Mission C physical Android runtime validation, PR #100 P2 remediations, and final-tree physical Android targeted revalidation (`NATIVE_ACCEPTED_ON_ANDROID`) on Samsung Galaxy A56 5G (Android 16 / API 36) at source revision `97e09d80c6ccfb2c6dc863990042fe900319ac8e`. Note: subsequent commit is documentation-only reconciliation.
 
 ## Boundaries
 - Does NOT build Customer or Owner production Flutter applications.
@@ -28,16 +28,22 @@ SCOPE: Phase 4I Native Flutter Foundation integration closure and publication pr
 - [x] Mission A bootstrap accepted (`9f24b2bea5130faeaa05e39b204ef4c8abc7b464`).
 - [x] Mission B implementation accepted (`f933900` / `82f98db300a15a9cf790dc8834e85c07670f38d4`).
 - [x] Mission B package/app verification accepted.
-- [x] Mission C physical Android runtime accepted on Samsung Galaxy A56 5G (`SM_A566B`), Android 16 / API 36 (`NATIVE_ACCEPTED_ON_ANDROID`).
+- [x] Mission C physical Android runtime accepted on Samsung Galaxy A56 5G (`SM_A566B`), Android 16 / API 36 (`NATIVE_ACCEPTED_ON_ANDROID` at historical checkpoint `e3fa755cd5f2636c4e10ac55d6651ed58ccc3932`).
 - [x] Android screenshots/runtime evidence accepted for typography, RTL/Bidi, inputs/keyboard, state system, Owner grouping, Customer navigation, Sticky Action, Android Back, and safe areas.
-- [x] Package test suite `18/18 PASS` (`flutter test` in `mobile/packages/konfrm_design_system`).
+- [x] Historical Mission C package test suite `18/18 PASS`.
 - [x] StickyAction / PrimaryButton full-height runtime defect (`DEFECT-01`) `CLOSED` (`Center(heightFactor: 1, ...)`).
 - [x] PrimaryButton accessibility-label duplication `CLOSED` (`excludeSemantics: true` with outer semantic `onTap`).
-- [x] Branch `phase4i/android-runtime-validation` pushed to `origin`.
-- [x] Bridge GitHub commit/scope verification `PASS` (`e3fa755cd5f2636c4e10ac55d6651ed58ccc3932`).
+- [x] PR #100 opened to `main` (`ab669c7fee8b3f76d885f42134be57d281ae3d84`).
+- [x] PR #100 initial 5-finding P2 review remediation verified and committed (`f063807af9be68bb5b0f670ca53b58294d1c8c9e`): SearchField keyboard submission, CustomerBottomNavigation Bookings calendar icon, StateView live-region distinctions, SecondaryButton semantics boundary, and `mobile/README.md`.
+- [x] PR #100 SectionAlert P2 review remediation verified and committed (`97e09d80c6ccfb2c6dc863990042fe900319ac8e`): informational and error live announcements (`liveRegion: true`) with test matcher correction.
+- [x] Final package test suite `19/19 PASS` (`flutter test` in `mobile/packages/konfrm_design_system`) and package analyze `No issues found!`.
+- [x] Validation app test suite `6/6 PASS` (`flutter test` in `mobile/apps/design_system_validation`) and app analyze `No issues found!`.
+- [x] P1 final-tree physical Android targeted revalidation on Samsung Galaxy A56 5G (`SM-A566B`, Android 16 / API 36) `CLOSED` (`PASS_WITH_LIMITATIONS` at final runtime-validated source head `97e09d80c6ccfb2c6dc863990042fe900319ac8e`).
+- [x] SectionAlert informational runtime scenario limitation recorded (`INFORMATIONAL_SECTIONALERT_RUNTIME_SCENARIO = NOT_REPRESENTED / TEST_BACKED`).
+- [x] PR #100 remains OPEN and mergeable.
 
-### Pending Gates (`PHASE_4I_PR_AND_MERGE_GOVERNANCE`)
-- [ ] PR to `main`
+### Pending Gates (`PHASE_4I_FINAL_PR_REVIEW_AND_MERGE_GOVERNANCE`)
+- [ ] Final PR review on post-documentation head
 - [ ] Required PR checks
 - [ ] Merge governance
 - [ ] Post-merge verification
@@ -45,8 +51,8 @@ SCOPE: Phase 4I Native Flutter Foundation integration closure and publication pr
 - [ ] Cross-platform gate preserved: `IOS_REALITY_GATE_PENDING`
 
 ## Immediate Next Roadmap Action
-- **NEXT_ACTION:** `PHASE_4I_PR_AND_MERGE_GOVERNANCE`
-  - **STATUS:** `READY_FOR_PR`
+- **NEXT_ACTION:** `PHASE_4I_FINAL_PR_REVIEW_AND_MERGE_GOVERNANCE`
+  - **STATUS:** `READY_FOR_FINAL_REVIEW`
   - **CROSS_PLATFORM_LIMITATION:** `IOS_REALITY_GATE_PENDING`
   - **PHASE_5_6_FLUTTER_IMPLEMENTATION:** `NOT_STARTED`
 

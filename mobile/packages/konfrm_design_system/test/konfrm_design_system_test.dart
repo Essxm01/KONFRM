@@ -682,6 +682,136 @@ void main() {
     },
   );
 
+  testWidgets(
+    'informational and error SectionAlerts announce messages separately from recovery',
+    (tester) async {
+      const infoKey = ValueKey('informational-section-alert');
+      const errorKey = ValueKey('error-section-alert');
+      const recoveryLabel = 'إعادة المحاولة';
+      var infoRecoveryCalls = 0;
+      var errorRecoveryCalls = 0;
+
+      await tester.pumpWidget(
+        host(
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SectionAlert(
+                key: infoKey,
+                message: 'تم تحديث البيانات',
+                recoveryLabel: recoveryLabel,
+                onRecovery: () => infoRecoveryCalls++,
+                isError: false,
+              ),
+              SectionAlert(
+                key: errorKey,
+                message: 'تعذر تحديث البيانات',
+                recoveryLabel: recoveryLabel,
+                onRecovery: () => errorRecoveryCalls++,
+                isError: true,
+              ),
+            ],
+          ),
+        ),
+      );
+
+      final infoNode = tester.getSemantics(find.byKey(infoKey));
+      final infoData = infoNode.getSemanticsData();
+      expect(
+        infoNode,
+        matchesSemantics(
+          isLiveRegion: true,
+          isButton: false,
+          hasTapAction: false,
+          label: 'تم تحديث البيانات',
+        ),
+      );
+      expect(infoData.label, isNot(contains(recoveryLabel)));
+
+      final infoRecoveryNode = tester.getSemantics(
+        find.descendant(
+          of: find.byKey(infoKey),
+          matching: find.byType(TextButton),
+        ),
+      );
+      expect(infoRecoveryNode.id, isNot(infoNode.id));
+      expect(
+        infoRecoveryNode,
+        matchesSemantics(
+          isLiveRegion: false,
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          isFocusable: true,
+          hasFocusAction: true,
+          label: recoveryLabel,
+        ),
+      );
+
+      final errorNode = tester.getSemantics(find.byKey(errorKey));
+      final errorData = errorNode.getSemanticsData();
+      expect(
+        errorNode,
+        matchesSemantics(
+          isLiveRegion: true,
+          isButton: false,
+          hasTapAction: false,
+          label: 'تعذر تحديث البيانات',
+        ),
+      );
+      expect(errorData.label, isNot(contains(recoveryLabel)));
+      final errorRecoveryNode = tester.getSemantics(
+        find.descendant(
+          of: find.byKey(errorKey),
+          matching: find.byType(TextButton),
+        ),
+      );
+      expect(errorRecoveryNode.id, isNot(errorNode.id));
+      expect(
+        errorRecoveryNode,
+        matchesSemantics(
+          isLiveRegion: false,
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          isFocusable: true,
+          hasFocusAction: true,
+          label: recoveryLabel,
+        ),
+      );
+
+      final errorContainer = tester.widget<Container>(
+        find.descendant(
+          of: find.byKey(errorKey),
+          matching: find.byType(Container),
+        ),
+      );
+      final errorBorder = errorContainer.decoration! as BoxDecoration;
+      expect(
+        (errorBorder.border! as BorderDirectional).start.color,
+        ValidationReferenceOnly.danger,
+      );
+
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(infoKey),
+          matching: find.byType(TextButton),
+        ),
+      );
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(errorKey),
+          matching: find.byType(TextButton),
+        ),
+      );
+      expect(infoRecoveryCalls, 1);
+      expect(errorRecoveryCalls, 1);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('StatusBadge wraps a long Arabic label at 200 percent', (
     tester,
   ) async {

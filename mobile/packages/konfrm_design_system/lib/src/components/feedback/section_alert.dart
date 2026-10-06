@@ -16,7 +16,8 @@ class SectionAlert extends StatelessWidget {
   final bool isError;
   @override
   Widget build(BuildContext context) => Semantics(
-    liveRegion: isError,
+    container: true,
+    liveRegion: true,
     child: Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(

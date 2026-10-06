@@ -113,6 +113,7 @@ class SearchField extends StatefulWidget {
     this.controller,
     this.loading = false,
     this.onChanged,
+    this.onSubmitted,
     this.onClear,
   });
   final String label;
@@ -120,6 +121,7 @@ class SearchField extends StatefulWidget {
   final TextEditingController? controller;
   final bool loading;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final VoidCallback? onClear;
   @override
   State<SearchField> createState() => _SearchFieldState();
@@ -175,7 +177,9 @@ class _SearchFieldState extends State<SearchField> {
         textField: true,
         child: TextField(
           controller: _controller,
+          textInputAction: TextInputAction.search,
           onChanged: widget.onChanged,
+          onSubmitted: widget.onSubmitted,
           textDirection: TextDirection.rtl,
           style: KonfrmTypography.body,
           decoration: InputDecoration(

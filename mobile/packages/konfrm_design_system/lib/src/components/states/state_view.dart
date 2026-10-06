@@ -30,7 +30,15 @@ class StateView extends StatelessWidget {
   final VoidCallback? onRecovery;
   @override
   Widget build(BuildContext context) => Semantics(
-    liveRegion: kind == StateKind.loading,
+    container: true,
+    liveRegion: switch (kind) {
+      StateKind.loading ||
+      StateKind.error ||
+      StateKind.offline ||
+      StateKind.unauthorized ||
+      StateKind.conflict => true,
+      _ => false,
+    },
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

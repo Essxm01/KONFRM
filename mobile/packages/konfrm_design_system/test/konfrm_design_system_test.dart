@@ -318,12 +318,17 @@ void main() {
   testWidgets(
     'secondary geometry remains explicitly lab scoped and icon action has target and label',
     (tester) async {
+      var secondaryCalls = 0;
       await tester.pumpWidget(
         host(
-          const Column(
+          Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SecondaryButton(label: 'رجوع', onPressed: null),
+              SecondaryButton(
+                label: 'متابعة',
+                onPressed: () => secondaryCalls++,
+              ),
+              const SecondaryButton(label: 'رجوع', onPressed: null),
               IconActionButton(
                 icon: Icons.arrow_back,
                 semanticLabel: 'رجوع',
@@ -335,6 +340,28 @@ void main() {
         ),
       );
       expect(ValidationReferenceOnly.secondaryRadius, 8);
+      expect(
+        tester.getSemantics(find.byType(SecondaryButton).first),
+        matchesSemantics(
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          label: 'متابعة',
+        ),
+      );
+      expect(
+        tester.getSemantics(find.byType(SecondaryButton).last),
+        matchesSemantics(
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: false,
+          hasTapAction: false,
+          label: 'رجوع',
+        ),
+      );
+      await tester.tap(find.text('متابعة'));
+      expect(secondaryCalls, 1);
       expect(tester.getSize(find.byType(IconActionButton)).width, 48);
       expect(
         tester.getSemantics(find.byType(IconActionButton)),
@@ -506,11 +533,14 @@ void main() {
     },
   );
 
-  testWidgets('phone is LTR inside RTL and search clear/loading are distinct', (
+  testWidgets('phone is LTR and SearchField submits and clears in RTL', (
     tester,
   ) async {
     final phone = TextEditingController(text: '+20 100 123 4567');
     final search = TextEditingController(text: 'نص');
+    String? changedQuery;
+    String? submittedQuery;
+    var clearCalls = 0;
     await tester.pumpWidget(
       host(
         Column(
@@ -521,6 +551,9 @@ void main() {
               label: 'البحث',
               placeholder: 'ابحث',
               controller: search,
+              onChanged: (value) => changedQuery = value,
+              onSubmitted: (value) => submittedQuery = value,
+              onClear: () => clearCalls++,
             ),
           ],
         ),
@@ -530,10 +563,22 @@ void main() {
       tester.widget<TextField>(find.byType(TextField).first).textDirection,
       TextDirection.ltr,
     );
+    final searchField = tester.widget<TextField>(find.byType(TextField).last);
+    expect(searchField.textDirection, TextDirection.rtl);
+    expect(searchField.textInputAction, TextInputAction.search);
+    const query = 'إقامة في القاهرة';
+    await tester.enterText(find.byType(TextField).last, query);
+    await tester.pump();
+    expect(changedQuery, query);
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pump();
+    expect(submittedQuery, query);
     expect(find.byTooltip('مسح البحث'), findsOneWidget);
     await tester.tap(find.byTooltip('مسح البحث'));
     await tester.pump();
     expect(search.text, isEmpty);
+    expect(changedQuery, isEmpty);
+    expect(clearCalls, 1);
     phone.dispose();
     search.dispose();
   });
@@ -572,6 +617,47 @@ void main() {
       expect(find.text('تعذر التحميل'), findsOneWidget);
       expect(find.text('إعادة المحاولة'), findsNWidgets(2));
       expect(find.text('تعذر الاتصال'), findsOneWidget);
+      final stateNode = tester.getSemantics(find.byType(StateView));
+      final stateData = stateNode.getSemanticsData();
+      expect(
+        stateNode,
+        matchesSemantics(
+          isLiveRegion: true,
+          isButton: false,
+          hasTapAction: false,
+        ),
+      );
+      expect(stateData.label, contains('تعذر التحميل'));
+      expect(stateData.label, contains('حدث خطأ'));
+      expect(stateData.label, isNot(contains('إعادة المحاولة')));
+      final recoveryNode = tester.getSemantics(
+        find.descendant(
+          of: find.byType(StateView),
+          matching: find.byType(SecondaryButton),
+        ),
+      );
+      final recoveryData = recoveryNode.getSemanticsData();
+      expect(recoveryNode.id, isNot(stateNode.id));
+      expect(
+        recoveryNode,
+        matchesSemantics(
+          isLiveRegion: false,
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          label: 'إعادة المحاولة',
+        ),
+      );
+      expect(recoveryData.label, isNot(contains('تعذر التحميل')));
+      expect(recoveryData.label, isNot(contains('حدث خطأ')));
+      const liveRegionKinds = <StateKind>{
+        StateKind.loading,
+        StateKind.error,
+        StateKind.offline,
+        StateKind.unauthorized,
+        StateKind.conflict,
+      };
       for (final kind in StateKind.values) {
         await tester.pumpWidget(
           host(
@@ -583,6 +669,15 @@ void main() {
           ),
         );
         expect(find.text(kind.name), findsOneWidget);
+        final stateData = tester
+            .getSemantics(find.byType(StateView))
+            .getSemanticsData();
+        expect(
+          stateData.flagsCollection.isLiveRegion,
+          liveRegionKinds.contains(kind),
+          reason: kind.name,
+        );
+        expect(find.text('معنى الحالة'), findsOneWidget);
       }
     },
   );
@@ -684,6 +779,17 @@ void main() {
             .flagsCollection
             .isSelected,
         Tristate.isTrue,
+      );
+      final bookingsDestination = tester.widget<NavigationDestination>(
+        find.byType(NavigationDestination).at(2),
+      );
+      expect(
+        (bookingsDestination.icon as Icon).icon,
+        Icons.calendar_month_outlined,
+      );
+      expect(
+        (bookingsDestination.selectedIcon as Icon).icon,
+        Icons.calendar_month_outlined,
       );
       for (var i = 0; i < customerDestinations.length; i++) {
         final size = tester.getSize(find.byKey(Key('customer-destination-$i')));

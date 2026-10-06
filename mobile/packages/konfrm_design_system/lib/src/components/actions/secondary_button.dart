@@ -13,9 +13,12 @@ class SecondaryButton extends StatelessWidget {
   final VoidCallback? onPressed;
   @override
   Widget build(BuildContext context) => Semantics(
+    container: true,
     button: true,
     label: label,
     enabled: onPressed != null,
+    onTap: onPressed,
+    excludeSemantics: true,
     child: ConstrainedBox(
       constraints: BoxConstraints(minHeight: mobileTouchTargetExtent(context)),
       child: OutlinedButton(

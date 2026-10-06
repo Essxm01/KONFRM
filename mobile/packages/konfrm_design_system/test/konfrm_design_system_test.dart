@@ -30,6 +30,20 @@ Widget host(
   ),
 );
 
+int renderedLineCount(WidgetTester tester, Finder finder) {
+  final textWidget = tester.widget<Text>(finder);
+  final element = tester.element(finder);
+  final painter = TextPainter(
+    text: TextSpan(text: textWidget.data!, style: textWidget.style),
+    textDirection: Directionality.of(element),
+    textScaler: MediaQuery.textScalerOf(element),
+    maxLines: textWidget.maxLines,
+  )..layout(maxWidth: tester.getSize(finder).width);
+  final lineCount = painter.computeLineMetrics().length;
+  painter.dispose();
+  return lineCount;
+}
+
 void main() {
   test('exports package metadata and all Profile B typography roles', () {
     expect(kKonfrmDesignSystemPackageName, 'konfrm_design_system');
@@ -116,6 +130,16 @@ void main() {
         tester.getSize(find.byType(PrimaryButton).first).height,
         greaterThanOrEqualTo(48),
       );
+      expect(
+        tester.getSemantics(find.byType(PrimaryButton).first),
+        matchesSemantics(
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          label: 'متابعة',
+        ),
+      );
       await tester.tap(find.text('متابعة'));
       expect(calls, 1);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -125,10 +149,151 @@ void main() {
           isButton: true,
           hasEnabledState: true,
           isEnabled: false,
+          hasTapAction: false,
           label: 'جارٍ الإرسال',
           value: 'جارٍ التنفيذ',
         ),
       );
+      expect(
+        tester.getSemantics(find.byType(PrimaryButton).last),
+        matchesSemantics(
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: false,
+          hasTapAction: false,
+          label: 'غير متاح',
+        ),
+      );
+    },
+  );
+
+  testWidgets('primary button shrink-wraps under a tall finite height limit', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      host(
+        SizedBox(
+          width: 352,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 700),
+            child: PrimaryButton(label: 'متابعة', onPressed: _noop),
+          ),
+        ),
+      ),
+    );
+
+    final size = tester.getSize(find.byType(PrimaryButton));
+    expect(size.width, 352);
+    expect(size.height, greaterThanOrEqualTo(48));
+    expect(size.height, lessThan(200));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'sticky primary action stays bounded in Scaffold at normal and 200 percent scale',
+    (tester) async {
+      tester.view.physicalSize = const Size(384, 832);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      const label = 'متابعة إلى الخطوة التالية مع تكبير النص';
+      const bodyKey = ValueKey('sticky-regression-body');
+
+      Future<void> pumpRuntime({
+        required double scale,
+        ActionPhase phase = ActionPhase.idle,
+      }) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: konfrmLightTheme().copyWith(
+              platform: TargetPlatform.android,
+            ),
+            home: Builder(
+              builder: (context) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(scale),
+                ),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Scaffold(
+                    body: ColoredBox(
+                      key: bodyKey,
+                      color: Colors.white,
+                      child: Center(child: Text('محتوى الصفحة')),
+                    ),
+                    bottomNavigationBar: StickyActionSurface(
+                      child: PrimaryButton(
+                        label: label,
+                        onPressed: _noop,
+                        phase: phase,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        expect(tester.takeException(), isNull);
+      }
+
+      await pumpRuntime(scale: 1);
+      final normalBody = tester.getRect(find.byKey(bodyKey));
+      final normalButton = tester.getRect(find.byType(PrimaryButton));
+      expect(normalBody.height, greaterThan(400));
+      expect(normalBody.bottom, lessThanOrEqualTo(normalButton.top));
+      expect(normalButton.width, closeTo(352, 0.01));
+      expect(normalButton.height, greaterThanOrEqualTo(48));
+      expect(normalButton.height, lessThan(200));
+      final normalLines = renderedLineCount(tester, find.text(label));
+      expect(normalLines, greaterThanOrEqualTo(1));
+      expect(
+        MediaQuery.textScalerOf(tester.element(find.text(label))).scale(1),
+        1,
+      );
+
+      await pumpRuntime(scale: 2);
+      final scaledBody = tester.getRect(find.byKey(bodyKey));
+      final scaledButton = tester.getRect(find.byType(PrimaryButton));
+      expect(scaledBody.height, greaterThan(400));
+      expect(scaledBody.bottom, lessThanOrEqualTo(scaledButton.top));
+      expect(scaledButton.width, closeTo(352, 0.01));
+      expect(scaledButton.height, greaterThanOrEqualTo(48));
+      expect(scaledButton.height, lessThan(200));
+      expect(find.text(label), findsOneWidget);
+      expect(scaledButton.height, greaterThan(normalButton.height));
+      final scaledText = tester.widget<Text>(find.text(label));
+      expect(scaledText.data, label);
+      expect(scaledText.maxLines, isNull);
+      expect(scaledText.overflow, isNot(TextOverflow.ellipsis));
+      final scaledLines = renderedLineCount(tester, find.text(label));
+      expect(scaledLines, greaterThan(normalLines));
+      expect(
+        MediaQuery.textScalerOf(tester.element(find.text(label))).scale(1),
+        2,
+      );
+      expect(
+        tester.getSemantics(find.byType(PrimaryButton)),
+        matchesSemantics(
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          label: label,
+        ),
+      );
+      expect(tester.takeException(), isNull);
+
+      await pumpRuntime(scale: 2, phase: ActionPhase.submitting);
+      final submittingButton = tester.getRect(find.byType(PrimaryButton));
+      expect(submittingButton.height, greaterThanOrEqualTo(48));
+      expect(submittingButton.height, lessThan(200));
+      final spinner = tester.getRect(find.byType(CircularProgressIndicator));
+      expect(spinner.center.dx, closeTo(submittingButton.center.dx, 0.01));
+      expect(spinner.center.dy, closeTo(submittingButton.center.dy, 0.01));
+      expect(tester.takeException(), isNull);
     },
   );
 

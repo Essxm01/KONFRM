@@ -23,6 +23,8 @@ class PrimaryButton extends StatelessWidget {
       label: label,
       enabled: !busy && onPressed != null,
       value: busy ? 'جارٍ التنفيذ' : null,
+      onTap: busy ? null : onPressed,
+      excludeSemantics: true,
       child: ConstrainedBox(
         constraints: BoxConstraints(
           minHeight: mobileTouchTargetExtent(context),
@@ -43,6 +45,7 @@ class PrimaryButton extends StatelessWidget {
                   vertical: 12,
                 ),
                 child: Center(
+                  heightFactor: 1,
                   child: busy
                       ? SizedBox.square(
                           dimension: 18,

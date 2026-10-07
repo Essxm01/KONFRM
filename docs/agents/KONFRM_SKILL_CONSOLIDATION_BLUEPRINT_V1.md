@@ -4,9 +4,9 @@
 ```yaml
 DOCUMENT_TYPE: ARCHITECTURAL_BLUEPRINT
 SYSTEM_NAME: KONFRM Engineering Intelligence System V1
-STATUS: CANDIDATE_FOR_FINAL_BRIDGE_APPROVAL
+STATUS: READY_FOR_RUNTIME_BRAIN_AUTHORING
 GOVERNING_BRANCH: chore/agent-skills-governance-v1
-BASE_CANONICAL_REF: 209f3419faec9cdbba4a5fadb42921cdaf63bc4c
+BASE_CANONICAL_REF: c1df82e3d1f6745e17626e3d645e7fc12688ede9
 ISOLATION_INVARIANTS:
   PR_100: FROZEN at 24269f2fe638c2846d053e03dafdf27c50652cda
   PR_99: UNTOUCHED
@@ -15,7 +15,7 @@ ISOLATION_INVARIANTS:
 
 ---
 
-## 1. PRIME DIRECTIVE & OPERATIONAL FOUNDATIONS
+## 1. PRIME DIRECTIVE & DOMAIN-SCOPED AUTHORITY
 
 ### 1.1 The Prime Directive
 A skill system becomes dangerous when it is confidently wrong. KONFRM Engineering Intelligence prioritizes structural truth, explicit boundaries, and live evidence over apparent completeness:
@@ -32,23 +32,57 @@ CONDITIONAL REQUIREMENT > UNIVERSAL RULE
 - **Open Decisions Must Remain Open:** Values marked provisional or awaiting Founder adjudication remain `OPEN`.
 - **Deferred Work Must Remain Deferred:** Future features or architecture phases are not treated as active implementations.
 
-### 1.2 The Operational Crisis of Fragmented Tooling
-The previous iteration of the KONFRM agent skills architecture decomposed engineering into 15 standalone capability families mirrored across 14 disparate skill folders (`.agents/skills/` wrappers and `docs/ai/skills/` native design skills).
+### 1.2 Domain-Scoped Authority
+Rather than a simplistic, global linear hierarchy, KONFRM operates under **Domain-Scoped Authority**. Different categories of truth have distinct, non-overlapping jurisdictions:
 
-Under live agent execution (Antigravity and Codex), this granular decomposition created severe operational failure modes:
-1. **Tool Bloat & Context Thrashing:** Registering numerous granular skills in the agent system prompt consumed massive baseline context before the agent read a single line of task-specific code.
-2. **Ambiguous Routing & Competing Authorities:** Routine UI and business tasks triggered conflicts across overlapping skills, forcing agents to spend rounds reconciling competing heuristics rather than implementing the Canon.
-3. **Execution Paralysis & Prompt Couriers:** Granular skills lacked end-to-end execution lifecycle ownership, causing agents to pause between testing, debugging, and review tasks to await intermediate prompts.
-4. **Subtle Canon Drift:** External wrappers imported unfiltered web conventions, foreign design tokens, and unvetted third-party assumptions that threatened core project invariants.
+```
++----------------------------------------------------------------------------------------------------+
+| DOMAIN-SCOPED AUTHORITY JURISDICTIONS                                                              |
++----------------------------------------------------------------------------------------------------+
+| 1. PRODUCT & BUSINESS JURISDICTION:                                                                |
+|    Founder-approved KONFRM Canon owns booking behavior, financial rules, user roles, product       |
+|    priorities, and UX product decisions. External generic best practices cannot redefine them.    |
++----------------------------------------------------------------------------------------------------+
+| 2. MANDATORY PLATFORM & STORE JURISDICTION:                                                        |
+|    First-party Apple, Google, and Android platform specifications govern technical eligibility and  |
+|    store submission constraints. Founder Canon cannot declare a mandatory store submission         |
+|    requirement irrelevant. (The Founder may choose not to ship to a platform or feature, but       |
+|    cannot compel an external platform to accept a non-compliant artifact).                         |
++----------------------------------------------------------------------------------------------------+
+| 3. SECURITY JURISDICTION:                                                                          |
+|    Security standards constrain safe implementation and identify unacceptable risk. Security       |
+|    guidance cannot silently alter product economics or business logic. Material trade-offs must be |
+|    escalated as PRODUCT_REQUIREMENT x SECURITY_CONSTRAINT, never silently overwritten.             |
++----------------------------------------------------------------------------------------------------+
+| 4. REPOSITORY REALITY JURISDICTION:                                                                |
+|    Actual committed source code and verified runtime evidence own statements about what currently  |
+|    exists physically. Intended architecture or documentation cannot claim an implementation exists |
+|    when code and runtime evidence say otherwise.                                                   |
++----------------------------------------------------------------------------------------------------+
+```
 
-### 1.3 The Core Law: Capability Family != Runtime Skill
-To eliminate structural friction, KONFRM establishes an architectural law:
-> **A Capability Family is an internal engineering competence module. A Runtime Skill is a coarse-grained, end-to-end Domain Brain.**
+### 1.3 Authority by Question Type
+To establish instant epistemic clarity, agents resolve questions against their authoritative source of truth:
 
-Runtime skills are the visible entry points exposed to coding agents. Capability families are internal competence units organized as companion reference modules (`references/*.md`) within their governing domain brain. Agents must never be presented with fragmented tools when coherent domain brains provide complete contextual authority.
+```text
+QUESTION TYPE                         SOURCE OF TRUTH
+What should KONFRM do?               Project Canon / accepted Founder decision
+What does KONFRM code do now?        Current repository + runtime evidence
+How should engineering work?         Governed/pinned engineering method
+What does platform/store require?    Live first-party official source
+What security control applies?       Current threat surface + governed security baseline
+What remains undecided?              OPEN / unresolved authority record
+```
 
-### 1.4 The Target 7-Domain-Brain Direction
-KONFRM organizes engineering, product, design, and release intelligence into **7 Governed Domain Brains** (evaluated as a working architecture direction):
+### 1.4 The Core Law: Capability Family != Runtime Skill
+KONFRM distinguishes internal capability from agent runtime interfaces:
+> **A Capability Family is an internal engineering competence module.**
+> **A Runtime Skill is a coarse-grained, end-to-end Domain Brain.**
+
+Runtime skills are the visible entry points exposed to coding agents. Capability families are competence units organized as companion reference modules (`references/*.md`) within their governing domain brain. Agents must never be presented with fragmented tools when 7 coherent domain brains provide complete contextual authority.
+
+### 1.5 The Target 7-Domain-Brain Direction
+KONFRM organizes engineering, product, design, and release intelligence into **7 Governed Domain Brains**:
 
 ```
 +----------------------------------------------------------------------------------------------------+
@@ -149,7 +183,7 @@ The fragmentation across these 14 skills created direct contradictions and repet
 ### 3.1 The Principle: One Truth Definition = One Authority
 The simplistic assumption that "One Concept = One Brain" is replaced with an authoritative lifecycle separation:
 > **ONE TRUTH DEFINITION = ONE GOVERNING AUTHORITY**
-> **Lifecycle Execution is divided into: DEFINE -> REPRESENT -> IMPLEMENT -> VERIFY -> RELEASE**
+> **Lifecycle Execution: DEFINE -> REPRESENT -> IMPLEMENT -> VERIFY -> RELEASE**
 
 Legitimate cross-domain consumption is not duplicate ownership. Duplication exists only when two brains independently **define** the same truth.
 
@@ -165,7 +199,7 @@ This separation applies across all cross-domain concepts:
 
 ```
 +---------------------------------------------------------------------------------------------------+
-| CONCEPT           | DEFINE (Semantic) | REPRESENT (UI/UX) | IMPLEMENT (Code)  | VERIFY (Quality)  |
+| CONCEPT           | DEFINE (Authority)| REPRESENT (UI/UX) | IMPLEMENT (Code)  | VERIFY (Quality)  |
 +-------------------+-------------------+-------------------+-------------------+-------------------+
 | UI States         | konfrm-product    | konfrm-design     | konfrm-flutter /  | konfrm-quality    |
 |                   | (Business states) | (Visual states)   | konfrm-admin-web  | (State testing)   |
@@ -176,15 +210,15 @@ This separation applies across all cross-domain concepts:
 | Booking Flows     | konfrm-product    | konfrm-design     | konfrm-flutter /  | konfrm-quality    |
 |                   | (State machine)   | (Interaction flow)| konfrm-backend    | (Integration test)|
 +-------------------+-------------------+-------------------+-------------------+-------------------+
-| Accessibility     | konfrm-product    | konfrm-design     | konfrm-flutter /  | konfrm-quality    |
-|                   | (Inclusivity req) | (Ergonomics/Specs)| konfrm-admin-web  | (Semantics audit) |
+| Accessibility     | Product (Roles) & | konfrm-design     | konfrm-flutter /  | konfrm-quality    |
+|                   | Platform Standards| (Interaction/spec)| konfrm-admin-web  | (Semantics audit) |
 +-------------------+-------------------+-------------------+-------------------+-------------------+
-| Security Controls | konfrm-product    | konfrm-design     | konfrm-flutter /  | konfrm-quality    |
-|                   | (Trust boundary)  | (Obscuring views) | konfrm-backend    | (MASVS audit)     |
+| Security Controls | Threat Surface &  | konfrm-design     | konfrm-flutter /  | konfrm-quality    |
+|                   | Governed Baseline | (Obscuring views) | konfrm-backend    | (MASVS audit)     |
 +---------------------------------------------------------------------------------------------------+
 ```
 
-### 3.4 Authoritative Authority Map
+### 3.4 Disambiguated Ownership Mapping
 
 | Concept Area | Definitive Authority (`DEFINE`) | Presentation Authority (`REPRESENT`) | Implementation Authority (`IMPLEMENT`) | Verification Authority (`VERIFY`) |
 | :--- | :--- | :--- | :--- | :--- |
@@ -222,11 +256,10 @@ To prevent domain brains from becoming bloated mega-skills, each brain adheres t
 ### 4.2 Brain 1: `konfrm-product` (Product Soul & Domain Truth)
 - **Primary Mission:** Preserve authentic business logic, user psychology, and market reality by interpreting and retrieving authoritative Business Canon.
 - **Truth Retrieval Mandate:** Runtime Product brain owns **PRODUCT INTERPRETATION and RETRIEVAL**, not a duplicated business rules database. It points directly to `docs/BUSINESS_RULES.md` and `docs/codex/KONFRM_MASTER_RULES.md`.
-- **Governing Invariants:**
-  - Three distinct user roles: Customer (discovery and booking), Owner (operational control and payouts), Admin (audit and dispute mediation).
-  - Booking lifecycle: Interprets authoritative booking states from `docs/BUSINESS_RULES.md`. Does not invent unapproved state machines or transitions.
-  - Egyptian market realities: Retrieval of established cash/card dynamics, property verification standards, and seasonal considerations.
-  - Anti-deception: Zero hidden fees, clear cancellation terms, honest availability messaging.
+- **Governing Scope:**
+  - Defines/interprets: Product goals, business semantics, user-role intent (Customer, Owner, Admin), accepted product rules, and market assumptions that are explicitly documented.
+  - Epistemic distinction: Distinguishes between `ACCEPTED_CANON`, `VALIDATED_RESEARCH_INSIGHT`, `FOUNDER_HYPOTHESIS`, and `OPEN_ASSUMPTION`.
+  - Boundaries: Product brain does NOT define technical security controls or WCAG/platform accessibility standards. It provides sensitive product context, trust expectations, and user needs; Security, Design, and Platform authorities translate those into controls.
 - **Companion Modules:**
   - `references/product_state_retrieval.md`: How to inspect and interpret authoritative business rules.
   - `references/role_mental_models.md`: Customer, Owner, and Admin behavioral priorities and friction tolerances.
@@ -243,6 +276,7 @@ To prevent domain brains from becoming bloated mega-skills, each brain adheres t
   - Applicable Truthful States: Components implement only `APPLICABLE_TRUTHFUL_STATES` defined by their product contract. No manufacturing of unused states for apparent completeness.
   - Motion: Purposeful, restrained micro-interactions. No blocking animations. Duration and curves follow current design Canon.
   - Platform Touch Ergonomics: Platform touch guidance is approximately Android: ~48dp, iOS: ~44pt, adhering to current platform/design Canon.
+  - Accessibility Authority: Defines accessible interaction and presentation specifications translating user needs and platform criteria into design reality.
 - **Companion Modules:**
   - `references/df2_tokens_and_components.md`: DF2 component contracts and token mappings.
   - `references/arabic_rtl_bidi.md`: Bidirectional text handling and RTL layout flipping.
@@ -257,7 +291,7 @@ To prevent domain brains from becoming bloated mega-skills, each brain adheres t
 - **Architectural Baseline:** Governed by `docs/architecture/KONFRM_MOBILE_ARCHITECTURE_BOUNDARIES_V1.md` and `docs/architecture/KONFRM_MOBILE_ARCHITECTURE_FOUNDATION_V1.md`:
   - **Feature-First Architecture:** Organized into `presentation / application / data` (NO mandatory `domain/` layer; avoids over-abstracted Clean Architecture ceremony).
   - **State Management:** Riverpod for application state. Architecture does not over-canonize a single provider class where not required.
-  - **Navigation:** Declarative `go_router` with strong typing and route guards. Deep-link architecture supported; concrete URL scheme (`konfrm://` vs https) remains deferred until canonically established.
+  - **Navigation:** Declarative `go_router` with strong typing and route guards. Deep-link architecture supported; concrete URL scheme remains deferred until canonically established.
   - **Networking & Serialization:** Standard `package:http` initially; manual DTO/adapter mapping (`fromMap`/`toMap`) initially. Zero uninspected code generation.
   - **Secure Storage:** Uses the KONFRM secure-storage abstraction backed by platform-appropriate protected storage (e.g. Android KeyStore, iOS Keychain). Concrete plugin is an implementation choice, not Canon.
   - **Fail-Closed UI:** Honest error feedback via `AsyncValue`; never swallow exceptions or display partial corrupted state.
@@ -276,7 +310,7 @@ To prevent domain brains from becoming bloated mega-skills, each brain adheres t
 - **Primary Mission:** Build and maintain the KONFRM Admin Operations web dashboard with high operational density.
 - **Governing Invariants:**
   - React 19, TypeScript, and Vite stack located in `admin-app/`.
-  - High Useful Density: Data-dense tables, keyboard shortcuts, multi-column operational views, filtering grids.
+  - Admin UX Invariant: **OPERATIONAL CLARITY + USEFUL DENSITY + AUDITABILITY + SAFE ACTIONABILITY**. Actual interaction patterns (tables, filter grids, batch actions, keyboard shortcuts) are selected according to the operational task, not imposed as universal widget mandates.
   - Web Standards: Semantic HTML5, full keyboard navigation, accessible contrast.
   - Desktop-First Ergonomics: Optimized for desktop operational workflows.
 - **Companion Modules:**
@@ -292,9 +326,9 @@ To prevent domain brains from becoming bloated mega-skills, each brain adheres t
 - **Governing Invariants:**
   - PostgreSQL Canonical Persistence: Supabase database is the source of truth for transactions, foreign keys, and audit logs.
   - Row-Level Security (RLS): User-accessible and exposed data surfaces must be protected by appropriate RLS or equivalent server-only isolation. Private schemas and server-only tables use appropriate isolation. The Supabase `service_role` key is NEVER exposed to client apps.
-  - Server Financial Authority: Payouts, fees, deposits, and refunds calculated strictly on the server according to Business Canon.
-  - Cloudflare Worker Proxying: Edge proxy handling request routing and header sanitization. (Security enhancements such as rate limiting must be classified as CURRENT IMPLEMENTATION, SECURITY RECOMMENDATION, or FUTURE HARDENING based on physical code reality).
-  - Migration Hygiene: Idempotent SQL migrations with reversible rollback paths.
+  - Server Financial Authority: Calculations and ledger mutations executed strictly on server per Business Canon. Backend never invents financial rules.
+  - Migration Reality: Safe, tested, ordered migrations with an explicit recovery strategy. Forward migration safety, data preservation, and transactional boundaries outrank artificial reversible rollback requirements.
+  - Physical Reality Classification: Backend controls must be labeled as `CURRENT_VERIFIED`, `REQUIRED_ARCHITECTURE`, `RECOMMENDED_HARDENING`, or `FUTURE_CAPABILITY` based on physical code reality.
 - **Companion Modules:**
   - `references/supabase_rls_patterns.md`: Multi-tenant RLS isolation templates.
   - `references/database_migration_protocol.md`: Migration authoring standards and indexing rules.
@@ -307,14 +341,15 @@ To prevent domain brains from becoming bloated mega-skills, each brain adheres t
 ### 4.7 Brain 6: `konfrm-quality` (Verification, Debugging & Security Engine)
 - **Primary Mission:** Guarantee structural correctness, runtime stability, and security posture through deterministic verification.
 - **Governing Invariants:**
-  - 4-Phase Root Cause Analysis (RCA): Mandatory upon defect: (1) Reproduce with failing test, (2) Isolate failure boundary, (3) Root-cause underlying defect, (4) Verify fix passes without regression.
-  - Multi-Tier Testing: Unit tests for domain logic/DTOs, Widget tests for truthful state rendering, Contract tests for API serialization, Integration tests on target devices.
-  - Static Analysis: `dart analyze --fatal-infos` exit code 0 required on PR candidates.
+  - RCA Oracle Model: **REPRODUCE WITH THE SMALLEST CREDIBLE ORACLE**. Preferred when feasible: failing automated regression test. Valid reproductions include physical-device reproduction, accessibility tree evidence, integration failure, API trace, database state evidence, store rejection message, or deployment log. Never manufacture an artificial unit test merely to satisfy a debugging ritual. After fix, add regression automation where practical and valuable.
+  - Repository-Defined Static Analysis: Run the repository-defined static analysis gate for the affected surface (`flutter analyze` for Flutter packages, `dart analyze` for pure Dart). Strictness follows repository configuration and task gates; skills do not redefine analyzer policy independently.
+  - Test Taxonomy: Testing spans application/business logic, pure utilities, DTO/adapters, widgets, API contracts, and integration/system boundaries (no mandatory domain layer).
+  - Golden Testing: Classified as `ON_DEMAND_VISUAL_REGRESSION_TOOL` for deterministic pixel validation; does not replace physical runtime visual QA.
   - Dual-Axis Code Review: Evaluating changes against Specification Axis (prompt fidelity) and Standards Axis (architectural integrity).
-  - Mobile Security Baseline: Auditing client storage, cryptography, auth, and network against OWASP MASVS v2.0.
-  - Performance: Measurement-driven frame/jank/performance profiling using Flutter DevTools across variable refresh rates (60Hz, 90Hz, 120Hz). No arbitrary optimization.
+  - Security Verification: Audits client and server controls against selected security baselines (OWASP MASVS v2.0).
+  - Performance: Measurement-driven frame/jank/performance profiling using Flutter DevTools across variable refresh rates (60Hz, 90Hz, 120Hz).
 - **Companion Modules:**
-  - `references/systematic_debugging_rca.md`: 4-phase RCA protocol and test authoring.
+  - `references/systematic_debugging_rca.md`: 4-phase RCA protocol and oracle selection.
   - `references/flutter_testing_playbook.md`: Golden testing, HTTP boundary mocking, and accessibility testing.
   - `references/code_review_dual_axis.md`: Structured standards and spec review checklists.
   - `references/mobile_security_masvs.md`: OWASP MASVS v2.0 verification controls.
@@ -328,7 +363,8 @@ To prevent domain brains from becoming bloated mega-skills, each brain adheres t
 - **Governing Invariants:**
   - Git Preflight & Safety: Branch awareness (`git rev-parse HEAD`, `git rev-parse origin/main`), candidate ancestry verification, conventional commits.
   - CI Gate Audit: Verifying that tests, analyzer, format, and build pass with concrete proof.
-  - Store Policy Verification: Managing store compliance via the Volatile Knowledge Model (verifying live official requirements before release).
+  - Store Policy Live-Check: Managing store compliance via the Volatile Knowledge Model, verifying live official requirements before release.
+  - Platform vs Store Distinction: Distinguishes technical OS requirements (Android/iOS) from conditional store policies (Google Play / App Store).
   - PR Closure Handshake: Autonomous execution of final verification, documentation reconciliation, and merge protocols.
   - Memory Backpropagation: Updating `CURRENT_STATE.md` and decision records upon PR closure.
 - **Companion Modules:**
@@ -343,33 +379,34 @@ To prevent domain brains from becoming bloated mega-skills, each brain adheres t
 ## 5. EXTERNAL INTELLIGENCE SOURCES & FORENSIC MATRIX
 
 ### 5.1 Source Quality Hierarchy
-External engineering sources are classified into a 4-tier trust hierarchy:
+External engineering sources are classified into a 4-tier trust hierarchy governed by domain-scoped authority:
 
 ```
 +----------------------------------------------------------------------------------------------------+
 | TIER A: FIRST-PARTY & OFFICIAL PLATFORM SPECIFICATIONS                                             |
 | Flutter/Dart Official Docs, Android Developers / android/skills, Apple Developer Guidelines,      |
 | Supabase Official Architecture, Cloudflare Workers Runtime Specs.                                  |
-| Status: PRIMARY TECHNICAL BENCHMARK (Subordinated to explicit Founder Canon)                      |
+| Status: PRIMARY TECHNICAL BENCHMARK FOR APIS & STORE RULES. Where official docs present multiple   |
+|         architectural choices, KONFRM Canon selects the project architecture (e.g. Riverpod).     |
 +----------------------------------------------------------------------------------------------------+
                                                   |
 +-------------------------------------------------v--------------------------------------------------+
 | TIER B: GOVERNING INDUSTRY STANDARDS & SECURITY FRAMEWORKS                                         |
 | OWASP Mobile Application Security (MASVS v2.0 / MASTG), NIST SSDF 1.1 (SP 800-218),               |
 | W3C WCAG Baseline.                                                                                 |
-| Status: MANDATORY AUDIT BASELINE FOR SECURITY & ACCESSIBILITY                                      |
+| Status: SELECTED ENGINEERING & VERIFICATION BASELINE. (Not a compliance or certification claim).    |
 +----------------------------------------------------------------------------------------------------+
                                                   |
 +-------------------------------------------------v--------------------------------------------------+
 | TIER C: HIGH-QUALITY SPECIALIST OPEN SOURCE & METHODOLOGIES                                        |
 | Obra Systematic Debugging, Matt Pocock Type Patterns, Deloitte Assured Engineering.                |
-| Status: METHODOLOGICAL INGREDIENTS (Distilled into project-native workflows)                       |
+| Status: METHODOLOGICAL INGREDIENTS (Distilled into project-native workflows).                      |
 +----------------------------------------------------------------------------------------------------+
                                                   |
 +-------------------------------------------------v--------------------------------------------------+
 | TIER D: DESIGN & INTERACTION HEURISTICS                                                            |
 | UIZZE, Impeccable Design Engine, Emil Kowalski Motion Principles, Taste Heuristics.                |
-| Status: STRICTLY ADVISORY (Subordinated to DF2 Canon & RTL Arabic Rules)                          |
+| Status: STRICTLY ADVISORY (Subordinated to DF2 Canon & RTL Arabic Rules).                         |
 +----------------------------------------------------------------------------------------------------+
 ```
 
@@ -377,15 +414,15 @@ External engineering sources are classified into a 4-tier trust hierarchy:
 
 | Source Name | Upstream Anchor / Commit | Quality Tier | Evaluated Value | Risk / Conflict with KONFRM | Architectural Disposition |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Official Flutter / Dart Docs** | Official SDK (Dart 3.x / Flutter 3.x) | Tier A | State management, rendering pipeline, widget tree optimization. | None. Aligns with project stack. | **ADOPT CORE**: Incorporated into `konfrm-flutter` and `konfrm-quality`. |
-| **Android Skills (`android/skills`)** | Commit `42dc2270e96032bd860bb94511e440aa00a43125` | Tier A | Platform requirements, 16 KB pages, insets handling, Data Safety. | Assumes Jetpack Compose; Compose code inapplicable to Flutter. | **EXTRACT PLATFORM**: Platform rules to `konfrm-delivery`; reject Compose UI. |
+| **Official Flutter / Dart Docs** | Official SDK (Dart 3.x / Flutter 3.x) | Tier A | State management, rendering pipeline, widget tree optimization. | Official docs show multiple patterns (ChangeNotifier vs Riverpod); Canon selects Riverpod. | **ADOPT CORE**: Incorporated into `konfrm-flutter` and `konfrm-quality`. |
+| **Android Skills (`android/skills`)** | Commit `42dc2270e96032bd860bb94511e440aa00a43125` | Tier A | Platform requirements, 16 KB pages, insets handling, Data Safety. | Assumes Jetpack Compose; Compose is not a KONFRM Flutter implementation authority. | **EXTRACT PLATFORM**: Platform rules to `konfrm-delivery`; Compose rejected for Flutter. |
 | **Google Play Policy Guidelines** | Official Play Console Policy | Tier A | Target SDK enforcement, Account Deletion, Photo Picker guidelines. | Policy drifts over time; requires volatile verification. | **ADOPT POLICY**: Governed in `konfrm-delivery` (Volatile Policy). |
 | **Apple App Store Review Guidelines** | Official Apple Developer Guidelines | Tier A | Guideline 3.1.5b (Physical Goods), Privacy Manifests, Required Reasons. | Rejection risk if payment exemption or manifest is misconfigured. | **ADOPT POLICY**: Governed in `konfrm-delivery` (Volatile Policy). |
 | **Supabase Architecture Guides** | Official Supabase Documentation | Tier A | RLS patterns, database indexing, connection pooling. | Client must not bypass Cloudflare Worker proxy. | **ADOPT CORE**: Distilled into `konfrm-backend`. |
 | **Cloudflare Workers Docs** | Official Cloudflare Developer Docs | Tier A | Edge request handling, environment secrets, header sanitation. | Worker SQL compatibility limits with Supabase REST must be respected. | **ADOPT CORE**: Distilled into `konfrm-backend`. |
-| **OWASP MASVS v2.0 / MASTG** | OWASP Mobile Application Security | Tier B | Mobile security verification (Storage, Crypto, Auth, Network). | High overhead if applied without risk tiering. | **ADOPT AUDIT**: Distilled into `konfrm-quality`. |
-| **NIST SSDF 1.1 (SP 800-218)** | NIST Computer Security Division | Tier B | Secure software development practices (PO, PS, PW, RV). | Distilled into lean agent verification gates. | **ADOPT PROCESS**: Integrated into quality and delivery gates. |
-| **Obra Systematic Debugging** | Upstream Debugging Methodology | Tier C | 4-Phase RCA: Reproduce, Isolate, Root-cause, Verify without regression. | Fast-path needed for non-semantic fixes. | **ADOPT RCA**: Governing debugging workflow in `konfrm-quality`. |
+| **OWASP MASVS v2.0 / MASTG** | OWASP Mobile Application Security | Tier B | Mobile security verification (Storage, Crypto, Auth, Network). | High overhead if applied without risk tiering. | **ADOPT AUDIT**: Distilled into `konfrm-quality` as verification baseline. |
+| **NIST SSDF 1.1 (SP 800-218)** | NIST Computer Security Division | Tier B | Secure software development practices (PO, PS, PW, RV). | Enterprise process lens; distilled only after evaluating relevance to Git Safety. | **ADOPT PROCESS**: Integrated into quality and delivery gates. |
+| **Obra Systematic Debugging** | Upstream Debugging Methodology | Tier C | 4-Phase RCA: Reproduce, Isolate, Root-cause, Verify without regression. | Oracle must be proportionate to bug; avoid test dogma. | **ADOPT RCA**: Governing debugging workflow in `konfrm-quality`. |
 | **Matt Pocock Type Patterns** | TypeScript Pattern Repository | Tier C | Parse don't validate, boundary typing. | Translate TypeScript patterns to Dart static typing. | **TRANSLATE PATTERNS**: Adapted for DTOs and Worker TypeScript. |
 | **Deloitte Assured Engineering** | Assured Engineering Principles | Tier C | Evidence-based quality gates, deterministic audit trails. | Distill into Git-backed proof artifacts. | **ADOPT EVIDENCE**: Anchors evidence-based quality gates. |
 | **Impeccable Design Engine** | Impeccable Design Skills | Tier D | Visual polish checklists, layout hierarchy reasoning. | Foreign web tokens and pastel palettes conflict with DF2. | **HEURISTIC ADVISORY**: Filtered heuristics to `konfrm-design`; zero tokens. |
@@ -396,7 +433,7 @@ External engineering sources are classified into a 4-tier trust hierarchy:
 ## 6. OFFICIAL ANDROID SKILLS EVALUATION (`android/skills`)
 
 ### 6.1 Architectural Context & Commit Baseline
-The official Google Android agent skills repository (`android/skills` at commit `42dc2270e96032bd860bb94511e440aa00a43125`) provides first-party Android platform intelligence. Because KONFRM uses Flutter rather than native Jetpack Compose for mobile, patterns must be categorized before ingestion.
+The official Google Android agent skills repository (`android/skills` at commit `42dc2270e96032bd860bb94511e440aa00a43125`) provides first-party Android platform intelligence. Because KONFRM uses Flutter for mobile, patterns are classified into distinct technical categories.
 
 ### 6.2 4-Way Technical Categorization Matrix
 
@@ -407,7 +444,6 @@ The official Google Android agent skills repository (`android/skills` at commit 
 | - 16 KB Page Size ELF alignment in native C/C++ shared objects (.so files).                         |
 | - Edge-to-Edge window insets handling.                                                             |
 | - Google Play Data Safety declaration disclosures.                                                 |
-| - In-app and web Account Deletion requirement.                                                     |
 | Disposition: FULL ADOPTION into konfrm-delivery and native Android shell.                           |
 +----------------------------------------------------------------------------------------------------+
                                                   |
@@ -424,17 +460,18 @@ The official Google Android agent skills repository (`android/skills` at commit 
 | 3. NATIVE_SHELL_ONLY (Configured strictly within android/ native subproject)                       |
 | - android/app/build.gradle.kts configuration (compileSdk, targetSdk, ndkVersion).                 |
 | - AndroidManifest.xml permissions, intent filters, and exported component security.               |
-| - ProGuard / R8 code shrinking and native library keep rules.                                      |
+| - ProGuard / R8 code shrinking and native library keep rules for JVM/native bytecode.             |
 | - 16 KB alignment verification on packaged native binaries.                                        |
 | Disposition: ADOPT IN NATIVE RUNTIME CONFIGURATION within konfrm-delivery and android/ shell.      |
 +----------------------------------------------------------------------------------------------------+
                                                   |
 +-------------------------------------------------v--------------------------------------------------+
-| 4. COMPOSE_SPECIFIC_REJECT (Incompatible with Flutter Architecture)                                |
+| 4. NOT_A_KONFRM_FLUTTER_AUTHORITY (Incompatible with Flutter Architecture)                         |
 | - Jetpack Compose @Composable functions, remember / mutableStateOf state management.              |
 | - Compose Modifier layouts, LazyColumn / LazyRow optimization.                                     |
 | - Jetpack Navigation compose graphs and Hilt dependency injection.                                 |
-| Disposition: STRICT REJECTION. Never introduce Compose dependencies or concepts to KONFRM.         |
+| Disposition: NOT A KONFRM FLUTTER IMPLEMENTATION AUTHORITY. If a future bounded native Android     |
+| surface genuinely requires native UI, that requires an explicit architecture decision.            |
 +----------------------------------------------------------------------------------------------------+
 ```
 
@@ -447,7 +484,7 @@ Store readiness governs development decisions from the start to prevent release 
 All Android release artifacts governed by `konfrm-delivery` must satisfy:
 
 1. **Target API Level (Volatile Policy):**
-   - Current verification: Starting August 31, 2026, new apps and updates generally must target **Android 16 / API 36+**.
+   - Observed Requirement (verified 2026-10-07): Starting August 31, 2026, new apps and updates generally must target **Android 16 / API 36+**.
    - Verification rule: Reverify live against official Play Console requirements before release.
 2. **16 KB Page Size Compatibility (Volatile Platform Requirement):**
    - Google requires apps targeting Android 15/API 35+ on Play to support 16 KB page sizes on 64-bit devices.
@@ -457,8 +494,8 @@ All Android release artifacts governed by `konfrm-delivery` must satisfy:
    - On Android 15+ (API 35+), edge-to-edge is the system default. Flutter must handle system bars and insets correctly so content is not obscured, verified at runtime.
 4. **Photo Selection & Media Permissions:**
    - Adhere to the principle of **LEAST PRIVILEGE**. For user property photo uploads, prefer the system Photo Picker where current platform/plugin behavior supports it (requiring no broad storage permissions). If a future feature legitimately requires broader media access, re-evaluate policy.
-5. **Account Deletion:**
-   - Provide a discoverable in-app account deletion request path and an external web deletion resource, declared in Play Console per current policy.
+5. **Account Deletion (Google Play Conditional Policy):**
+   - If account creation exists in the app: provide a discoverable in-app account deletion request path and an external web deletion resource, declared in Play Console per current policy.
 6. **Data Safety Section:**
    - Truthfully declare collected data, transfer encryption, and retention policies.
 
@@ -468,7 +505,7 @@ All Android release artifacts governed by `konfrm-delivery` must satisfy:
 All iOS release artifacts governed by `konfrm-delivery` must satisfy:
 
 1. **Build Tooling & SDK Baseline (Volatile Policy):**
-   - Current verification: Since April 28, 2026, App Store Connect uploads must use **Xcode 26+** with the **iOS 26 SDK+**.
+   - Observed Requirement (verified 2026-10-07): Since April 28, 2026, App Store Connect uploads must use **Xcode 26+** with the **iOS 26 SDK+**.
    - Verification rule: Verify current official App Store Connect build requirements before release.
 2. **Apple Privacy Manifests (`PrivacyInfo.xcprivacy`):**
    - Embedded manifest reflecting actual runtime SDK and data behavior.
@@ -479,14 +516,14 @@ All iOS release artifacts governed by `konfrm-delivery` must satisfy:
      4. Identify Required Reason API usage.
      5. Choose only Apple-approved reasons truthfully matching actual usage.
      6. Validate manifest.
-   - Do NOT prefill specific reasons (e.g. `CA92.1`, `35F9.1`, `C617.1`, `E174.1`) as universal rules without code justification.
-   - Do NOT hard-code `NSPrivacyTracking = false` as permanent truth; declaration must match actual data behavior.
+   - Specific reasons (e.g. `CA92.1`, `35F9.1`) are declared ONLY when justified by actual code/SDK inspection.
+   - `NSPrivacyTracking` is declared truthfully based on runtime data behavior, not an assumed static value.
 3. **Third-Party Apple SDK Governance:**
    - Audit linked SDKs against Apple's list of SDKs requiring privacy manifests and signatures. (Verify list live against official Apple Developer portal).
 4. **Sign in with Apple (Guideline 4.8):**
    - If third-party social logins are offered, evaluate Guideline 4.8 and its exceptions against the actual authentication configuration.
 5. **Account Deletion (Guideline 5.1.1v):**
-   - Allow people to initiate account deletion in-app. Deletion may be asynchronous/manual if reasonable and transparent. Respect legally required data retention.
+   - If account creation exists: allow people to initiate account deletion in-app. Deletion may be asynchronous/manual if reasonable and transparent. Respect legally required data retention.
 
 ---
 
@@ -509,6 +546,7 @@ Store review requires precise classification of transaction categories:
 +----------------------------------------------------------------------------------------------------+
 ```
 - **External Payment Methods:** A compatible external payment method or gateway may be used for property bookings subject to: current store policy, provider availability, geography, Egyptian legal/regulatory requirements, KONFRM product decisions, backend security, and commercial terms. Reverify before production launch.
+- **Legal/Regulatory Boundary:** Store policy is distinct from Egyptian law and commercial regulations. Payment gateway selection requires dedicated legal and tax evaluation: `LEGAL/REGULATORY REVIEW REQUIRED`. Agents must not claim regulatory compliance by inference.
 
 ---
 
@@ -526,40 +564,43 @@ Store review requires precise classification of transaction categories:
 ## 8. SECURITY & SUPPLY CHAIN GOVERNANCE ARCHITECTURE
 
 ### 8.1 Mobile Security Baseline: OWASP MASVS v2.0
-Client security is audited against **OWASP MASVS v2.0**:
+Client security is audited against **OWASP MASVS v2.0** (used as a selected engineering and verification baseline, not an external compliance claim):
 - **MASVS-STORAGE:** Sensitive credentials (auth tokens, refresh tokens) use the KONFRM secure-storage abstraction backed by platform-appropriate protected storage (e.g. Android KeyStore, iOS Keychain). Plaintext SharedPreferences / NSUserDefaults are forbidden for secrets. Obscure sensitive views in app switcher where appropriate.
 - **MASVS-CRYPTO:** Platform-native cryptographic primitives only; zero custom algorithms or hardcoded keys.
 - **MASVS-AUTH:** Non-rotating refresh token semantics are the accepted Auth Canon. Security skills may flag risk as advisories, but may NOT rewrite accepted auth behavior without an explicit architecture/security/product decision.
 - **MASVS-NETWORK:** HTTPS/TLS with modern secure configuration. Cleartext HTTP blocked in platform security configs. Zero bypassing of certificate trust verification.
 - **MASVS-PLATFORM:** Strict deep-link URI validation via route guards. Least-privilege platform permissions.
-- **MASVS-CODE:** R8 code shrinking and symbol obfuscation enabled for release builds. Debugging flags stripped in production.
+- **MASVS-CODE & Release Hardening:**
+  - *Android Native Shell:* ProGuard / R8 bytecode shrinking and keep rules applied where appropriate and supported by Flutter tooling; release artifact behavior verified. (R8 shrinks JVM/native-shell bytecode; it is NOT equivalent to Dart symbol obfuscation).
+  - *Dart Obfuscation:* Dart obfuscation is a separate optional release-hardening decision. If considered, evaluate crash symbolication, split-debug-info, support workflows, and build operations. It is not a mandatory security control without a dedicated project decision.
+  - *iOS:* Governed by current iOS release, compiler, and codesigning behavior.
 
 ### 8.2 Backend & Edge Security Baseline
 Governed by `konfrm-backend`:
 - **Supabase Row-Level Security (RLS):** User-accessible and exposed data surfaces must be protected by appropriate RLS or equivalent server-only isolation. Private schemas and server-only tables use appropriate controls. The `service_role` key is NEVER exposed to client code.
-- **Cloudflare Worker Proxying:** Edge proxy sanitizes incoming headers before forwarding to Supabase REST. (Enhancements such as rate limiting are categorized as CURRENT IMPLEMENTATION, SECURITY RECOMMENDATION, or FUTURE HARDENING based on physical code reality).
+- **Cloudflare Worker Proxying:** Edge proxy sanitizes incoming headers before forwarding to Supabase REST. (Enhancements such as rate limiting are categorized as CURRENT_VERIFIED, REQUIRED_ARCHITECTURE, RECOMMENDED_HARDENING, or FUTURE_CAPABILITY based on physical code reality).
 
-### 8.3 Secure Software Development Lifecycle: NIST SSDF 1.1
-Aligned with **NIST SP 800-218 (SSDF 1.1)**:
-- **Prepare the Organization (PO):** Security invariants documented in Canon; authority separation enforced.
-- **Protect the Software (PS):** Branch protection, signed commits, zero secrets in source code, dependency vulnerability scanning.
-- **Produce Well-Secured Software (PW):** 4-phase RCA debugging, zero-warning static analysis, server-authoritative financials.
+### 8.3 Secure Software Development Lifecycle: NIST SSDF 1.1 Process Lens
+Aligned with **NIST SP 800-218 (SSDF 1.1)** as a process lens, not a source of manufactured mandatory controls:
+- **Prepare the Organization (PO):** Security invariants documented; domain-scoped authority enforced.
+- **Protect the Software (PS):** Branch protection, dependency vulnerability scanning, secrets isolation. (Controls like signed commits are adopted only when explicitly decided by project Canon).
+- **Produce Well-Secured Software (PW):** Systematic RCA debugging, static analysis gates, server-authoritative financials.
 - **Respond to Vulnerabilities (RV):** Documented vulnerability response runbooks.
 
 ### 8.4 Software Supply Chain & Dependency Governance
 
 #### 8.4.1 Static Analysis & Supply Chain Realities
-- **CodeQL Scope:** GitHub CodeQL does not currently support Dart/Flutter analysis. CodeQL may still protect supported repository languages (TypeScript in `admin-app/` and `backend/`). CodeQL passing does NOT equal full repository security.
+- **CodeQL Scope:** GitHub CodeQL does not currently support Dart/Flutter analysis. CodeQL protects supported repository languages (TypeScript in `admin-app/` and `backend/`). CodeQL passing does NOT equal full repository security.
 - **Dart Security Tooling:** The command `dart pub audit` does not exist. Dart pub surfaces known GitHub Advisory Database advisories during dependency resolution (`flutter pub get`). Dependency security relies on: `flutter pub get` advisory output, lockfile inspection, GitHub security capabilities, and verified third-party scanners only if separately approved.
 
-#### 8.4.2 Dependency Admission Gate
+#### 8.4.2 Dependency Risk Evaluation Model
 Adding a new third-party dependency requires risk-based evaluation across:
-1. **Necessity & Alternatives:** Can the functionality be achieved with existing dependencies or minimal first-party code?
+1. **Necessity & Alternatives:** Can functionality be achieved with existing dependencies or minimal first-party code?
 2. **Maintainer Identity & Health:** Verified publisher, active maintenance, and release cadence.
-3. **Security Posture:** Zero open, unpatched high-severity CVEs.
+3. **Vulnerability Evaluation:** Detect known advisories; determine whether affected versions are used; evaluate applicability, reachability, and exploitability where possible; prefer fixed versions. Unresolved materially applicable high/critical risk blocks admission unless explicitly accepted by authorized project/security authority. (A non-reachable transitive advisory is not identical to an exploitable direct vulnerability, but advisories must never be silently suppressed).
 4. **License Compatibility:** Evaluated legally and technically for project suitability.
 5. **Transitive Footprint:** Scope of transitive dependencies, native C/C++ code inclusion, platform permissions, and binary size impact.
-6. **Lockfile & Version Constraints:** Ecosystem-appropriate constraints using lockfiles. Critical native or store-sensitive dependencies may justify stricter pinning while balancing security updates.
+6. **Lockfile & Constraints:** Ecosystem-appropriate constraints using lockfiles. Critical native or store-sensitive dependencies may justify stricter pinning while balancing security updates.
 
 
 ## 9. PROJECT MEMORY & CONTEXT ROUTING ARCHITECTURE
@@ -571,7 +612,8 @@ Adding a new third-party dependency requires risk-based evaluation across:
 | 1. MACHINE ROUTER LAYER: .agents/CONTEXT_MAP.yaml                                                  |
 | Format: High-density, machine-parseable YAML. Contains locators and routing metadata ONLY.          |
 | Contains ZERO duplicated business rules or design values.                                          |
-| Purpose: Deterministic routing table mapping file paths, surfaces, and intents to domain brains.   |
+| Purpose: Deterministic routing table mapping file paths, surfaces, roles, and mission contracts to |
+|          domain brains.                                                                            |
 +----------------------------------------------------------------------------------------------------+
                                                   |
 +-------------------------------------------------v--------------------------------------------------+
@@ -589,33 +631,45 @@ Trigger paths in `.agents/CONTEXT_MAP.yaml` reflect actual repository topology:
 - **`mobile/**` (Future `mobile/customer_app`, `mobile/owner_app`, `mobile/packages`):** Triggers `konfrm-flutter`.
 - **`DESIGN_SYSTEM/**`:** Triggers `konfrm-design`.
 - **`docs/**`:** Triggers `konfrm-product` for business rules, `docs/architecture/` for architecture boundaries.
-- **Combined Signals Routing:** Routes by combined signals: file scope + task intent + surface + role + risk + Bridge contract. Naive keyword matching alone is strictly avoided.
+- **Combined Signals Routing:** Routes by combined signals: exact file scope + task intent + product surface + role + risk + active mission contract. Naive keyword matching alone is strictly avoided.
 
-### 9.3 Knowledge Freshness Model (`KONFRM_KNOWLEDGE_FRESHNESS_V1`)
+### 9.3 Four Principal Knowledge Classes
 
 ```
 +----------------------------------------------------------------------------------------------------+
-| 1. PROJECT_CANON_STABLE (Foundational Invariants)                                                  |
-| Business rules, DF2 identity, Cairo Arabic RTL, 3-role models, server-authoritative financials.    |
+| 1. PROJECT_CANON                                                                                   |
+| Authoritative project, product, design, and architecture decisions.                                |
 | Refresh Rule: Modified ONLY by explicit Founder decision.                                          |
 +----------------------------------------------------------------------------------------------------+
                                                   |
 +-------------------------------------------------v--------------------------------------------------+
-| 2. ENGINEERING_PRACTICE_PINNED (Stable Technical Standards)                                        |
-| Riverpod patterns, 4-phase RCA debugging, manual DTO mapping, conventional commits, MASVS.         |
+| 2. REPOSITORY_REALITY_DYNAMIC                                                                      |
+| What currently exists physically at an exact Git commit / runtime environment.                     |
+| Required Rule: NEVER infer CURRENT implementation from intended architecture. Inspect source, pin |
+|                exact commit/HEAD, and use runtime/backend evidence. Changes every commit.          |
++----------------------------------------------------------------------------------------------------+
+                                                  |
++-------------------------------------------------v--------------------------------------------------+
+| 3. ENGINEERING_METHOD_PINNED                                                                       |
+| Audited methods, standards, and patterns chosen to improve execution (e.g. 4-phase RCA, MASVS).    |
 | Refresh Rule: Updated via reviewed architecture PRs. Anchored to pinned references.                |
 +----------------------------------------------------------------------------------------------------+
                                                   |
 +-------------------------------------------------v--------------------------------------------------+
-| 3. VOLATILE_EXTERNAL_POLICY (Living External Mandates)                                             |
-| Google Play Target API requirements, Apple App Store Guidelines, Xcode SDK baselines, 16 KB pages. |
-| Refresh Rule: NEVER treated as permanent Canon. Must be verified LIVE against official consoles.   |
+| 4. VOLATILE_EXTERNAL_REQUIREMENT                                                                   |
+| Live store, platform, and regulatory requirements (e.g. Google Play Target API, Xcode SDK minimums).|
+| Refresh Rule: NEVER treated as permanent Canon. Must be verified LIVE against official sources.     |
 | Volatile Storage Schema:                                                                           |
 |   status: VERIFIED_CURRENT                                                                         |
 |   verified_on: YYYY-MM-DD                                                                          |
 |   official_source: "<Official URL or Console>"                                                     |
 |   observed_requirement: "<Exact Requirement>"                                                      |
 |   reverify_before: "<Release Milestone>"                                                           |
++----------------------------------------------------------------------------------------------------+
+                                                  |
++-------------------------------------------------v--------------------------------------------------+
+| (OPTIONAL) OPEN_DECISION                                                                           |
+| Unresolved questions or choices awaiting Founder adjudication. Never coerced into the other four.  |
 +----------------------------------------------------------------------------------------------------+
 ```
 
@@ -638,11 +692,11 @@ Trigger paths in `.agents/CONTEXT_MAP.yaml` reflect actual repository topology:
 The system will be evaluated across 8 concrete evaluation suites:
 1. **Routing Eval:** Feature tasks route to the appropriate domain brain and load relevant references based on combined signals.
 2. **Negative Routing Eval:** Backend SQL tasks do not activate frontend UI skills.
-3. **Canon Conflict Eval:** Agent rejects requests that violate Canon (e.g. unapproved colors or unvetted foreign tokens).
+3. **Canon Conflict Eval:** Agent rejects requests that violate Canon (e.g. unapproved colors or foreign tokens).
 4. **Memory Retrieval Eval:** Product brain retrieves accurate business rules directly from `docs/BUSINESS_RULES.md` without hallucinations.
 5. **Store Policy Freshness Eval:** Verifies correct understanding of physical accommodation payment exemptions under Apple Guideline 3.1.5b.
 6. **Security Surface Eval:** Mandates secure-storage abstraction for credentials; rejects plaintext local storage.
-7. **Completion Honesty Eval:** Refuses to bypass failing tests without completing 4-phase RCA debugging.
+7. **Completion Honesty Eval:** Refuses to declare tasks complete without credible oracle reproduction and verification.
 8. **Context Efficiency Eval:** Measures actual context signals (files opened, references loaded, routing steps) rather than unmeasured token percentages.
 
 
@@ -658,7 +712,7 @@ The previous 3-skill pilot (`systematic-debugging`, `widget-testing`, `static-an
 
 ### 12.2 Staged 8-Stage Rollout Sequence (Stage A through Stage H)
 - **Stage A (Completed):** Freeze state; verify PR #100 frozen at `24269f2fe638c2846d053e03dafdf27c50652cda`; PR #99 untouched.
-- **Stage B (Current Milestone):** Adopt purified Blueprint; submit for Final Bridge Approval.
+- **Stage B (Current Milestone):** Finalize Epistemic Authority Model; freeze Blueprint (`READY_FOR_RUNTIME_BRAIN_AUTHORING`).
 - **Stage C:** Author draft modules for `konfrm-quality` and `konfrm-flutter`; modernize scripts.
 - **Stage D:** Deploy router metadata and non-authoritative Project Compass.
 - **Stage E:** Run evaluation benchmark against pilot deployment.
@@ -669,19 +723,24 @@ The previous 3-skill pilot (`systematic-debugging`, `widget-testing`, `static-an
 
 ## 13. QUALITY BAR REVIEW & FINAL DECLARATIONS
 
-### 13.1 Verification Against Remediation Directives
-- **Business Canon Purified:** Invented booking state machine and generalized financial formulas removed. Product brain owns interpretation and retrieval from authoritative Canon.
-- **Financial Authority Separated:** Structured as DEFINE (Canon/Product) -> IMPLEMENT (Backend) -> VERIFY (Quality) -> RELEASE (Delivery).
-- **Ownership V2 Applied:** Cross-domain concepts separated across DEFINE, REPRESENT, IMPLEMENT, VERIFY.
-- **Flutter Architecture Corrected:** Feature-first with `presentation / application / data` (no mandatory domain layer), manual DTO mapping, Riverpod, go_router, secure-storage abstraction.
-- **Auth Canon Corrected:** Non-rotating refresh token semantics preserved as accepted Canon.
-- **Deep Link Corrected:** Concrete URL scheme remains deferred until canonical establishment.
-- **Design Canon Purified:** Invented tokens, universal motion caps, and manufactured states removed. Open values remain `OPEN`. Touch guidance reflects platform norms (~48dp Android, ~44pt iOS).
-- **Applicable Truthful States:** Components implement only states in their product contract.
-- **Context Metrics Corrected:** Arbitrary line caps and unmeasured token claims removed; minimal sufficient context enforced.
-- **Store Policies Verified:** Apple Xcode 26+ / iOS 26 SDK+ requirement noted as volatile policy. Google Play API 36+ and 16 KB page size requirements accurately documented. Physical accommodation payment exemption correctly framed.
-- **Security & Supply Chain Grounded:** `dart pub audit` removed; real Dart dependency resolution advisory tools cited. CodeQL limitations on Dart accurately specified. Risk-based dependency admission established.
-- **Project Compass & Context Map Grounded:** Compass is a non-authoritative retrieval compass; Context Map contains locators and routing metadata reflecting physical repo paths.
+### 13.1 Verification Against Epistemic & Authority Directives
+- **Domain-Scoped Authority Established:** Global linear authority replaced with 4 distinct jurisdictions: Product/Business, Mandatory Platform/Store, Security, and Repository Reality.
+- **Authority by Question Mapped:** Standardized epistemic lookup table established for agents.
+- **Dynamic Repository Reality Integrated:** `REPOSITORY_REALITY_DYNAMIC` defined with strict rule: never infer current implementation from intended architecture.
+- **Four Knowledge Classes Defined:** `PROJECT_CANON`, `REPOSITORY_REALITY_DYNAMIC`, `ENGINEERING_METHOD_PINNED`, `VOLATILE_EXTERNAL_REQUIREMENT` (plus `OPEN_DECISION`).
+- **Product Scope Disambiguated:** Product brain owns product goals, business semantics, role intent, and documented market assumptions; does not define technical security controls or WCAG standards.
+- **Accessibility & Security Ownership Separated:** Ownership V2 maps DEFINE, REPRESENT, IMPLEMENT, VERIFY across Product, Design, Implementation, and Quality.
+- **RCA Oracle Model Grounded:** `REPRODUCE WITH THE SMALLEST CREDIBLE ORACLE` adopted; test dogma eliminated.
+- **Static Analysis Gate Grounded:** Surface-specific analyzer execution (`flutter analyze` vs `dart analyze`) adopted; no skill-invented analyzer policy.
+- **Release Hardening Disambiguated:** ProGuard/R8 JVM bytecode shrinking separated from optional Dart symbol obfuscation.
+- **NIST SSDF Process Lens:** SSDF used as a process lens; no manufactured mandatory controls (signed commits removed).
+- **Migration Reality Grounded:** Reversible rollback requirement replaced with safe, tested, ordered migrations with explicit recovery strategies.
+- **Admin UX Grounded:** Admin invariant established as operational clarity, useful density, auditability, and safe actionability; tables/filters treated as task patterns, not universal mandates.
+- **Store Policies Verified:** Apple Xcode 26+ / iOS 26 SDK+ and Google Play API 36+ documented as live volatile snapshots with official verification dates.
+- **Android vs Google Play Disambiguated:** Account deletion correctly classified as a conditional Google Play store policy, not an Android OS requirement.
+- **Compose Authority Positioned:** Jetpack Compose classified as `NOT A KONFRM FLUTTER IMPLEMENTATION AUTHORITY`.
+- **Dependency Risk Model Refined:** Advisories evaluated by reachability and exploitability; zero silent suppression.
+- **Project Compass Role Preserved:** Explicitly defined as a `NON-AUTHORITATIVE RETRIEVAL COMPASS`.
 
 ---
 
@@ -695,5 +754,5 @@ The previous 3-skill pilot (`systematic-debugging`, `widget-testing`, `static-an
 ---
 
 ```yaml
-DECLARATION: KONFRM_ENGINEERING_INTELLIGENCE_BLUEPRINT_CANDIDATE_FOR_FINAL_BRIDGE_APPROVAL
+DECLARATION: KONFRM_ENGINEERING_INTELLIGENCE_BLUEPRINT_READY_FOR_RUNTIME_BRAIN_AUTHORING
 ```

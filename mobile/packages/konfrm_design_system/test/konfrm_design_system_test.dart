@@ -442,6 +442,34 @@ void main() {
       final icons = tester.widgetList<Icon>(find.byType(Icon)).toList();
       expect(icons[0].color, ValidationReferenceOnly.text);
       expect(icons[1].color, ValidationReferenceOnly.interaction);
+
+      int ordinaryTapped = 0;
+      await tester.pumpWidget(
+        host(
+          IconActionButton(
+            icon: Icons.close,
+            semanticLabel: 'إجراء عادي',
+            onPressed: () => ordinaryTapped++,
+          ),
+        ),
+      );
+
+      final ordinaryFinder = find.bySemanticsLabel('إجراء عادي');
+      final ordinarySemantics = tester.getSemantics(ordinaryFinder);
+      expect(
+        ordinarySemantics,
+        matchesSemantics(
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          isFocusable: true,
+          hasFocusAction: true,
+          label: 'إجراء عادي',
+        ),
+      );
+      await tester.tap(ordinaryFinder);
+      expect(ordinaryTapped, 1);
     },
   );
 

@@ -37,9 +37,12 @@ SCOPE: Phase 4I Native Flutter Foundation integration closure and publication pr
 - [x] PR #100 initial 5-finding P2 review remediation verified and committed (`f063807af9be68bb5b0f670ca53b58294d1c8c9e`): SearchField keyboard submission, CustomerBottomNavigation Bookings calendar icon, StateView live-region distinctions, SecondaryButton semantics boundary, and `mobile/README.md`.
 - [x] PR #100 SectionAlert P2 review remediation verified and committed (`97e09d80c6ccfb2c6dc863990042fe900319ac8e`): informational and error live announcements (`liveRegion: true`) with test matcher correction.
 - [x] PR #100 SearchField decorative-icon P2 review remediation verified, committed (`0576f06a8f7675ea558efd0188b8bf8bae2c1026`), and targeted physically revalidated on Samsung Galaxy A56 5G (`SM-A566B`, Android 16 / API 36): decorative icon excluded from semantics, test matcher updated with `hasSelectedState: true`, no standalone `بحث` node, clear action `مسح البحث` functional.
-- [x] Final package test suite `19/19 PASS` (`flutter test` in `mobile/packages/konfrm_design_system`) and package analyze `No issues found!`.
+- [x] Final package test suite `20/20 PASS` (`flutter test` in `mobile/packages/konfrm_design_system`) and package analyze `No issues found!`.
 - [x] Validation app test suite `6/6 PASS` (`flutter test` in `mobile/apps/design_system_validation`) and app analyze `No issues found!`.
-- [x] P1 final-tree physical Android targeted revalidation on Samsung Galaxy A56 5G (`SM-A566B`, Android 16 / API 36) `CLOSED` (`PASS_WITH_LIMITATIONS` at final runtime-validated source head `0576f06a8f7675ea558efd0188b8bf8bae2c1026`).
+- [x] P1 final-tree physical Android targeted revalidation on Samsung Galaxy A56 5G (`SM-A566B`, Android 16 / API 36) `CLOSED`:
+  - `PHYSICAL_ANDROID_INTERACTION = PASS` (SearchField text clear demonstrated; Back and Close ordinary buttons demonstrated clickable and activated).
+  - `FLUTTER_SELECTED_STATE_SEMANTICS = PASS` (verified by explicit test assertions: ordinary `IconActionButton` and `SearchField` clear controls omit `hasSelectedState` capability entirely; toggle selection capability present only on explicit toggles).
+  - `TALKBACK_SPOKEN_OUTPUT = NOT_DIRECTLY_VERIFIED` (explicit Founder-approved adjustment: manual auditory confirmation not performed; broader accessibility testing preserved as ongoing product-quality requirement).
 - [x] SectionAlert informational runtime scenario limitation recorded (`INFORMATIONAL_SECTIONALERT_RUNTIME_SCENARIO = NOT_REPRESENTED / TEST_BACKED`).
 - [x] PR #100 remains OPEN and mergeable.
 

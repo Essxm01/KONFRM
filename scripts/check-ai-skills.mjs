@@ -258,6 +258,28 @@ if (!fs.existsSync(CANONICAL_DIR)) {
     pass('Context map physical paths and heading anchor locators validated.');
   }
 
+  // B3. Validate Antigravity native routing rule (.agents/rules/konfrm-skill-routing.md)
+  const AGY_RULE_PATH = path.join(projectRoot, '.agents', 'rules', 'konfrm-skill-routing.md');
+  if (!fs.existsSync(AGY_RULE_PATH)) {
+    fail(`Antigravity native routing rule missing: .agents/rules/konfrm-skill-routing.md`);
+  } else {
+    const ruleText = fs.readFileSync(AGY_RULE_PATH, 'utf8');
+    if (!ruleText.includes('.agents/SKILL_ROUTER.md')) {
+      fail(`Antigravity routing rule does not point to .agents/SKILL_ROUTER.md`);
+    }
+    // Check that rule remains a compact pointer and does not duplicate Canon/Router/Business logic
+    if (ruleText.length > 1500) {
+      fail(`Antigravity routing rule is too large (${ruleText.length} chars). It must remain a minimal pointer.`);
+    }
+    const forbiddenDuplicates = ['Table of Contents', 'EVIDENCE_TREE', 'DEPOSIT_RELEASE_POLICY', 'PAYMENT_CAPTURE_POLICY'];
+    for (const token of forbiddenDuplicates) {
+      if (ruleText.includes(token)) {
+        fail(`Antigravity routing rule duplicates internal Canon/Router content: ${token}`);
+      }
+    }
+    pass('Antigravity native routing rule validated (.agents/rules/konfrm-skill-routing.md points to router, zero duplicate Canon).');
+  }
+
   // C. Check .agents/skills (canonical shims + manifest-registered native runtime brains)
   if (!fs.existsSync(AGENTS_DIR)) {
     fail(`Target directory does not exist: .agents/skills`);

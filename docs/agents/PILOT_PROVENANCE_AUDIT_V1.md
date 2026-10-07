@@ -90,3 +90,17 @@ In accordance with the Minimal Sufficient Runtime Context principle, this proven
   - Physical reality: Passing local unit/widget tests does not equal physical runtime device verification.
   - Multi-platform isolation: Android TalkBack passes do not equal iOS VoiceOver compliance.
 - **KONFRM Adaptation:** Codified as hard invariants in both `konfrm-flutter` and `konfrm-quality`.
+
+---
+
+### 2.6 Antigravity-Native Routing Architecture & Provenance (Phase A)
+- **Official Host Reference:** Antigravity Customization System (`agy-customizations` and `docs/rules.md`).
+- **Rule Convention:** Official hierarchical directory rules path `.agents/rules/*.md` discovered by walking up from the current directory to repository root.
+- **Delivery Architecture:**
+  - Codex Host: Directly consumes root `AGENTS.md` Mandatory Universal Core instruction pointing to `.agents/SKILL_ROUTER.md`.
+  - Antigravity Host: Automatically discovers persistent workspace rule `.agents/rules/konfrm-skill-routing.md` pointing to `.agents/SKILL_ROUTER.md`.
+  - Shared Single Truth: `.agents/SKILL_ROUTER.md` remains the sole routing intelligence file; zero Router, Canon, or Business Rule duplication in host entry points.
+- **Discovery Taxonomy & Classification:**
+  - `CODEX_DETERMINISTIC_ROUTING_PASS`: Verified via deterministic pointer in `AGENTS.md` and narrowed legacy frontmatter exclusions.
+  - `ANTIGRAVITY_NATIVE_ROUTING_ARCHITECTURE_PASS`: Verified via native `.agents/rules/konfrm-skill-routing.md` rule existence, valid target path, zero duplicate Canon, and passing automated policy validator.
+  - `ANTIGRAVITY_LIVE_DISCOVERY_PENDING_PUBLICATION`: Because Antigravity host runtime scans the active workspace root (`KONFRM-CANONICAL`) and branch `chore/agent-skills-governance-v1` remains in an isolated development worktree awaiting bridge review, live auto-discovery into host session prompts is pending merge/publication. No false pass is claimed.

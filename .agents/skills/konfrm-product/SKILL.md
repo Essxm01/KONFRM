@@ -84,7 +84,7 @@ KONFRM is a three-role marketplace. Each role has fundamentally distinct psychol
 - **Key Invariants:**
   - High-utility operational instrument: zero decorative marketing fluff or hero photography.
   - Action-First Hub: customer-style bottom navigation is strictly prohibited on Owner mobile.
-  - Anti-card soup: related operational rows share a single structural container (12px provisional radius).
+  - Anti-card soup: related operational rows share a single structural container (presentation geometry and border-radius tokens governed by `konfrm-design`).
   - Financial certainty: distinct balance buckets (Available, Pending release clock, Held, Reserved) derived strictly from the server ledger; never reconstructed locally.
 
 ### 3. Admin (Platform Reviewer & Operator)

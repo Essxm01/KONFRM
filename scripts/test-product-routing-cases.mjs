@@ -137,13 +137,28 @@ function deriveEpistemicClassification(tc, canon) {
     return row || '';
   };
 
-  // Case-specific Canon evaluation
+  // Extract a markdown section strictly bounded by its ## heading up to the next ## heading
+  const getMarkdownSection = (text, heading) => {
+    const lines = text.split(/\r?\n/);
+    const startIdx = lines.findIndex((l) => l.trim() === `## ${heading}`);
+    if (startIdx === -1) return '';
+    const sectionLines = [];
+    for (let i = startIdx + 1; i < lines.length; i++) {
+      if (lines[i].startsWith('## ')) break;
+      sectionLines.push(lines[i]);
+    }
+    return sectionLines.join('\n');
+  };
+
+  // Case-specific Canon evaluation strictly bounded to the governing section
   if (tc.id === 'POS-1') {
     // Governed by MR-12 and Booking lifecycle section
     const mr12Row = getMasterRuleRow('MR-12');
     const isMR12Confirmed = mr12Row.includes('Confirmed');
-    const hasBrBookingClause = /## Booking lifecycle and availability[\s\S]*?not for `?PENDING_OWNER_APPROVAL`?/i.test(br);
-    const hasRetBookingClause = ret.includes('PENDING_OWNER_APPROVAL') && ret.includes('DO NOT BLOCK');
+    const brBookingSection = getMarkdownSection(br, 'Booking lifecycle and availability');
+    const hasBrBookingClause = /not for `?PENDING_OWNER_APPROVAL`?/i.test(brBookingSection);
+    const retBookingSection = getMarkdownSection(ret, '2. BOOKING LIFECYCLE & INVENTORY HOLD RETRIEVAL');
+    const hasRetBookingClause = retBookingSection.includes('PENDING_OWNER_APPROVAL') && retBookingSection.includes('DO NOT BLOCK');
     if (isMR12Confirmed && hasBrBookingClause && hasRetBookingClause) {
       return 'ACCEPTED_CANON';
     }
@@ -151,11 +166,14 @@ function deriveEpistemicClassification(tc, canon) {
   }
 
   if (tc.id === 'POS-2') {
-    // Governed by MR-16 and Owner wallet and ledger section
+    // Governed by MR-16 and Owner wallet and ledger section (strictly bounded before next ## heading)
     const mr16Row = getMasterRuleRow('MR-16');
     const isMR16Confirmed = mr16Row.includes('Confirmed');
-    const hasBrLedgerClause = /## Owner wallet and ledger[\s\S]*?release-clock/i.test(br);
-    const hasRetLedgerClause = ret.includes('pending_balance') && /release clock/i.test(ret);
+    const brLedgerSection = getMarkdownSection(br, 'Owner wallet and ledger');
+    const hasBrLedgerClause = /credited to \*\*pending\*\* balance once/i.test(brLedgerSection) &&
+                              /moves from Pending to Available/i.test(brLedgerSection);
+    const retLedgerSection = getMarkdownSection(ret, '4. OWNER WALLET, LEDGER & PAYOUT RETRIEVAL');
+    const hasRetLedgerClause = retLedgerSection.includes('pending_balance') && /moves from Pending to Available/i.test(retLedgerSection);
     if (isMR16Confirmed && hasBrLedgerClause && hasRetLedgerClause) {
       return 'ACCEPTED_CANON';
     }
@@ -166,8 +184,10 @@ function deriveEpistemicClassification(tc, canon) {
     // Governed by MR-15 and Needs product confirmation section
     const mr15Row = getMasterRuleRow('MR-15');
     const isMR15Open = mr15Row.includes('Open');
-    const hasBrOpenCancellation = /## Needs product confirmation[\s\S]*?renter cancellation\/refund matrix/i.test(br);
-    const hasRetOpenCancellation = ret.includes('Renter Cancellation & Refund Matrix') && ret.includes('OPEN / UNRESOLVED');
+    const brOpenSection = getMarkdownSection(br, 'Needs product confirmation');
+    const hasBrOpenCancellation = /renter cancellation\/refund matrix/i.test(brOpenSection);
+    const retOpenSection = getMarkdownSection(ret, '5. CANCELLATION & REFUND POLICY RETRIEVAL (HANDLING OPEN POLICY)');
+    const hasRetOpenCancellation = retOpenSection.includes('Renter Cancellation & Refund Matrix') && retOpenSection.includes('OPEN / UNRESOLVED');
     if (isMR15Open && hasBrOpenCancellation && hasRetOpenCancellation) {
       return 'OPEN_ASSUMPTION';
     }
@@ -179,9 +199,12 @@ function deriveEpistemicClassification(tc, canon) {
     const mr10Row = getMasterRuleRow('MR-10');
     const isMR10Confirmed = mr10Row.includes('Confirmed');
     const hasIdentityInMR = /One human can be Customer plus optional Owner/i.test(mr10Row);
-    const hasRetIdentityClause = /`?users`? represents human identity/i.test(ret) &&
-                                 /`?owners`? is an optional capability/i.test(ret);
-    if (isMR10Confirmed && hasIdentityInMR && hasRetIdentityClause) {
+    const brIdentitySection = getMarkdownSection(br, 'Identity and access');
+    const hasBrIdentityClause = /`?users`? represents a human identity;\s*`?owners`? is an optional extension/i.test(brIdentitySection);
+    const retIdentitySection = getMarkdownSection(ret, '6. IDENTITY, PRIVACY & COMMUNICATION BOUNDARIES');
+    const hasRetIdentityClause = /`?users`? represents human identity/i.test(retIdentitySection) &&
+                                 /`?owners`? is an optional capability/i.test(retIdentitySection);
+    if (isMR10Confirmed && hasIdentityInMR && hasBrIdentityClause && hasRetIdentityClause) {
       return 'ACCEPTED_CANON';
     }
     return 'UNCERTAIN_CANON';
@@ -191,8 +214,10 @@ function deriveEpistemicClassification(tc, canon) {
     // Governed by MR-15 and remaining balance openness
     const mr15Row = getMasterRuleRow('MR-15');
     const isMR15Open = mr15Row.includes('Open');
-    const hasBrOpenRemaining = /## Needs product confirmation[\s\S]*?remaining-balance payment method/i.test(br);
-    const hasRetOpenRemaining = ret.includes('OPEN / UNCONFIRMED');
+    const brOpenSection = getMarkdownSection(br, 'Needs product confirmation');
+    const hasBrOpenRemaining = /remaining-balance payment method/i.test(brOpenSection);
+    const retOpenSection = getMarkdownSection(ret, '5. CANCELLATION & REFUND POLICY RETRIEVAL (HANDLING OPEN POLICY)');
+    const hasRetOpenRemaining = /payment method for the remaining balance[\s\S]*?OPEN \/ UNCONFIRMED/i.test(retOpenSection);
     if (isMR15Open && hasBrOpenRemaining && hasRetOpenRemaining) {
       return 'OPEN_ASSUMPTION';
     }
@@ -396,6 +421,8 @@ const prohibitedNumericHardcodes = [
   'Nightly rate × nights',
   'PENDING_OWNER_APPROVAL -> APPROVED_PENDING_PAYMENT',
   'equal to the first-night price',
+  'first-night deposit amount',
+  '12px',
 ];
 
 for (const mod of allProductModules) {
@@ -649,6 +676,34 @@ if (mentalModelsContent.includes('Decisions are enforced through canonical platf
   fail('[REG-17] Dispute resolution protocol missing BLOCKED / OPEN classification and Completion Matrix anchor');
 }
 
+// REG-18: Zero Design Token Pixel Geometry in Product Brain (Presentation geometry delegated to konfrm-design)
+let reg18Passed = true;
+for (const mod of allProductModules) {
+  if (/\b\d+px\b/i.test(mod.text)) {
+    fail(`[REG-18] Hardcoded pixel design token found in ${mod.name} — presentation geometry must be delegated to konfrm-design`);
+    reg18Passed = false;
+  }
+}
+if (reg18Passed && productSkillContent.includes('governed by `konfrm-design`') && mentalModelsContent.includes('governed by `konfrm-design`')) {
+  pass('[REG-18] Design Token Boundary: Zero hardcoded pixel geometry in Product Brain; delegated to konfrm-design');
+} else if (reg18Passed) {
+  fail('[REG-18] Product Brain missing explicit geometry delegation to konfrm-design');
+}
+
+// REG-19: Zero Control Characters in Product Brain Files
+let reg19Passed = true;
+for (const mod of allProductModules) {
+  if (/[\x00-\x08\x0B\x0C\x0E-\x1F]/.test(mod.text)) {
+    fail(`[REG-19] Control character detected in ${mod.name}`);
+    reg19Passed = false;
+  }
+}
+if (reg19Passed && mentalModelsContent.includes('`backend/server/src/app.ts:2997-3045`')) {
+  pass('[REG-19] Control-Character Hygiene: Zero control characters across all Product Brain modules; paths clean');
+} else if (reg19Passed) {
+  fail('[REG-19] Clean backend path `backend/server/src/app.ts:2997-3045` missing in role_mental_models.md');
+}
+
 // 7. Negative Test Harness: Verify Evaluator Fails Closed on Corrupted Input
 console.log('--- [NEGATIVE TEST HARNESS: FAIL-CLOSED VERIFICATION] ---');
 let harnessFailures = 0;
@@ -733,6 +788,24 @@ try {
 } catch (err) {
   harnessFailures++;
   fail(`Negative Harness 4 unexpected error: ${err.message}`);
+}
+
+// Harness 5: Section-Bounded Ledger Clause Loss (Removing Pending-to-Available bullet in Owner wallet section must fail closed)
+try {
+  const fakeCanon = {
+    ...canonContext,
+    businessRulesContent: canonContext.businessRulesContent.replace(/-\s*\*\*Confirmed prototype accounting rule:\*\*[\s\S]*?\r?\n/, ''),
+  };
+  const derivedEpistemic = deriveEpistemicClassification(testCases[1], fakeCanon);
+  if (derivedEpistemic === testCases[1].expectedEpistemic) {
+    harnessFailures++;
+    fail('Negative Harness 5: Epistemic check leaked across markdown section boundary when ledger release rule was removed');
+  } else {
+    pass('Negative Harness 5: Section-bounded epistemic check failed closed when Pending-to-Available release rule was removed from Owner wallet section');
+  }
+} catch (err) {
+  harnessFailures++;
+  fail(`Negative Harness 5 unexpected error: ${err.message}`);
 }
 
 if (harnessFailures > 0) {

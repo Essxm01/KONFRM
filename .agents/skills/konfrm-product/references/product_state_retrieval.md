@@ -37,7 +37,7 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
    - **Crucial Invariant:** Instant booking does **NOT** exist in KONFRM. A submission is strictly a request awaiting Owner evaluation.
 2. **Inventory Blocking States Retrieval:**
    - **DO NOT BLOCK:** `PENDING_OWNER_APPROVAL` does **NOT** block dates on the property calendar. Other guests may inquire or request overlapping dates.
-   - **BLOCK INVENTORY:** Retrieve inventory-blocking states dynamically from `docs/BUSINESS_RULES.md` (Section: Booking lifecycle and availability) and MR-12 (e.g. `APPROVED_PENDING_PAYMENT` and `CONFIRMED`). Inventory is held only once an eligible booking reaches an approved or confirmed state per Canon.
+   - **BLOCK INVENTORY:** Retrieve inventory-blocking states dynamically from `docs/BUSINESS_RULES.md` (Section: Booking lifecycle and availability) and MR-12. Inventory is held only once an eligible booking reaches an approved or confirmed state per Canon.
    - Availability checks must revalidate atomically and fail closed on any collision.
 3. **Owner Decision Semantics:**
    - Retrieve the exact Owner-approval and rejection transition state names from `docs/BUSINESS_RULES.md` (Section: Booking lifecycle and availability) and MR-12. Semantically: Owner approval advances the request to the payment-eligible state; Owner rejection is a terminal decision.
@@ -60,7 +60,7 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
 1. **Customer Pricing Presentation:**
    - Always retrieve and display three distinct customer-relevant amounts from canonical server-side pricing calculations or booking financial summaries (never locally reconstructed from a naive nightly-rate formula):
      - **Total Stay Price:** Retrieved from canonical server-side quote / financial summary.
-     - **Upfront Deposit:** Retrieved from canonical quote (conceptually corresponds to the first-night deposit amount per MR-13).
+     - **Upfront Deposit:** Retrieved dynamically from canonical server-side quote / financial summary per Canon (retrieve current deposit policy from `docs/BUSINESS_RULES.md` and MR-13; never hardcode or duplicate the deposit calculation rule).
      - **Remaining Balance:** Total stay price minus upfront deposit.
 2. **Marketplace Commission & Splits (Internal Economics):**
    - Platform commission applies strictly to the deposit amount, never to the total stay price (MR-13). Retrieve exact commission percentage from `docs/BUSINESS_RULES.md` (Section: Prototype deposit payment) and MR-13.

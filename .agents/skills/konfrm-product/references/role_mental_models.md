@@ -75,7 +75,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
    - It must present: Guest count, Stay dates (check-in / check-out), Total Stay, Upfront Deposit, and **صافي مستحقاتك (Net Earnings / deposit entitlement, retrieved from Canon)**.
    - Action pair: Clear Primary Action (`قبول الطلب` - Accept) paired with Destructive Outline Action (`رفض` - Decline).
 4. **Anti-Card Soup Structural System:**
-   - Homogeneous operational rows (e.g., unit settings, payout configurations, property list items) share a single structural container (12px provisional radius) separated by hairlines.
+   - Homogeneous operational rows (e.g., unit settings, payout configurations, property list items) share a single structural container separated by hairlines (presentation geometry and border-radius tokens governed by `konfrm-design`).
    - Avoid creating separate nested cards for every line item.
 5. **Financial Certainty & Distinct Balance Buckets:**
    - Owners demand exact ledger reconciliation across four distinct canonical buckets (`owner_wallets`):
@@ -107,7 +107,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
    - Do not invent universal mandatory reason capture or fabricated operational friction.
 4. **Dispute Resolution Protocol:**
    - When a booking dispute arises, the Admin inspects timestamped event logs (booking creation, owner response, payment completion, check-in time, and in-app message logs).
-   - **Settlement Status Open / Blocked (OPEN_ASSUMPTION):** Dispute settlement and ledger-adjustment rules remain **BLOCKED / OPEN** pending approved cancellation and dispute contracts (docs/codex/KONFRM_COMPLETION_MATRIX.md:46, MR-15). The current /api/v1/admin/disputes/:id/resolve route returns a mock ledgerMutation without persisting canonical ledger adjustments (ackend/server/src/app.ts:2997-3045). Retrieve an approved Founder/Canon contract before prescribing or implementing refund, split, or fund-release ledger mutations.
+   - **Settlement Status Open / Blocked (`OPEN_ASSUMPTION`):** Dispute settlement and ledger-adjustment rules remain **BLOCKED / OPEN** pending approved cancellation and dispute contracts (`docs/codex/KONFRM_COMPLETION_MATRIX.md:46`, MR-15). The current `/api/v1/admin/disputes/:id/resolve` route returns a mock `ledgerMutation` without persisting canonical ledger adjustments (`backend/server/src/app.ts:2997-3045`). Retrieve an approved Founder/Canon contract before prescribing or implementing refund, split, or fund-release ledger mutations.
 
 ---
 

@@ -13,7 +13,7 @@ This reference defines the core right-to-left (RTL) layout semantics, bidirectio
 ## 1. Native Arabic-First Architecture
 
 Arabic is the primary native language of KONFRM. All interfaces are engineered RTL-native from inception:
-- **Reading Progression:** Natural eye scan flows from top-right to bottom-left.
+- **Reading Progression:** Arabic reading order is RTL; interface alignment and sequencing follow logical start/end while vertical page progression remains top-to-bottom.
 - **Direction-Relative Alignment:** All spatial positioning uses logical directional coordinates (`start` / `end`, `leading` / `trailing`) rather than hardcoded physical coordinates (`left` / `right`).
 - **Default Text Alignment:** Body text, headlines, form field labels, and descriptions are aligned to the logical `start` (RIGHT).
 
@@ -28,10 +28,11 @@ In DF2 §11, the doctrine of *"mirror everything"* is explicitly **NOT canonical
 - **List & Card Items:** Leading icons, avatars, and property thumbnails sit on the logical `start` (RIGHT). Trailing badges, action triggers, and chevron indicators sit on the logical `end` (LEFT).
 - **Form Controls:** Field labels align to the `start` (RIGHT); dropdown carets, clear buttons, and password-visibility toggles sit at the `end` (LEFT).
 
-### B. Elements That MUST NOT Be Mirrored (Exceptions):
-1. **Clockwise Circular Progress:** Spinners, pull-to-refresh rings, and circular loading indicators always rotate in standard clockwise direction.
-2. **Media Playback & Audio Timelines:** Media players, video progress bars, and audio waveforms follow platform-standard conventions and temporal flow rather than forced mirroring.
-3. **Charts & Spatial Maps:** Geographic maps and Cartesian coordinate axes preserve absolute spatial reality.
+### B. Platform Conventions & Semantic Exceptions (Do Not Blindly Mirror):
+- **Temporal & System Controls:** Do not blindly mirror temporal, circular, or platform-standard controls. Preserve current platform conventions unless product semantics require otherwise.
+- **System Progress Spinners:** Circular loading indicators and refresh spinners preserve standard platform rotation rather than being arbitrarily reversed.
+- **Media Timelines & Progress Bars:** Audio/video playback timelines, scrubbers, and waveforms follow platform-standard temporal progression.
+- **Maps & Absolute Coordinates:** Geographic maps and Cartesian coordinate axes preserve absolute spatial orientation.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: emil-wrapper
-description: "KONFRM-governed wrapper for Emil Kowalski's interaction design and animation principles. Provides guidelines for purposeful micro-interactions and tactile feedback while treating numeric duration and easing heuristics as candidates and forbidding motion that obstructs transactional workflows."
+description: "Reference only. Subordinated to konfrm-design. Advisory input on purposeful micro-interactions invoked only by konfrm-design when needed. Do not use as primary design authority; use konfrm-design."
 ---
 
 # Emil Kowalski Design Engineering — KONFRM Governed Wrapper

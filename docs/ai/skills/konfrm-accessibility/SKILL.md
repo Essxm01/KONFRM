@@ -1,6 +1,6 @@
 ---
 name: konfrm-accessibility
-description: "Use for accessibility design-policy interpretation and historical governed guidance. Do not use as the primary skill for Flutter implementation, Flutter semantics debugging, or runtime verification; use konfrm-flutter for implementation and konfrm-quality for verification."
+description: "Reference only. Consolidated into konfrm-design (references/accessibility_design.md). Do not use as primary design skill; use konfrm-design for design foundation authority, konfrm-flutter for implementation, and konfrm-quality for verification."
 ---
 
 # KONFRM Accessibility Engineering Standards

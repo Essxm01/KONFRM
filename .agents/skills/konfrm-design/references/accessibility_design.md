@@ -37,7 +37,7 @@ To maintain disciplined ergonomics without artificial constraints, distinguish b
 
 ### Hit Regions vs. Visual Geometry:
 - **High-Density Controls:** In dense operational layouts (Owner calendar date cells, compact Admin filter chips), visual graphics may be compact (e.g. 32px height) provided transparent touch hit delegation maintains a comfortable target region.
-- **Primary Buttons:** Mobile primary action controls must provide comfortable tap targets spanning full width or minimum 48dp height.
+- **Primary Action Targets:** Mobile primary action controls must provide comfortable tap regions aligned with platform recommendations (Google Material ~48dp, Apple HIG ~44pt). Actual control geometry follows governed component contracts and native hardware validation.
 
 ---
 
@@ -45,9 +45,11 @@ To maintain disciplined ergonomics without artificial constraints, distinguish b
 
 Assistive technologies (TalkBack on Android, VoiceOver on iOS) must receive complete, honest semantic descriptions:
 
-### A. Action Button vs. Toggle Semantics (Crucial Invariant):
-- **Ordinary Action Buttons:** For non-toggle action controls (e.g. "طلب حجز", "إغلاق", "رجوع"), the selected-state capability must be **COMPLETELY ABSENT** (`hasSelectedState = false`). It is NEVER acceptable to announce `isSelected == false` on an ordinary button.
-- **Genuine Toggles:** Selected-state capability is reserved strictly for elements that retain an active/inactive toggle state (e.g. favorite bookmark, filter checkbox, selection radio). Only these elements declare `hasSelectedState = true` with `isSelected: true | false`.
+### A. Action Button vs. Toggle Experience Meaning:
+- **Ordinary Actions:** An ordinary action control (e.g. "طلب حجز", "إغلاق", "رجوع") communicates a discrete trigger, NEVER a selectable or toggle state.
+  - *Design intent:* Users must not experience an ordinary action as having an active/inactive selected condition.
+  - *Cross-system note (Implementation / Verification):* Flutter code models this by leaving selection capability absent (`selected: null`); Quality verifies that `hasSelectedState` is completely absent in the assistive tree.
+- **Genuine Toggles & Selection Controls:** Selection and toggle states are reserved strictly for elements whose state persists after interaction (e.g. favorite bookmark, filter checkbox, selection radio). Only these elements communicate selected/toggled states.
 
 ### B. Meaningful Arabic Accessibility Labels:
 - Icon-only buttons (search, filter, share, clear) must declare clear Arabic semantic labels (e.g. "بحث", "تصفية النتائج", "مشاركة العقار").

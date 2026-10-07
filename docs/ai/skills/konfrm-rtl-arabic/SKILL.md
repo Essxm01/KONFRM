@@ -1,6 +1,6 @@
 ---
 name: konfrm-rtl-arabic
-description: "Use for Arabic-first and RTL design-policy interpretation, typography rules, and localization guidance. Do not use as the primary skill for Flutter layout implementation, EdgeInsetsDirectional code mechanics, or client widgets; use konfrm-flutter for Flutter implementation."
+description: "Reference only. Consolidated into konfrm-design (references/rtl_content.md). Do not use as primary design skill; use konfrm-design for design foundation authority and konfrm-flutter for implementation."
 ---
 
 # KONFRM Arabic-First RTL Design Standards

@@ -110,17 +110,48 @@ In accordance with the Minimal Sufficient Runtime Context principle, this proven
 ### 2.7 Consolidated Design Runtime Brain Provenance (`konfrm-design` Phase B)
 - **Primary Runtime Brain:** `.agents/skills/konfrm-design/SKILL.md` (with lazy companion references).
 - **Consolidated Internal Sources:**
-  - `docs/ai/skills/konfrm-mobile-design/`: DF2 v1.4 visual foundations, monochrome identity, geometric radii, relational spacing.
+  - `docs/ai/skills/konfrm-mobile-design/`: DF2 v1.7 visual foundations, monochrome identity, geometric radii, relational spacing.
   - `docs/ai/skills/konfrm-rtl-arabic/`: Arabic-first UX, directional semantics, Western digits default, canonical currency formatting (`1,600 ج.م`), Bidi data run isolation.
   - `docs/ai/skills/konfrm-accessibility/`: Contrast frameworks (WCAG 2.2 AA for Web, display readability for Mobile), non-color-only communication, touch target hit regions, Arabic screen reader semantics (`hasSelectedState = false` on action controls), text scaling resilience, reduced motion.
-  - `docs/ai/skills/konfrm-visual-qa/`: Optical inspection checklists, initial candidate viewport matrix (360×800, 390×844, 430×932, 1440×900).
-  - `docs/ai/skills/konfrm-design-reasoning/`: Structured design dialectic loop (`OBSERVE` -> `HYPOTHESIZE` -> `ARGUE` -> `RESEARCH` -> `ROLE LENS` -> `BRAND` -> `A11Y` -> `DECISION`), research claim hygiene.
-  - `docs/ai/skills/konfrm-design-court/`: Governed design adjudication escalation (`FAST_PANEL` / `FULL_COURT` modes, Hard Gates, consensus classification).
+  - `docs/ai/skills/konfrm-visual-qa/`: Optical inspection checklists, candidate viewports (selected by surface and risk scope).
+  - `docs/ai/skills/konfrm-design-reasoning/`: Structured design dialectic loop (`OBSERVE` -> `HYPOTHESIZE` -> `ARGUE` -> `RESEARCH` -> `ROLE LENS` -> `BRAND` -> `A11Y / PLATFORM` -> `DECISION`), research claim hygiene.
+  - `docs/ai/skills/konfrm-design-court/`: Governed design adjudication escalation (`FAST_PANEL` / `FULL_COURT` modes, Hard Gates, advisory consensus classification).
   - `docs/ai/skills/konfrm-product-ux/`: Presentation slice — role mental models (Customer discovery clarity, Owner operational certainty, Admin audit throughput), truthful state grammar (Error is never Empty, no phantom progress, optimistic UI bounds).
   - External wrappers (`frontend-design-wrapper`, `impeccable-wrapper`, `emil-wrapper`, `ui-ux-pro-max-wrapper`, `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`): Anti-generic visual hierarchy, purposeful motion without transactional delay, craftsmanship critiques.
 - **Concepts Subordinated & Rejected:**
-  - Rejected: Blind "mirror everything" doctrine; mechanical transposition of Web CSS-pixel thresholds into native mobile dp; universal 4-state dogma on every component; generic AI dashboard aesthetics (card soup, floating glow containers, arbitrary pills); unsubstantiated lab psychology extrapolations.
+  - Rejected: Blind "mirror everything" doctrine; mechanical transposition of Web CSS-pixel thresholds into native mobile dp; universal 4-state dogma on every component; generic AI dashboard aesthetics (card soup, floating glow containers, arbitrary pills); unsubstantiated lab psychology extrapolations; non-canonical "escrow" language.
 - **Disposition of Legacy Artifacts:**
   - Preserved in `docs/ai/skills/` for provenance and policy validator contract tests.
   - Narrowed frontmatter exclusions prevent discovery collisions in agent runtimes.
   - Registered as future retirement targets once Stage F full system freeze occurs.
+
+---
+
+### 2.8 Consolidated Design Brain Hardening & Legacy Discovery Consolidation
+- **Governing Baseline:** `c12204796c1a0700f1d1a86b9f6386f74c1f53c9`
+- **Design Authority Correction:** Synchronized from stale `DF2 v1.4` to current repository truth `DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md` (v1.7).
+- **Business Canon Deduplication:** Removed duplicate booking state machine, night bounds, deposit split numbers, and table names from `role_experience.md`; replaced with semantic retrieval pointing to `docs/BUSINESS_RULES.md`.
+- **False Escrow Language Purged:** Completely purged non-canonical "escrow" terminology from runtime design brains and references.
+- **Domain-Scoped Authority Implemented:** Replaced linear hierarchy with 5 jurisdictional tiers (Product/Brand/UX direction, Mandatory statutory constraints, Platform recommendations, Platform conventions, External heuristics).
+- **Define vs Implement vs Verify Boundaries:** Design defines what the experience means; Flutter/Web implements; Quality verifies (`hasSelectedState` absent on ordinary action buttons).
+- **Provisional Token Discipline:** Explicitly preserved candidate/provisional status for `#000000` (black primary), `6px` primary radius, `8px` field radius, and `12px` container radius across all checklists and references.
+- **Legacy Skill Discovery Disposition:**
+  | Skill Name | Runtime Classification | Frontmatter Disposition | Runtime Brain Pointer |
+  |---|---|---|---|
+  | `konfrm-design` | ACTIVE_PRIMARY_BRAIN | Active runtime design foundation authority | Self |
+  | `konfrm-flutter` | ACTIVE_PRIMARY_BRAIN | Active runtime mobile implementation brain | Self |
+  | `konfrm-quality` | ACTIVE_PRIMARY_BRAIN | Active runtime verification & quality brain | Self |
+  | `konfrm-design-court` | SPECIAL_ESCALATION_ONLY | Escalated only by `konfrm-design` for ambiguous conflicts | `konfrm-design` |
+  | `konfrm-design-router` | PRIMARY_RUNTIME_RETIRED | Superseded in normal runtime routing by `.agents/SKILL_ROUTER.md` | `konfrm-design`, `konfrm-flutter`, `konfrm-quality` |
+  | `konfrm-design-reasoning` | PRIMARY_RUNTIME_RETIRED | Consolidated into `konfrm-design/references/visual_review.md` | `konfrm-design`, `konfrm-flutter`, `konfrm-quality` |
+  | `konfrm-mobile-design` | PRIMARY_RUNTIME_RETIRED | Consolidated into `konfrm-design` | `konfrm-design`, `konfrm-flutter` |
+  | `konfrm-rtl-arabic` | PRIMARY_RUNTIME_RETIRED | Consolidated into `konfrm-design/references/rtl_content.md` | `konfrm-design`, `konfrm-flutter` |
+  | `konfrm-accessibility` | PRIMARY_RUNTIME_RETIRED | Consolidated into `konfrm-design/references/accessibility_design.md` | `konfrm-design`, `konfrm-flutter`, `konfrm-quality` |
+  | `konfrm-visual-qa` | PRIMARY_RUNTIME_RETIRED | Consolidated into `konfrm-design/references/visual_review.md` | `konfrm-design`, `konfrm-quality` |
+  | `konfrm-product-ux` | REFERENCE_ONLY | Retains business journey truth until `konfrm-product` rollout | `konfrm-design` |
+  | `frontend-design-wrapper` | REFERENCE_ONLY | Subordinated advisory input invoked only by `konfrm-design` | `konfrm-design` |
+  | `impeccable-wrapper` | REFERENCE_ONLY | Subordinated advisory input invoked only by `konfrm-design` | `konfrm-design` |
+  | `emil-wrapper` | REFERENCE_ONLY | Subordinated advisory input invoked only by `konfrm-design` | `konfrm-design` |
+  | `ui-ux-pro-max-wrapper` | REFERENCE_ONLY | Subordinated pattern catalogue invoked only by `konfrm-design` | `konfrm-design` |
+  | `vercel-composition-wrapper` | REFERENCE_ONLY | Reserved for future `konfrm-admin-web` React component architecture | `konfrm-design` |
+  | `vercel-web-guidelines-wrapper` | REFERENCE_ONLY | Reserved for future `konfrm-admin-web` web interface quality | `konfrm-design`, `konfrm-quality` |

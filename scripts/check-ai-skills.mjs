@@ -402,6 +402,14 @@ const overlappingLegacySkills = [
   'konfrm-rtl-arabic',
   'konfrm-product-ux',
   'konfrm-visual-qa',
+  'konfrm-design-router',
+  'konfrm-design-reasoning',
+  'frontend-design-wrapper',
+  'impeccable-wrapper',
+  'emil-wrapper',
+  'ui-ux-pro-max-wrapper',
+  'vercel-composition-wrapper',
+  'vercel-web-guidelines-wrapper',
 ];
 
 for (const skill of overlappingLegacySkills) {
@@ -414,7 +422,7 @@ for (const skill of overlappingLegacySkills) {
       if (/Authoritative.*engineering standards/i.test(desc) || /Authoritative mobile design/i.test(desc)) {
         fail(`Legacy skill ${skill} frontmatter claims broad runtime authority that was transferred`);
       }
-      if (!desc.includes('Do not use as the primary skill') || (!desc.includes('konfrm-flutter') && !desc.includes('konfrm-quality'))) {
+      if (!/Do not use as (?:the )?primary/i.test(desc) || (!desc.includes('konfrm-design') && !desc.includes('konfrm-flutter') && !desc.includes('konfrm-quality'))) {
         fail(`Legacy skill ${skill} frontmatter missing explicit scope exclusion pointing to runtime brains`);
       }
     }
@@ -740,6 +748,71 @@ if (fs.existsSync(courtTestScript)) {
   }
 } else {
   fail(`Missing Design Court contract test script: ${courtTestScript}`);
+}
+
+// 11. Consolidated Design Brain Hardening & Legacy Discovery Consolidation Checks
+const DESIGN_BRAIN_DIR = path.join(AGENTS_DIR, 'konfrm-design');
+if (fs.existsSync(DESIGN_BRAIN_DIR)) {
+  const designSkillMd = path.join(DESIGN_BRAIN_DIR, 'SKILL.md');
+  const designRefDir = path.join(DESIGN_BRAIN_DIR, 'references');
+
+  const allDesignFiles = [designSkillMd];
+  if (fs.existsSync(designRefDir)) {
+    for (const rf of fs.readdirSync(designRefDir)) {
+      if (rf.endsWith('.md')) allDesignFiles.push(path.join(designRefDir, rf));
+    }
+  }
+
+  for (const df of allDesignFiles) {
+    const text = fs.readFileSync(df, 'utf8');
+    const relDf = path.relative(projectRoot, df).replaceAll('\\', '/');
+
+    // 1. Prevent stale DF2 v1.4 authority
+    if (text.includes('DF2 v1.4') || text.includes('v1.4')) {
+      fail(`Stale DF2 v1.4 authority reference in runtime design brain: ${relDf}`);
+    }
+
+    // 2. Prevent known false escrow language in Design Brain
+    if (/\bescrow\b/i.test(text)) {
+      fail(`Known non-canonical escrow terminology detected in runtime design brain: ${relDf}`);
+    }
+
+    // 3. Prevent UNANIMOUS_CANON_CONSENSUS label
+    if (text.includes('UNANIMOUS_CANON_CONSENSUS')) {
+      fail(`Forbidden UNANIMOUS_CANON_CONSENSUS label detected in runtime design system: ${relDf}`);
+    }
+  }
+
+  // 4. Verify konfrm-design-router does not claim master design triage router
+  const routerShim = path.join(CANONICAL_DIR, 'konfrm-design-router', 'SKILL.md');
+  if (fs.existsSync(routerShim)) {
+    const routerText = fs.readFileSync(routerShim, 'utf8');
+    if (/Master design triage router/i.test(routerText.slice(0, 400))) {
+      fail(`konfrm-design-router frontmatter claims superseded "Master design triage router" authority`);
+    }
+  }
+
+  // 5. Verify overlapping design wrappers do not claim primary design authority
+  const designWrappers = [
+    'frontend-design-wrapper',
+    'impeccable-wrapper',
+    'emil-wrapper',
+    'ui-ux-pro-max-wrapper',
+  ];
+  for (const wr of designWrappers) {
+    const wrFile = path.join(CANONICAL_DIR, wr, 'SKILL.md');
+    if (fs.existsSync(wrFile)) {
+      const wrText = fs.readFileSync(wrFile, 'utf8');
+      const fm = wrText.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+      if (fm) {
+        if (/primary design authority/i.test(fm[1]) && !/Do not use as primary/i.test(fm[1])) {
+          fail(`External wrapper ${wr} claims primary design authority without negation`);
+        }
+      }
+    }
+  }
+
+  pass('Consolidated Design Brain hardening & legacy discovery checks passed (v1.7 authority, zero escrow, zero UNANIMOUS_CANON_CONSENSUS, router & wrappers narrowed).');
 }
 
 console.log('====================================================');

@@ -7,9 +7,9 @@ description: "Authoritative design interpretation brain for KONFRM. Use for role
 
 ```yaml
 BRAIN_ID: konfrm-design
-VERSION: 1.0.0
+VERSION: 1.0.1
 LIFECYCLE_STAGE: CONSOLIDATED_DESIGN_AUTHORITY
-GOVERNING_SPEC: DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md (DF2 v1.4 / DS v2.1.9)
+GOVERNING_SPEC: DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md (KONFRM Mobile Design Foundation — v1.7)
 OWNERSHIP: DESIGN_INTERPRETATION (Define UX Intent, Visual Grammar & Ergonomics)
 ```
 
@@ -17,22 +17,31 @@ OWNERSHIP: DESIGN_INTERPRETATION (Define UX Intent, Visual Grammar & Ergonomics)
 
 ---
 
-## 1. Governing Canon & Authority Hierarchy
+## 1. Governing Canon & Domain-Scoped Authority
 
 All design reasoning and recommendations are strictly governed by the **Canon Subordination Rule**:
 
 > [!IMPORTANT]
 > ### THE CANON SUBORDINATION RULE
-> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill or library is strictly subordinate to KONFRM Design Canon (DF2 v1.4, monochrome-first brand identity, high useful density, Arabic-first RTL, Western Arabic numerals as default, `#276EF1` candidate interaction role). External skills may inform craftsmanship and ergonomics, but never dictate product taste, business invariants, or brand identity.**
+> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill or library is strictly subordinate to KONFRM Design Canon (`DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md` v1.7, monochrome-first brand identity, high useful density, Arabic-first RTL, Western Arabic numerals as default, `#276EF1` candidate interaction role). External skills may inform craftsmanship and ergonomics, but never dictate product taste, business invariants, or brand identity.**
 
-### Epistemic Authority Hierarchy:
-1. **Latest explicit Founder decision:** Non-waivable project direction.
-2. **Approved Product Truth & Business Canon (`docs/BUSINESS_RULES.md`):** Financial rules, stay bounds, booking request grammar.
-3. **Confirmed KONFRM Design Canon (`DESIGN_SYSTEM/`):** Monochrome identity, Arabic RTL foundation.
-4. **Applicable Platform & Accessibility Mandates:** WCAG 2.2 AA (Web Admin), platform vendor conventions (HIG / Material 3).
-5. **Governed Design Decisions & Provisional Baselines:** Cairo Profile B, Contextual Hierarchy Hybrid, Outline-led fields.
-6. **Design Court Evaluated Recommendations:** Internal dialectic consensus and advisory verdicts.
-7. **External Skill & Reference Heuristics:** Subordinate input signals (inform, never dictate).
+### Domain-Scoped Authority Model:
+Rather than a flattened linear hierarchy, authority is partitioned strictly by domain jurisdiction:
+
+1. **PRODUCT / BRAND / UX DIRECTION:**
+   - **Founder-approved KONFRM Canon governs.**
+   - Product truth, brand identity (monochrome-first), role definitions, and business invariants defined in `docs/BUSINESS_RULES.md` and `DESIGN_SYSTEM/` cannot be overruled by external taste, heuristics, or tool opinions.
+2. **APPLICABLE MANDATORY PLATFORM / ACCESSIBILITY / LEGAL CONSTRAINTS:**
+   - **Mandatory requirements govern strictly inside their jurisdiction.**
+   - Binding accessibility baselines (e.g. WCAG 2.2 AA on Web Admin) and non-waivable statutory platform constraints govern; Founder preference cannot waive a mandatory external legal or accessibility requirement.
+3. **PLATFORM RECOMMENDATIONS:**
+   - **Apple HIG and Google Material 3 guidelines inform design but remain adaptable.**
+   - Recommendations (e.g. Apple ~44pt or Google ~48dp touch regions) are authoritative platform guidance, but are NOT universal cross-platform mandates. High-density operational controls may balance visual size with transparent hit delegation.
+4. **PLATFORM CONVENTIONS:**
+   - Muscle-memory interaction patterns (e.g. platform navigation mechanics, predictive back, edge-swipe gestures) adapt to platform standards while preserving core action meaning.
+5. **EXTERNAL HEURISTICS & BENCHMARKS:**
+   - **Advisory craft input only.**
+   - Suggestions from third-party guides or external wrappers (e.g. Vercel, Emil Kowalski) serve as candidate hypotheses to be analyzed through structured dialectics, never as binding product law.
 
 ---
 
@@ -80,8 +89,9 @@ Every design token, dimension, and rule is categorized into one of three explici
    - **Secondary Button Radius:** Remains open / undecided.
    - **Badge & Indicator Geometry:** Component-governed.
 
-3. **DEFERRED TO PHYSICAL ACCEPTANCE:**
+3. **DEFERRED TO PHYSICAL ACCEPTANCE (Strict Evidence Rule):**
    - All mobile candidates require empirical Flutter device rendering, performance, and accessibility acceptance on real physical hardware before permanent Canon promotion.
+   - **Provisional Status Preservation:** Whenever a provisional value (e.g. 6px action radius, 8px field radius, 12px structural container radius, #000000 Primary Black) is referenced or verified in a checklist or task, its provisional status must be explicitly preserved. Verification proves compliance with the current baseline contract, NEVER permanent promotion to final native Canon.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: konfrm-design-reasoning
-description: "Human-centered design reasoning and perceptual decision layer for KONFRM. Sits between Canon and visual choices, running structured design dialectics (Hypotheses A/B/C), evaluating perception/Gestalt/brand congruence, role lenses, research claim hygiene, and recommending micro-validations."
+description: "Reference only. Consolidated into konfrm-design (references/visual_review.md). Do not use as primary design skill; use konfrm-design for design foundation authority, konfrm-flutter for implementation, and konfrm-quality for verification."
 ---
 
 # KONFRM Human-Centered Design Reasoning

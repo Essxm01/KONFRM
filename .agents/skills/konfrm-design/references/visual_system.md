@@ -6,7 +6,7 @@ BRAIN: konfrm-design
 AUTHORITY: DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md §1–§8 + DESIGN_SYSTEM/TOKENS/
 ```
 
-This reference defines the visual grammar, brand identity, geometric radii, spacing scales, and typographical discipline governing KONFRM interfaces under DF2 v1.4.
+This reference defines the visual grammar, brand identity, geometric radii, spacing scales, and typographical discipline governing KONFRM interfaces under DF2 v1.7.
 
 ---
 
@@ -44,10 +44,11 @@ KONFRM deliberately differentiates corner radii across semantic component catego
 +----------------------------+-----------+----------------------------------------------+
 ```
 
-### Semantic Rationale:
-- **6px Primary CTA:** Crisp, decisive, high-authority button contour aligned with financial commitment.
+### Semantic Rationale & Provisional Status Preservation:
+- **6px Primary CTA:** Crisp, decisive button contour aligned with financial commitment.
 - **8px Form Fields:** Subtly softer contour signaling an interactive input container, creating clear visual contrast against the 6px primary action.
 - **12px Outer Containers:** Balanced framing for grouped operational elements or editorial media cards, avoiding both boxy sharpness (0–4px) and juvenile pill ballooning (16px+).
+- **Strict Provisional Status:** 6px, 8px, and 12px are evaluated provisional baseline directions, NOT final native Canon. Permanent promotion requires empirical Phase 4I device validation.
 
 ---
 
@@ -63,9 +64,9 @@ $$\text{TIER\_1 (Micro)} < \text{TIER\_2 (Intra-Group)} < \text{TIER\_3 (Section
 - **Tier 3 (Section Spacing):** `16px` / `24px` — Spacing between independent cards, form sections, or header-to-content.
 - **Tier 4 (Major Boundary Spacing):** `24px` / `32px` — Page edge margins, major layout divisions, sticky bottom bar clearances.
 
-### Page Insets:
+### Page Insets & Token Discipline:
 - **Mobile Content Inset:** `16px` candidate (`SYSTEM-EVALUATED PROVISIONAL MOBILE_PAGE_INSET`). Page insets are distinct from platform hardware safe-area insets.
-- **No Arbitrary Numbers:** Agents must never invent arbitrary values (e.g. 7px, 13px, 22px). Every spacing choice must anchor to an established relational tier.
+- **Governed Token Baseline:** Use governed spacing and component tokens by default. A deviation requires a documented component, platform, or rendering reason and must not silently create a new system token. Spacing scales govern relational layout structure; they do not make every other dimensional value in specialized components illegal.
 
 ---
 

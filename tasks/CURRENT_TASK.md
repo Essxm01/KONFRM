@@ -1,40 +1,149 @@
-# Active Task — PHASE_4H_COMPONENT_CONTRACT_CATALOG
+# Active Task — PHASE_4I_NATIVE_VALIDATION_PUBLICATION
 
-TASK_ID: PHASE_4H_COMPONENT_CONTRACT_CATALOG
-TASK_CLASS: DESIGN_SYSTEM_FOUNDATION_PHASE
-STATUS: READY_FOR_BRIDGE_REVIEW
-PR: #98
+TASK_ID: PHASE_4I_NATIVE_VALIDATION_PUBLICATION
+TASK_CLASS: NATIVE_DESIGN_SYSTEM_INTEGRATION_CLOSURE
+STATUS: ANDROID_FINAL_TREE_REVALIDATED / PR_100_OPEN / READY_FOR_FINAL_REVIEW
+PR: #100 (OPEN)
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: bb4534fc9edbb3b44ab6431c259f115220e7fbf9
-BRANCH: design/component-contract-catalog-01
-SCOPE: Phase 4H Component Contract & Reference Catalog — Turn validated Phase 4A–4G decisions into consumable, role-aware component contracts with state matrix, RTL/Bidi behavior, accessibility behavior, role differences, reference catalog, and permitted/open values register.
+BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
+BASE_MISSION_A_SHA: 9f24b2bea5130faeaa05e39b204ef4c8abc7b464
+BASE_MISSION_B_SHA: 82f98db300a15a9cf790dc8834e85c07670f38d4
+FINAL_RUNTIME_VALIDATED_SOURCE_HEAD: 0576f06a8f7675ea558efd0188b8bf8bae2c1026
+BRANCH: phase4i/android-runtime-validation
+SCOPE: Phase 4I Native Flutter Foundation integration closure and publication preparation — reconciling documentation state after Bridge acceptance of Mission A bootstrap, Mission B shared primitives/scenarios, Mission C physical Android runtime validation, PR #100 P2 remediations, and final-tree physical Android targeted revalidation (`NATIVE_ACCEPTED_ON_ANDROID`) on Samsung Galaxy A56 5G (Android 16 / API 36) at source revision `0576f06a8f7675ea558efd0188b8bf8bae2c1026`. Note: subsequent commit is documentation-only reconciliation.
 
 ## Boundaries
-- Does NOT start Phase 4I (Native Flutter Foundation).
-- Does NOT implement Flutter components or initialize Flutter workspace.
+- Does NOT build Customer or Owner production Flutter applications.
+- Does NOT start Phase 5 or Phase 6 implementation.
 - Does NOT modify production applications (`customer-app/`, `owner-app/`, `admin-app/`).
-- Does NOT modify token files (`DESIGN_SYSTEM/TOKENS/*.json`) or backend/database/API contracts.
-- Does NOT invent Product behavior, financial rules, or status enums.
-- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E), Role-Aware Contextual Navigation & Overlays + 16px Sheet Radius + 12px Dialog Radius + DF2 v1.5 + CHANGELOG 2.1.10 (4F), Role-Aware Layered State System + Four-Layer State Delivery + Canonical Domain Status Mappings + DF2 v1.6 + CHANGELOG 2.1.11 (4G).
-- Preserves non-negotiables: ERROR != EMPTY; FAILED_QUERY != FAKE_ZERO; NORMAL_PENDING != WARNING; STALE != CURRENT; UNAUTHORIZED != GENERIC_ERROR; CONFLICT != SILENT_SUBMISSION; CRITICAL_FAILURE != TOAST_ONLY; DUAL_BOTTOM_CHROME PROHIBITED; OWNER_BOTTOM_NAV PROHIBITED; exact semantic colors OPEN; exact neutrals OPEN; exact blue OPEN; exact shadows OPEN; toast duration OPEN; native acceptance DEFERRED TO 4I.
+- Does NOT modify backend business logic, database schema, Supabase, Cloudflare, API contracts, or token JSON.
+- Preserves cross-platform limitation: `IOS_REALITY_GATE_PENDING` (Android validation is `NATIVE_ACCEPTED_ON_ANDROID` only; not final cross-platform Canon, iOS accepted, or universal native acceptance).
+- Preserves overlay limitation: BottomSheet/Dialog runtime scenarios were `NOT_REPRESENTED_IN_MISSION_B_VALIDATION_SUBSET` (governed Phase 4F contracts remain valid; exact native overlay realization remains pending future product/runtime implementation).
+- Preserves all open values as `OPEN` (Exact Blue, Exact Neutrals, Semantic Colors, Shadows, Scrim, Toast Duration, Secondary Button Radius, Native Field Height, Native Focus, Sheet Detents, Motion Curves); validation references are not promoted to Canon.
+- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E), Role-Aware Contextual Navigation & Overlays + 16px Sheet Radius + 12px Dialog Radius + DF2 v1.5 + CHANGELOG 2.1.10 (4F), Role-Aware Layered State System + Four-Layer State Delivery + Canonical Domain Status Mappings + DF2 v1.6 + CHANGELOG 2.1.11 (4G), Component Contract Catalog + DF2 v1.7 + CHANGELOG 2.1.12 (4H).
 
-## Closure Gates
-- [x] Component inventory & gap analysis documented (`COMPONENT_INVENTORY.md`, `CONTRACT_GAP_ANALYSIS.md`).
-- [x] Component contract schema & master matrix documented (`COMPONENT_CONTRACT_MATRIX.md`, `OPEN_VALUES_REGISTER.md`).
-- [x] Master component state matrix & product truth dependency matrix documented.
-- [x] Role difference matrix & RTL / Accessibility contracts documented.
-- [x] Reference catalog built (`DESIGN_SYSTEM/PILOTS/component-contract-catalog-01/index.html`).
-- [x] Visual evidence captured and inspected (`EVIDENCE_MANIFEST.md`, `evidence/*.png`).
-- [x] Cross-component consistency audit completed.
-- [x] Phase 4I native validation handoff matrix defined.
-- [x] Shared component contracts reconciled / formalized in `DESIGN_SYSTEM/COMPONENTS/`.
-- [x] Deterministic checks passed (`npm run design:check`, `npm run ai:skills:check`, `node scripts/test-design-court-contract.mjs`, `git diff --check`).
-- [x] Publication PR created (`#98`).
-- [x] Phase 4I status remains strictly `NOT_STARTED`.
+## Closure Gates — Phase 4I Publication & Integration
+
+### Completed Gates
+- [x] Mission A bootstrap accepted (`9f24b2bea5130faeaa05e39b204ef4c8abc7b464`).
+- [x] Mission B implementation accepted (`f933900` / `82f98db300a15a9cf790dc8834e85c07670f38d4`).
+- [x] Mission B package/app verification accepted.
+- [x] Mission C physical Android runtime accepted on Samsung Galaxy A56 5G (`SM_A566B`), Android 16 / API 36 (`NATIVE_ACCEPTED_ON_ANDROID` at historical checkpoint `e3fa755cd5f2636c4e10ac55d6651ed58ccc3932`).
+- [x] Android screenshots/runtime evidence accepted for typography, RTL/Bidi, inputs/keyboard, state system, Owner grouping, Customer navigation, Sticky Action, Android Back, and safe areas.
+- [x] Historical Mission C package test suite `18/18 PASS`.
+- [x] StickyAction / PrimaryButton full-height runtime defect (`DEFECT-01`) `CLOSED` (`Center(heightFactor: 1, ...)`).
+- [x] PrimaryButton accessibility-label duplication `CLOSED` (`excludeSemantics: true` with outer semantic `onTap`).
+- [x] PR #100 opened to `main` (`ab669c7fee8b3f76d885f42134be57d281ae3d84`).
+- [x] PR #100 initial 5-finding P2 review remediation verified and committed (`f063807af9be68bb5b0f670ca53b58294d1c8c9e`): SearchField keyboard submission, CustomerBottomNavigation Bookings calendar icon, StateView live-region distinctions, SecondaryButton semantics boundary, and `mobile/README.md`.
+- [x] PR #100 SectionAlert P2 review remediation verified and committed (`97e09d80c6ccfb2c6dc863990042fe900319ac8e`): informational and error live announcements (`liveRegion: true`) with test matcher correction.
+- [x] PR #100 SearchField decorative-icon P2 review remediation verified, committed (`0576f06a8f7675ea558efd0188b8bf8bae2c1026`), and targeted physically revalidated on Samsung Galaxy A56 5G (`SM-A566B`, Android 16 / API 36): decorative icon excluded from semantics, test matcher updated with `hasSelectedState: true`, no standalone `بحث` node, clear action `مسح البحث` functional.
+- [x] Final package test suite `20/20 PASS` (`flutter test` in `mobile/packages/konfrm_design_system`) and package analyze `No issues found!`.
+- [x] Validation app test suite `6/6 PASS` (`flutter test` in `mobile/apps/design_system_validation`) and app analyze `No issues found!`.
+- [x] P1 final-tree physical Android targeted revalidation on Samsung Galaxy A56 5G (`SM-A566B`, Android 16 / API 36) `CLOSED`:
+  - `PHYSICAL_ANDROID_INTERACTION = PASS` (SearchField text clear demonstrated; Back and Close ordinary buttons demonstrated clickable and activated).
+  - `FLUTTER_SELECTED_STATE_SEMANTICS = PASS` (verified by explicit test assertions: ordinary `IconActionButton` and `SearchField` clear controls omit `hasSelectedState` capability entirely; toggle selection capability present only on explicit toggles).
+  - `TALKBACK_SPOKEN_OUTPUT = NOT_DIRECTLY_VERIFIED` (explicit Founder-approved adjustment: manual auditory confirmation not performed; broader accessibility testing preserved as ongoing product-quality requirement).
+- [x] SectionAlert informational runtime scenario limitation recorded (`INFORMATIONAL_SECTIONALERT_RUNTIME_SCENARIO = NOT_REPRESENTED / TEST_BACKED`).
+- [x] PR #100 remains OPEN and mergeable.
+
+### Pending Gates (`PHASE_4I_FINAL_PR_REVIEW_AND_MERGE_GOVERNANCE`)
+- [ ] Final PR review on post-documentation head
+- [ ] Required PR checks
+- [ ] Merge governance
+- [ ] Post-merge verification
+- [ ] Final publication checkpoint
+- [ ] Cross-platform gate preserved: `IOS_REALITY_GATE_PENDING`
+
+## Immediate Next Roadmap Action
+- **NEXT_ACTION:** `PHASE_4I_FINAL_PR_REVIEW_AND_MERGE_GOVERNANCE`
+  - **STATUS:** `READY_FOR_FINAL_REVIEW`
+  - **CROSS_PLATFORM_LIMITATION:** `IOS_REALITY_GATE_PENDING`
+  - **PHASE_5_6_FLUTTER_IMPLEMENTATION:** `NOT_STARTED`
 
 ---
 
-## Closed Upstream Dependency — Phase 4G Content & State Presentation System
+## Historical Task — PHASE_4I_MISSION_C_ANDROID_RUNTIME_INTEGRATION (Mission C — HISTORICAL / COMPLETED)
+
+TASK_ID: PHASE_4I_MISSION_C_ANDROID_RUNTIME_INTEGRATION
+TASK_CLASS: NATIVE_ANDROID_RUNTIME_VALIDATION
+STATUS: HISTORICAL / COMPLETED (BRIDGE_ACCEPTED)
+BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
+BASE_MISSION_B_SHA: 82f98db300a15a9cf790dc8834e85c07670f38d4
+MISSION_C_COMMIT_SHA: e3fa755cd5f2636c4e10ac55d6651ed58ccc3932
+BRANCH: phase4i/android-runtime-validation
+SCOPE: Physical Android device runtime validation (Samsung Galaxy A56 5G, Android 16 / API 36), visual/accessibility verification across 100%/125%/150%/200% text scaling, and bounded PrimaryButton layout/semantics hardening.
+
+---
+
+## Historical Task — PHASE_4I_MISSION_B_PRIMITIVES_AND_SCENARIOS (Mission B — HISTORICAL / COMPLETED)
+
+TASK_ID: PHASE_4I_MISSION_B_PRIMITIVES_AND_SCENARIOS
+TASK_CLASS: NATIVE_DESIGN_SYSTEM_IMPLEMENTATION
+STATUS: HISTORICAL / COMPLETED (BRIDGE_ACCEPTED at 82f98db300a15a9cf790dc8834e85c07670f38d4)
+PR: NONE (MERGED INTO MISSION C VALIDATION LINEAGE)
+EXECUTION_STARTED: YES
+BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
+BASE_MISSION_A_SHA: 9f24b2bea5130faeaa05e39b204ef4c8abc7b464
+MISSION_B_IMPLEMENTATION_COMMIT: f933900
+MISSION_B_ACCEPTED_COMMIT: 82f98db300a15a9cf790dc8834e85c07670f38d4
+BRANCH: phase4i/mobile-primitives-and-scenarios
+SCOPE: Phase 4I Mission B — governed shared Flutter typography/primitives, accessibility/RTL semantics, representative validation scenarios and tests, and bounded Mission A/B documentation reconciliation.
+
+## Historical Boundaries — Mission B
+- Does not implement Customer/Owner production apps or routing.
+- Does not modify Admin, backend, database, Supabase, Cloudflare, API contracts, business/finance/auth/booking/payment logic, token JSON, or Phase 5/6 implementation.
+- Open values stay validation-reference-only and are not promoted to Canon.
+
+## Historical Closure Gates — Mission B (`HISTORICAL / COMPLETED`)
+- [x] Required package/app pub get, analyze, tests, formatting, Android APK build, repository design/governance checks, and diff check pass.
+- [x] Package owns the single Cairo font source and validation app consumes it by package font semantics.
+- [x] Flutter primitives, semantics, RTL/bidi, scaling tests, and catalog scenarios match Phase 4H contracts.
+- [x] Production/backend/database/API/token JSON/Phase 5/6 forbidden paths remain untouched.
+- [x] Mission B implementation `f933900` and closure `82f98db300a15a9cf790dc8834e85c07670f38d4` committed and Bridge-accepted on `phase4i/mobile-primitives-and-scenarios`.
+
+---
+
+## Historical Task — PHASE_4I_NATIVE_BOOTSTRAP_BASELINE (Mission A — HISTORICAL / COMPLETED)
+
+TASK_ID: PHASE_4I_NATIVE_BOOTSTRAP_BASELINE
+TASK_CLASS: NATIVE_MOBILE_INTEGRATION_BASELINE
+STATUS: HISTORICAL / COMPLETED (MISSION_A_BASELINE_CREATED at 9f24b2bea5130faeaa05e39b204ef4c8abc7b464)
+PR: NONE (MISSION_A_BASELINE)
+EXECUTION_STARTED: YES
+BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
+BRANCH: phase4i/native-bootstrap-baseline
+SCOPE: Minimum Flutter repository boundary, validation harness, package skeleton, Android toolchain check, and stable Codex interface contract.
+
+## Historical Closure Gates — Mission A (`HISTORICAL / COMPLETED`)
+- [x] Canonical starting base independently verified (`9c908d2756fba0d421e67959ecfbc13d0ca35f9b`).
+- [x] Minimum `mobile/` boundary created (`mobile/packages/konfrm_design_system`, `mobile/apps/design_system_validation`).
+- [x] Validation app created with Arabic RTL shell (`design_system_validation`).
+- [x] `konfrm_design_system` package created with clean entrypoint.
+- [x] Customer production Flutter app has NOT been created.
+- [x] Owner production Flutter app has NOT been created.
+- [x] Codex ownership paths and interface documented (`mobile/README.md`).
+- [x] Approved Cairo font asset wired from repository source (`assets/fonts/`).
+- [x] Dependencies resolve (`flutter pub get` on package and app).
+- [x] Formatting clean (`dart format`).
+- [x] Static analysis clean (`flutter analyze` on package and app: zero issues).
+- [x] Legitimate tests pass (`flutter test` on package and app: 100% pass).
+- [x] Android debug build succeeds (`flutter build apk --debug`).
+- [x] Current State reflects merged Phase 4H and started Phase 4I.
+- [x] Immutable baseline commit SHA produced: `9f24b2bea5130faeaa05e39b204ef4c8abc7b464`.
+- [ ] A clean working-tree state at baseline creation is not attested by this Mission B checkout; pre-existing untracked workspace files remain excluded from Mission B.
+
+---
+
+## Closed Upstream Dependency — Phase 4H Component Contract & Reference Catalog
+- **PHASE_4H_STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#98`
+- **MERGE_COMMIT:** `9c908d2756fba0d421e67959ecfbc13d0ca35f9b`
+- **Component Contracts:** 24 component families reconciled; shared authority formalized in `DESIGN_SYSTEM/COMPONENTS/`.
+- **Reference Catalog:** Arabic RTL reference catalog published at `DESIGN_SYSTEM/PILOTS/component-contract-catalog-01/index.html`.
+- **DF2:** `v1.7`
+- **CHANGELOG:** `2.1.12`
+
+## Closed Upstream Dependency — Phase 4G Content & State Presentation
 - **PHASE_4G_STATUS:** `CLOSED / MERGED / PUBLISHED`
 - **PR:** `#97`
 - **MERGE_COMMIT:** `bb4534fc9edbb3b44ab6431c259f115220e7fbf9`
@@ -86,10 +195,9 @@ SCOPE: Phase 4H Component Contract & Reference Catalog — Turn validated Phase 
 - **Primary Button Radius:** `6px` (`PRIMARY_ONLY`).
 - **Primary Color:** Stable Black `#000000`.
 
-## Next Roadmap Dependency (after 4H)
-- **PHASE_4I_NATIVE_FLUTTER_FOUNDATION**
-  - **STATUS:** `NOT_STARTED`
-  - **EXECUTION_STARTED:** `NO`
+## Historical Roadmap Transitions (`HISTORICAL / COMPLETED` — Superseded)
+- **PHASE_4I_NATIVE_FLUTTER_FOUNDATION (Mission A & Mission B):** `HISTORICAL / COMPLETED` (`9f24b2bea5130faeaa05e39b204ef4c8abc7b464` -> `82f98db300a15a9cf790dc8834e85c07670f38d4`)
+- **PHASE_4I_MISSION_C_ANDROID_RUNTIME_INTEGRATION (Mission C):** `HISTORICAL / COMPLETED` (`e3fa755cd5f2636c4e10ac55d6651ed58ccc3932`)
 
 ---
 

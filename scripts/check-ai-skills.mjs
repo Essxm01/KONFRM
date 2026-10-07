@@ -98,10 +98,11 @@ for (const hook of disallowedHooks) {
 }
 pass('Disallowed hook check passed (0 detected).');
 
-// 3. Thin-Shim Synchronization & Bloat Check
+// 3. Thin-Shim Synchronization & Runtime Brain Architecture Check
 const CANONICAL_DIR = path.join(projectRoot, 'docs', 'ai', 'skills');
 const AGENTS_DIR = path.join(projectRoot, '.agents', 'skills');
 const ZCODE_DIR = path.join(projectRoot, '.zcode', 'skills');
+const MANIFEST_PATH = path.join(projectRoot, '.agents', 'SKILL_MANIFEST.yaml');
 
 if (!fs.existsSync(CANONICAL_DIR)) {
   fail(`Missing canonical skills directory: ${CANONICAL_DIR}`);
@@ -110,42 +111,166 @@ if (!fs.existsSync(CANONICAL_DIR)) {
     .filter(d => d.isDirectory())
     .map(d => d.name);
 
-  const checkShimDir = (targetDir, label) => {
-    if (!fs.existsSync(targetDir)) {
-      fail(`Target directory does not exist: ${label}`);
-      return;
-    }
-    const entries = fs.readdirSync(targetDir, { withFileTypes: true })
+  // A. Check .zcode/skills (legacy thin shims only; no .zcode dependency for new system)
+  if (!fs.existsSync(ZCODE_DIR)) {
+    fail(`Target directory does not exist: .zcode/skills`);
+  } else {
+    const zcodeEntries = fs.readdirSync(ZCODE_DIR, { withFileTypes: true })
       .filter(d => d.isDirectory())
       .map(d => d.name);
 
-    if (entries.length !== canonicalSkills.length) {
-      fail(`${label} has ${entries.length} skills, expected ${canonicalSkills.length}`);
+    if (zcodeEntries.length !== canonicalSkills.length) {
+      fail(`.zcode/skills has ${zcodeEntries.length} skills, expected ${canonicalSkills.length}`);
     }
 
     for (const skill of canonicalSkills) {
-      const shimSkillDir = path.join(targetDir, skill);
+      const shimSkillDir = path.join(ZCODE_DIR, skill);
       const shimSkillMd = path.join(shimSkillDir, 'SKILL.md');
       if (!fs.existsSync(shimSkillMd)) {
-        fail(`${label}/${skill}/SKILL.md missing`);
+        fail(`.zcode/skills/${skill}/SKILL.md missing`);
         continue;
       }
-      // Ensure shim directory contains ONLY SKILL.md (no bloat / vendor copies)
       const subEntries = fs.readdirSync(shimSkillDir);
       if (subEntries.length > 1 || subEntries[0] !== 'SKILL.md') {
-        fail(`${label}/${skill} contains unexpected files (expected thin shim only): ${subEntries.join(', ')}`);
+        fail(`.zcode/skills/${skill} contains unexpected files: ${subEntries.join(', ')}`);
       }
-      // Ensure shim references canonical repo-relative path
       const shimText = fs.readFileSync(shimSkillMd, 'utf8');
       if (!shimText.includes(`docs/ai/skills/${skill}/SKILL.md`)) {
-        fail(`${label}/${skill}/SKILL.md does not point to canonical source docs/ai/skills/${skill}/SKILL.md`);
+        fail(`.zcode/skills/${skill}/SKILL.md does not point to canonical source docs/ai/skills/${skill}/SKILL.md`);
       }
     }
-  };
+    pass('Legacy .zcode discovery shims validated (1:1 with canonical, zero new system dependency).');
+  }
 
-  checkShimDir(AGENTS_DIR, '.agents/skills');
-  checkShimDir(ZCODE_DIR, '.zcode/skills');
-  pass('Thin discovery shim architecture validated (1:1 with canonical, zero vendor duplicates).');
+  // B. Parse .agents/SKILL_MANIFEST.yaml if present
+  let manifestBrains = [];
+  if (fs.existsSync(MANIFEST_PATH)) {
+    const manifestContent = fs.readFileSync(MANIFEST_PATH, 'utf8');
+
+    // Scoped extraction of active brains block
+    const brainsSectionMatch = manifestContent.match(/brains:([\s\S]*?)(?=\n[a-zA-Z0-9_-]+:|$)/);
+    const brainsSection = brainsSectionMatch ? brainsSectionMatch[1] : '';
+
+    const brainBlocks = [...brainsSection.matchAll(/id:\s*([a-zA-Z0-9_-]+)/g)];
+    const seenIds = new Set();
+    for (const match of brainBlocks) {
+      const bId = match[1];
+      if (seenIds.has(bId)) {
+        fail(`Duplicate runtime skill ID in manifest: ${bId}`);
+      }
+      seenIds.add(bId);
+      manifestBrains.push(bId);
+    }
+
+    // Verify manifest path validity for active brains
+    const pathMatches = [...brainsSection.matchAll(/^\s*path:\s*([^\r\n]+)/gm)];
+    for (const pm of pathMatches) {
+      const relPath = pm[1].trim().replace(/^['"]|['"]$/g, '');
+      const fullPath = path.join(projectRoot, relPath);
+      if (!fs.existsSync(fullPath)) {
+        fail(`Manifest path does not exist: ${relPath}`);
+      }
+    }
+
+    // Verify manifest reference paths (bullet items starting with - )
+    const refMatches = [...brainsSection.matchAll(/^\s*-\s*([^\r\n]+\.md)/gm)];
+    for (const rm of refMatches) {
+      const relRef = rm[1].trim().replace(/^['"]|['"]$/g, '');
+      const fullRef = path.join(projectRoot, relRef);
+      if (!fs.existsSync(fullRef)) {
+        fail(`Manifest reference path does not exist: ${relRef}`);
+      }
+    }
+    pass('Runtime skill manifest paths and unique IDs validated.');
+  }
+
+  // C. Check .agents/skills (canonical shims + manifest-registered native runtime brains)
+  if (!fs.existsSync(AGENTS_DIR)) {
+    fail(`Target directory does not exist: .agents/skills`);
+  } else {
+    const agentEntries = fs.readdirSync(AGENTS_DIR, { withFileTypes: true })
+      .filter(d => d.isDirectory())
+      .map(d => d.name);
+
+    // Verify all canonical design skills are present as thin shims
+    for (const skill of canonicalSkills) {
+      const shimSkillDir = path.join(AGENTS_DIR, skill);
+      const shimSkillMd = path.join(shimSkillDir, 'SKILL.md');
+      if (!fs.existsSync(shimSkillMd)) {
+        fail(`.agents/skills/${skill}/SKILL.md missing`);
+        continue;
+      }
+      const subEntries = fs.readdirSync(shimSkillDir);
+      if (subEntries.length > 1 || subEntries[0] !== 'SKILL.md') {
+        fail(`.agents/skills/${skill} contains unexpected files (expected thin shim only): ${subEntries.join(', ')}`);
+      }
+      const shimText = fs.readFileSync(shimSkillMd, 'utf8');
+      if (!shimText.includes(`docs/ai/skills/${skill}/SKILL.md`)) {
+        fail(`.agents/skills/${skill}/SKILL.md does not point to canonical source docs/ai/skills/${skill}/SKILL.md`);
+      }
+    }
+
+    // Verify manifest-registered native runtime brains (SKILL.md + references/)
+    for (const brainId of manifestBrains) {
+      const brainDir = path.join(AGENTS_DIR, brainId);
+      if (!fs.existsSync(brainDir)) {
+        fail(`Manifest-registered runtime brain directory missing: .agents/skills/${brainId}`);
+        continue;
+      }
+      const brainSkillMd = path.join(brainDir, 'SKILL.md');
+      if (!fs.existsSync(brainSkillMd)) {
+        fail(`Runtime brain missing root SKILL.md: .agents/skills/${brainId}/SKILL.md`);
+        continue;
+      }
+      const refDir = path.join(brainDir, 'references');
+      if (!fs.existsSync(refDir)) {
+        fail(`Runtime brain missing references/ directory: .agents/skills/${brainId}/references`);
+        continue;
+      }
+      const refEntries = fs.readdirSync(refDir);
+      if (refEntries.length === 0) {
+        fail(`Runtime brain references/ directory is empty: .agents/skills/${brainId}/references`);
+      }
+
+      // Ensure directory contains only SKILL.md and references/
+      const brainSubEntries = fs.readdirSync(brainDir);
+      const unexpected = brainSubEntries.filter(e => e !== 'SKILL.md' && e !== 'references');
+      if (unexpected.length > 0) {
+        fail(`Runtime brain .agents/skills/${brainId} contains unexpected files: ${unexpected.join(', ')}`);
+      }
+
+      // Check for broken local references in SKILL.md and references/*.md
+      const checkLocalRefs = (filePath) => {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const linkMatches = [...content.matchAll(/\[.*?\]\((?!https?:|mailto:)(.*?)\)/g)];
+        for (const lm of linkMatches) {
+          const rawLink = lm[1].split('#')[0];
+          if (rawLink && !rawLink.startsWith('/')) {
+            const resolvedPath = path.resolve(path.dirname(filePath), rawLink);
+            if (!fs.existsSync(resolvedPath)) {
+              fail(`Broken local reference in ${path.relative(projectRoot, filePath)} -> ${rawLink}`);
+            }
+          }
+        }
+      };
+
+      checkLocalRefs(brainSkillMd);
+      for (const refFile of refEntries) {
+        if (refFile.endsWith('.md')) {
+          checkLocalRefs(path.join(refDir, refFile));
+        }
+      }
+    }
+
+    // Verify no unmanaged rogue directories in .agents/skills
+    for (const entry of agentEntries) {
+      if (!canonicalSkills.includes(entry) && !manifestBrains.includes(entry)) {
+        fail(`Unrecognized runtime directory in .agents/skills: ${entry}`);
+      }
+    }
+
+    pass('Thin discovery shims and native runtime brains validated (.agents/skills and .zcode/skills integrity verified).');
+  }
 }
 
 // 4. Frontmatter Integrity

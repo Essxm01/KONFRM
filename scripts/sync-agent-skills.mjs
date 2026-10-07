@@ -114,12 +114,25 @@ for (const targetDir of TARGET_DIRS) {
     fs.writeFileSync(destSkillMd, shimContent, 'utf8');
   }
 
+  // Read native runtime brains from .agents/SKILL_MANIFEST.yaml to prevent pruning
+  let nativeRuntimeBrains = [];
+  const manifestPath = path.join(projectRoot, '.agents', 'SKILL_MANIFEST.yaml');
+  if (fs.existsSync(manifestPath)) {
+    const manifestText = fs.readFileSync(manifestPath, 'utf8');
+    const matches = [...manifestText.matchAll(/id:\s*([a-zA-Z0-9_-]+)/g)];
+    nativeRuntimeBrains = matches.map(m => m[1]);
+  }
+
   // 2. Remove stale managed shims safely (only if confirmed managed)
   const existingDestDirs = fs.readdirSync(targetDir, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name);
 
   for (const existingDir of existingDestDirs) {
+    if (nativeRuntimeBrains.includes(existingDir)) {
+      // Governed native runtime brain bundle; preserve without pruning
+      continue;
+    }
     if (!skills.includes(existingDir)) {
       const staleDir = path.join(targetDir, existingDir);
       const staleEntries = fs.readdirSync(staleDir);

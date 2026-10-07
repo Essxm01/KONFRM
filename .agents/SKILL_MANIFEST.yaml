@@ -1,0 +1,47 @@
+schema_version: 1.0.0
+system_name: KONFRM Engineering Intelligence System V1
+manifest_type: RUNTIME_SKILL_MANIFEST
+governing_branch: chore/agent-skills-governance-v1
+
+brains:
+  konfrm-flutter:
+    id: konfrm-flutter
+    path: .agents/skills/konfrm-flutter/SKILL.md
+    primary_intent: "Implement native Flutter Customer and Owner mobile application behavior"
+    surface: "mobile/customer_app, mobile/owner_app, mobile/packages"
+    activation: "Flutter widget, layout, Riverpod state, navigation, DTO/networking, RTL, accessibility mechanics"
+    priority: primary_implementation
+    network_class: offline_local
+    runtime_status: PILOT_ACTIVE
+    references:
+      - .agents/skills/konfrm-flutter/references/architecture.md
+      - .agents/skills/konfrm-flutter/references/widgets_and_layout.md
+      - .agents/skills/konfrm-flutter/references/navigation_and_native.md
+      - .agents/skills/konfrm-flutter/references/performance_and_testing_seams.md
+
+  konfrm-quality:
+    id: konfrm-quality
+    path: .agents/skills/konfrm-quality/SKILL.md
+    primary_intent: "Diagnose defects, verify implementation against Canon, review code, and prove completion"
+    surface: "all_surfaces"
+    activation: "Failure diagnosis, RCA debugging, test selection, static analysis review, security audit, completion proof"
+    priority: primary_verification
+    network_class: offline_local
+    runtime_status: PILOT_ACTIVE
+    references:
+      - .agents/skills/konfrm-quality/references/debugging_and_rca.md
+      - .agents/skills/konfrm-quality/references/testing_strategy.md
+      - .agents/skills/konfrm-quality/references/static_analysis_and_review.md
+      - .agents/skills/konfrm-quality/references/security_and_accessibility_verification.md
+
+deferred_brains:
+  - id: konfrm-product
+    status: DEFERRED_STAGE_F
+  - id: konfrm-design
+    status: DEFERRED_STAGE_F
+  - id: konfrm-admin-web
+    status: DEFERRED_STAGE_F
+  - id: konfrm-backend
+    status: DEFERRED_STAGE_F
+  - id: konfrm-delivery
+    status: DEFERRED_STAGE_F

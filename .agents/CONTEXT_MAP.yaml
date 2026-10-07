@@ -39,7 +39,7 @@ authoritative_locators:
     guidelines_roles: "DESIGN_SYSTEM/GUIDELINES/roles.md"
 
   quality_and_governance:
-    quality_gates: "AGENTS.md"
+    quality_gates: "docs/codex/KONFRM_QUALITY_GATES.md"
     current_state: "docs/CURRENT_STATE.md"
     current_task: "tasks/CURRENT_TASK.md"
     brain_sync_protocol: "docs/BRAIN_SYNC_PROTOCOL.md"

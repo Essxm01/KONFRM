@@ -142,9 +142,48 @@ if (!fs.existsSync(CANONICAL_DIR)) {
     pass('Legacy .zcode discovery shims validated (1:1 with canonical, zero new system dependency).');
   }
 
-  // B. Parse .agents/SKILL_MANIFEST.yaml if present
+  // B0. Explicit Fail-Closed Check for Mandatory Runtime Intelligence Artifacts
+  const REQUIRED_RUNTIME_ARTIFACTS = [
+    '.agents/SKILL_MANIFEST.yaml',
+    '.agents/SKILL_ROUTER.md',
+    '.agents/CONTEXT_MAP.yaml',
+    '.agents/rules/konfrm-skill-routing.md',
+    '.agents/skills/konfrm-flutter/SKILL.md',
+    '.agents/skills/konfrm-flutter/references/architecture.md',
+    '.agents/skills/konfrm-flutter/references/widgets_and_layout.md',
+    '.agents/skills/konfrm-flutter/references/navigation_and_native.md',
+    '.agents/skills/konfrm-flutter/references/performance_and_testing_seams.md',
+    '.agents/skills/konfrm-quality/SKILL.md',
+    '.agents/skills/konfrm-quality/references/debugging_and_rca.md',
+    '.agents/skills/konfrm-quality/references/testing_strategy.md',
+    '.agents/skills/konfrm-quality/references/static_analysis_and_review.md',
+    '.agents/skills/konfrm-quality/references/security_and_accessibility_verification.md',
+    '.agents/skills/konfrm-design/SKILL.md',
+    '.agents/skills/konfrm-design/references/role_experience.md',
+    '.agents/skills/konfrm-design/references/visual_system.md',
+    '.agents/skills/konfrm-design/references/rtl_content.md',
+    '.agents/skills/konfrm-design/references/accessibility_design.md',
+    '.agents/skills/konfrm-design/references/states_interactions.md',
+    '.agents/skills/konfrm-design/references/visual_review.md',
+  ];
+
+  let missingRequiredArtifacts = 0;
+  for (const relPath of REQUIRED_RUNTIME_ARTIFACTS) {
+    const fullPath = path.join(projectRoot, relPath);
+    if (!fs.existsSync(fullPath)) {
+      fail(`Required runtime artifact missing: ${relPath}`);
+      missingRequiredArtifacts++;
+    }
+  }
+  if (missingRequiredArtifacts === 0) {
+    pass(`All ${REQUIRED_RUNTIME_ARTIFACTS.length} required runtime intelligence artifacts verified present.`);
+  }
+
+  // B. Parse .agents/SKILL_MANIFEST.yaml (fail-closed)
   let manifestBrains = [];
-  if (fs.existsSync(MANIFEST_PATH)) {
+  if (!fs.existsSync(MANIFEST_PATH)) {
+    fail(`Required runtime artifact missing: .agents/SKILL_MANIFEST.yaml`);
+  } else {
     const manifestContent = fs.readFileSync(MANIFEST_PATH, 'utf8');
 
     // Scoped extraction of active brains block
@@ -186,7 +225,9 @@ if (!fs.existsSync(CANONICAL_DIR)) {
 
   // B1. Validate .agents/SKILL_ROUTER.md module and path references
   const ROUTER_PATH = path.join(projectRoot, '.agents', 'SKILL_ROUTER.md');
-  if (fs.existsSync(ROUTER_PATH)) {
+  if (!fs.existsSync(ROUTER_PATH)) {
+    fail(`Required runtime artifact missing: .agents/SKILL_ROUTER.md`);
+  } else {
     const routerText = fs.readFileSync(ROUTER_PATH, 'utf8');
 
     // Collect all valid reference file names from active manifest brains
@@ -228,7 +269,9 @@ if (!fs.existsSync(CANONICAL_DIR)) {
 
   // B2. Validate .agents/CONTEXT_MAP.yaml paths and anchor locators
   const CONTEXT_MAP_PATH = path.join(projectRoot, '.agents', 'CONTEXT_MAP.yaml');
-  if (fs.existsSync(CONTEXT_MAP_PATH)) {
+  if (!fs.existsSync(CONTEXT_MAP_PATH)) {
+    fail(`Required runtime artifact missing: .agents/CONTEXT_MAP.yaml`);
+  } else {
     const contextMapText = fs.readFileSync(CONTEXT_MAP_PATH, 'utf8');
 
     // Extract all string values that look like file paths or path#anchor
@@ -813,6 +856,8 @@ if (fs.existsSync(DESIGN_BRAIN_DIR)) {
   }
 
   pass('Consolidated Design Brain hardening & legacy discovery checks passed (v1.7 authority, zero escrow, zero UNANIMOUS_CANON_CONSENSUS, router & wrappers narrowed).');
+} else {
+  fail('Required runtime artifact missing: .agents/skills/konfrm-design');
 }
 
 console.log('====================================================');

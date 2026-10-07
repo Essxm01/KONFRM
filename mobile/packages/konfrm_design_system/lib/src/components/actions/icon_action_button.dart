@@ -9,13 +9,13 @@ class IconActionButton extends StatelessWidget {
     required this.icon,
     required this.semanticLabel,
     required this.onPressed,
-    this.selected = false,
+    this.selected,
     this.directional = false,
   });
   final IconData icon;
   final String semanticLabel;
   final VoidCallback? onPressed;
-  final bool selected;
+  final bool? selected;
   final bool directional;
 
   @override
@@ -45,7 +45,7 @@ class IconActionButton extends StatelessWidget {
                   textDirection: directional
                       ? Directionality.of(context)
                       : TextDirection.ltr,
-                  color: selected
+                  color: selected == true
                       ? ValidationReferenceOnly.interaction
                       : ValidationReferenceOnly.text,
                 ),

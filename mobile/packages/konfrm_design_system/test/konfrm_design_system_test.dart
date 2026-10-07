@@ -369,8 +369,6 @@ void main() {
           isButton: true,
           hasEnabledState: true,
           isEnabled: false,
-          hasSelectedState: true,
-          isSelected: false,
           label: 'رجوع',
         ),
       );
@@ -382,6 +380,68 @@ void main() {
       );
       expect(icon.icon, Icons.arrow_back);
       expect(icon.textDirection, TextDirection.rtl);
+    },
+  );
+
+  testWidgets(
+    'IconActionButton supports explicit selection semantics and visual treatment',
+    (tester) async {
+      await tester.pumpWidget(
+        host(
+          Row(
+            children: const [
+              IconActionButton(
+                icon: Icons.filter_alt,
+                semanticLabel: 'تصفية غير محددة',
+                onPressed: _noop,
+                selected: false,
+              ),
+              IconActionButton(
+                icon: Icons.filter_alt,
+                semanticLabel: 'تصفية محددة',
+                onPressed: _noop,
+                selected: true,
+              ),
+            ],
+          ),
+        ),
+      );
+
+      final unselectedFinder = find.bySemanticsLabel('تصفية غير محددة');
+      expect(
+        tester.getSemantics(unselectedFinder),
+        matchesSemantics(
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          isFocusable: true,
+          hasFocusAction: true,
+          hasSelectedState: true,
+          isSelected: false,
+          label: 'تصفية غير محددة',
+        ),
+      );
+
+      final selectedFinder = find.bySemanticsLabel('تصفية محددة');
+      expect(
+        tester.getSemantics(selectedFinder),
+        matchesSemantics(
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          isFocusable: true,
+          hasFocusAction: true,
+          hasSelectedState: true,
+          isSelected: true,
+          label: 'تصفية محددة',
+        ),
+      );
+
+      final icons = tester.widgetList<Icon>(find.byType(Icon)).toList();
+      expect(icons[0].color, ValidationReferenceOnly.text);
+      expect(icons[1].color, ValidationReferenceOnly.interaction);
     },
   );
 
@@ -589,7 +649,6 @@ void main() {
         hasTapAction: true,
         isFocusable: true,
         hasFocusAction: true,
-        hasSelectedState: true,
       ),
     );
     const query = 'إقامة في القاهرة';

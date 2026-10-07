@@ -69,10 +69,10 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
 3. **Strict Information Leakage Prohibition (MR-13):**
    - **Customer Interface:** Customers must **NEVER** see KONFRM platform commission, Owner net earnings, wallet balances, or internal fee breakdowns.
    - **Owner Interface:** Owners see property booking breakdown: Total, Upfront Deposit, Net Deposit Entitlement (retrieved from Canon), and Remaining Balance (collection method remains open/unconfirmed).
-4. **Prototype vs Live Payment Mode:**
-   - Current Worker runtime uses `PAYMENT_MODE=PROTOTYPE`.
-   - In prototype mode, transactions are simulated and recorded canonically via database RPC; no credit card details are collected, and real Paymob webhooks are not called.
-   - `PAYMENT_MODE=LIVE` must fail closed if production Paymob credentials are unconfigured; it must never silently fall back to mock processing.
+4. **Payment Mode & Provider Retrieval:**
+   - Retrieve the active payment mode (`PAYMENT_MODE`) and payment-provider configuration dynamically from `docs/INTEGRATIONS.md`, `docs/BUSINESS_RULES.md` (Section: Prototype deposit payment), and runtime environment configuration. Never hardcode or assume a fixed payment mode.
+   - When operating in prototype mode per Canon, transactions are recorded canonically via database RPC without collecting card credentials or invoking live payment webhooks.
+   - When operating in live mode (`PAYMENT_MODE=LIVE`), execution must fail closed if production payment-provider credentials or implementations are unavailable; it must never silently fall back to mock processing.
 
 ---
 
@@ -110,7 +110,7 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
    - **Owner Fault Cancellation:** If a confirmed booking is cancelled due to Owner fault (e.g. double booking, uninhabitable unit), the Customer receives a **full deposit refund** and the platform takes **zero platform commission**.
 2. **What is an OPEN_ASSUMPTION (Must NOT be Invented):**
    - The wider **Renter Cancellation & Refund Matrix** (e.g. cancellation 7 days before check-in vs 24 hours before check-in) is **OPEN / UNRESOLVED**.
-   - **Dispute Settlement & Ledger Mutation Rules:** Admin dispute resolution and financial settlement contracts remain **OPEN / BLOCKED** pending approved cancellation/dispute product decisions (docs/codex/KONFRM_COMPLETION_MATRIX.md:46).
+   - **Dispute Settlement & Ledger Mutation Rules:** Admin dispute resolution and financial settlement contracts remain **OPEN / BLOCKED** pending approved cancellation/dispute product decisions (`docs/codex/KONFRM_COMPLETION_MATRIX.md:46`).
    - The exact payment method for the remaining balance (cash at check-in vs card vs wallet transfer) is **OPEN / UNCONFIRMED**.
    - Automatic request expiration timeouts (e.g. 24h or 48h Owner response SLA) are **OPEN / UNCONFIRMED**.
 3. **Agent Action:**
@@ -132,8 +132,9 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
    - Merely entering the Owner app or logging in as a user does **NOT** grant Owner capability. Owner sessions require a verified record in `owners`.
 2. **Session Cleanup:**
    - Changing identities or logging out must immediately purge all account-scoped Owner and Customer state from in-memory stores and secure caches.
-3. **Booking-Contextual Communication:**
-   - In-app messaging is strictly scoped to an active booking context.
+3. **Booking-Contextual Communication & Open Eligibility:**
+   - Communication remains in-app and booking-contextual (`docs/BUSINESS_RULES.md:47`).
+   - Exact booking-lifecycle eligibility rules for messaging remain **OPEN / UNCONFIRMED** (`DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md:12`, `OPEN_ASSUMPTION`). Retrieve an approved Founder/Canon contract before prescribing or restricting which specific booking states allow messaging.
    - Do **NOT** expose personal phone numbers, emails, or off-platform contact information between Customer and Owner at any booking state. Direct contact details remain strictly hidden.
 4. **Reviews Eligibility:**
    - Reviews and ratings are eligible **ONLY AFTER** a stay is completed; never on pending, approved, or cancelled bookings.

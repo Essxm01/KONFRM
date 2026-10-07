@@ -423,6 +423,7 @@ const prohibitedNumericHardcodes = [
   'equal to the first-night price',
   'first-night deposit amount',
   '12px',
+  'PAYMENT_MODE=PROTOTYPE',
 ];
 
 for (const mod of allProductModules) {
@@ -702,6 +703,40 @@ if (reg19Passed && mentalModelsContent.includes('`backend/server/src/app.ts:2997
   pass('[REG-19] Control-Character Hygiene: Zero control characters across all Product Brain modules; paths clean');
 } else if (reg19Passed) {
   fail('[REG-19] Clean backend path `backend/server/src/app.ts:2997-3045` missing in role_mental_models.md');
+}
+
+// REG-20: Dynamic Payment Mode Retrieval (No frozen PAYMENT_MODE=PROTOTYPE assertion)
+if (retrievalContent.includes('Current Worker runtime uses `PAYMENT_MODE=PROTOTYPE`')) {
+  fail('[REG-20] product_state_retrieval.md freezes PAYMENT_MODE=PROTOTYPE instead of retrieving dynamically');
+} else if (retrievalContent.includes('docs/INTEGRATIONS.md') && retrievalContent.includes('Never hardcode or assume a fixed payment mode')) {
+  pass('[REG-20] Payment Mode Retrieval: PAYMENT_MODE retrieved dynamically via docs/INTEGRATIONS.md and runtime config');
+} else {
+  fail('[REG-20] product_state_retrieval.md missing dynamic PAYMENT_MODE retrieval instruction via docs/INTEGRATIONS.md');
+}
+
+// REG-21: Chat Eligibility Openness (Booking-contextual chat; lifecycle eligibility preserved as OPEN / UNCONFIRMED)
+if (retrievalContent.includes('active booking context')) {
+  fail('[REG-21] product_state_retrieval.md invents "active booking context" lifecycle eligibility rule for chat');
+} else if (retrievalContent.includes('DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md:12') &&
+           /booking-lifecycle eligibility rules for messaging remain \*\*OPEN \/ UNCONFIRMED\*\*/i.test(retrievalContent)) {
+  pass('[REG-21] Chat Eligibility Openness: Messaging lifecycle eligibility preserved as OPEN / UNCONFIRMED per NAVIGATION.md:12');
+} else {
+  fail('[REG-21] product_state_retrieval.md missing OPEN / UNCONFIRMED chat lifecycle eligibility classification');
+}
+
+// REG-22: Legacy konfrm-product-ux Body Subordination (No competing authority claim, stale DF2 v1.4, or duplicated formulas)
+const legacyProductUxPath = path.join(projectRoot, 'docs', 'ai', 'skills', 'konfrm-product-ux', 'SKILL.md');
+const legacyProductUxText = fs.readFileSync(legacyProductUxPath, 'utf8');
+if (legacyProductUxText.includes('Defines the authoritative product user experience contracts') ||
+    legacyProductUxText.includes('DF2 v1.4') ||
+    legacyProductUxText.includes('20% of the deposit') ||
+    legacyProductUxText.includes('equal to the first-night price')) {
+  fail('[REG-22] docs/ai/skills/konfrm-product-ux/SKILL.md retains competing authority claims, stale DF2 v1.4, or duplicated payment formulas');
+} else if (legacyProductUxText.includes('LEGACY CONSOLIDATION & SUBORDINATION NOTICE') &&
+           legacyProductUxText.includes('.agents/skills/konfrm-product/SKILL.md')) {
+  pass('[REG-22] Legacy Skill Subordination: konfrm-product-ux body subordinated to konfrm-product and konfrm-design with zero duplicated formulas');
+} else {
+  fail('[REG-22] docs/ai/skills/konfrm-product-ux/SKILL.md missing explicit subordination notice to konfrm-product');
 }
 
 // 7. Negative Test Harness: Verify Evaluator Fails Closed on Corrupted Input

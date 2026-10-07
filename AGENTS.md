@@ -28,6 +28,8 @@ Load this Mandatory Universal Core once at the beginning of a NEW TASK, NEW SESS
 
 Then use `docs/CONTEXT_ROUTER.md` to load only the selective domain authorities matching the task. Do not load all documentation files at once; preserve token quotas for execution and verification.
 
+When selecting project skills, consult `.agents/SKILL_ROUTER.md`. Load only the selected brain and required companion references.
+
 For substantial or cross-system work, also review `docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md` and the applicable current-reality, conflict, completion-matrix, rescue-backlog, and quality-gate documents named by the index.
 
 Before editing, establish the objective, governing authorities, affected systems, non-negotiable rules, open decisions, evidence to verify, and explicit non-goals. Historical material, old code, mocks, constants, and prior behavior never silently override that current context.

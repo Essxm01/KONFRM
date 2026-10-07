@@ -1,0 +1,62 @@
+schema_version: 1.0.0
+system_name: KONFRM Engineering Intelligence System V1
+manifest_type: RUNTIME_SKILL_MANIFEST
+governing_branch: chore/agent-skills-governance-v1
+
+brains:
+  konfrm-flutter:
+    id: konfrm-flutter
+    path: .agents/skills/konfrm-flutter/SKILL.md
+    primary_intent: "Implement native Flutter Customer and Owner mobile application behavior"
+    surface: "mobile/customer_app, mobile/owner_app, mobile/packages"
+    activation: "Flutter widget, layout, Riverpod state, navigation, DTO/networking, RTL, accessibility mechanics"
+    priority: primary_implementation
+    network_class: offline_local
+    runtime_status: PILOT_ACTIVE
+    references:
+      - .agents/skills/konfrm-flutter/references/architecture.md
+      - .agents/skills/konfrm-flutter/references/widgets_and_layout.md
+      - .agents/skills/konfrm-flutter/references/navigation_and_native.md
+      - .agents/skills/konfrm-flutter/references/performance_and_testing_seams.md
+
+  konfrm-quality:
+    id: konfrm-quality
+    path: .agents/skills/konfrm-quality/SKILL.md
+    primary_intent: "Diagnose defects, verify implementation against Canon, review code, and prove completion"
+    surface: "generic_quality_core + pilot_proven_flutter_verification (backend and admin-web specialist verification deferred)"
+    activation: "Failure diagnosis, RCA debugging, test selection, static analysis review, security audit, completion proof"
+    priority: primary_verification
+    network_class: offline_local
+    runtime_status: PILOT_ACTIVE
+    references:
+      - .agents/skills/konfrm-quality/references/debugging_and_rca.md
+      - .agents/skills/konfrm-quality/references/testing_strategy.md
+      - .agents/skills/konfrm-quality/references/static_analysis_and_review.md
+      - .agents/skills/konfrm-quality/references/security_and_accessibility_verification.md
+
+  konfrm-design:
+    id: konfrm-design
+    path: .agents/skills/konfrm-design/SKILL.md
+    primary_intent: "Interpret design intent, visual hierarchy, DF2 design-system consumption, Arabic RTL semantics, and accessibility presentation"
+    surface: "cross_role_design (Customer Mobile, Owner Mobile, Admin Web, DESIGN_SYSTEM)"
+    activation: "UX reasoning, visual hierarchy, DF2 token usage, Arabic RTL semantics, accessibility intent, optical review, design dialectics"
+    priority: primary_design
+    network_class: offline_local
+    runtime_status: ACTIVE_CONSOLIDATED
+    references:
+      - .agents/skills/konfrm-design/references/role_experience.md
+      - .agents/skills/konfrm-design/references/visual_system.md
+      - .agents/skills/konfrm-design/references/rtl_content.md
+      - .agents/skills/konfrm-design/references/accessibility_design.md
+      - .agents/skills/konfrm-design/references/states_interactions.md
+      - .agents/skills/konfrm-design/references/visual_review.md
+
+deferred_brains:
+  - id: konfrm-product
+    status: DEFERRED_STAGE_F
+  - id: konfrm-admin-web
+    status: DEFERRED_STAGE_F
+  - id: konfrm-backend
+    status: DEFERRED_STAGE_F
+  - id: konfrm-delivery
+    status: DEFERRED_STAGE_F

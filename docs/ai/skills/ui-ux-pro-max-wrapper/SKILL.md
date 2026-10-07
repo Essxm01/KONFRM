@@ -1,6 +1,6 @@
 ---
 name: ui-ux-pro-max-wrapper
-description: "KONFRM-governed wrapper for UI/UX Pro Max design intelligence. Provides searchable local UX/UI guidelines across styles, stacks, and patterns while strictly subordinating numeric heuristics to KONFRM DF2 Canon, stripping Claude plugin root dependencies, and forbidding repository token mutations."
+description: "Reference only. Subordinated to konfrm-design. Advisory pattern catalogue invoked only by konfrm-design when needed. Do not use as primary design authority; use konfrm-design."
 ---
 
 # UI/UX Pro Max — KONFRM Governed Wrapper

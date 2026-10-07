@@ -98,10 +98,11 @@ for (const hook of disallowedHooks) {
 }
 pass('Disallowed hook check passed (0 detected).');
 
-// 3. Thin-Shim Synchronization & Bloat Check
+// 3. Thin-Shim Synchronization & Runtime Brain Architecture Check
 const CANONICAL_DIR = path.join(projectRoot, 'docs', 'ai', 'skills');
 const AGENTS_DIR = path.join(projectRoot, '.agents', 'skills');
 const ZCODE_DIR = path.join(projectRoot, '.zcode', 'skills');
+const MANIFEST_PATH = path.join(projectRoot, '.agents', 'SKILL_MANIFEST.yaml');
 
 if (!fs.existsSync(CANONICAL_DIR)) {
   fail(`Missing canonical skills directory: ${CANONICAL_DIR}`);
@@ -110,42 +111,262 @@ if (!fs.existsSync(CANONICAL_DIR)) {
     .filter(d => d.isDirectory())
     .map(d => d.name);
 
-  const checkShimDir = (targetDir, label) => {
-    if (!fs.existsSync(targetDir)) {
-      fail(`Target directory does not exist: ${label}`);
-      return;
-    }
-    const entries = fs.readdirSync(targetDir, { withFileTypes: true })
+  // A. Check .zcode/skills (legacy thin shims only; no .zcode dependency for new system)
+  if (!fs.existsSync(ZCODE_DIR)) {
+    fail(`Target directory does not exist: .zcode/skills`);
+  } else {
+    const zcodeEntries = fs.readdirSync(ZCODE_DIR, { withFileTypes: true })
       .filter(d => d.isDirectory())
       .map(d => d.name);
 
-    if (entries.length !== canonicalSkills.length) {
-      fail(`${label} has ${entries.length} skills, expected ${canonicalSkills.length}`);
+    if (zcodeEntries.length !== canonicalSkills.length) {
+      fail(`.zcode/skills has ${zcodeEntries.length} skills, expected ${canonicalSkills.length}`);
     }
 
     for (const skill of canonicalSkills) {
-      const shimSkillDir = path.join(targetDir, skill);
+      const shimSkillDir = path.join(ZCODE_DIR, skill);
       const shimSkillMd = path.join(shimSkillDir, 'SKILL.md');
       if (!fs.existsSync(shimSkillMd)) {
-        fail(`${label}/${skill}/SKILL.md missing`);
+        fail(`.zcode/skills/${skill}/SKILL.md missing`);
         continue;
       }
-      // Ensure shim directory contains ONLY SKILL.md (no bloat / vendor copies)
       const subEntries = fs.readdirSync(shimSkillDir);
       if (subEntries.length > 1 || subEntries[0] !== 'SKILL.md') {
-        fail(`${label}/${skill} contains unexpected files (expected thin shim only): ${subEntries.join(', ')}`);
+        fail(`.zcode/skills/${skill} contains unexpected files: ${subEntries.join(', ')}`);
       }
-      // Ensure shim references canonical repo-relative path
       const shimText = fs.readFileSync(shimSkillMd, 'utf8');
       if (!shimText.includes(`docs/ai/skills/${skill}/SKILL.md`)) {
-        fail(`${label}/${skill}/SKILL.md does not point to canonical source docs/ai/skills/${skill}/SKILL.md`);
+        fail(`.zcode/skills/${skill}/SKILL.md does not point to canonical source docs/ai/skills/${skill}/SKILL.md`);
       }
     }
-  };
+    pass('Legacy .zcode discovery shims validated (1:1 with canonical, zero new system dependency).');
+  }
 
-  checkShimDir(AGENTS_DIR, '.agents/skills');
-  checkShimDir(ZCODE_DIR, '.zcode/skills');
-  pass('Thin discovery shim architecture validated (1:1 with canonical, zero vendor duplicates).');
+  // B. Parse .agents/SKILL_MANIFEST.yaml if present
+  let manifestBrains = [];
+  if (fs.existsSync(MANIFEST_PATH)) {
+    const manifestContent = fs.readFileSync(MANIFEST_PATH, 'utf8');
+
+    // Scoped extraction of active brains block
+    const brainsSectionMatch = manifestContent.match(/brains:([\s\S]*?)(?=\n[a-zA-Z0-9_-]+:|$)/);
+    const brainsSection = brainsSectionMatch ? brainsSectionMatch[1] : '';
+
+    const brainBlocks = [...brainsSection.matchAll(/id:\s*([a-zA-Z0-9_-]+)/g)];
+    const seenIds = new Set();
+    for (const match of brainBlocks) {
+      const bId = match[1];
+      if (seenIds.has(bId)) {
+        fail(`Duplicate runtime skill ID in manifest: ${bId}`);
+      }
+      seenIds.add(bId);
+      manifestBrains.push(bId);
+    }
+
+    // Verify manifest path validity for active brains
+    const pathMatches = [...brainsSection.matchAll(/^\s*path:\s*([^\r\n]+)/gm)];
+    for (const pm of pathMatches) {
+      const relPath = pm[1].trim().replace(/^['"]|['"]$/g, '');
+      const fullPath = path.join(projectRoot, relPath);
+      if (!fs.existsSync(fullPath)) {
+        fail(`Manifest path does not exist: ${relPath}`);
+      }
+    }
+
+    // Verify manifest reference paths (bullet items starting with - )
+    const refMatches = [...brainsSection.matchAll(/^\s*-\s*([^\r\n]+\.md)/gm)];
+    for (const rm of refMatches) {
+      const relRef = rm[1].trim().replace(/^['"]|['"]$/g, '');
+      const fullRef = path.join(projectRoot, relRef);
+      if (!fs.existsSync(fullRef)) {
+        fail(`Manifest reference path does not exist: ${relRef}`);
+      }
+    }
+    pass('Runtime skill manifest paths and unique IDs validated.');
+  }
+
+  // B1. Validate .agents/SKILL_ROUTER.md module and path references
+  const ROUTER_PATH = path.join(projectRoot, '.agents', 'SKILL_ROUTER.md');
+  if (fs.existsSync(ROUTER_PATH)) {
+    const routerText = fs.readFileSync(ROUTER_PATH, 'utf8');
+
+    // Collect all valid reference file names from active manifest brains
+    const allKnownBrainRefs = new Set();
+    for (const bId of manifestBrains) {
+      const bRefDir = path.join(AGENTS_DIR, bId, 'references');
+      if (fs.existsSync(bRefDir)) {
+        for (const rf of fs.readdirSync(bRefDir)) {
+          if (rf.endsWith('.md')) allKnownBrainRefs.add(rf);
+        }
+      }
+    }
+
+    // Extract all referenced markdown paths/files
+    const mdRefMatches = [...routerText.matchAll(/([a-zA-Z0-9_\-\.\/]+\.md)/g)];
+    for (const match of mdRefMatches) {
+      const refToken = match[1];
+      if (refToken === 'SKILL.md') continue;
+
+      if (refToken.startsWith('.agents/') || refToken.startsWith('docs/')) {
+        const fullP = path.join(projectRoot, refToken);
+        if (!fs.existsSync(fullP)) {
+          fail(`Router references non-existent file path: ${refToken}`);
+        }
+      } else if (refToken.startsWith('references/')) {
+        const baseName = path.basename(refToken);
+        if (!allKnownBrainRefs.has(baseName)) {
+          fail(`Router references non-existent companion reference module: ${refToken}`);
+        }
+      } else {
+        // Standalone filename e.g. architecture.md
+        if (!allKnownBrainRefs.has(refToken)) {
+          fail(`Router references non-existent runtime reference module: ${refToken}`);
+        }
+      }
+    }
+    pass('Router reference paths and companion module locators validated.');
+  }
+
+  // B2. Validate .agents/CONTEXT_MAP.yaml paths and anchor locators
+  const CONTEXT_MAP_PATH = path.join(projectRoot, '.agents', 'CONTEXT_MAP.yaml');
+  if (fs.existsSync(CONTEXT_MAP_PATH)) {
+    const contextMapText = fs.readFileSync(CONTEXT_MAP_PATH, 'utf8');
+
+    // Extract all string values that look like file paths or path#anchor
+    const locatorMatches = [...contextMapText.matchAll(/:\s*["']([^"']+\.[a-zA-Z0-9]+(?:#[^"']+)?)["']/g)];
+    for (const lm of locatorMatches) {
+      const rawLocator = lm[1].trim();
+      const [relPath, anchor] = rawLocator.split('#');
+      const targetPath = path.join(projectRoot, relPath);
+
+      if (!fs.existsSync(targetPath)) {
+        fail(`Context map locator path does not exist: ${relPath}`);
+        continue;
+      }
+
+      if (anchor) {
+        const fileContent = fs.readFileSync(targetPath, 'utf8');
+        const headings = [...fileContent.matchAll(/^#+\s+(.*)$/gm)].map(m => m[1]);
+        const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const normAnchor = norm(anchor);
+
+        const anchorFound = headings.some(h => norm(h) === normAnchor);
+        if (!anchorFound) {
+          fail(`Context map declares non-existent heading anchor: #${anchor} in ${relPath}`);
+        }
+      }
+    }
+    pass('Context map physical paths and heading anchor locators validated.');
+  }
+
+  // B3. Validate Antigravity native routing rule (.agents/rules/konfrm-skill-routing.md)
+  const AGY_RULE_PATH = path.join(projectRoot, '.agents', 'rules', 'konfrm-skill-routing.md');
+  if (!fs.existsSync(AGY_RULE_PATH)) {
+    fail(`Antigravity native routing rule missing: .agents/rules/konfrm-skill-routing.md`);
+  } else {
+    const ruleText = fs.readFileSync(AGY_RULE_PATH, 'utf8');
+    if (!ruleText.includes('.agents/SKILL_ROUTER.md')) {
+      fail(`Antigravity routing rule does not point to .agents/SKILL_ROUTER.md`);
+    }
+    // Check that rule remains a compact pointer and does not duplicate Canon/Router/Business logic
+    if (ruleText.length > 1500) {
+      fail(`Antigravity routing rule is too large (${ruleText.length} chars). It must remain a minimal pointer.`);
+    }
+    const forbiddenDuplicates = ['Table of Contents', 'EVIDENCE_TREE', 'DEPOSIT_RELEASE_POLICY', 'PAYMENT_CAPTURE_POLICY'];
+    for (const token of forbiddenDuplicates) {
+      if (ruleText.includes(token)) {
+        fail(`Antigravity routing rule duplicates internal Canon/Router content: ${token}`);
+      }
+    }
+    pass('Antigravity native routing rule validated (.agents/rules/konfrm-skill-routing.md points to router, zero duplicate Canon).');
+  }
+
+  // C. Check .agents/skills (canonical shims + manifest-registered native runtime brains)
+  if (!fs.existsSync(AGENTS_DIR)) {
+    fail(`Target directory does not exist: .agents/skills`);
+  } else {
+    const agentEntries = fs.readdirSync(AGENTS_DIR, { withFileTypes: true })
+      .filter(d => d.isDirectory())
+      .map(d => d.name);
+
+    // Verify all canonical design skills are present as thin shims
+    for (const skill of canonicalSkills) {
+      const shimSkillDir = path.join(AGENTS_DIR, skill);
+      const shimSkillMd = path.join(shimSkillDir, 'SKILL.md');
+      if (!fs.existsSync(shimSkillMd)) {
+        fail(`.agents/skills/${skill}/SKILL.md missing`);
+        continue;
+      }
+      const subEntries = fs.readdirSync(shimSkillDir);
+      if (subEntries.length > 1 || subEntries[0] !== 'SKILL.md') {
+        fail(`.agents/skills/${skill} contains unexpected files (expected thin shim only): ${subEntries.join(', ')}`);
+      }
+      const shimText = fs.readFileSync(shimSkillMd, 'utf8');
+      if (!shimText.includes(`docs/ai/skills/${skill}/SKILL.md`)) {
+        fail(`.agents/skills/${skill}/SKILL.md does not point to canonical source docs/ai/skills/${skill}/SKILL.md`);
+      }
+    }
+
+    // Verify manifest-registered native runtime brains (SKILL.md + references/)
+    for (const brainId of manifestBrains) {
+      const brainDir = path.join(AGENTS_DIR, brainId);
+      if (!fs.existsSync(brainDir)) {
+        fail(`Manifest-registered runtime brain directory missing: .agents/skills/${brainId}`);
+        continue;
+      }
+      const brainSkillMd = path.join(brainDir, 'SKILL.md');
+      if (!fs.existsSync(brainSkillMd)) {
+        fail(`Runtime brain missing root SKILL.md: .agents/skills/${brainId}/SKILL.md`);
+        continue;
+      }
+      const refDir = path.join(brainDir, 'references');
+      if (!fs.existsSync(refDir)) {
+        fail(`Runtime brain missing references/ directory: .agents/skills/${brainId}/references`);
+        continue;
+      }
+      const refEntries = fs.readdirSync(refDir);
+      if (refEntries.length === 0) {
+        fail(`Runtime brain references/ directory is empty: .agents/skills/${brainId}/references`);
+      }
+
+      // Ensure directory contains only SKILL.md and references/
+      const brainSubEntries = fs.readdirSync(brainDir);
+      const unexpected = brainSubEntries.filter(e => e !== 'SKILL.md' && e !== 'references');
+      if (unexpected.length > 0) {
+        fail(`Runtime brain .agents/skills/${brainId} contains unexpected files: ${unexpected.join(', ')}`);
+      }
+
+      // Check for broken local references in SKILL.md and references/*.md
+      const checkLocalRefs = (filePath) => {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const linkMatches = [...content.matchAll(/\[.*?\]\((?!https?:|mailto:)(.*?)\)/g)];
+        for (const lm of linkMatches) {
+          const rawLink = lm[1].split('#')[0];
+          if (rawLink && !rawLink.startsWith('/')) {
+            const resolvedPath = path.resolve(path.dirname(filePath), rawLink);
+            if (!fs.existsSync(resolvedPath)) {
+              fail(`Broken local reference in ${path.relative(projectRoot, filePath)} -> ${rawLink}`);
+            }
+          }
+        }
+      };
+
+      checkLocalRefs(brainSkillMd);
+      for (const refFile of refEntries) {
+        if (refFile.endsWith('.md')) {
+          checkLocalRefs(path.join(refDir, refFile));
+        }
+      }
+    }
+
+    // Verify no unmanaged rogue directories in .agents/skills
+    for (const entry of agentEntries) {
+      if (!canonicalSkills.includes(entry) && !manifestBrains.includes(entry)) {
+        fail(`Unrecognized runtime directory in .agents/skills: ${entry}`);
+      }
+    }
+
+    pass('Thin discovery shims and native runtime brains validated (.agents/skills and .zcode/skills integrity verified).');
+  }
 }
 
 // 4. Frontmatter Integrity
@@ -173,6 +394,41 @@ validateFrontmatter(CANONICAL_DIR);
 validateFrontmatter(AGENTS_DIR);
 validateFrontmatter(ZCODE_DIR);
 pass('SKILL.md YAML frontmatter validated across canonical and shim directories.');
+
+// 4B. Legacy Scope Disambiguation Verification
+const overlappingLegacySkills = [
+  'konfrm-accessibility',
+  'konfrm-mobile-design',
+  'konfrm-rtl-arabic',
+  'konfrm-product-ux',
+  'konfrm-visual-qa',
+  'konfrm-design-router',
+  'konfrm-design-reasoning',
+  'frontend-design-wrapper',
+  'impeccable-wrapper',
+  'emil-wrapper',
+  'ui-ux-pro-max-wrapper',
+  'vercel-composition-wrapper',
+  'vercel-web-guidelines-wrapper',
+];
+
+for (const skill of overlappingLegacySkills) {
+  const canonicalSkillMd = path.join(CANONICAL_DIR, skill, 'SKILL.md');
+  if (fs.existsSync(canonicalSkillMd)) {
+    const text = fs.readFileSync(canonicalSkillMd, 'utf8');
+    const fmMatch = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (fmMatch) {
+      const desc = fmMatch[1];
+      if (/Authoritative.*engineering standards/i.test(desc) || /Authoritative mobile design/i.test(desc)) {
+        fail(`Legacy skill ${skill} frontmatter claims broad runtime authority that was transferred`);
+      }
+      if (!/Do not use as (?:the )?primary/i.test(desc) || (!desc.includes('konfrm-design') && !desc.includes('konfrm-flutter') && !desc.includes('konfrm-quality'))) {
+        fail(`Legacy skill ${skill} frontmatter missing explicit scope exclusion pointing to runtime brains`);
+      }
+    }
+  }
+}
+pass('Legacy skill discovery scope exclusions and authority narrowing validated.');
 
 // 5. False-Canon & Product-Truth Verification in Internal Skills
 const internalSkills = [
@@ -260,7 +516,7 @@ for (const skill of internalSkills) {
 
     // Freshness & authority synchronization checks:
     if (text.includes('DF2 v1.1')) {
-      fail(`Stale DF2 v1.1 authority reference in internal skill ${skill}/SKILL.md (current is DF2 v1.4)`);
+      fail(`Stale DF2 v1.1 authority reference in internal skill ${skill}/SKILL.md`);
     }
     if (skill === 'konfrm-design-reasoning' && /Exact primary CTA color treatment.*Unresolved Candidate/i.test(text)) {
       fail(`Stale unresolved primary CTA status phrase in konfrm-design-reasoning/SKILL.md`);
@@ -270,7 +526,7 @@ for (const skill of internalSkills) {
     }
   }
 }
-pass('Internal skill Canon vs Candidate discipline & research hygiene passed (0 false-canon phrases, current DF2 v1.4 authority verified).');
+pass('Internal skill Canon vs Candidate discipline & research hygiene passed (0 false-canon phrases, design authority references verified).');
 
 // 6. UI/UX Pro Max Behavioral Runner Safety Verification
 const testScript = path.join(projectRoot, 'scripts', 'test-uiux-runner-safety.py');
@@ -492,6 +748,71 @@ if (fs.existsSync(courtTestScript)) {
   }
 } else {
   fail(`Missing Design Court contract test script: ${courtTestScript}`);
+}
+
+// 11. Consolidated Design Brain Hardening & Legacy Discovery Consolidation Checks
+const DESIGN_BRAIN_DIR = path.join(AGENTS_DIR, 'konfrm-design');
+if (fs.existsSync(DESIGN_BRAIN_DIR)) {
+  const designSkillMd = path.join(DESIGN_BRAIN_DIR, 'SKILL.md');
+  const designRefDir = path.join(DESIGN_BRAIN_DIR, 'references');
+
+  const allDesignFiles = [designSkillMd];
+  if (fs.existsSync(designRefDir)) {
+    for (const rf of fs.readdirSync(designRefDir)) {
+      if (rf.endsWith('.md')) allDesignFiles.push(path.join(designRefDir, rf));
+    }
+  }
+
+  for (const df of allDesignFiles) {
+    const text = fs.readFileSync(df, 'utf8');
+    const relDf = path.relative(projectRoot, df).replaceAll('\\', '/');
+
+    // 1. Prevent stale DF2 v1.4 authority
+    if (text.includes('DF2 v1.4') || text.includes('v1.4')) {
+      fail(`Stale DF2 v1.4 authority reference in runtime design brain: ${relDf}`);
+    }
+
+    // 2. Prevent known false escrow language in Design Brain
+    if (/\bescrow\b/i.test(text)) {
+      fail(`Known non-canonical escrow terminology detected in runtime design brain: ${relDf}`);
+    }
+
+    // 3. Prevent UNANIMOUS_CANON_CONSENSUS label
+    if (text.includes('UNANIMOUS_CANON_CONSENSUS')) {
+      fail(`Forbidden UNANIMOUS_CANON_CONSENSUS label detected in runtime design system: ${relDf}`);
+    }
+  }
+
+  // 4. Verify konfrm-design-router does not claim master design triage router
+  const routerShim = path.join(CANONICAL_DIR, 'konfrm-design-router', 'SKILL.md');
+  if (fs.existsSync(routerShim)) {
+    const routerText = fs.readFileSync(routerShim, 'utf8');
+    if (/Master design triage router/i.test(routerText.slice(0, 400))) {
+      fail(`konfrm-design-router frontmatter claims superseded "Master design triage router" authority`);
+    }
+  }
+
+  // 5. Verify overlapping design wrappers do not claim primary design authority
+  const designWrappers = [
+    'frontend-design-wrapper',
+    'impeccable-wrapper',
+    'emil-wrapper',
+    'ui-ux-pro-max-wrapper',
+  ];
+  for (const wr of designWrappers) {
+    const wrFile = path.join(CANONICAL_DIR, wr, 'SKILL.md');
+    if (fs.existsSync(wrFile)) {
+      const wrText = fs.readFileSync(wrFile, 'utf8');
+      const fm = wrText.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+      if (fm) {
+        if (/primary design authority/i.test(fm[1]) && !/Do not use as primary/i.test(fm[1])) {
+          fail(`External wrapper ${wr} claims primary design authority without negation`);
+        }
+      }
+    }
+  }
+
+  pass('Consolidated Design Brain hardening & legacy discovery checks passed (v1.7 authority, zero escrow, zero UNANIMOUS_CANON_CONSENSUS, router & wrappers narrowed).');
 }
 
 console.log('====================================================');

@@ -41,7 +41,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
    - Always present three transparent values:
      - **إجمالي الإقامة (Total Stay):** Complete price for all nights.
      - **العربون المطلوب (Deposit Due):** Upfront amount (equal to the first-night price).
-     - **المتبقي (Remaining Balance):** Total stay price minus upfront deposit (zero platform commission; collection method remains OPEN / UNCONFIRMED per MR-15, DC-08).
+     - **المتبقي (Remaining Balance):** Total stay price minus upfront deposit (collection method remains OPEN / UNCONFIRMED per MR-15, DC-08; Customers must NEVER be shown platform commission or internal financial splits).
 3. **Request-Not-Instant Booking Mental Model:**
    - Customers understand that high-value vacation rentals require host approval.
    - The UI must project calm expectation: *"Your booking request has been sent. The host will review your dates."*

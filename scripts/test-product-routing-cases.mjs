@@ -294,6 +294,14 @@ if (requiresServerPricing) {
   fail('[REG-4] Customer price totals missing server-side pricing retrieval requirement');
 }
 
+// REG-5: Customer Pricing Commission Secrecy (No internal commission leakage in customer model)
+const customerPricingSection = mentalModelsContent.split('## 3. OWNER MENTAL MODEL')[0];
+if (/المتبقي[\s\S]*?zero platform commission/i.test(customerPricingSection)) {
+  fail('[REG-5] Customer 3-amount pricing presentation in role_mental_models.md references platform commission (leakage risk)');
+} else {
+  pass('[REG-5] Customer Pricing Commission Secrecy: Customer 3-amount model contains zero commission leakage');
+}
+
 console.log('====================================================');
 if (failures > 0) {
   console.error(`FAILED: ${failures} evaluation failure(s).`);

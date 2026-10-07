@@ -8,20 +8,18 @@ STATUS: CURRENT_APPROVED_METHOD
 
 ---
 
-## 1. FLUTTER RENDER PERFORMANCE MECHANICS
+## 1. MEASUREMENT-DRIVEN RENDER PERFORMANCE
 
-1. **Measurement-Driven Performance:**
-   - Performance optimization must be driven by profiling measurements, not generic guesswork.
-   - Modern target devices run at variable refresh rates (60Hz, 90Hz, 120Hz). Evaluate frame rendering budgets using Flutter DevTools performance profiler.
-2. **Const Constructor Discipline:**
-   - Always apply `const` to immutable widget subtrees to allow the Flutter framework to reuse elements across build passes without reallocation.
-3. **Isolating Rebuild Boundaries:**
-   - Keep widget trees fine-grained. Use Riverpod's `Consumer` or `ref.watch(provider.select(...))` to limit widget rebuilds to the exact property that changed.
-   - Never perform asynchronous calls, JSON parsing, or heavy transformations inside a `build()` method.
-4. **Scrolling List Performance:**
-   - For long scrollable lists, use `ListView.builder` or `CustomScrollView` with `SliverList`.
-   - Provide `itemExtent` or `prototypeItem` where list item heights are fixed to eliminate layout calculation passes during fast scrolling.
-   - Wrap complex or animated subtrees in `RepaintBoundary` to prevent full-screen paint invalidation.
+1. **Measurement-First Optimization Cycle:**
+   - Follow the strict engineering cycle:
+     `MEASURE → IDENTIFY BOTTLENECK → APPLY RELEVANT OPTIMIZATION → RE-MEASURE`.
+   - Never apply premature or speculative optimizations based on generic advice. Modern target devices run at variable refresh rates (60Hz, 90Hz, 120Hz); evaluate frame rendering metrics and timeline traces using Flutter DevTools profiler on release/profile modes.
+2. **Targeted Performance Tools:**
+   - **`const` Constructors:** Apply `const` where widget subtrees are semantically immutable to assist Flutter's element reuse.
+   - **Provider `.select`:** Use `ref.watch(provider.select(...))` when profiling reveals that a widget is rebuilding unnecessarily for unobserved state changes.
+   - **`RepaintBoundary`:** Introduce `RepaintBoundary` only around complex, frequently animating, or heavy custom painter subtrees where profiling proves paint invalidation is leaking into parent layers. Do not sprinkle `RepaintBoundary` blindly across static layouts.
+   - **Scroll Optimizations:** Use `ListView.builder` / `SliverList` for virtualized item rendering. Apply `itemExtent` or `prototypeItem` only when item dimensions are strictly uniform and profiling indicates layout measurement overhead during fast fling scrolling.
+   - **Build Method Hygiene:** Never perform asynchronous network calls, JSON decoding, or heavy algorithmic sorting inside a `build()` method.
 
 ---
 

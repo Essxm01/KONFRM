@@ -39,9 +39,9 @@ lib/features/<feature_name>/
 2. **Provider Scope & Architecture:**
    - Use Riverpod state containers (such as `NotifierProvider`, `AsyncNotifierProvider`) to model screen and feature state.
    - Architecture does not over-canonize a single provider class where not required; select the provider class that fits the state lifecycle (synchronous vs asynchronous).
-3. **Fail-Closed Async UI Pattern:**
-   - Asynchronous feature state is represented via `AsyncValue<T>`.
-   - Render all states truthfully:
+3. **Fail-Closed Async State Patterns:**
+   - `AsyncValue<T>` is a preferred/available Riverpod pattern where it fits, while preserving truthful states, fail-closed error handling, and avoiding swallowed failures. Do not mandate that every asynchronous feature state must use `AsyncValue<T>` if project architecture specifies an alternate state container.
+   - Render all applicable truthful states faithfully:
      ```dart
      state.when(
        data: (data) => ContentWidget(data),
@@ -61,34 +61,59 @@ lib/features/<feature_name>/
 1. **Manual Serialization Baseline:**
    - Initially, DTOs implement explicit, manual `fromMap`/`toMap` (or `fromJson`/`toJson`) serialization methods.
    - Avoid uninspected runtime reflection and avoid introducing code generation tooling (`build_runner`, `freezed`) unless explicitly mandated by project architecture.
-2. **Strict Nullability & Type Guards:**
+2. **Strict Fail-Closed Nullability & Contract Guards:**
    - Never use force unwrapping (`!`) on API response fields.
-   - Handle missing or malformed fields gracefully with safe fallbacks or honest parse exceptions:
+   - **Required Contract Fields:** If a required field is missing, null, or of an unexpected type, fail closed immediately by throwing an explicit contract error (e.g., `FormatException`). NEVER invent plausible business values (such as empty string `''`, `'UNKNOWN'` status, `0.0` price, or `DateTime.now()`) that hide malformed server payloads.
+   - **Optional Contract Fields:** Fallback defaults are permitted ONLY when the backend API contract explicitly marks the field optional and fallback semantics are explicitly defined.
+   - Example fail-closed manual parser:
      ```dart
      factory BookingDto.fromMap(Map<String, dynamic> map) {
+       final id = map['id'];
+       if (id is! String || id.isEmpty) {
+         throw const FormatException('Missing or invalid required field: id');
+       }
+       final status = map['status'];
+       if (status is! String || status.isEmpty) {
+         throw const FormatException('Missing or invalid required field: status');
+       }
+       final totalPrice = map['total_price'];
+       if (totalPrice is! num) {
+         throw const FormatException('Missing or invalid required field: total_price');
+       }
+       final rawCreatedAt = map['created_at'];
+       if (rawCreatedAt is! String) {
+         throw const FormatException('Missing or invalid required field: created_at');
+       }
+       final createdAt = DateTime.tryParse(rawCreatedAt);
+       if (createdAt == null) {
+         throw FormatException('Invalid ISO-8601 date format for created_at: $rawCreatedAt');
+       }
+       // Optional field with explicit nullable fallback:
+       final specialInstructions = map['special_instructions'] as String?;
+
        return BookingDto(
-         id: map['id'] as String? ?? '',
-         status: map['status'] as String? ?? 'UNKNOWN',
-         totalPrice: (map['total_price'] as num?)?.toDouble() ?? 0.0,
-         createdAt: DateTime.tryParse(map['created_at'] as String? ?? '') ?? DateTime.now(),
+         id: id,
+         status: status,
+         totalPrice: totalPrice.toDouble(),
+         createdAt: createdAt,
+         specialInstructions: specialInstructions,
        );
      }
      ```
 
 ---
 
-## 4. SECURE CREDENTIAL STORAGE & ISOLATION
+## 4. SECURE CREDENTIAL STORAGE & ROLE ISOLATION
 
 1. **Secure Storage Abstraction:**
-   - Never store authentication tokens, refresh tokens, or personal identifiers in unencrypted storage (such as raw `SharedPreferences` or `NSUserDefaults`).
-   - Store sensitive session tokens using the KONFRM secure-storage abstraction, which delegates to platform-protected storage:
+   - Authentication tokens, refresh tokens, and session secrets MUST be stored using the KONFRM secure-storage abstraction backed by platform-protected storage:
      - Android: Android KeyStore (EncryptedSharedPreferences).
      - iOS: iOS Keychain Services.
-2. **Credential Isolation Between Roles:**
-   - Customer and Owner authentication flows must use distinct storage keys and sessions:
-     - `konfrm_customer_token`
-     - `konfrm_owner_token`
-   - Switching roles or sessions must cleanly flush the active in-memory Riverpod container state to prevent state leaking between roles.
+   - Other personal data handling depends on sensitivity, data minimization, platform/privacy architecture, and actual need; avoid overgeneralized security rules that treat every data field identically.
+2. **Credential Isolation Between Roles & Sessions:**
+   - Customer and Owner credentials remain strictly isolated across storage namespaces determined by the secure-storage abstraction.
+   - Do not describe role switching as a normal same-app lifecycle when Customer and Owner are separate applications.
+   - State invalidation and session cleanup (such as logout or credential expiration) must cleanly flush the active in-memory Riverpod container state at the application and session boundary.
 
 ---
 

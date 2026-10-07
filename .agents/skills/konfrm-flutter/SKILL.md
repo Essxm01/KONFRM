@@ -51,7 +51,7 @@ GOVERNING_SPEC: docs/architecture/KONFRM_MOBILE_ARCHITECTURE_BOUNDARIES_V1.md
 8. **Credential Isolation:** Customer and Owner credentials, storage keys, and authentication states must remain strictly isolated.
 9. **Secure Storage Abstraction:** Sensitive credentials must use the KONFRM secure-storage abstraction backed by platform-protected storage (Android KeyStore, iOS Keychain).
 10. **Phase 4I Distilled Implementation Invariants:**
-    - **No False Selection Semantics:** Ordinary action buttons (`IconButton`, `IconActionButton`) must never expose `selected` semantics unless they are genuine toggles.
+    - **Absence of Selected-State Capability:** Ordinary action buttons (`IconButton`, `IconActionButton`) must have selected-state capability completely ABSENT (`hasSelectedState = false`). Never pass `selected: false` or emit selection semantics on ordinary actions; selection capability is reserved strictly for genuine stateful toggles (`hasSelectedState = true`, `isSelected = true | false`).
     - **No Duplicate Accessibility Semantics:** Avoid wrapping already semantic widgets in redundant `Semantics` labels that cause screen readers to announce duplicated copy.
     - **Green CI != Physical Device Pass:** Implementation must account for physical device reality (e.g. Android TalkBack, Samsung One UI, edge-to-edge window insets).
 

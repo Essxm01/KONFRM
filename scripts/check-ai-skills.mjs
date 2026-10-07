@@ -184,6 +184,80 @@ if (!fs.existsSync(CANONICAL_DIR)) {
     pass('Runtime skill manifest paths and unique IDs validated.');
   }
 
+  // B1. Validate .agents/SKILL_ROUTER.md module and path references
+  const ROUTER_PATH = path.join(projectRoot, '.agents', 'SKILL_ROUTER.md');
+  if (fs.existsSync(ROUTER_PATH)) {
+    const routerText = fs.readFileSync(ROUTER_PATH, 'utf8');
+
+    // Collect all valid reference file names from active manifest brains
+    const allKnownBrainRefs = new Set();
+    for (const bId of manifestBrains) {
+      const bRefDir = path.join(AGENTS_DIR, bId, 'references');
+      if (fs.existsSync(bRefDir)) {
+        for (const rf of fs.readdirSync(bRefDir)) {
+          if (rf.endsWith('.md')) allKnownBrainRefs.add(rf);
+        }
+      }
+    }
+
+    // Extract all referenced markdown paths/files
+    const mdRefMatches = [...routerText.matchAll(/([a-zA-Z0-9_\-\.\/]+\.md)/g)];
+    for (const match of mdRefMatches) {
+      const refToken = match[1];
+      if (refToken === 'SKILL.md') continue;
+
+      if (refToken.startsWith('.agents/') || refToken.startsWith('docs/')) {
+        const fullP = path.join(projectRoot, refToken);
+        if (!fs.existsSync(fullP)) {
+          fail(`Router references non-existent file path: ${refToken}`);
+        }
+      } else if (refToken.startsWith('references/')) {
+        const baseName = path.basename(refToken);
+        if (!allKnownBrainRefs.has(baseName)) {
+          fail(`Router references non-existent companion reference module: ${refToken}`);
+        }
+      } else {
+        // Standalone filename e.g. architecture.md
+        if (!allKnownBrainRefs.has(refToken)) {
+          fail(`Router references non-existent runtime reference module: ${refToken}`);
+        }
+      }
+    }
+    pass('Router reference paths and companion module locators validated.');
+  }
+
+  // B2. Validate .agents/CONTEXT_MAP.yaml paths and anchor locators
+  const CONTEXT_MAP_PATH = path.join(projectRoot, '.agents', 'CONTEXT_MAP.yaml');
+  if (fs.existsSync(CONTEXT_MAP_PATH)) {
+    const contextMapText = fs.readFileSync(CONTEXT_MAP_PATH, 'utf8');
+
+    // Extract all string values that look like file paths or path#anchor
+    const locatorMatches = [...contextMapText.matchAll(/:\s*["']([^"']+\.[a-zA-Z0-9]+(?:#[^"']+)?)["']/g)];
+    for (const lm of locatorMatches) {
+      const rawLocator = lm[1].trim();
+      const [relPath, anchor] = rawLocator.split('#');
+      const targetPath = path.join(projectRoot, relPath);
+
+      if (!fs.existsSync(targetPath)) {
+        fail(`Context map locator path does not exist: ${relPath}`);
+        continue;
+      }
+
+      if (anchor) {
+        const fileContent = fs.readFileSync(targetPath, 'utf8');
+        const headings = [...fileContent.matchAll(/^#+\s+(.*)$/gm)].map(m => m[1]);
+        const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const normAnchor = norm(anchor);
+
+        const anchorFound = headings.some(h => norm(h) === normAnchor);
+        if (!anchorFound) {
+          fail(`Context map declares non-existent heading anchor: #${anchor} in ${relPath}`);
+        }
+      }
+    }
+    pass('Context map physical paths and heading anchor locators validated.');
+  }
+
   // C. Check .agents/skills (canonical shims + manifest-registered native runtime brains)
   if (!fs.existsSync(AGENTS_DIR)) {
     fail(`Target directory does not exist: .agents/skills`);
@@ -385,7 +459,7 @@ for (const skill of internalSkills) {
 
     // Freshness & authority synchronization checks:
     if (text.includes('DF2 v1.1')) {
-      fail(`Stale DF2 v1.1 authority reference in internal skill ${skill}/SKILL.md (current is DF2 v1.4)`);
+      fail(`Stale DF2 v1.1 authority reference in internal skill ${skill}/SKILL.md`);
     }
     if (skill === 'konfrm-design-reasoning' && /Exact primary CTA color treatment.*Unresolved Candidate/i.test(text)) {
       fail(`Stale unresolved primary CTA status phrase in konfrm-design-reasoning/SKILL.md`);
@@ -395,7 +469,7 @@ for (const skill of internalSkills) {
     }
   }
 }
-pass('Internal skill Canon vs Candidate discipline & research hygiene passed (0 false-canon phrases, current DF2 v1.4 authority verified).');
+pass('Internal skill Canon vs Candidate discipline & research hygiene passed (0 false-canon phrases, design authority references verified).');
 
 // 6. UI/UX Pro Max Behavioral Runner Safety Verification
 const testScript = path.join(projectRoot, 'scripts', 'test-uiux-runner-safety.py');

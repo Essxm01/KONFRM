@@ -12,11 +12,17 @@ authoritative_locators:
   founder_operating_context:
     document: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md"
     targeted_sections:
-      autonomy_preference: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#autonomous-execution-mandate"
-      explanation_preference: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#communication-standards"
-      ux_quality_priority: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#product-and-design-standards"
-      evidence_and_trust_model: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#evidence-and-verification"
-      prompt_courier_avoidance: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#operational-friction-rules"
+      persona_and_communication: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#1-founder-persona--communication-principles"
+      delegation_and_resources: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#2-resource-management--agent-delegation-model"
+      engineering_and_delivery_laws: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#3-engineering--delivery-laws"
+      role_mental_models: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#4-role-mental-models"
+      autonomy_boundary: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#5-phase-47-entry--automation-boundary"
+      project_local_memory: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#6-project-local-memory-preference"
+
+  epistemic_reality_model:
+    documentary_current_state: "docs/CURRENT_STATE.md"
+    documentary_active_task: "tasks/CURRENT_TASK.md"
+    physical_repository_reality: "exact git HEAD + source inspection + runtime/backend evidence when required"
 
   mobile_architecture:
     foundation: "docs/architecture/KONFRM_MOBILE_ARCHITECTURE_FOUNDATION_V1.md"

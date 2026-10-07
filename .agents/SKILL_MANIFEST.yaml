@@ -23,7 +23,7 @@ brains:
     id: konfrm-quality
     path: .agents/skills/konfrm-quality/SKILL.md
     primary_intent: "Diagnose defects, verify implementation against Canon, review code, and prove completion"
-    surface: "all_surfaces"
+    surface: "generic_quality_core + pilot_proven_flutter_verification (backend and admin-web specialist verification deferred)"
     activation: "Failure diagnosis, RCA debugging, test selection, static analysis review, security audit, completion proof"
     priority: primary_verification
     network_class: offline_local

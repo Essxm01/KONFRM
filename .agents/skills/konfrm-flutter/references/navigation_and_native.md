@@ -76,12 +76,23 @@ STATUS: CURRENT_APPROVED_METHOD
      class NativeDeviceBridge {
        static const _channel = MethodChannel('com.konfrm.mobile/device');
 
-       Future<String?> getDeviceModel() async {
+       Future<String> getDeviceModel() async {
          try {
-           return await _channel.invokeMethod<String>('getDeviceModel');
+           final model = await _channel.invokeMethod<String>('getDeviceModel');
+           if (model == null || model.isEmpty) {
+             throw const NativePlatformException(
+               code: 'EMPTY_DEVICE_MODEL',
+               message: 'Native bridge returned an empty device model identifier',
+             );
+           }
+           return model;
          } on PlatformException catch (e) {
-           // Handle platform error gracefully without crashing
-           return null;
+           // Propagate truthful failure via typed exception; never swallow platform failures
+           throw NativePlatformException(
+             code: e.code,
+             message: e.message ?? 'Unknown platform failure',
+             details: e.details,
+           );
          }
        }
      }

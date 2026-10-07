@@ -85,7 +85,7 @@ In accordance with the Minimal Sufficient Runtime Context principle, this proven
 - **Internal Anchor:** PR #100 Samsung Galaxy A56 5G Physical Validation Evidence
 - **Status:** Internal Project Reality
 - **Concepts Adopted:**
-  - Action button semantics: Ordinary icon action buttons (`IconButton`, `IconActionButton`) must never declare `selected: true/false`.
+  - Action button semantics: Ordinary icon action buttons (`IconButton`, `IconActionButton`) must have selected-state capability completely ABSENT (`hasSelectedState = false`). Never accept `isSelected == false` as acceptance criteria; selected capability is reserved strictly for genuine toggles (`hasSelectedState: true`, `isSelected: true | false`).
   - Duplicate semantics: Semantic wrappers must not wrap already semantic widgets with duplicate labels.
   - Physical reality: Passing local unit/widget tests does not equal physical runtime device verification.
   - Multi-platform isolation: Android TalkBack passes do not equal iOS VoiceOver compliance.

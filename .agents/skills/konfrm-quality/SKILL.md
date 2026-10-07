@@ -9,7 +9,7 @@ description: Use for diagnosing defects, systematic 4-phase root cause analysis 
 BRAIN_ID: konfrm-quality
 SYSTEM: KONFRM Engineering Intelligence System V1
 STATUS: PILOT_ACTIVE
-SURFACE: all_surfaces (mobile, web, edge, test suites)
+SURFACE: generic_quality_core + pilot_proven_flutter_verification (backend and admin-web specialist verification deferred)
 GOVERNING_SPEC: docs/agents/KONFRM_SKILL_CONSOLIDATION_BLUEPRINT_V1.md
 ```
 
@@ -68,7 +68,7 @@ GOVERNING_SPEC: docs/agents/KONFRM_SKILL_CONSOLIDATION_BLUEPRINT_V1.md
    > `NEVER CLAIM CURRENT IMPLEMENTATION FROM ARCHITECTURE ALONE.`
    Always verify physical code and runtime evidence at current HEAD.
 10. **Phase 4I Distilled Verification Invariants:**
-    - Verify that ordinary action buttons (`IconButton`, `IconActionButton`) do not emit `selected` semantics in the accessibility tree unless they are stateful toggles.
+    - Verify that ordinary action buttons (`IconButton`, `IconActionButton`) have selected-state capability completely ABSENT (`hasSelectedState = false`). Never accept `isSelected == false` as proof of an ordinary action button, which falsely marks it as an unselected toggle in TalkBack.
     - Verify that semantic wrappers do not duplicate existing button labels.
     - Physical Android device evidence cannot be substituted by emulator assertions when physical validation is required.
     - iOS is a distinct platform reality gate; do not infer iOS compliance from Android evidence.

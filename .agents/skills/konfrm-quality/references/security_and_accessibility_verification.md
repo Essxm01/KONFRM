@@ -17,10 +17,12 @@ Security audits use **OWASP MASVS v2.0** as a selected engineering baseline. Rat
 | TOUCHED SURFACE                    | TRIGGERED MASVS CONTROLS                                      |
 +------------------------------------+---------------------------------------------------------------+
 | Authentication / Token Storage     | MASVS-STORAGE & MASVS-AUTH:                                    |
-|                                    | - Verify credentials use secure-storage abstraction.           |
+|                                    | - Verify credentials and secrets use secure-storage abstraction.|
 |                                    | - Zero plaintext tokens in SharedPreferences / NSUserDefaults. |
 |                                    | - Non-rotating refresh token semantics preserved as Canon.    |
 |                                    | - Role isolation: Customer and Owner tokens never shared.     |
+|                                    | - Other personal data: Handled per sensitivity, minimization,  |
+|                                    |   and privacy architecture; no blanket overgeneralization.     |
 +------------------------------------+---------------------------------------------------------------+
 | Network Client / DTO Endpoints     | MASVS-NETWORK:                                                |
 |                                    | - Verify HTTPS/TLS transport with modern cipher configuration.|
@@ -50,7 +52,7 @@ Security guidance may identify risk, but it must NEVER silently alter accepted p
      handle.dispose();
      ```
 2. **Phase 4I Distilled Verification Rules:**
-   - **No False Selection Semantics:** Assert that non-toggle action buttons (such as navigation icons, search clear buttons, back buttons) emit `isSelected == false`. If Android TalkBack announces "Not selected, Button" on an ordinary action button, the component fails the accessibility gate.
+   - **Absence of Selected-State Capability:** Assert that non-toggle ordinary action buttons (such as navigation icons, search clear buttons, back buttons) have selected-state capability completely ABSENT (`hasSelectedState = false`). They must NOT emit `isSelected == false` or declare `selected: false` (which causes Android TalkBack to announce "Not selected, Button", creating user confusion). Selection capability (`hasSelectedState: true, isSelected: true | false`) is reserved strictly for genuine stateful toggles (such as filter chips or checkboxes).
    - **No Duplicate Screen Reader Labels:** Assert that semantic label wrappers do not duplicate the child widget's inherent label. Redundant wrapping causes screen readers to read the same label twice in sequence.
    - **Touch Target Dimensions:** Assert that interactive bounds satisfy platform criteria (~48dp on Android, ~44pt on iOS).
 3. **Multi-Platform Reality Gates:**

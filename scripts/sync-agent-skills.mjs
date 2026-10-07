@@ -119,7 +119,9 @@ for (const targetDir of TARGET_DIRS) {
   const manifestPath = path.join(projectRoot, '.agents', 'SKILL_MANIFEST.yaml');
   if (fs.existsSync(manifestPath)) {
     const manifestText = fs.readFileSync(manifestPath, 'utf8');
-    const matches = [...manifestText.matchAll(/id:\s*([a-zA-Z0-9_-]+)/g)];
+    const brainsSectionMatch = manifestText.match(/brains:([\s\S]*?)(?=\n[a-zA-Z0-9_-]+:|$)/);
+    const brainsSection = brainsSectionMatch ? brainsSectionMatch[1] : '';
+    const matches = [...brainsSection.matchAll(/id:\s*([a-zA-Z0-9_-]+)/g)];
     nativeRuntimeBrains = matches.map(m => m[1]);
   }
 

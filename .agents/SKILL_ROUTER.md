@@ -50,12 +50,12 @@ DEFERRED_BRAINS:
 | Physical runtime evidence audit / completion proof  | konfrm-quality     | None (Verdicts)    |
 +-----------------------------------------------------+--------------------+--------------------+
 | Pure documentation task (Markdown docs only)        | NONE (Bypass)      | None               |
-| Backend SQL migration / Cloudflare Worker proxy     | konfrm-backend**   | konfrm-quality     |
-| Web Admin dashboard (React 19 / Vite in admin-app)  | konfrm-admin-web** | konfrm-quality     |
+| Backend SQL migration / Cloudflare Worker proxy     | konfrm-backend**   | Docs / Database Canon            |
+| Web Admin dashboard (React 19 / Vite in admin-app)  | konfrm-admin-web** | Web Admin Guidelines             |
 +-----------------------------------------------------+--------------------+--------------------+
 
 * Handoff to konfrm-flutter occurs when code modification of Flutter client source is required.
-** Deferred brains until later rollout stages; during Pilot V1, unpiloted surfaces follow standard project guidelines.
+** Deferred brains until later rollout stages. During Pilot V1, konfrm-quality provides generic quality core + pilot-proven Flutter verification; backend/admin specialist modules are deferred.
 ```
 
 ---
@@ -67,7 +67,7 @@ DEFERRED_BRAINS:
 Task: "Implement/modify a Flutter screen, widget, or state controller."
 1. Activate: konfrm-flutter (.agents/skills/konfrm-flutter/SKILL.md)
 2. Retrieve Canon: Look up relevant Design or Architecture locators via .agents/CONTEXT_MAP.yaml.
-3. Lazy-Load References: Open only matching references (e.g., widgets_and_layout.md or state_riverpod.md).
+3. Lazy-Load References: Open only matching references (e.g., widgets_and_layout.md or architecture.md).
 4. Implement: Author or modify Flutter code adhering to presentation/application/data feature-first architecture.
 5. Handoff: Hand off to konfrm-quality for verification gate if task introduces non-trivial risk.
 ```

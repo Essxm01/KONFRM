@@ -33,7 +33,7 @@ KONFRM tests are structured according to architectural boundaries rather than re
                                                   │
 +-------------------------------------------------▼--------------------------------------------------+
 | 4. WIDGET & ACCESSIBILITY TESTS                                                                    |
-| Scope: UI state rendering (Loading, Empty, Error, Content), tap callbacks, semantics tree labels.  |
+| Scope: Applicable truthful states (APPLICABLE_TRUTHFUL_STATES), tap callbacks, semantics tree.     |
 | Tooling: testWidgets, ProviderScope overrides, tester.pumpAndSettle(), tester.getSemantics().       |
 +----------------------------------------------------------------------------------------------------+
                                                   │
@@ -65,13 +65,42 @@ KONFRM tests are structured according to architectural boundaries rather than re
 2. **Pump Discipline:**
    - Use `tester.pumpAndSettle()` for static views where animations have finished.
    - For infinite animations or recurring timers, avoid `pumpAndSettle()` (which will time out); use bounded pumps: `tester.pump(const Duration(milliseconds: 100))`.
-3. **Verifying Accessibility Semantics:**
-   - Assert that interactive widgets emit correct semantics without false selection states:
+3. **Verifying Accessibility Semantics (Selected-State Capability Discipline):**
+   - **Ordinary Action Buttons:** Selected-state capability must be completely ABSENT (`hasSelectedState = false`).
+   - **Real Toggle Buttons:** Selected-state capability is PRESENT (`hasSelectedState = true`, `isSelected = true | false`).
+   - **CRITICAL INVARIANT:** Never use `expect(semantics.isSelected, isFalse)` as the acceptance criterion for ordinary action buttons! That erroneously asserts an unselected toggle, which causes TalkBack to announce "Not selected, Button".
+   - Use Flutter's `matchesSemantics` to enforce truthful capability boundaries:
      ```dart
-     final semantics = tester.getSemantics(find.byKey(const Key('search_clear_button')));
-     expect(semantics.isButton, isTrue);
-     expect(semantics.isSelected, isFalse); // Ordinary action button must not be selected!
-     expect(semantics.label, equals('مسح نص البحث'));
+     // A. Ordinary action button (e.g., search clear, back button, nav action):
+     expect(
+       tester.getSemantics(find.byKey(const Key('search_clear_button'))),
+       matchesSemantics(
+         isButton: true,
+         hasEnabledState: true,
+         isEnabled: true,
+         hasTapAction: true,
+         isFocusable: true,
+         hasFocusAction: true,
+         label: 'مسح نص البحث',
+         // NOTE: hasSelectedState is absent; selected-state capability is omitted entirely.
+       ),
+     );
+
+     // B. Stateful toggle button (e.g., filter toggle chip):
+     expect(
+       tester.getSemantics(find.byKey(const Key('filter_toggle_chip'))),
+       matchesSemantics(
+         isButton: true,
+         hasEnabledState: true,
+         isEnabled: true,
+         hasTapAction: true,
+         isFocusable: true,
+         hasFocusAction: true,
+         hasSelectedState: true, // Capability present for genuine toggles
+         isSelected: false,       // or true when selected
+         label: 'تصفية',
+       ),
+     );
      ```
 
 ---

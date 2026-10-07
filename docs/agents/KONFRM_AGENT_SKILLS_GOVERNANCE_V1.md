@@ -1,12 +1,13 @@
 # KONFRM Agent Skills Governance V1
 ## Runtime Architecture, Skill Bundles, Precedence Model, and Operational Safety Standards
 
-**Document Version:** 1.3.0
+**Document Version:** 1.4.0
 **Status:** DRAFT — PENDING FINAL BRIDGE APPROVAL
 **Scope:** Universal Agent Tooling Architecture (Antigravity, Codex, Bridge)
 **Target Repository:** `Essxm01/KONFRM`
 **Base Anchor Main SHA:** `9c908d2756fba0d421e67959ecfbc13d0ca35f9b`
 **Governing Authority:** KONFRM Canon, Master Rules (`docs/codex/KONFRM_MASTER_RULES.md`), Founder Operating Context (`docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md`)
+**Harmonization Authority:** `docs/agents/KONFRM_SKILL_HARMONIZATION_V1.md`
 
 ---
 
@@ -24,6 +25,7 @@ The purpose of the **KONFRM Agent Skills Governance Framework (V1)** is to estab
 5. **Skill-Bundle Architecture (`KONFRM_SKILL_BUNDLE_V1`):** A skill is not assumed to be a single `SKILL.md` file. Bundles contain self-contained operational scripts, references, and normalized frontmatter with zero unresolvable dependencies.
 6. **Separation of Contexts:** Execution context (`.agents/skills/`) is strictly separated from audit, provenance, and vendor snapshot context (`docs/ai/skills/`). Routine execution agents must never load historical vendor snapshots.
 7. **Fast Discovery & Progressive Disclosure (`KONFRM_SKILL_DISCLOSURE_V1`):** Fast routing through direct deterministic path resolution, physically flat runtime directories, progressive disclosure (Metadata $\to$ `SKILL.md` $\to$ Supporting Reference), and strict prohibition of recursive filesystem scanning in routine tasks.
+8. **Harmonization & Multi-Skill Intelligence (`KONFRM_SKILL_HARMONIZATION_V1`):** Skills do not operate as isolated instructions; they form a coordinated capability system linked by a Directed Acyclic Graph (DAG), structured handoffs (`KONFRM_SKILL_HANDOFF_V1`), shared constitutional contracts (Authority, Evidence, Completion), and risk-based completion gates.
 
 ---
 
@@ -185,7 +187,7 @@ flowchart TD
 ### 5.1 Level 0 — Discovery Metadata
 Used strictly to determine whether a skill is relevant to the active task.
 - **Required Fields:** Skill name, trigger intent, concise description, and direct path.
-- **Context Impact:** Near-zero overhead. Handled by native host tool discovery or compact fallback router.
+- **Context Impact:** Minimal overhead. Handled by native host tool discovery or compact fallback router.
 
 ### 5.2 Level 1 — `SKILL.md`
 Loaded only for the specifically selected skill upon task activation.
@@ -226,9 +228,9 @@ To prevent guess-and-check tool selection, agents follow an unambiguous five-ste
 ### 6.2 Lightweight Skill Router (`.agents/SKILL_ROUTER.md`) Specification
 The future compact file `.agents/SKILL_ROUTER.md` serves as a deterministic, human-readable routing lookup table.
 
-- **Size Constraint:** Strictly limited to $\le 50$ lines.
-- **Content:** Contains direct mappings from triggering task intents to runtime skill directories. It does **NOT** duplicate skill instructions.
-- **Implementation Status:** Specified in this V1 architecture; created during the approved Phase 1 Pilot.
+- **Context Discipline Principle:** Governed by `MINIMAL_SUFFICIENT_CONTEXT`. The router must remain compact and focused on routing intent without duplicating skill instructions. Arbitrary line-count limits must not compromise necessary routing coverage.
+- **Content:** Contains direct mappings from triggering task intents to runtime skill directories.
+- **Implementation Status:** Specified in this architecture; created during the approved Phase 1 Pilot.
 
 *Conceptual Schema:*
 ```markdown
@@ -250,7 +252,7 @@ For future automated tooling, CI validation, and subagent lookup, a compact YAML
 
 - **Constraint:** One concise entry per governed skill; zero instruction text.
 - **Fields:** `id`, `path`, `surface`, `trigger`, `activation`, `priority`, `network`.
-- **Implementation Status:** Specified in this V1 architecture; authored during the approved Phase 1 Pilot.
+- **Implementation Status:** Specified in this architecture; authored during the approved Phase 1 Pilot.
 
 *Example Specification Entry:*
 ```yaml
@@ -294,10 +296,9 @@ Skills that are NOT loaded by default, but become strictly mandatory the moment 
 
 ## 8. Context Discipline, Execution vs. Audit Separation & Bridge Overrides
 
-### 8.1 Smallest Sufficient Skill Set (Context Discipline)
+### 8.1 Smallest Sufficient Skill Set (`MINIMAL_SUFFICIENT_CONTEXT`)
 Agents must activate only the minimal skill set required for the active task.
-- **Recommended Ordinary Target:** **`1–3 active skills`** per task.
-- This is a context-discipline engineering principle, not a fragile mechanical restriction.
+- **Context Efficiency Principle:** The default target is **`1–3 active skills`** per task. However, this is an efficiency guideline rather than a rigid mechanical ceiling. Correctness outranks arbitrary limits: when risk and verification demand additional capabilities, the DAG activates them sequentially.
 - *Anti-Pattern:* For a simple Dart analysis task, loading systematic debugging, responsive layout, accessibility, code review, TDD, and design skills simultaneously is strictly forbidden.
 
 ### 8.2 Description Quality Standard
@@ -462,12 +463,12 @@ All external UI/Design skills are classified as **Advisory Lenses** and must not
 
 ## 15. Context Efficiency Principle & Tool Evaluations
 
-### 15.1 Context-Efficiency Governance Principle
+### 15.1 Context-Efficiency Governance Principle (`MINIMAL_SUFFICIENT_CONTEXT`)
 > [!IMPORTANT]
 > **GOVERNANCE PRINCIPLE:**
-> Minimize irrelevant context, filesystem discovery, and redundant instruction loading through deterministic routing and progressive disclosure.
+> Minimize irrelevant context, filesystem discovery, and redundant instruction loading through deterministic routing, progressive disclosure, and modular shared contracts.
 >
-> The framework avoids claiming unsupported, unbenchmarked token savings. True efficiency gains will be evaluated empirically during the Phase 1 Pilot.
+> Rather than relying on rigid mechanical caps (e.g. arbitrary line counts or file quotas), agents must load the **`MINIMAL_SUFFICIENT_CONTEXT`** required for total correctness.
 
 ### 15.2 Qualitative Footprint Classes
 - **`VERY_LOW`:** Compact, targeted utility ($\le 1$ page of instructions; minimal context footprint).
@@ -506,6 +507,8 @@ Before any wider rollout, exactly three representative governed skill bundles wi
 2. `konfrm-flutter-widget-testing` (Adapts `flutter/agent-plugins/flutter-add-widget-test`)
 3. `konfrm-dart-static-analysis` (Adapts `dart-lang/skills/dart-run-static-analysis`)
 
+*Mandate:* The Phase 1 pilot bundles must be authored directly from Day 1 against the Harmonization Architecture (`docs/agents/KONFRM_SKILL_HARMONIZATION_V1.md`) embodying Authority, Evidence, Completion, Handoffs, and domain anti-patterns.
+
 ### 17.2 Pilot Discovery and Efficiency Acceptance Gates
 In addition to functional verification, the Phase 1 Pilot must explicitly evaluate discovery cost and context efficiency:
 
@@ -531,7 +534,7 @@ During the pilot, qualitative and observable metrics will be captured:
 - **Selected Skill:** Match accuracy against task category.
 - **Unexpected Skills Loaded:** Count of spurious skill activations (target: 0).
 - **Runtime Skill Files Opened:** Count of `SKILL.md` files read (target: 1 per active domain).
-- **Supporting References Opened:** Only specific Level 2 files needed for subtasks (target: $\le 1$).
+- **Supporting References Opened:** Only specific Level 2 files needed for subtasks (governed by `MINIMAL_SUFFICIENT_CONTEXT`).
 - **Vendor/Audit Files Opened Unexpectedly:** Target: 0.
 - **Routing Success / Failure:** Deterministic match vs. fallback requirement.
 - **Activation Mode:** Explicit Bridge directive vs. automatic discovery.
@@ -554,6 +557,7 @@ Before any single external skill bundle is approved for installation:
 - [ ] **Dependency Manifest Verified:** All `RUNTIME_REQUIRED` companion files exist and resolve locally; zero broken links.
 - [ ] **Commit SHA Pinning:** Confirmed exact 40-character commit SHA is recorded and snapshot committed to `docs/ai/skills/<name>/vendor/`.
 - [ ] **Flat Runtime Directory:** Placed as direct child of `.agents/skills/`.
+- [ ] **Harmonization Contracts Declared:** Declares required shared contracts under `docs/agents/KONFRM_SKILL_HARMONIZATION_V1.md`.
 
 ### 18.2 Version Upgrade Protocol
 1. **Trigger:** A compelling new capability or bugfix is identified in an upstream repository.
@@ -561,3 +565,48 @@ Before any single external skill bundle is approved for installation:
 3. **Canon Conflict Review:** Inspect the diff for new architectural recommendations, breaking changes, or token bloat.
 4. **Bundle Reconciliation:** Update `docs/ai/skills/<skill-name>/vendor/` snapshot, update `UPSTREAM_MANIFEST.md`, and adjust the runtime wrapper in `.agents/skills/<skill-name>/` with updated guardrails.
 5. **Bridge Review & Approval:** Submit as an isolated `chore(skills): upgrade <skill-name> to <sha>` commit for Bridge signoff.
+
+---
+
+## 19. Harmonization & Multi-Skill Intelligence Layer (`KONFRM_SKILL_HARMONIZATION_V1`)
+
+To transform isolated skills into a cohesive engineering system, all skills operate within the **Harmonization & Intelligence Layer** defined in `docs/agents/KONFRM_SKILL_HARMONIZATION_V1.md`.
+
+### 19.1 Capability Graph & Conditional Composition
+- All skills map to 15 discrete **Capability Families**: `DEBUGGING`, `FLUTTER_IMPLEMENTATION`, `FLUTTER_TESTING`, `STATIC_ANALYSIS`, `ACCESSIBILITY`, `RTL`, `DESIGN_REVIEW`, `VISUAL_QA`, `CODE_REVIEW`, `TDD`, `BACKEND`, `SECURITY`, `DATABASE`, `PR_CLOSURE`, `DOCUMENT_RECONCILIATION`.
+- **DAG Enforcement:** Transitions between skills follow a strict Directed Acyclic Graph. Uncontrolled recursive cycles ($\text{Debug} \leftrightarrow \text{Test} \leftrightarrow \text{Review}$) are prohibited.
+- **Conditional Activation:** Capabilities do not preload; they activate sequentially as runtime evidence reveals dependencies.
+
+### 19.2 Standardized Skill Handoffs (`KONFRM_SKILL_HANDOFF_V1`)
+Capabilities pass findings to downstream skills using the structured handoff envelope:
+```text
+=== KONFRM_SKILL_HANDOFF_V1 ===
+CAPABILITY_COMPLETED: <Family Name>
+SURFACE:             <Surface>
+ROLE:                <Role>
+ROOT_FACT_OR_RESULT: <Concise verified finding>
+AFFECTED_SCOPE:      <Modified paths>
+EVIDENCE:            <Command output / artifact>
+RISK_CLASS:          <Risk Dimension>
+NEXT_CAPABILITY:     <Next Family>
+NEXT_CAPABILITY_REASON: <DAG Transition Rationale>
+BLOCKER:             <NONE | Blocker Description>
+===============================
+```
+
+### 19.3 Risk-Based Gate Activation & Evidence
+- Change risk is classified across 11 dimensions (`PRODUCT_LOGIC`, `FINANCIAL`, `AUTH`, `PERSISTENCE`, `SECURITY`, `ACCESSIBILITY`, `VISUAL`, `NAVIGATION`, `STATE_MACHINE`, `NETWORK`, `GIT_RELEASE`).
+- Verification gates activate strictly based on touched risk dimensions.
+- Green builds alone never universally prove completion; domain-specific evidence (e.g. TalkBack semantics, multi-viewport rendering, RLS leak tests) is strictly required under `KONFRM_EVIDENCE_CONTRACT`.
+
+### 19.4 Role-Aware UI & State Completeness
+- All UI and mobile capabilities ground their recommendations in role-specific mental models:
+  - **Customer:** Trust, fee transparency, effortless booking.
+  - **Owner:** Operational certainty, high useful density, actionable alerts.
+  - **Admin:** Auditability, evidence logs, safe moderation.
+- Components evaluate truthful state grammar under `KONFRM_UI_STATE_CONTRACT` without synthetic fallback data.
+- Deceptive patterns (fake scarcity, fake timers, fake reviews) are strictly forbidden.
+
+### 19.5 Founder Escalation Protocol (`KONFRM_FOUNDER_ESCALATION_V1`)
+- Agents resolve routine implementation seams, mechanical linter issues, and standard test fixtures autonomously.
+- Escalation to the Founder is reserved strictly for genuine product rule ambiguities, financial logic changes, persistence boundary shifts, and physical hardware requirements.

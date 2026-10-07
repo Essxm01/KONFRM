@@ -926,6 +926,20 @@ if (fs.existsSync(PRODUCT_BRAIN_DIR)) {
     }
   }
 
+  // 6. Execute Product Brain Deterministic Contract & Regression Test
+  const productTestScript = path.join(projectRoot, 'scripts', 'test-product-routing-cases.mjs');
+  if (fs.existsSync(productTestScript)) {
+    try {
+      const nodeExe = process.execPath;
+      execSync(`"${nodeExe}" "${productTestScript}"`, { stdio: 'pipe' });
+      pass('Product Brain deterministic contract & regression test executed and passed.');
+    } catch (err) {
+      fail(`Product Brain deterministic contract & regression test failed: ${err.message}`);
+    }
+  } else {
+    fail('Missing required test script: scripts/test-product-routing-cases.mjs');
+  }
+
   pass('Consolidated Product Brain hardening & legacy discovery checks passed (epistemic taxonomy, zero fabricated policy, router integrated).');
 } else {
   fail('Required runtime artifact missing: .agents/skills/konfrm-product');

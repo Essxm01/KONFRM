@@ -84,7 +84,7 @@ KONFRM is a three-role marketplace. Each role has fundamentally distinct psychol
   - High-utility operational instrument: zero decorative marketing fluff or hero photography.
   - Action-First Hub: customer-style bottom navigation is strictly prohibited on Owner mobile.
   - Anti-card soup: related operational rows share a single structural container (12px provisional radius).
-  - Financial certainty: distinct balance buckets (Available, Pending 24h post-check-in, Held, Reserved) derived strictly from the server ledger; never reconstructed locally.
+  - Financial certainty: distinct balance buckets (Available, Pending release clock, Held, Reserved) derived strictly from the server ledger; never reconstructed locally.
 
 ### 3. Admin (Platform Reviewer & Operator)
 - **Mental Model:** *"Where is the objective evidence, what is the platform risk, and are authorization and marketplace integrity boundaries strictly preserved?"*
@@ -92,7 +92,7 @@ KONFRM is a three-role marketplace. Each role has fundamentally distinct psychol
 - **Key Invariants:**
   - Desktop-operational environment: dense data tables, structured review queues, audit logs.
   - Strict evidence requirements: authentic property photography, National ID front/back + live face for Owner KYC (zero fabricated biometric liveness claims).
-  - Explicit intervention reasoning: every approval, rejection, or dispute resolution must be backed by an auditable reason code.
+  - Endpoint-specific governance & auditability: require reason codes only where existing Canon or backend implementation explicitly enforces them (e.g. property review notes are optional, and standard property approval accepts no reason code; do not invent unbacked claims of universal mandatory reason capture). Separate confirmed existing audit behavior from desirable future governance candidates.
 
 ---
 

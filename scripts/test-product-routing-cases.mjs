@@ -3,7 +3,8 @@
  * KONFRM Product Brain — Routing & Domain Truth Contract Test
  *
  * Deterministically tests the 5 Positive and 4 Negative evaluation cases
- * required by KONFRM Engineering Intelligence Stage F.
+ * plus regression assertions for contact privacy, remaining-balance openness,
+ * endpoint-specific admin reason codes, and zero mutable numeric duplication.
  * Built-in Node APIs only. Zero network calls. Zero model calls.
  */
 
@@ -40,7 +41,13 @@ const productSkillContent = fs.readFileSync(productSkillPath, 'utf8');
 const retrievalContent = fs.readFileSync(retrievalPath, 'utf8');
 const mentalModelsContent = fs.readFileSync(mentalModelsPath, 'utf8');
 
-// 2. Evaluation Cases
+const allProductModules = [
+  { name: 'SKILL.md', text: productSkillContent },
+  { name: 'product_state_retrieval.md', text: retrievalContent },
+  { name: 'role_mental_models.md', text: mentalModelsContent },
+];
+
+// 2. Evaluation Cases (5 Positive, 4 Negative)
 const testCases = [
   {
     id: 'POS-1',
@@ -64,10 +71,10 @@ const testCases = [
     expectedBrain: 'konfrm-product',
     expectedEpistemic: 'ACCEPTED_CANON',
     verification: () => {
-      // Must state deposit credits pending balance initially; released 24h after check-in
+      // Must state deposit credits pending balance initially; released post-check-in per Canon
       const hasPendingRule = retrievalContent.includes('pending_balance');
-      const has24hRule = retrievalContent.includes('24 hours after check-in');
-      return hasPendingRule && has24hRule;
+      const hasReleaseClockRule = /release clock|post-check-in/i.test(retrievalContent);
+      return hasPendingRule && hasReleaseClockRule;
     }
   },
   {
@@ -167,7 +174,7 @@ const testCases = [
   }
 ];
 
-// 3. Execute all evaluations
+// 3. Execute all routing evaluations
 for (const tc of testCases) {
   const result = tc.verification();
   if (result) {
@@ -177,21 +184,114 @@ for (const tc of testCases) {
   }
 }
 
-// 4. Invariant checks: zero duplicated mutable formulas in root SKILL.md
-console.log('--- Checking for prohibited mutable formula duplication in root SKILL.md ---');
-const prohibitedHardcodes = [
+// 4. Invariant checks: zero duplicated mutable numbers across entire Product Brain
+console.log('--- Checking for prohibited mutable formula duplication across entire Product Brain ---');
+const prohibitedNumericHardcodes = [
   '20% of deposit',
+  '20% of the deposit',
   '80% of deposit',
+  '80% of the deposit',
   '500 EGP',
   '2-30 nights',
+  '2–30 nights',
+  'Nightly rate × nights',
   'PENDING_OWNER_APPROVAL -> APPROVED_PENDING_PAYMENT',
 ];
-for (const phrase of prohibitedHardcodes) {
-  if (productSkillContent.includes(phrase)) {
-    fail(`Prohibited mutable business constant hardcoded in root SKILL.md: "${phrase}"`);
-  } else {
-    pass(`Zero mutable hardcoding of "${phrase}" in root SKILL.md`);
+
+for (const mod of allProductModules) {
+  for (const phrase of prohibitedNumericHardcodes) {
+    if (mod.text.includes(phrase)) {
+      fail(`Prohibited mutable business constant hardcoded in ${mod.name}: "${phrase}"`);
+    } else {
+      pass(`Zero mutable hardcoding of "${phrase}" in ${mod.name}`);
+    }
   }
+}
+
+// 5. Deterministic Regression Tests for PR #102 Targeted Remediation
+console.log('--- Checking PR #102 Targeted Remediation Regression Invariants ---');
+
+// REG-1: Contact Privacy (No post-confirmation phone exposure)
+const prohibitedTemporalPrivacyPhrases = [
+  'until confirmation',
+  'prior to a confirmed booking',
+  'Pre-Confirmation Contact',
+];
+let reg1Passed = true;
+for (const mod of allProductModules) {
+  for (const phrase of prohibitedTemporalPrivacyPhrases) {
+    if (mod.text.includes(phrase)) {
+      fail(`[REG-1] Prohibited temporal contact qualification in ${mod.name}: "${phrase}"`);
+      reg1Passed = false;
+    }
+  }
+}
+const enforcesInAppOnly = /communication remains in-app|in-app messaging is strictly/i.test(retrievalContent) &&
+                          /communication remains in-app/i.test(mentalModelsContent);
+if (!enforcesInAppOnly) {
+  fail('[REG-1] Product Brain missing unconditional in-app contact privacy enforcement');
+  reg1Passed = false;
+}
+if (reg1Passed) {
+  pass('[REG-1] Contact Privacy: Direct phone/contact strictly withheld across all states (in-app only verified)');
+}
+
+// REG-2: Remaining Balance Collection Method (Must remain OPEN / UNCONFIRMED)
+const prohibitedRemainingCollectionPhrases = [
+  'collected directly by Owner at check-in',
+  'collect at check-in',
+  'Due to the host at check-in',
+];
+let reg2Passed = true;
+for (const mod of allProductModules) {
+  for (const phrase of prohibitedRemainingCollectionPhrases) {
+    if (mod.text.includes(phrase)) {
+      fail(`[REG-2] Invented remaining-balance collection method in ${mod.name}: "${phrase}"`);
+      reg2Passed = false;
+    }
+  }
+}
+const remainingIsOpen = retrievalContent.includes('OPEN / UNCONFIRMED') &&
+                        mentalModelsContent.includes('OPEN / UNCONFIRMED');
+if (!remainingIsOpen) {
+  fail('[REG-2] Remaining-balance payment method not consistently marked OPEN / UNCONFIRMED');
+  reg2Passed = false;
+}
+if (reg2Passed) {
+  pass('[REG-2] Remaining-Balance Collection: Collection method strictly preserved as OPEN / UNCONFIRMED');
+}
+
+// REG-3: Admin Reason Codes (Must NOT be universal mandatory)
+const prohibitedUniversalReasonPhrases = [
+  'every approval, rejection, or dispute resolution must be backed by an auditable reason code',
+  'every approval, rejection, or status hold must require a selected reason code',
+];
+let reg3Passed = true;
+for (const mod of allProductModules) {
+  for (const phrase of prohibitedUniversalReasonPhrases) {
+    if (mod.text.includes(phrase)) {
+      fail(`[REG-3] Universal mandatory admin reason code claim in ${mod.name}: "${phrase}"`);
+      reg3Passed = false;
+    }
+  }
+}
+const scopesReasonCodes = /Endpoint-specific governance & auditability/i.test(productSkillContent) &&
+                          /Actions align with confirmed endpoint capabilities/i.test(mentalModelsContent);
+if (!scopesReasonCodes) {
+  fail('[REG-3] Admin reason codes not scoped to confirmed endpoint capabilities');
+  reg3Passed = false;
+}
+if (reg3Passed) {
+  pass('[REG-3] Admin Reason Codes: Reason codes strictly scoped to confirmed endpoint requirements');
+}
+
+// REG-4: Server-Side Pricing (No naive client calculation)
+const requiresServerPricing = retrievalContent.includes('canonical server-side pricing calculations') ||
+                              retrievalContent.includes('canonical server-side quote');
+if (requiresServerPricing) {
+  pass('[REG-4] Server-Side Pricing: Customer totals retrieved from server quote/pricing, not naive formula');
+} else {
+  fail('[REG-4] Customer price totals missing server-side pricing retrieval requirement');
 }
 
 console.log('====================================================');
@@ -199,6 +299,6 @@ if (failures > 0) {
   console.error(`FAILED: ${failures} evaluation failure(s).`);
   process.exit(1);
 } else {
-  console.log('ALL 9 PRODUCT ROUTING & EVALUATION CASES PASSED.');
+  console.log('ALL PRODUCT ROUTING, INVARIANT & REGRESSION CHECKS PASSED.');
   console.log('====================================================');
 }

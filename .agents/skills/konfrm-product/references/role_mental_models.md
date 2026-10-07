@@ -41,7 +41,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
    - Always present three transparent values:
      - **إجمالي الإقامة (Total Stay):** Complete price for all nights.
      - **العربون المطلوب (Deposit Due):** Upfront amount (equal to the first-night price).
-     - **المتبقي عند الوصول (Remaining Balance):** Due to the host at check-in.
+     - **المتبقي (Remaining Balance):** Total stay price minus upfront deposit (zero platform commission; collection method remains OPEN / UNCONFIRMED per MR-15, DC-08).
 3. **Request-Not-Instant Booking Mental Model:**
    - Customers understand that high-value vacation rentals require host approval.
    - The UI must project calm expectation: *"Your booking request has been sent. The host will review your dates."*
@@ -50,7 +50,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
    - Strictly prohibit fake social proof (*"5 people viewing this"*), false countdown timers (*"Price rises in 10 mins"*), or artificial strikethrough markdowns.
 5. **Privacy & Communication Reassurance:**
    - Messaging remains strictly within the platform in the context of the booking.
-   - Contact numbers are withheld until confirmation to protect both guest and host from off-platform scams.
+   - Direct phone and contact details are strictly withheld across all booking states; communication remains in-app and booking-contextual to protect both guest and host from off-platform scams and disintermediation.
 
 ---
 
@@ -72,7 +72,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
      - **المحفظة (Wallet & Balances):** Direct drill-down into financial balances, transactions, and payouts.
 3. **Decision-Unit Triage Grammar:**
    - A pending request is a standalone decision unit.
-   - It must present: Guest count, Stay dates (check-in / check-out), Total Stay, Upfront Deposit, and **صافي مستحقاتك (Net Earnings = 80% of deposit)**.
+   - It must present: Guest count, Stay dates (check-in / check-out), Total Stay, Upfront Deposit, and **صافي مستحقاتك (Net Earnings / deposit entitlement, retrieved from Canon)**.
    - Action pair: Clear Primary Action (`قبول الطلب` - Accept) paired with Destructive Outline Action (`رفض` - Decline).
 4. **Anti-Card Soup Structural System:**
    - Homogeneous operational rows (e.g., unit settings, payout configurations, property list items) share a single structural container (12px provisional radius) separated by hairlines.
@@ -80,7 +80,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
 5. **Financial Certainty & Distinct Balance Buckets:**
    - Owners demand exact ledger reconciliation:
      - **رصيد متاح (Available Balance):** Cleared funds eligible for payout withdrawal.
-     - **رصيد معلق (Pending Balance):** Confirmed deposits held until the 24-hour post-check-in release clock expires.
+     - **رصيد معلق (Pending Balance):** Confirmed deposits held until the post-check-in release clock expires per Canon.
      - **رصيد محجوز / قيد المعالجة (Held / In Processing):** Active payout requests being processed.
    - Balances derive strictly from the server ledger (`owner_wallets`), never calculated client-side.
 
@@ -100,8 +100,10 @@ KONFRM is a three-role platform. Designing or implementing features without unde
    - **Property Review:** Verifies high-resolution photos, realistic pricing, complete amenity lists, and accurate location mapping before marking `PUBLISHED` + `VERIFIED`.
    - **Owner KYC Review:** Inspects National ID front/back + live selfie.
    - **Truth in Verification (MR-14):** System verifies manual document review; it must **never claim automated biometric or AI facial liveness verification** unless explicitly implemented.
-3. **Explicit Audit Trails & Rejection Codes:**
-   - No silent actions: every approval, rejection, or status hold must require a selected reason code and an optional operational note logged to the audit table.
+3. **Operational Governance & Audit Alignment:**
+   - Actions align with confirmed endpoint capabilities (docs/ai/skills/konfrm-product-ux/SKILL.md §1.C).
+   - Reason codes and review notes are required only where existing Canon or backend endpoints explicitly require them (e.g. rejection/revision feedback where enforced; property approval accepts no reason code).
+   - Do not invent universal mandatory reason capture or fabricated operational friction.
 4. **Dispute Resolution Protocol:**
    - When a booking dispute arises, the Admin inspects timestamped event logs (booking creation, owner response, payment completion, check-in time, and in-app message logs).
    - Decisions are enforced through canonical platform ledger adjustments, not subjective intervention.
@@ -116,12 +118,12 @@ To prevent dangerous information leaks and privilege escalation, the following v
 | :--- | :--- | :--- | :--- |
 | **Total Booking Price** | VISIBLE (`إجمالي الإقامة`) | VISIBLE (`إجمالي الحجز`) | VISIBLE |
 | **Upfront Deposit** | VISIBLE (`العربون المطلوب`) | VISIBLE (`العربون المدفوع`) | VISIBLE |
-| **Remaining Balance** | VISIBLE (`المتبقي عند الوصول`) | VISIBLE (`المتبقي للتحصيل`) | VISIBLE |
-| **Platform Commission (20%)** | **STRICTLY PROHIBITED** | VISIBLE (`عمولة المنصة 20%`) | VISIBLE |
-| **Owner Net Deposit (80%)** | **STRICTLY PROHIBITED** | VISIBLE (`صافي مستحقاتك`) | VISIBLE |
+| **Remaining Balance** | VISIBLE (`المتبقي`) | VISIBLE (`المتبقي`) | VISIBLE |
+| **Platform Commission** | **STRICTLY PROHIBITED** | VISIBLE (`عمولة المنصة`) | VISIBLE |
+| **Owner Net Deposit** | **STRICTLY PROHIBITED** | VISIBLE (`صافي مستحقاتك`) | VISIBLE |
 | **Owner National ID / KYC** | **STRICTLY PROHIBITED** | VISIBLE (Own documents only)| VISIBLE (Full review queue) |
 | **Wallet & Payout Records** | **STRICTLY PROHIBITED** | VISIBLE (Own wallet only) | VISIBLE (System-wide ledger) |
-| **Pre-Confirmation Contact** | **STRICTLY PROHIBITED** | **STRICTLY PROHIBITED** | VISIBLE (For security audit) |
+| **Direct Phone / Contact Info** | **STRICTLY PROHIBITED** | **STRICTLY PROHIBITED** | VISIBLE (Audit/support only) |
 | **Property Admin Review Notes**| **STRICTLY PROHIBITED** | VISIBLE (Rejection reason) | VISIBLE (Full audit trail) |
 
 ---

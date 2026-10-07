@@ -47,7 +47,7 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
    - Successful deposit payment transitions the booking to `CONFIRMED`.
    - A confirmed booking must never create an additional payment request.
 5. **Global Stay Bounds:**
-   - Retrieve stay bounds from `docs/BUSINESS_RULES.md` (canonical baseline: 2–30 nights). Price quotes are not inventory holds.
+   - Retrieve allowed minimum and maximum stay bounds from `docs/BUSINESS_RULES.md` (Section: Booking lifecycle and availability) and `docs/codex/KONFRM_MASTER_RULES.md` (MR-12). Price quotes are not inventory holds.
 
 ---
 
@@ -60,17 +60,17 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
 
 ### Retrieval & Interpretation Procedure
 1. **Customer Pricing Presentation:**
-   - Always retrieve and display three distinct customer-relevant amounts:
-     - **Total Stay Price:** Nightly rate × nights + any approved fees.
-     - **Upfront Deposit:** Equal to the first-night price.
+   - Always retrieve and display three distinct customer-relevant amounts from canonical server-side pricing calculations or booking financial summaries (never locally reconstructed from a naive nightly-rate formula):
+     - **Total Stay Price:** Retrieved from canonical server-side quote / financial summary.
+     - **Upfront Deposit:** Retrieved from canonical quote (conceptually corresponds to the first-night deposit amount per MR-13).
      - **Remaining Balance:** Total stay price minus upfront deposit.
 2. **Marketplace Commission & Splits (Internal Economics):**
-   - Platform commission is calculated as **20% of the deposit amount** (not 20% of total stay).
-   - Owner net deposit is **80% of the deposit amount**.
-   - No platform commission is taken on the remaining balance (collected directly by Owner at check-in).
+   - Platform commission applies strictly to the deposit amount, never to the total stay price (MR-13). Retrieve exact commission percentage from `docs/BUSINESS_RULES.md` (Section: Prototype deposit payment) and MR-13.
+   - Owner net share applies to the deposit amount. Retrieve exact split percentage from `docs/BUSINESS_RULES.md` and MR-13.
+   - Zero platform commission is charged on the remaining balance (MR-13). The exact collection method and payment workflow for the remaining balance remain OPEN / UNCONFIRMED (MR-15, DC-08); UI and agents must not assume cash-at-arrival, card collection, or any automated payment mechanism without explicit Founder decision.
 3. **Strict Information Leakage Prohibition (MR-13):**
    - **Customer Interface:** Customers must **NEVER** see KONFRM platform commission, Owner net earnings, wallet balances, or internal fee breakdowns.
-   - **Owner Interface:** Owners see property booking breakdown: Total, Upfront Deposit, Net Deposit Entitlement (80%), and Remaining Direct Balance to collect at check-in.
+   - **Owner Interface:** Owners see property booking breakdown: Total, Upfront Deposit, Net Deposit Entitlement (retrieved from Canon), and Remaining Balance (collection method remains open/unconfirmed).
 4. **Prototype vs Live Payment Mode:**
    - Current Worker runtime uses `PAYMENT_MODE=PROTOTYPE`.
    - In prototype mode, transactions are simulated and recorded canonically via database RPC; no credit card details are collected, and real Paymob webhooks are not called.
@@ -88,12 +88,12 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
 1. **Ledger Authority:**
    - Owner financial balances must be retrieved strictly from `owner_wallets` and immutable `wallet_ledger_entries`.
    - **Prohibition:** Never recalculate wallet balances dynamically on the client by summing booking prices.
-2. **Deposit Entitlement Lifecycle (The 24h Post-Check-In Rule):**
-   - When a deposit payment is confirmed, the Owner's net deposit (80%) is credited to the **Pending Balance** (`pending_balance`).
+2. **Deposit Entitlement Lifecycle (Post-Check-In Release Rule):**
+   - When a deposit payment is confirmed, the Owner's canonical net deposit is credited to the **Pending Balance** (`pending_balance`).
    - The deposit does **NOT** enter Available Balance immediately.
-   - **Canonical Release Rule:** The Owner net electronic deposit moves from Pending to Available exactly **24 hours after check-in**. The payment-completion RPC does not perform that release; it occurs via the scheduled release clock.
+   - **Canonical Release Rule:** The Owner net electronic deposit moves from Pending to Available according to the canonical post-check-in release clock (retrieve exact duration from `docs/BUSINESS_RULES.md` [Section: Owner wallet and ledger] and MR-16). The payment-completion RPC does not perform that release; it occurs via the scheduled release clock.
 3. **Payout Thresholds & Fees:**
-   - Retrieve minimum payout from `docs/BUSINESS_RULES.md` (canonical baseline: 500 EGP).
+   - Retrieve minimum payout threshold from `docs/BUSINESS_RULES.md` (Section: Owner wallet and ledger) and MR-16. Never hardcode payout minimums.
    - Any payout provider transaction fee is borne by the Owner.
    - Payout requests require validated Owner verification status; existence of pending funds alone does not authorize payout.
 4. **Financial Truthfulness Invariant:**
@@ -109,7 +109,7 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
 
 ### Retrieval & Epistemic Classification Procedure
 1. **What is ACCEPTED_CANON:**
-   - **Owner Fault Cancellation:** If a confirmed booking is cancelled due to Owner fault (e.g. double booking, uninhabitable unit), the Customer receives a **full deposit refund (100%)** and the platform takes **zero commission**.
+   - **Owner Fault Cancellation:** If a confirmed booking is cancelled due to Owner fault (e.g. double booking, uninhabitable unit), the Customer receives a **full deposit refund** and the platform takes **zero platform commission**.
 2. **What is an OPEN_ASSUMPTION (Must NOT be Invented):**
    - The wider **Renter Cancellation & Refund Matrix** (e.g. cancellation 7 days before check-in vs 24 hours before check-in) is **OPEN / UNRESOLVED**.
    - The exact payment method for the remaining balance (cash at check-in vs card vs wallet transfer) is **OPEN / UNCONFIRMED**.
@@ -117,7 +117,7 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
 3. **Agent Action:**
    - When asked to implement or specify renter cancellation behavior, the agent must output:
      `STATUS: BLOCKED_OPEN_DECISION`, `EPISTEMIC_STATUS: OPEN_ASSUMPTION`, citing `docs/BUSINESS_RULES.md` and `DC-08`.
-   - Never fabricate tiered cancellation policies or arbitrary refund cutoff deadlines.
+    - Never fabricate tiered cancellation policies or arbitrary refund cutoff deadlines.
 
 ---
 
@@ -135,6 +135,6 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
    - Changing identities or logging out must immediately purge all account-scoped Owner and Customer state from in-memory stores and secure caches.
 3. **Booking-Contextual Communication:**
    - In-app messaging is strictly scoped to an active booking context.
-   - Do **NOT** expose personal phone numbers, emails, or off-platform contact information between Customer and Owner prior to a confirmed booking.
+   - Do **NOT** expose personal phone numbers, emails, or off-platform contact information between Customer and Owner at any booking state. Direct contact details remain strictly hidden.
 4. **Reviews Eligibility:**
    - Reviews and ratings are eligible **ONLY AFTER** a stay is completed; never on pending, approved, or cancelled bookings.

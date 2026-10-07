@@ -1,6 +1,6 @@
 ---
 name: konfrm-visual-qa
-description: "Visual Quality Assurance and verification standards for KONFRM. Enforces device testing against candidate viewport sets, verification of all applicable component states, RTL visual alignment, contrast verification, and mandates that green CI does not equal visual QA pass."
+description: "Use for design visual review guidelines, candidate viewport sets, and optical inspection checklists. Do not use as the primary skill for code-level defect RCA, static analysis gates, or test suite execution; use konfrm-quality for systematic debugging and code verification."
 ---
 
 # KONFRM Visual Quality Assurance (QA) Standards

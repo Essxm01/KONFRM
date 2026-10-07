@@ -373,6 +373,33 @@ validateFrontmatter(AGENTS_DIR);
 validateFrontmatter(ZCODE_DIR);
 pass('SKILL.md YAML frontmatter validated across canonical and shim directories.');
 
+// 4B. Legacy Scope Disambiguation Verification
+const overlappingLegacySkills = [
+  'konfrm-accessibility',
+  'konfrm-mobile-design',
+  'konfrm-rtl-arabic',
+  'konfrm-product-ux',
+  'konfrm-visual-qa',
+];
+
+for (const skill of overlappingLegacySkills) {
+  const canonicalSkillMd = path.join(CANONICAL_DIR, skill, 'SKILL.md');
+  if (fs.existsSync(canonicalSkillMd)) {
+    const text = fs.readFileSync(canonicalSkillMd, 'utf8');
+    const fmMatch = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (fmMatch) {
+      const desc = fmMatch[1];
+      if (/Authoritative.*engineering standards/i.test(desc) || /Authoritative mobile design/i.test(desc)) {
+        fail(`Legacy skill ${skill} frontmatter claims broad runtime authority that was transferred`);
+      }
+      if (!desc.includes('Do not use as the primary skill') || (!desc.includes('konfrm-flutter') && !desc.includes('konfrm-quality'))) {
+        fail(`Legacy skill ${skill} frontmatter missing explicit scope exclusion pointing to runtime brains`);
+      }
+    }
+  }
+}
+pass('Legacy skill discovery scope exclusions and authority narrowing validated.');
+
 // 5. False-Canon & Product-Truth Verification in Internal Skills
 const internalSkills = [
   'konfrm-mobile-design',

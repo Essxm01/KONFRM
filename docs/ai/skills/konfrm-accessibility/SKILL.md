@@ -1,6 +1,6 @@
 ---
 name: konfrm-accessibility
-description: "Authoritative accessibility engineering standards for KONFRM. Enforces Web WCAG 2.2 AA baseline where applicable, platform-appropriate native mobile accessibility criteria, Arabic screen reader semantics, native text scaling support, and reduced-motion compliance without inventing unapproved cross-platform numeric mandates."
+description: "Use for accessibility design-policy interpretation and historical governed guidance. Do not use as the primary skill for Flutter implementation, Flutter semantics debugging, or runtime verification; use konfrm-flutter for implementation and konfrm-quality for verification."
 ---
 
 # KONFRM Accessibility Engineering Standards

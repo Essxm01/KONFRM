@@ -53,8 +53,8 @@ STATUS: CURRENT_APPROVED_METHOD
      )
      ```
 3. **Native Shell Security & Permissions:**
-   - `android/app/src/main/AndroidManifest.xml` must adhere to least privilege.
-   - Do NOT declare broad storage permissions (`READ_EXTERNAL_STORAGE`, `READ_MEDIA_IMAGES`) if media selection uses the Android Photo Picker (`MediaStore.ACTION_PICK_IMAGES`), which requires zero runtime storage permissions.
+   - Native shell configurations must adhere to least privilege.
+   - Use least privilege. Prefer the system picker when it satisfies the feature requirement; do not request broad storage/media permissions (`READ_EXTERNAL_STORAGE`, `READ_MEDIA_IMAGES`) unnecessarily.
 
 ---
 

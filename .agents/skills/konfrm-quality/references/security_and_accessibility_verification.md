@@ -27,13 +27,15 @@ Security audits use **OWASP MASVS v2.0** as a selected engineering baseline. Rat
 | Network Client / DTO Endpoints     | MASVS-NETWORK:                                                |
 |                                    | - Verify HTTPS/TLS transport with modern cipher configuration.|
 |                                    | - Verify cleartext traffic permitted = false.                 |
-|                                    | - Verify badCertificateCallback returns false (no SSL bypass).|
+|                                    | - Verify there is no certificate-validation bypass (e.g., if a|
+|                                    |   custom badCertificateCallback exists, it must not accept     |
+|                                    |   invalid certificates).                                      |
 +------------------------------------+---------------------------------------------------------------+
 | Deep Links / Native Shell          | MASVS-PLATFORM:                                               |
 |                                    | - Verify deep link URI parameters are validated in route guard|
 |                                    | - Verify Android exported components are secured.             |
-|                                    | - Verify photo selection uses system Photo Picker (no broad   |
-|                                    |   storage permissions).                                       |
+|                                    | - Verify photo/media selection uses least privilege: prefer   |
+|                                    |   system picker where suitable; no broad media permissions.   |
 +------------------------------------+---------------------------------------------------------------+
 ```
 

@@ -1,6 +1,6 @@
 ---
 name: konfrm-mobile-design
-description: "Authoritative mobile design interpretation and safety standards for KONFRM. Implements DF2 v1.4 foundations, monochrome-first brand identity, restrained interaction-accent role, platform adaptation, and useful density without inventing unapproved numeric Canon."
+description: "Use for mobile design-policy interpretation, DF2 visual foundations, and brand design guidance. Do not use as the primary skill for Flutter Dart code authoring, widget implementation, or native platform integration; use konfrm-flutter for Flutter client implementation."
 ---
 
 # KONFRM Mobile Design Authority (DF2 v1.4 Interpretation)

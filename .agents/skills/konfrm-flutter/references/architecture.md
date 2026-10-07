@@ -106,9 +106,7 @@ lib/features/<feature_name>/
 ## 4. SECURE CREDENTIAL STORAGE & ROLE ISOLATION
 
 1. **Secure Storage Abstraction:**
-   - Authentication tokens, refresh tokens, and session secrets MUST be stored using the KONFRM secure-storage abstraction backed by platform-protected storage:
-     - Android: Android KeyStore (EncryptedSharedPreferences).
-     - iOS: iOS Keychain Services.
+   - Authentication tokens, refresh tokens, and session secrets MUST be stored using platform-protected storage backed by Android Keystore / iOS Keychain through the KONFRM secure-storage abstraction.
    - Other personal data handling depends on sensitivity, data minimization, platform/privacy architecture, and actual need; avoid overgeneralized security rules that treat every data field identically.
 2. **Credential Isolation Between Roles & Sessions:**
    - Customer and Owner credentials remain strictly isolated across storage namespaces determined by the secure-storage abstraction.

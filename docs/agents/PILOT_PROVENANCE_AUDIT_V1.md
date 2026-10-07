@@ -42,7 +42,7 @@ In accordance with the Minimal Sufficient Runtime Context principle, this proven
 - **Network Behavior:** Fully offline; static repository inspection.
 - **Concepts Adopted:**
   - System window insets handling and Edge-to-Edge display on Android 15+ (API 35+).
-  - Android Photo Picker least-privilege pattern (`MediaStore.ACTION_PICK_IMAGES`).
+  - Least-privilege photo and media selection (preferring system picker over broad permissions).
   - ProGuard/R8 bytecode shrinking distinctions (JVM bytecode vs Dart code).
   - 16 KB memory page size ELF alignment verification requirement.
 - **Concepts Rejected:**

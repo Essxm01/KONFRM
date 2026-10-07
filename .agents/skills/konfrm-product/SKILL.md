@@ -92,7 +92,7 @@ KONFRM is a three-role marketplace. Each role has fundamentally distinct psychol
 - **Core Values:** Verifiable evidence, risk mitigation, auditability, safe operational interventions.
 - **Key Invariants:**
   - Desktop-operational environment: dense data tables, structured review queues, audit logs.
-  - Strict evidence requirements: authentic property photography, National ID front/back + live face for Owner KYC (zero fabricated biometric liveness claims).
+  - Strict evidence requirements: authentic property photography, National ID front/back + live face for Owner KYC (**Prototype-only** per MR-14; zero fabricated biometric liveness claims). Production KYC requirements require Founder/legal revalidation.
   - Endpoint-specific governance & auditability: require reason codes only where existing Canon or backend implementation explicitly enforces them (e.g. property review notes are optional, and standard property approval accepts no reason code; do not invent unbacked claims of universal mandatory reason capture). Separate confirmed existing audit behavior from desirable future governance candidates.
 
 ---

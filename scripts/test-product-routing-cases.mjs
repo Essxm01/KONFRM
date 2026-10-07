@@ -602,6 +602,43 @@ if (/Payout requests require validated Owner verification status/i.test(retrieva
   fail('[REG-12] Payout eligibility prerequisites not explicitly classified as OPEN / UNCONFIRMED');
 }
 
+
+// REG-13: Canonical Column Name (reserved_for_payout_balance, not reserved_for_payout)
+if (/\(`reserved_for_payout`\)/.test(mentalModelsContent)) {
+  fail('[REG-13] role_mental_models.md uses non-canonical column `reserved_for_payout` — must be `reserved_for_payout_balance`');
+} else if (mentalModelsContent.includes('reserved_for_payout_balance')) {
+  pass('[REG-13] Canonical Column Name: reserved_for_payout_balance used correctly in Owner balance buckets');
+} else {
+  fail('[REG-13] Owner balance bucket missing reserved_for_payout_balance column reference');
+}
+
+// REG-14: Prototype-Only KYC Classification (MR-14)
+const kycPrototypeInMM = mentalModelsContent.includes('Prototype-only') && mentalModelsContent.includes('MR-14');
+const kycPrototypeInSKILL = productSkillContent.includes('Prototype-only') && productSkillContent.includes('MR-14');
+if (!kycPrototypeInMM || !kycPrototypeInSKILL) {
+  fail('[REG-14] KYC requirements not classified as Prototype-only per MR-14 in all relevant files');
+} else {
+  pass('[REG-14] KYC Prototype Classification: National ID/selfie KYC classified as Prototype-only per MR-14 in SKILL.md and role_mental_models.md');
+}
+
+// REG-15: No Invented Property Publication Criteria
+if (/Verifies high-resolution photos.*realistic pricing.*accurate location mapping/i.test(mentalModelsContent)) {
+  fail('[REG-15] role_mental_models.md invents unapproved subjective property publication criteria');
+} else if (mentalModelsContent.includes('Do not invent unapproved subjective publication criteria')) {
+  pass('[REG-15] Property Review Canon Anchor: No invented subjective publication criteria; review anchored to Canon endpoint only');
+} else {
+  fail('[REG-15] Property review clause missing Canon anchor and subjective-criteria prohibition');
+}
+
+// REG-16: Dynamic Lifecycle Transition Retrieval (no frozen Owner-decision state names)
+if (/Owner approval transitions the request to `APPROVED_PENDING_PAYMENT`/.test(retrievalContent)) {
+  fail('[REG-16] product_state_retrieval.md freezes Owner-decision lifecycle transition state names instead of retrieving from Canon');
+} else if (/Retrieve the exact Owner-approval and rejection transition state names from.*BUSINESS_RULES/i.test(retrievalContent)) {
+  pass('[REG-16] Dynamic Lifecycle Retrieval: Owner-decision and deposit-payment lifecycle transitions retrieved from Canon, not frozen');
+} else {
+  fail('[REG-16] product_state_retrieval.md missing canonical retrieval pointer for Owner-decision lifecycle transitions');
+}
+
 // 7. Negative Test Harness: Verify Evaluator Fails Closed on Corrupted Input
 console.log('--- [NEGATIVE TEST HARNESS: FAIL-CLOSED VERIFICATION] ---');
 let harnessFailures = 0;

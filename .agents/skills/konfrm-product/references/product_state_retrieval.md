@@ -40,11 +40,9 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
    - **BLOCK INVENTORY:** Retrieve inventory-blocking states dynamically from `docs/BUSINESS_RULES.md` (Section: Booking lifecycle and availability) and MR-12 (e.g. `APPROVED_PENDING_PAYMENT` and `CONFIRMED`). Inventory is held only once an eligible booking reaches an approved or confirmed state per Canon.
    - Availability checks must revalidate atomically and fail closed on any collision.
 3. **Owner Decision Semantics:**
-   - Owner approval transitions the request to `APPROVED_PENDING_PAYMENT`.
-   - Owner rejection is a terminal decision transitioning the request to `REJECTED`.
+   - Retrieve the exact Owner-approval and rejection transition state names from `docs/BUSINESS_RULES.md` (Section: Booking lifecycle and availability) and MR-12. Semantically: Owner approval advances the request to the payment-eligible state; Owner rejection is a terminal decision.
 4. **Deposit Payment & Confirmation:**
-   - Deposit payment is permissible **ONLY AFTER** Owner approval (`APPROVED_PENDING_PAYMENT`).
-   - Successful deposit payment transitions the booking to `CONFIRMED`.
+   - Retrieve the exact deposit-payment eligibility state and confirmed state from `docs/BUSINESS_RULES.md` (Section: Booking lifecycle and availability) and MR-12. Semantically: deposit payment is permissible **ONLY AFTER** Owner approval; successful deposit payment transitions the booking to the confirmed state.
    - A confirmed booking must never create an additional payment request.
 5. **Global Stay Bounds:**
    - Retrieve allowed minimum and maximum stay bounds from `docs/BUSINESS_RULES.md` (Section: Booking lifecycle and availability) and `docs/codex/KONFRM_MASTER_RULES.md` (MR-12). Price quotes are not inventory holds.

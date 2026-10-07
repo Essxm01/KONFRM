@@ -82,7 +82,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
      - **رصيد متاح (Available Balance):** Cleared funds eligible for payout withdrawal (`available_balance`).
      - **رصيد معلق (Pending Balance):** Confirmed deposits held until the post-check-in release clock expires per Canon (`pending_balance`).
      - **رصيد محجوز (Held Balance):** Funds frozen due to dispute holds or compliance reviews (`held_balance`).
-     - **رصيد قيد السحب / المعالجة (Reserved for Payout):** Active payout requests currently being processed (`reserved_for_payout`).
+     - **رصيد قيد السحب / المعالجة (Reserved for Payout):** Active payout requests currently being processed (`reserved_for_payout_balance`).
    - Balances derive strictly from the server ledger (`owner_wallets`), never calculated client-side.
 
 ---
@@ -98,8 +98,8 @@ KONFRM is a three-role platform. Designing or implementing features without unde
    - Admin operations run on desktop viewports (`admin-app/`).
    - Relies on sortable, filterable data tables, dense queue views, and side-by-side comparison panes.
 2. **Evidence-Based Verification Standards:**
-   - **Property Review:** Verifies high-resolution photos, realistic pricing, complete amenity lists, and accurate location mapping before marking `PUBLISHED` + `VERIFIED`.
-   - **Owner KYC Review:** Inspects National ID front/back + live selfie.
+   - **Property Review:** Conducts independent property review for listings in pending-review state; upon approval, transitions to `PUBLISHED` + `VERIFIED` for public marketplace discovery per Canon (`backend/server/src/app.ts:2172-2190`, `docs/BUSINESS_RULES.md`). Do not invent unapproved subjective publication criteria (mandatory photo resolution, pricing realism thresholds, etc.) without an explicit Founder decision.
+   - **Owner KYC Review:** Inspects National ID front/back + live selfie (**Prototype-only** per MR-14; production KYC document packages, provider rails, and retention rules require Founder/legal revalidation before being treated as permanent production requirements).
    - **Truth in Verification (MR-14):** System verifies manual document review; it must **never claim automated biometric or AI facial liveness verification** unless explicitly implemented.
 3. **Operational Governance & Audit Alignment:**
    - Actions align with confirmed endpoint capabilities (docs/ai/skills/konfrm-product-ux/SKILL.md §1.C).

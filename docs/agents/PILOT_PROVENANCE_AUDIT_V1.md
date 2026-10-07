@@ -104,3 +104,23 @@ In accordance with the Minimal Sufficient Runtime Context principle, this proven
   - `CODEX_DETERMINISTIC_ROUTING_PASS`: Verified via deterministic pointer in `AGENTS.md` and narrowed legacy frontmatter exclusions.
   - `ANTIGRAVITY_NATIVE_ROUTING_ARCHITECTURE_PASS`: Verified via native `.agents/rules/konfrm-skill-routing.md` rule existence, valid target path, zero duplicate Canon, and passing automated policy validator.
   - `ANTIGRAVITY_LIVE_DISCOVERY_PENDING_PUBLICATION`: Because Antigravity host runtime scans the active workspace root (`KONFRM-CANONICAL`) and branch `chore/agent-skills-governance-v1` remains in an isolated development worktree awaiting bridge review, live auto-discovery into host session prompts is pending merge/publication. No false pass is claimed.
+
+---
+
+### 2.7 Consolidated Design Runtime Brain Provenance (`konfrm-design` Phase B)
+- **Primary Runtime Brain:** `.agents/skills/konfrm-design/SKILL.md` (with lazy companion references).
+- **Consolidated Internal Sources:**
+  - `docs/ai/skills/konfrm-mobile-design/`: DF2 v1.4 visual foundations, monochrome identity, geometric radii, relational spacing.
+  - `docs/ai/skills/konfrm-rtl-arabic/`: Arabic-first UX, directional semantics, Western digits default, canonical currency formatting (`1,600 ج.م`), Bidi data run isolation.
+  - `docs/ai/skills/konfrm-accessibility/`: Contrast frameworks (WCAG 2.2 AA for Web, display readability for Mobile), non-color-only communication, touch target hit regions, Arabic screen reader semantics (`hasSelectedState = false` on action controls), text scaling resilience, reduced motion.
+  - `docs/ai/skills/konfrm-visual-qa/`: Optical inspection checklists, initial candidate viewport matrix (360×800, 390×844, 430×932, 1440×900).
+  - `docs/ai/skills/konfrm-design-reasoning/`: Structured design dialectic loop (`OBSERVE` -> `HYPOTHESIZE` -> `ARGUE` -> `RESEARCH` -> `ROLE LENS` -> `BRAND` -> `A11Y` -> `DECISION`), research claim hygiene.
+  - `docs/ai/skills/konfrm-design-court/`: Governed design adjudication escalation (`FAST_PANEL` / `FULL_COURT` modes, Hard Gates, consensus classification).
+  - `docs/ai/skills/konfrm-product-ux/`: Presentation slice — role mental models (Customer discovery clarity, Owner operational certainty, Admin audit throughput), truthful state grammar (Error is never Empty, no phantom progress, optimistic UI bounds).
+  - External wrappers (`frontend-design-wrapper`, `impeccable-wrapper`, `emil-wrapper`, `ui-ux-pro-max-wrapper`, `vercel-web-guidelines-wrapper`, `vercel-composition-wrapper`): Anti-generic visual hierarchy, purposeful motion without transactional delay, craftsmanship critiques.
+- **Concepts Subordinated & Rejected:**
+  - Rejected: Blind "mirror everything" doctrine; mechanical transposition of Web CSS-pixel thresholds into native mobile dp; universal 4-state dogma on every component; generic AI dashboard aesthetics (card soup, floating glow containers, arbitrary pills); unsubstantiated lab psychology extrapolations.
+- **Disposition of Legacy Artifacts:**
+  - Preserved in `docs/ai/skills/` for provenance and policy validator contract tests.
+  - Narrowed frontmatter exclusions prevent discovery collisions in agent runtimes.
+  - Registered as future retirement targets once Stage F full system freeze occurs.

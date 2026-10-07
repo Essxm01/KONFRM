@@ -34,10 +34,25 @@ brains:
       - .agents/skills/konfrm-quality/references/static_analysis_and_review.md
       - .agents/skills/konfrm-quality/references/security_and_accessibility_verification.md
 
+  konfrm-design:
+    id: konfrm-design
+    path: .agents/skills/konfrm-design/SKILL.md
+    primary_intent: "Interpret design intent, visual hierarchy, DF2 design-system consumption, Arabic RTL semantics, and accessibility presentation"
+    surface: "cross_role_design (Customer Mobile, Owner Mobile, Admin Web, DESIGN_SYSTEM)"
+    activation: "UX reasoning, visual hierarchy, DF2 token usage, Arabic RTL semantics, accessibility intent, optical review, design dialectics"
+    priority: primary_design
+    network_class: offline_local
+    runtime_status: ACTIVE_CONSOLIDATED
+    references:
+      - .agents/skills/konfrm-design/references/role_experience.md
+      - .agents/skills/konfrm-design/references/visual_system.md
+      - .agents/skills/konfrm-design/references/rtl_content.md
+      - .agents/skills/konfrm-design/references/accessibility_design.md
+      - .agents/skills/konfrm-design/references/states_interactions.md
+      - .agents/skills/konfrm-design/references/visual_review.md
+
 deferred_brains:
   - id: konfrm-product
-    status: DEFERRED_STAGE_F
-  - id: konfrm-design
     status: DEFERRED_STAGE_F
   - id: konfrm-admin-web
     status: DEFERRED_STAGE_F

@@ -70,7 +70,7 @@ physical_repository_surface_triggers:
   design_system:
     paths:
       - "DESIGN_SYSTEM/**"
-    governing_brain: "konfrm-design (Deferred / DF2 v1.7 Authority)"
+    governing_brain: "konfrm-design (Active Consolidated Runtime Brain / DF2 v1.4 Authority)"
 
   documentation_and_tasks:
     paths:

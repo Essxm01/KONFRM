@@ -1,15 +1,15 @@
 # KONFRM Engineering Intelligence Skill Router V1
 
 ```yaml
-ROUTER_VERSION: 1.0.0
-GOVERNING_SYSTEM: KONFRM Engineering Intelligence Pilot V1
+ROUTER_VERSION: 1.1.0
+GOVERNING_SYSTEM: KONFRM Engineering Intelligence System V1
 ROUTING_MODEL: DOMAIN_SCOPED_COMBINED_SIGNALS
-ACTIVE_PILOT_BRAINS:
+ACTIVE_RUNTIME_BRAINS:
   - konfrm-flutter
   - konfrm-quality
+  - konfrm-design
 DEFERRED_BRAINS:
   - konfrm-product
-  - konfrm-design
   - konfrm-admin-web
   - konfrm-backend
   - konfrm-delivery
@@ -21,7 +21,8 @@ DEFERRED_BRAINS:
 
 1. **Combined Signals Routing:** Route based on task intent, affected file scope, product surface, user role, and risk level. Never route on naive keyword matching alone.
 2. **Domain-Scoped Authority:** Route tasks strictly to the governing brain owning that lifecycle phase:
-   - Client implementation mechanics -> `konfrm-flutter`
+   - Design interpretation, visual hierarchy, DF2 tokens, Arabic RTL semantics, A11y design intent -> `konfrm-design`
+   - Client implementation mechanics (Flutter Dart code, widgets, Riverpod) -> `konfrm-flutter`
    - Defect diagnosis, verification, review, and completion proof -> `konfrm-quality`
 3. **No Recursive Directory Scans:** Agents use direct file locators from `.agents/SKILL_MANIFEST.yaml` and `.agents/CONTEXT_MAP.yaml`.
 4. **Minimal Sufficient Runtime Context:** Load only the primary brain's root `SKILL.md`. Lazy-load companion reference modules (`references/*.md`) only when the task actively touches that specific domain risk or seam.
@@ -33,6 +34,13 @@ DEFERRED_BRAINS:
 ```text
 +-----------------------------------------------------+--------------------+--------------------+
 | TASK CLASS / INTENT                                 | PRIMARY BRAIN      | HANDOFF / GATE     |
++-----------------------------------------------------+--------------------+--------------------+
+| UI/UX reasoning / role-specific information model   | konfrm-design      | konfrm-flutter*    |
+| Visual hierarchy / DF2 token consumption / spacing  | konfrm-design      | konfrm-flutter*    |
+| Arabic RTL layout policy / Bidi isolation design    | konfrm-design      | konfrm-flutter*    |
+| Accessibility design intent / touch hit contracts   | konfrm-design      | konfrm-flutter*    |
+| Optical review / visual critique ("what good looks")| konfrm-design      | konfrm-quality     |
+| Materially ambiguous design decision / dialectic    | konfrm-design      | Design Court Gate  |
 +-----------------------------------------------------+--------------------+--------------------+
 | New Flutter widget / layout implementation          | konfrm-flutter     | konfrm-quality     |
 | Flutter state management (Riverpod)                 | konfrm-flutter     | konfrm-quality     |
@@ -55,7 +63,7 @@ DEFERRED_BRAINS:
 +-----------------------------------------------------+--------------------+--------------------+
 
 * Handoff to konfrm-flutter occurs when code modification of Flutter client source is required.
-** Deferred brains until later rollout stages. During Pilot V1, konfrm-quality provides generic quality core + pilot-proven Flutter verification; backend/admin specialist modules are deferred.
+** Deferred brains until later rollout stages.
 ```
 
 ---
@@ -84,14 +92,25 @@ Task: "Diagnose and fix a test failure, runtime error, or visual mismatch."
 7. Phase 4 (Verify): konfrm-quality verifies oracle passes and runs surface static analysis gate.
 ```
 
+### 3.3 Design Reasoning & Interpretation Sequence
+```text
+Task: "Review, structure, or refine UI/UX hierarchy, Arabic RTL layout, or visual styling."
+1. Activate: konfrm-design (.agents/skills/konfrm-design/SKILL.md)
+2. Retrieve Canon: Look up DF2 design tokens or guidelines via .agents/CONTEXT_MAP.yaml.
+3. Lazy-Load References: Open only matching references (role_experience.md, visual_system.md, rtl_content.md, accessibility_design.md, states_interactions.md, or visual_review.md).
+4. Formulate Design Contract: Define visual hierarchy, spacing tiers, and semantic states.
+5. Handoff: Hand off to konfrm-flutter for Flutter client implementation, or konfrm-quality for optical verification.
+```
+
 ---
 
 ## 4. NEGATIVE ROUTING RULES
 
-1. **Pure Documentation / Policy Edits:** Do NOT load `konfrm-flutter` or `konfrm-quality` when editing markdown files in `docs/` that do not involve code verification or quality gates.
-2. **Backend / SQL Tasks:** Do NOT activate `konfrm-flutter` for tasks touching exclusively `backend/` or `supabase/`.
-3. **Web Admin Tasks:** Do NOT activate `konfrm-flutter` for tasks touching exclusively `admin-app/`.
+1. **Pure Documentation / Policy Edits:** Do NOT load `konfrm-flutter`, `konfrm-quality`, or `konfrm-design` when editing markdown files in `docs/` that do not involve design or code verification.
+2. **Backend / SQL Tasks:** Do NOT activate `konfrm-flutter` or `konfrm-design` for tasks touching exclusively `backend/` or `supabase/`.
+3. **Web Admin Implementation:** Do NOT activate `konfrm-flutter` for tasks touching exclusively `admin-app/` implementation code.
 4. **No Premature Gate Loading:** Do NOT load `konfrm-quality` security or performance modules for routine typographical or layout adjustments unless an explicit security boundary or frame-rate risk is touched.
+5. **No Code Mechanics in Design Brain:** Do NOT load `konfrm-design` to write Dart widget code, Riverpod state logic, or fix Flutter compiler errors (use `konfrm-flutter` or `konfrm-quality`).
 
 ---
 
@@ -106,7 +125,7 @@ RESULT: [Summary of findings or code changes executed]
 AFFECTED_SCOPE: [Exact list of files or symbols modified/inspected]
 EVIDENCE: [Smallest credible oracle output, analyzer status, or test pass proof]
 RISK: [Identified security, architectural, or regression risks]
-NEXT_BRAIN: [konfrm-flutter | konfrm-quality | NONE]
+NEXT_BRAIN: [konfrm-flutter | konfrm-quality | konfrm-design | NONE]
 NEXT_REASON: [Why handoff is required]
 BLOCKER: [Description of genuine blocker if stopped, else NONE]
 ```

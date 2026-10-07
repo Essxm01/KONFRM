@@ -78,10 +78,11 @@ KONFRM is a three-role platform. Designing or implementing features without unde
    - Homogeneous operational rows (e.g., unit settings, payout configurations, property list items) share a single structural container (12px provisional radius) separated by hairlines.
    - Avoid creating separate nested cards for every line item.
 5. **Financial Certainty & Distinct Balance Buckets:**
-   - Owners demand exact ledger reconciliation:
-     - **رصيد متاح (Available Balance):** Cleared funds eligible for payout withdrawal.
-     - **رصيد معلق (Pending Balance):** Confirmed deposits held until the post-check-in release clock expires per Canon.
-     - **رصيد محجوز / قيد المعالجة (Held / In Processing):** Active payout requests being processed.
+   - Owners demand exact ledger reconciliation across four distinct canonical buckets (`owner_wallets`):
+     - **رصيد متاح (Available Balance):** Cleared funds eligible for payout withdrawal (`available_balance`).
+     - **رصيد معلق (Pending Balance):** Confirmed deposits held until the post-check-in release clock expires per Canon (`pending_balance`).
+     - **رصيد محجوز (Held Balance):** Funds frozen due to dispute holds or compliance reviews (`held_balance`).
+     - **رصيد قيد السحب / المعالجة (Reserved for Payout):** Active payout requests currently being processed (`reserved_for_payout`).
    - Balances derive strictly from the server ledger (`owner_wallets`), never calculated client-side.
 
 ---

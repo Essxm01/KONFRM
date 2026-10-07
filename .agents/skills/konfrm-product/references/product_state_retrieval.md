@@ -95,7 +95,7 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
 3. **Payout Thresholds & Fees:**
    - Retrieve minimum payout threshold from `docs/BUSINESS_RULES.md` (Section: Owner wallet and ledger) and MR-16. Never hardcode payout minimums.
    - Any payout provider transaction fee is borne by the Owner.
-   - Payout requests require validated Owner verification status; existence of pending funds alone does not authorize payout.
+   - Production treatment of payout providers, payment rails, and verification/eligibility prerequisites remains OPEN / UNCONFIRMED per `docs/BUSINESS_RULES.md:53` and MR-16 (pending funds alone never authorize payout; require an explicit Founder decision before implementing concrete eligibility gates).
 4. **Financial Truthfulness Invariant:**
    - A network error or database query failure is an **ERROR**, never an empty wallet (`0 ج.م`) or an empty ledger list (`ERROR != EMPTY`, `FAILED_QUERY != FAKE_ZERO`).
 

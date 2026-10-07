@@ -130,34 +130,73 @@ function deriveRoutingOutcome(tc, matrix, manifest) {
 function deriveEpistemicClassification(tc, canon) {
   const { businessRulesContent: br, masterRulesContent: mr, retrievalContent: ret } = canon;
 
-  // Check if topic touches open / unconfirmed decisions
-  const touchesRenterCancellation = /cancellation|refund/i.test(tc.prompt) && !/owner fault/i.test(tc.prompt);
-  const touchesRemainingBalanceMethod = /remaining balance/i.test(tc.prompt) && /collected/i.test(tc.prompt);
+  // Extract a specific rule row from MASTER_RULES markdown table
+  const getMasterRuleRow = (ruleId) => {
+    const lines = mr.split(/\r?\n/);
+    const row = lines.find((l) => l.includes(`| ${ruleId} `) || l.includes(`| ${ruleId}|`));
+    return row || '';
+  };
 
-  if (touchesRenterCancellation || touchesRemainingBalanceMethod) {
-    const isOpenInBusinessRules = /Needs product confirmation[\s\S]*?(renter cancellation|remaining-balance payment method)/i.test(br);
-    const isOpenInMasterRules = /MR-15[\s\S]*?Open/i.test(mr);
-    const isOpenInRetrieval = /What is an OPEN_ASSUMPTION[\s\S]*?(Renter Cancellation|remaining balance)/i.test(ret);
+  // Case-specific Canon evaluation
+  if (tc.id === 'POS-1') {
+    // Governed by MR-12 and Booking lifecycle section
+    const mr12Row = getMasterRuleRow('MR-12');
+    const isMR12Confirmed = mr12Row.includes('Confirmed');
+    const hasBrBookingClause = /## Booking lifecycle and availability[\s\S]*?not for `?PENDING_OWNER_APPROVAL`?/i.test(br);
+    const hasRetBookingClause = ret.includes('PENDING_OWNER_APPROVAL') && ret.includes('DO NOT BLOCK');
+    if (isMR12Confirmed && hasBrBookingClause && hasRetBookingClause) {
+      return 'ACCEPTED_CANON';
+    }
+    return 'UNCERTAIN_CANON';
+  }
 
-    if (isOpenInBusinessRules && isOpenInMasterRules && isOpenInRetrieval) {
+  if (tc.id === 'POS-2') {
+    // Governed by MR-16 and Owner wallet and ledger section
+    const mr16Row = getMasterRuleRow('MR-16');
+    const isMR16Confirmed = mr16Row.includes('Confirmed');
+    const hasBrLedgerClause = /## Owner wallet and ledger[\s\S]*?release-clock/i.test(br);
+    const hasRetLedgerClause = ret.includes('pending_balance') && /release clock/i.test(ret);
+    if (isMR16Confirmed && hasBrLedgerClause && hasRetLedgerClause) {
+      return 'ACCEPTED_CANON';
+    }
+    return 'UNCERTAIN_CANON';
+  }
+
+  if (tc.id === 'POS-3') {
+    // Governed by MR-15 and Needs product confirmation section
+    const mr15Row = getMasterRuleRow('MR-15');
+    const isMR15Open = mr15Row.includes('Open');
+    const hasBrOpenCancellation = /## Needs product confirmation[\s\S]*?renter cancellation\/refund matrix/i.test(br);
+    const hasRetOpenCancellation = ret.includes('Renter Cancellation & Refund Matrix') && ret.includes('OPEN / UNRESOLVED');
+    if (isMR15Open && hasBrOpenCancellation && hasRetOpenCancellation) {
       return 'OPEN_ASSUMPTION';
     }
     return 'UNCERTAIN_OPEN';
   }
 
-  // Check if topic touches accepted Canon
-  const touchesBookingLifecycle = /booking request|confirmed right now|dates blocked/i.test(tc.prompt);
-  const touchesOwnerLedgerStatus = /deposit marked as paid|available payout balance|pending/i.test(tc.prompt);
-  const touchesCrossRolePermissions = /access rights|permissions|identity capabilities/i.test(tc.prompt);
-
-  if (touchesBookingLifecycle || touchesOwnerLedgerStatus || touchesCrossRolePermissions) {
-    const isConfirmedInMasterRules = /MR-(10|11|12|16)[\s\S]*?Confirmed/i.test(mr);
-    const isDeclaredInRetrieval = /What is ACCEPTED_CANON|PENDING_OWNER_APPROVAL|pending_balance/i.test(ret);
-
-    if (isConfirmedInMasterRules && isDeclaredInRetrieval) {
+  if (tc.id === 'POS-4') {
+    // Governed by MR-10 and Identity and access section
+    const mr10Row = getMasterRuleRow('MR-10');
+    const isMR10Confirmed = mr10Row.includes('Confirmed');
+    const hasIdentityInMR = /One human can be Customer plus optional Owner/i.test(mr10Row);
+    const hasRetIdentityClause = /`?users`? represents human identity/i.test(ret) &&
+                                 /`?owners`? is an optional capability/i.test(ret);
+    if (isMR10Confirmed && hasIdentityInMR && hasRetIdentityClause) {
       return 'ACCEPTED_CANON';
     }
     return 'UNCERTAIN_CANON';
+  }
+
+  if (tc.id === 'POS-5') {
+    // Governed by MR-15 and remaining balance openness
+    const mr15Row = getMasterRuleRow('MR-15');
+    const isMR15Open = mr15Row.includes('Open');
+    const hasBrOpenRemaining = /## Needs product confirmation[\s\S]*?remaining-balance payment method/i.test(br);
+    const hasRetOpenRemaining = ret.includes('OPEN / UNCONFIRMED');
+    if (isMR15Open && hasBrOpenRemaining && hasRetOpenRemaining) {
+      return 'OPEN_ASSUMPTION';
+    }
+    return 'UNCERTAIN_OPEN';
   }
 
   return 'UNKNOWN_EPISTEMIC';
@@ -536,6 +575,33 @@ if (blockingRetrievalEnforced) {
   fail('[REG-9] Inventory blocking states not configured as dynamic retrieval procedure from Canon');
 }
 
+// REG-10: Epistemic Framework Canon Definition (No numeric ID range MR-01..14)
+if (productSkillContent.includes('MR-01..14')) {
+  fail('[REG-10] ACCEPTED_CANON defined by arbitrary numeric range MR-01..14 in SKILL.md');
+} else if (/Confirmed status in Master Rules/i.test(productSkillContent)) {
+  pass('[REG-10] Epistemic Framework: ACCEPTED_CANON derived from Confirmed status, not arbitrary ID range');
+} else {
+  fail('[REG-10] ACCEPTED_CANON missing Confirmed classification requirement in SKILL.md');
+}
+
+// REG-11: Four-Bucket Owner Ledger Architecture (held_balance vs reserved_for_payout distinct)
+if (mentalModelsContent.includes('رصيد محجوز / قيد المعالجة')) {
+  fail('[REG-11] Owner mental model collapses heldBalance and reservedForPayout into single bucket');
+} else if (mentalModelsContent.includes('held_balance') && mentalModelsContent.includes('reserved_for_payout')) {
+  pass('[REG-11] Four-Bucket Ledger Architecture: held_balance (dispute freezes) and reserved_for_payout (withdrawals) kept distinct');
+} else {
+  fail('[REG-11] Owner mental model missing distinct held_balance and reserved_for_payout buckets');
+}
+
+// REG-12: Payout Verification & Eligibility Openness (OPEN / UNCONFIRMED per Canon)
+if (/Payout requests require validated Owner verification status/i.test(retrievalContent)) {
+  fail('[REG-12] Product brain invents unconfirmed mandatory KYC restriction for payouts');
+} else if (/payout providers, payment rails, and verification\/eligibility prerequisites remains OPEN \/ UNCONFIRMED/i.test(retrievalContent)) {
+  pass('[REG-12] Payout Eligibility Openness: Payout rails and eligibility prerequisites preserved as OPEN / UNCONFIRMED per BR:53');
+} else {
+  fail('[REG-12] Payout eligibility prerequisites not explicitly classified as OPEN / UNCONFIRMED');
+}
+
 // 7. Negative Test Harness: Verify Evaluator Fails Closed on Corrupted Input
 console.log('--- [NEGATIVE TEST HARNESS: FAIL-CLOSED VERIFICATION] ---');
 let harnessFailures = 0;
@@ -602,6 +668,24 @@ try {
 } catch (err) {
   harnessFailures++;
   fail(`Negative Harness 3 unexpected error: ${err.message}`);
+}
+
+// Harness 4: Case-Specific Canon Rule Loss (MR-12 removal must fail closed)
+try {
+  const fakeCanon = {
+    ...canonContext,
+    masterRulesContent: canonContext.masterRulesContent.replace(/\| MR-12 \|[\s\S]*?\n/, ''),
+  };
+  const derivedEpistemic = deriveEpistemicClassification(testCases[0], fakeCanon);
+  if (derivedEpistemic === testCases[0].expectedEpistemic) {
+    harnessFailures++;
+    fail('Negative Harness 4: Epistemic check did not detect loss of case-specific Canon rule MR-12');
+  } else {
+    pass('Negative Harness 4: Epistemic check correctly failed closed when case-specific Canon rule MR-12 was removed');
+  }
+} catch (err) {
+  harnessFailures++;
+  fail(`Negative Harness 4 unexpected error: ${err.message}`);
 }
 
 if (harnessFailures > 0) {

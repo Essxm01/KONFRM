@@ -43,8 +43,9 @@ Every product statement, requirement, and domain interpretation must be explicit
 +------------------------------+--------------------------------------------------------------------------+
 | CLASSIFICATION               | DEFINITION & GOVERNING AUTHORITY                                         |
 +------------------------------+--------------------------------------------------------------------------+
-| ACCEPTED_CANON               | Formally established in docs/BUSINESS_RULES.md, Master Rules (MR-01..14),|
-|                              | confirmed ADRs, or explicit Founder decisions. Fully authoritative.      |
+| ACCEPTED_CANON               | Formally established with Confirmed status in Master Rules, confirmed    |
+|                              | sections of docs/BUSINESS_RULES.md, confirmed ADRs, or explicit Founder  |
+|                              | decisions. Fully authoritative.                                          |
 +------------------------------+--------------------------------------------------------------------------+
 | VALIDATED_RESEARCH_INSIGHT   | Empirically grounded in real user testing, live behavior traces, or      |
 |                              | pilot feedback, but not yet codified as universal business policy.       |

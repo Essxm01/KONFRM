@@ -35,13 +35,13 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
 1. **Initial Submission:**
    - A customer booking submission creates a booking in `PENDING_OWNER_APPROVAL`.
    - **Crucial Invariant:** Instant booking does **NOT** exist in KONFRM. A submission is strictly a request awaiting Owner evaluation.
-2. **Inventory Blocking States:**
+2. **Inventory Blocking States Retrieval:**
    - **DO NOT BLOCK:** `PENDING_OWNER_APPROVAL` does **NOT** block dates on the property calendar. Other guests may inquire or request overlapping dates.
-   - **BLOCK INVENTORY:** Only when the Owner explicitly approves the request, transitioning it to `APPROVED_PENDING_PAYMENT`, or after successful payment when it transitions to `CONFIRMED`, is calendar inventory blocked.
+   - **BLOCK INVENTORY:** Retrieve inventory-blocking states dynamically from `docs/BUSINESS_RULES.md` (Section: Booking lifecycle and availability) and MR-12 (e.g. `APPROVED_PENDING_PAYMENT` and `CONFIRMED`). Inventory is held only once an eligible booking reaches an approved or confirmed state per Canon.
    - Availability checks must revalidate atomically and fail closed on any collision.
 3. **Owner Decision Semantics:**
    - Owner approval transitions the request to `APPROVED_PENDING_PAYMENT`.
-   - Owner rejection is a terminal decision transitioning the request to `REJECTED`. Rejection releases any pending review locks.
+   - Owner rejection is a terminal decision transitioning the request to `REJECTED`.
 4. **Deposit Payment & Confirmation:**
    - Deposit payment is permissible **ONLY AFTER** Owner approval (`APPROVED_PENDING_PAYMENT`).
    - Successful deposit payment transitions the booking to `CONFIRMED`.

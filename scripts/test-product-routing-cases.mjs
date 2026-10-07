@@ -509,6 +509,33 @@ if (reg7Passed) {
   pass('[REG-7] Retrieval Over Duplication: Upfront deposit rule dynamically retrieved from canonical quote per MR-13');
 }
 
+// REG-8: Invented Lock Prohibition (No invented "pending review locks" across Product Brain)
+const prohibitedLockPhrases = [
+  'pending review locks',
+  'release any pending review locks',
+  'releases any pending review locks',
+];
+let reg8Passed = true;
+for (const mod of allProductModules) {
+  for (const phrase of prohibitedLockPhrases) {
+    if (mod.text.includes(phrase)) {
+      fail(`[REG-8] Invented lock mechanism in ${mod.name}: "${phrase}"`);
+      reg8Passed = false;
+    }
+  }
+}
+if (reg8Passed) {
+  pass('[REG-8] Invented Lock Prohibition: Zero references to unconfirmed pending review locks');
+}
+
+// REG-9: Blocking States Canonical Retrieval (Dynamic retrieval from BUSINESS_RULES.md / MR-12)
+const blockingRetrievalEnforced = /Retrieve inventory-blocking states dynamically from `?docs\/BUSINESS_RULES\.md`?/i.test(retrievalContent);
+if (blockingRetrievalEnforced) {
+  pass('[REG-9] Blocking States Retrieval: Inventory blocking states dynamically retrieved from Canon per MR-12');
+} else {
+  fail('[REG-9] Inventory blocking states not configured as dynamic retrieval procedure from Canon');
+}
+
 // 7. Negative Test Harness: Verify Evaluator Fails Closed on Corrupted Input
 console.log('--- [NEGATIVE TEST HARNESS: FAIL-CLOSED VERIFICATION] ---');
 let harnessFailures = 0;

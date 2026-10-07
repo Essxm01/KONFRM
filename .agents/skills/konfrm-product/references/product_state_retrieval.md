@@ -1,0 +1,140 @@
+# Product State & Domain Truth Retrieval Guide
+
+```yaml
+MODULE: product_state_retrieval
+PARENT_BRAIN: konfrm-product
+PURPOSE: Authoritative retrieval procedures for booking lifecycle, financials, inventory holds, cancellation, and identity.
+GOVERNING_RULE: "RETRIEVAL OVER DUPLICATION — ALWAYS RETRIEVE FROM AUTHORITATIVE CANON"
+```
+
+---
+
+## 1. THE RETRIEVAL-OVER-DUPLICATION INVARIANT
+
+Coding agents must **never hardcode or memorize mutable business constants** (e.g., commission percentages, stay bounds, deposit amounts, cancellation refund percentages, or payout minimums) inside runtime instructions or agent prompts.
+
+Hardcoded business values inevitably drift from reality when policy evolves. Instead, this module provides the exact locator paths and interpretation procedures to retrieve live truth from the repository's authoritative sources:
+
+| Domain | Authoritative Primary Source | Context Map Locator |
+| :--- | :--- | :--- |
+| **Business Invariants & Policies** | `docs/BUSINESS_RULES.md` | `authoritative_locators.business_and_product.primary_rules` |
+| **Master Operating Invariants** | `docs/codex/KONFRM_MASTER_RULES.md` | `authoritative_locators.business_and_product.master_invariants` |
+| **Architectural Decisions (ADRs)** | `docs/DECISIONS.md` | `authoritative_locators.business_and_product.decision_records` |
+| **Active Conflict & Decision Register**| `docs/codex/KONFRM_DECISION_CONFLICTS.md` | `authoritative_locators.business_and_product.conflicts_log` |
+| **Scope, Roles & Boundaries** | `docs/PROJECT.md` | Core repository context |
+
+---
+
+## 2. BOOKING LIFECYCLE & INVENTORY HOLD RETRIEVAL
+
+### Authoritative Locator
+- Primary Source: `docs/BUSINESS_RULES.md` (Section: Booking lifecycle and availability)
+- Master Rule: `docs/codex/KONFRM_MASTER_RULES.md` (Rule MR-12)
+
+### Retrieval & Interpretation Procedure
+1. **Initial Submission:**
+   - A customer booking submission creates a booking in `PENDING_OWNER_APPROVAL`.
+   - **Crucial Invariant:** Instant booking does **NOT** exist in KONFRM. A submission is strictly a request awaiting Owner evaluation.
+2. **Inventory Blocking States:**
+   - **DO NOT BLOCK:** `PENDING_OWNER_APPROVAL` does **NOT** block dates on the property calendar. Other guests may inquire or request overlapping dates.
+   - **BLOCK INVENTORY:** Only when the Owner explicitly approves the request, transitioning it to `APPROVED_PENDING_PAYMENT`, or after successful payment when it transitions to `CONFIRMED`, is calendar inventory blocked.
+   - Availability checks must revalidate atomically and fail closed on any collision.
+3. **Owner Decision Semantics:**
+   - Owner approval transitions the request to `APPROVED_PENDING_PAYMENT`.
+   - Owner rejection is a terminal decision transitioning the request to `REJECTED`. Rejection releases any pending review locks.
+4. **Deposit Payment & Confirmation:**
+   - Deposit payment is permissible **ONLY AFTER** Owner approval (`APPROVED_PENDING_PAYMENT`).
+   - Successful deposit payment transitions the booking to `CONFIRMED`.
+   - A confirmed booking must never create an additional payment request.
+5. **Global Stay Bounds:**
+   - Retrieve stay bounds from `docs/BUSINESS_RULES.md` (canonical baseline: 2–30 nights). Price quotes are not inventory holds.
+
+---
+
+## 3. FINANCIAL MODEL & PRICING SEMANTICS RETRIEVAL
+
+### Authoritative Locator
+- Primary Source: `docs/BUSINESS_RULES.md` (Sections: Prototype deposit payment & Owner wallet and ledger)
+- Master Rule: `docs/codex/KONFRM_MASTER_RULES.md` (Rule MR-13)
+- Decision Record: `docs/DECISIONS.md` (ADR-004)
+
+### Retrieval & Interpretation Procedure
+1. **Customer Pricing Presentation:**
+   - Always retrieve and display three distinct customer-relevant amounts:
+     - **Total Stay Price:** Nightly rate × nights + any approved fees.
+     - **Upfront Deposit:** Equal to the first-night price.
+     - **Remaining Balance:** Total stay price minus upfront deposit.
+2. **Marketplace Commission & Splits (Internal Economics):**
+   - Platform commission is calculated as **20% of the deposit amount** (not 20% of total stay).
+   - Owner net deposit is **80% of the deposit amount**.
+   - No platform commission is taken on the remaining balance (collected directly by Owner at check-in).
+3. **Strict Information Leakage Prohibition (MR-13):**
+   - **Customer Interface:** Customers must **NEVER** see KONFRM platform commission, Owner net earnings, wallet balances, or internal fee breakdowns.
+   - **Owner Interface:** Owners see property booking breakdown: Total, Upfront Deposit, Net Deposit Entitlement (80%), and Remaining Direct Balance to collect at check-in.
+4. **Prototype vs Live Payment Mode:**
+   - Current Worker runtime uses `PAYMENT_MODE=PROTOTYPE`.
+   - In prototype mode, transactions are simulated and recorded canonically via database RPC; no credit card details are collected, and real Paymob webhooks are not called.
+   - `PAYMENT_MODE=LIVE` must fail closed if production Paymob credentials are unconfigured; it must never silently fall back to mock processing.
+
+---
+
+## 4. OWNER WALLET, LEDGER & PAYOUT RETRIEVAL
+
+### Authoritative Locator
+- Primary Source: `docs/BUSINESS_RULES.md` (Section: Owner wallet and ledger)
+- State Rules: `docs/codex/KONFRM_MASTER_RULES.md` (MR-11)
+
+### Retrieval & Interpretation Procedure
+1. **Ledger Authority:**
+   - Owner financial balances must be retrieved strictly from `owner_wallets` and immutable `wallet_ledger_entries`.
+   - **Prohibition:** Never recalculate wallet balances dynamically on the client by summing booking prices.
+2. **Deposit Entitlement Lifecycle (The 24h Post-Check-In Rule):**
+   - When a deposit payment is confirmed, the Owner's net deposit (80%) is credited to the **Pending Balance** (`pending_balance`).
+   - The deposit does **NOT** enter Available Balance immediately.
+   - **Canonical Release Rule:** The Owner net electronic deposit moves from Pending to Available exactly **24 hours after check-in**. The payment-completion RPC does not perform that release; it occurs via the scheduled release clock.
+3. **Payout Thresholds & Fees:**
+   - Retrieve minimum payout from `docs/BUSINESS_RULES.md` (canonical baseline: 500 EGP).
+   - Any payout provider transaction fee is borne by the Owner.
+   - Payout requests require validated Owner verification status; existence of pending funds alone does not authorize payout.
+4. **Financial Truthfulness Invariant:**
+   - A network error or database query failure is an **ERROR**, never an empty wallet (`0 ج.م`) or an empty ledger list (`ERROR != EMPTY`, `FAILED_QUERY != FAKE_ZERO`).
+
+---
+
+## 5. CANCELLATION & REFUND POLICY RETRIEVAL (HANDLING OPEN POLICY)
+
+### Authoritative Locator
+- Primary Source: `docs/BUSINESS_RULES.md` (Section: Needs product confirmation)
+- Decision Conflict Register: `docs/codex/KONFRM_DECISION_CONFLICTS.md` (Conflict DC-08)
+
+### Retrieval & Epistemic Classification Procedure
+1. **What is ACCEPTED_CANON:**
+   - **Owner Fault Cancellation:** If a confirmed booking is cancelled due to Owner fault (e.g. double booking, uninhabitable unit), the Customer receives a **full deposit refund (100%)** and the platform takes **zero commission**.
+2. **What is an OPEN_ASSUMPTION (Must NOT be Invented):**
+   - The wider **Renter Cancellation & Refund Matrix** (e.g. cancellation 7 days before check-in vs 24 hours before check-in) is **OPEN / UNRESOLVED**.
+   - The exact payment method for the remaining balance (cash at check-in vs card vs wallet transfer) is **OPEN / UNCONFIRMED**.
+   - Automatic request expiration timeouts (e.g. 24h or 48h Owner response SLA) are **OPEN / UNCONFIRMED**.
+3. **Agent Action:**
+   - When asked to implement or specify renter cancellation behavior, the agent must output:
+     `STATUS: BLOCKED_OPEN_DECISION`, `EPISTEMIC_STATUS: OPEN_ASSUMPTION`, citing `docs/BUSINESS_RULES.md` and `DC-08`.
+   - Never fabricate tiered cancellation policies or arbitrary refund cutoff deadlines.
+
+---
+
+## 6. IDENTITY, PRIVACY & COMMUNICATION BOUNDARIES
+
+### Authoritative Locator
+- Primary Source: `docs/BUSINESS_RULES.md` (Section: Identity and access & Truthful state and privacy)
+- Architectural Decision: `docs/DECISIONS.md` (ADR-003: Unified identity with optional Owner capability)
+
+### Retrieval & Interpretation Procedure
+1. **Unified Identity Model:**
+   - `users` represents human identity. `owners` is an optional capability sharing the exact same UUID.
+   - Merely entering the Owner app or logging in as a user does **NOT** grant Owner capability. Owner sessions require a verified record in `owners`.
+2. **Session Cleanup:**
+   - Changing identities or logging out must immediately purge all account-scoped Owner and Customer state from in-memory stores and secure caches.
+3. **Booking-Contextual Communication:**
+   - In-app messaging is strictly scoped to an active booking context.
+   - Do **NOT** expose personal phone numbers, emails, or off-platform contact information between Customer and Owner prior to a confirmed booking.
+4. **Reviews Eligibility:**
+   - Reviews and ratings are eligible **ONLY AFTER** a stay is completed; never on pending, approved, or cancelled bookings.

@@ -165,6 +165,9 @@ if (!fs.existsSync(CANONICAL_DIR)) {
     '.agents/skills/konfrm-design/references/accessibility_design.md',
     '.agents/skills/konfrm-design/references/states_interactions.md',
     '.agents/skills/konfrm-design/references/visual_review.md',
+    '.agents/skills/konfrm-product/SKILL.md',
+    '.agents/skills/konfrm-product/references/product_state_retrieval.md',
+    '.agents/skills/konfrm-product/references/role_mental_models.md',
   ];
 
   let missingRequiredArtifacts = 0;
@@ -858,6 +861,74 @@ if (fs.existsSync(DESIGN_BRAIN_DIR)) {
   pass('Consolidated Design Brain hardening & legacy discovery checks passed (v1.7 authority, zero escrow, zero UNANIMOUS_CANON_CONSENSUS, router & wrappers narrowed).');
 } else {
   fail('Required runtime artifact missing: .agents/skills/konfrm-design');
+}
+
+// G. Consolidated Product Brain Hardening & Discovery Checks
+const PRODUCT_BRAIN_DIR = path.join(AGENTS_DIR, 'konfrm-product');
+if (fs.existsSync(PRODUCT_BRAIN_DIR)) {
+  const prodSkillMd = path.join(PRODUCT_BRAIN_DIR, 'SKILL.md');
+  const prodSkillText = fs.readFileSync(prodSkillMd, 'utf8');
+
+  // 1. Verify konfrm-product frontmatter
+  const prodFm = prodSkillText.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!prodFm || !prodFm[1].includes('name: konfrm-product')) {
+    fail('konfrm-product root SKILL.md missing valid YAML frontmatter name: konfrm-product');
+  }
+
+  // 2. Verify companion modules
+  const retrievalMod = path.join(PRODUCT_BRAIN_DIR, 'references', 'product_state_retrieval.md');
+  const mentalModelsMod = path.join(PRODUCT_BRAIN_DIR, 'references', 'role_mental_models.md');
+  if (!fs.existsSync(retrievalMod)) fail('Missing konfrm-product reference: product_state_retrieval.md');
+  if (!fs.existsSync(mentalModelsMod)) fail('Missing konfrm-product reference: role_mental_models.md');
+
+  // 3. Verify zero fabricated cancellation matrix
+  const retrievalText = fs.readFileSync(retrievalMod, 'utf8');
+  if (retrievalText.includes('free cancellation up to') || retrievalText.includes('full refund if cancelled 48')) {
+    fail('konfrm-product references contain fabricated cancellation refund matrix');
+  }
+
+  // 4. Verify legacy konfrm-product-ux is narrowed to reference only
+  const legacyProdUx = path.join(CANONICAL_DIR, 'konfrm-product-ux', 'SKILL.md');
+  if (fs.existsSync(legacyProdUx)) {
+    const legacyText = fs.readFileSync(legacyProdUx, 'utf8');
+    const lfm = legacyText.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (lfm && !lfm[1].includes('Consolidated into konfrm-product')) {
+      fail('Legacy konfrm-product-ux does not declare consolidation into konfrm-product');
+    }
+    if (lfm && !/Do not use as primary/i.test(lfm[1])) {
+      fail('Legacy konfrm-product-ux does not declare primary authority exclusion');
+    }
+  }
+
+  // 5. Deterministic evaluation of routing contract (5 positive cases + 4 negative cases)
+  const ROUTER_PATH = path.join(projectRoot, '.agents', 'SKILL_ROUTER.md');
+  if (fs.existsSync(ROUTER_PATH)) {
+    const routerText = fs.readFileSync(ROUTER_PATH, 'utf8');
+
+    // Positive case patterns
+    const requiredPositivePatterns = [
+      'Business rule interpretation',
+      'Booking lifecycle semantics',
+      'Financial model meaning',
+      'Role mental model definition',
+      'Cancellation / refund policy interpretation',
+      'Epistemic audit',
+    ];
+    for (const pat of requiredPositivePatterns) {
+      if (!routerText.includes(pat)) {
+        fail(`Router decision matrix missing positive product routing class: "${pat}"`);
+      }
+    }
+
+    // Negative case patterns
+    if (!routerText.includes('No Code, SQL, or Token Mechanics in Product Brain')) {
+      fail('Router missing explicit negative routing rule for konfrm-product');
+    }
+  }
+
+  pass('Consolidated Product Brain hardening & legacy discovery checks passed (epistemic taxonomy, zero fabricated policy, router integrated).');
+} else {
+  fail('Required runtime artifact missing: .agents/skills/konfrm-product');
 }
 
 console.log('====================================================');

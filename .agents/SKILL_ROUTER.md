@@ -1,15 +1,15 @@
 # KONFRM Engineering Intelligence Skill Router V1
 
 ```yaml
-ROUTER_VERSION: 1.1.0
+ROUTER_VERSION: 1.2.0
 GOVERNING_SYSTEM: KONFRM Engineering Intelligence System V1
 ROUTING_MODEL: DOMAIN_SCOPED_COMBINED_SIGNALS
 ACTIVE_RUNTIME_BRAINS:
+  - konfrm-product
+  - konfrm-design
   - konfrm-flutter
   - konfrm-quality
-  - konfrm-design
 DEFERRED_BRAINS:
-  - konfrm-product
   - konfrm-admin-web
   - konfrm-backend
   - konfrm-delivery
@@ -21,6 +21,7 @@ DEFERRED_BRAINS:
 
 1. **Combined Signals Routing:** Route based on task intent, affected file scope, product surface, user role, and risk level. Never route on naive keyword matching alone.
 2. **Domain-Scoped Authority:** Route tasks strictly to the governing brain owning that lifecycle phase:
+   - Business invariants, booking lifecycle, financial meaning, role mental models -> `konfrm-product`
    - Design interpretation, visual hierarchy, DF2 tokens, Arabic RTL semantics, A11y design intent -> `konfrm-design`
    - Client implementation mechanics (Flutter Dart code, widgets, Riverpod) -> `konfrm-flutter`
    - Defect diagnosis, verification, review, and completion proof -> `konfrm-quality`
@@ -34,6 +35,14 @@ DEFERRED_BRAINS:
 ```text
 +-----------------------------------------------------+--------------------+--------------------+
 | TASK CLASS / INTENT                                 | PRIMARY BRAIN      | HANDOFF / GATE     |
++-----------------------------------------------------+--------------------+--------------------+
+| Business rule interpretation / invariant inquiry    | konfrm-product     | konfrm-design /    |
+|                                                     |                    | konfrm-flutter     |
+| Booking lifecycle semantics / request vs confirm    | konfrm-product     | konfrm-design      |
+| Financial model meaning / deposit vs commission     | konfrm-product     | konfrm-design      |
+| Role mental model definition / cross-role boundary  | konfrm-product     | konfrm-design      |
+| Cancellation / refund policy interpretation         | konfrm-product     | Founder Gate / Open|
+| Epistemic audit (Canon vs Insight vs Hypo vs Open)  | konfrm-product     | None (Verdicts)    |
 +-----------------------------------------------------+--------------------+--------------------+
 | UI/UX reasoning / role-specific information model   | konfrm-design      | konfrm-flutter*    |
 | Visual hierarchy / DF2 token consumption / spacing  | konfrm-design      | konfrm-flutter*    |
@@ -70,7 +79,18 @@ DEFERRED_BRAINS:
 
 ## 3. FAST-PATH EXECUTION SEQUENCES
 
-### 3.1 Flutter Implementation Sequence
+### 3.1 Product Soul & Domain Truth Sequence
+```text
+Task: "Interpret business invariants, clarify booking lifecycle, or evaluate product policy."
+1. Activate: konfrm-product (.agents/skills/konfrm-product/SKILL.md)
+2. Retrieve Canon: Look up business and master invariants via .agents/CONTEXT_MAP.yaml.
+3. Lazy-Load References: Open product_state_retrieval.md or role_mental_models.md on demand.
+4. Epistemic Audit: Classify status as ACCEPTED_CANON, VALIDATED_RESEARCH_INSIGHT, FOUNDER_HYPOTHESIS, or OPEN_ASSUMPTION.
+5. Formulate Contract: State verified business truth without duplicating mutable formulas or inventing open policy.
+6. Handoff: Hand off to konfrm-design (for UX presentation) or konfrm-flutter (for client implementation).
+```
+
+### 3.2 Flutter Implementation Sequence
 ```text
 Task: "Implement/modify a Flutter screen, widget, or state controller."
 1. Activate: konfrm-flutter (.agents/skills/konfrm-flutter/SKILL.md)
@@ -80,7 +100,7 @@ Task: "Implement/modify a Flutter screen, widget, or state controller."
 5. Handoff: Hand off to konfrm-quality for verification gate if task introduces non-trivial risk.
 ```
 
-### 3.2 Defect Diagnosis & Remediation Sequence
+### 3.3 Defect Diagnosis & Remediation Sequence
 ```text
 Task: "Diagnose and fix a test failure, runtime error, or visual mismatch."
 1. Activate: konfrm-quality (.agents/skills/konfrm-quality/SKILL.md)
@@ -92,7 +112,7 @@ Task: "Diagnose and fix a test failure, runtime error, or visual mismatch."
 7. Phase 4 (Verify): konfrm-quality verifies oracle passes and runs surface static analysis gate.
 ```
 
-### 3.3 Design Reasoning & Interpretation Sequence
+### 3.4 Design Reasoning & Interpretation Sequence
 ```text
 Task: "Review, structure, or refine UI/UX hierarchy, Arabic RTL layout, or visual styling."
 1. Activate: konfrm-design (.agents/skills/konfrm-design/SKILL.md)
@@ -111,6 +131,7 @@ Task: "Review, structure, or refine UI/UX hierarchy, Arabic RTL layout, or visua
 3. **Web Admin Implementation:** Do NOT activate `konfrm-flutter` for tasks touching exclusively `admin-app/` implementation code.
 4. **No Premature Gate Loading:** Do NOT load `konfrm-quality` security or performance modules for routine typographical or layout adjustments unless an explicit security boundary or frame-rate risk is touched.
 5. **No Code Mechanics in Design Brain:** Do NOT load `konfrm-design` to write Dart widget code, Riverpod state logic, or fix Flutter compiler errors (use `konfrm-flutter` or `konfrm-quality`).
+6. **No Code, SQL, or Token Mechanics in Product Brain:** Do NOT load `konfrm-product` to write Dart widget code, Riverpod controllers, SQL migrations, or author DF2 design tokens. `konfrm-product` interprets business semantics and defines product requirements; it hands off implementation to `konfrm-flutter`, `konfrm-backend`, or `konfrm-design`.
 
 ---
 
@@ -125,7 +146,7 @@ RESULT: [Summary of findings or code changes executed]
 AFFECTED_SCOPE: [Exact list of files or symbols modified/inspected]
 EVIDENCE: [Smallest credible oracle output, analyzer status, or test pass proof]
 RISK: [Identified security, architectural, or regression risks]
-NEXT_BRAIN: [konfrm-flutter | konfrm-quality | konfrm-design | NONE]
+NEXT_BRAIN: [konfrm-product | konfrm-flutter | konfrm-quality | konfrm-design | NONE]
 NEXT_REASON: [Why handoff is required]
 BLOCKER: [Description of genuine blocker if stopped, else NONE]
 ```

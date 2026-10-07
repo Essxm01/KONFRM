@@ -639,6 +639,16 @@ if (/Owner approval transitions the request to `APPROVED_PENDING_PAYMENT`/.test(
   fail('[REG-16] product_state_retrieval.md missing canonical retrieval pointer for Owner-decision lifecycle transitions');
 }
 
+// REG-17: Dispute Settlement Openness (Blocked pending approved contract per Completion Matrix:46)
+if (mentalModelsContent.includes('Decisions are enforced through canonical platform ledger adjustments')) {
+  fail('[REG-17] role_mental_models.md promotes unapproved dispute ledger adjustments into a universal settlement rule');
+} else if (/Dispute settlement and ledger-adjustment rules remain \*\*BLOCKED \/ OPEN\*\*/i.test(mentalModelsContent) &&
+           mentalModelsContent.includes('KONFRM_COMPLETION_MATRIX.md:46')) {
+  pass('[REG-17] Dispute Settlement Openness: Dispute settlement classified as BLOCKED / OPEN per KONFRM_COMPLETION_MATRIX.md:46');
+} else {
+  fail('[REG-17] Dispute resolution protocol missing BLOCKED / OPEN classification and Completion Matrix anchor');
+}
+
 // 7. Negative Test Harness: Verify Evaluator Fails Closed on Corrupted Input
 console.log('--- [NEGATIVE TEST HARNESS: FAIL-CLOSED VERIFICATION] ---');
 let harnessFailures = 0;

@@ -107,7 +107,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
    - Do not invent universal mandatory reason capture or fabricated operational friction.
 4. **Dispute Resolution Protocol:**
    - When a booking dispute arises, the Admin inspects timestamped event logs (booking creation, owner response, payment completion, check-in time, and in-app message logs).
-   - Decisions are enforced through canonical platform ledger adjustments, not subjective intervention.
+   - **Settlement Status Open / Blocked (OPEN_ASSUMPTION):** Dispute settlement and ledger-adjustment rules remain **BLOCKED / OPEN** pending approved cancellation and dispute contracts (docs/codex/KONFRM_COMPLETION_MATRIX.md:46, MR-15). The current /api/v1/admin/disputes/:id/resolve route returns a mock ledgerMutation without persisting canonical ledger adjustments (ackend/server/src/app.ts:2997-3045). Retrieve an approved Founder/Canon contract before prescribing or implementing refund, split, or fund-release ledger mutations.
 
 ---
 

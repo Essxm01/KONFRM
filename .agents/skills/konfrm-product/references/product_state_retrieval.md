@@ -110,6 +110,7 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
    - **Owner Fault Cancellation:** If a confirmed booking is cancelled due to Owner fault (e.g. double booking, uninhabitable unit), the Customer receives a **full deposit refund** and the platform takes **zero platform commission**.
 2. **What is an OPEN_ASSUMPTION (Must NOT be Invented):**
    - The wider **Renter Cancellation & Refund Matrix** (e.g. cancellation 7 days before check-in vs 24 hours before check-in) is **OPEN / UNRESOLVED**.
+   - **Dispute Settlement & Ledger Mutation Rules:** Admin dispute resolution and financial settlement contracts remain **OPEN / BLOCKED** pending approved cancellation/dispute product decisions (docs/codex/KONFRM_COMPLETION_MATRIX.md:46).
    - The exact payment method for the remaining balance (cash at check-in vs card vs wallet transfer) is **OPEN / UNCONFIRMED**.
    - Automatic request expiration timeouts (e.g. 24h or 48h Owner response SLA) are **OPEN / UNCONFIRMED**.
 3. **Agent Action:**

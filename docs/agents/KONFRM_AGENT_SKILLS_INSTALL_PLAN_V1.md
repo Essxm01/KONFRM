@@ -1,7 +1,7 @@
 # KONFRM Agent Skills Installation & Implementation Plan V1
-## Phased Rollout, Skill Bundle Vendoring Architecture, and Pinning Manifest
+## Phased Rollout, Skill Bundle Vendoring Architecture, Discovery Verification, and Pinning Manifest
 
-**Document Version:** 1.2.0
+**Document Version:** 1.3.0
 **Status:** DRAFT — PENDING FINAL BRIDGE APPROVAL
 **Scope:** Controlled Implementation Blueprint for Approved Agent Skills
 **Target Repository:** `Essxm01/KONFRM`
@@ -13,13 +13,17 @@
 
 > [!IMPORTANT]
 > **ZERO INSTALLATION IN THIS MISSION.**
-> In accordance with Section 20 of the Mission Charter, this document is an architectural implementation plan only. No skills are installed, no `.agents/skills/` directories are mutated, and no dependencies are added during this mission. Actual installation occurs only after explicit Founder and Bridge review and approval.
+> In accordance with the Mission Charter, this document is an architectural implementation plan only. No skills are installed, no `.agents/skills/` directories are mutated, and no dependencies are added during this mission.
+>
+> Furthermore, `.agents/SKILL_ROUTER.md` and `.agents/SKILL_MANIFEST.yaml` are specified conceptually in this document, but are **NOT** created during this mission. They will be authored strictly during the future approved Phase 1 Pilot. Actual installation occurs only after explicit Founder and Bridge review and approval.
 
 ### Rollout Philosophy
-- **Controlled, Incremental Rollout:** Skills are integrated in phased tiers based on verification value and stability.
+- **Controlled, Incremental Rollout:** Skills are integrated in phased tiers based on verification value and operational stability.
+- **Physically Flat Runtime Structure:** Every runtime skill directory is maintained as a direct child of `.agents/skills/<skill-name>/`. Deeply nested hierarchies (e.g. `.agents/skills/flutter/testing/...`) are strictly prohibited to eliminate host filesystem indexing overhead.
 - **The `KONFRM_SKILL_BUNDLE_V1` Pattern:** Every approved external skill is preserved as a self-contained runtime bundle in `.agents/skills/` paired with an audit and provenance record in `docs/ai/skills/`.
 - **Strict Upstream Pinning:** Zero tracking of `main`, `master`, or `latest`. Every external skill is frozen to a verified 40-character commit SHA (`AUDITED_COMMIT`).
-- **Sanitization & Frontmatter Normalization:** Conflicting upstream guidance (MVVM, ChangeNotifier, offline mutation queues, generic SaaS palettes) and platform-locked frontmatter (e.g. `model: haiku`) are adapted before bundle activation.
+- **Separation of Contexts:** Routine execution agents operate exclusively within `.agents/skills/` and must **NEVER** read historical vendor snapshots in `docs/ai/skills/<name>/vendor/`.
+- **Scope Clarity:** KONFRM-governed skills are exclusively repository-local under `.agents/skills/`. The global Antigravity scope is `~/.gemini/config/skills/` (outside KONFRM governance).
 
 ---
 
@@ -29,7 +33,7 @@ To guarantee total reproducibility and auditability, KONFRM uses a standardized 
 
 ```text
 KONFRM-CANONICAL/
-├── .agents/skills/<governed-skill-name>/      <-- RUNTIME SOURCE OF TRUTH (Antigravity & Codex)
+├── .agents/skills/<governed-skill-name>/      <-- RUNTIME SOURCE OF TRUTH (Direct Child; Flat Layout)
 │   ├── SKILL.md                              <-- Authoritative, self-contained executable skill
 │   ├── references/                           <-- Bundled local supporting guides (RUNTIME_REQUIRED only)
 │   ├── scripts/                              <-- Optional local validation scripts (scanned & audited)
@@ -46,43 +50,98 @@ KONFRM-CANONICAL/
 ### Component Roles
 1. **`.agents/skills/<governed-skill-name>/SKILL.md`:**
    - The authoritative runtime executable skill discovered by both Antigravity and Codex.
-   - Contains normalized frontmatter, triggers, Canon subordination, operational procedures, guardrails, and relative links to companion files in `references/`.
+   - Contains normalized frontmatter, trigger intent, Canon subordination, operational procedures, guardrails, and relative links to companion files in `references/`.
    - **NOT** a pointer shim; it is completely self-contained.
 2. **`.agents/skills/<governed-skill-name>/references/`:**
    - Companion markdown files classified as `RUNTIME_REQUIRED` by the dependency manifest.
    - Preserves required deep-dive checklists and procedures locally so that runtime execution has zero broken links.
+   - Loaded strictly on-demand for specific subtasks under Progressive Disclosure Level 2.
 3. **`docs/ai/skills/<governed-skill-name>/`:**
    - Preserves the audited upstream snapshot (`vendor/`), full dependency classification (`UPSTREAM_MANIFEST.md`), and governance findings (`AUDIT.md`).
-   - Kept out of routine agent execution contexts to protect token budgets.
+   - Kept completely out of routine agent execution contexts to protect token budgets.
 
 ---
 
-## 3. Master Upstream Pinning & Bundle Manifest Table
+## 3. Future Discovery Architecture Specifications (Pilot Implementation)
+
+The following lightweight routing assets are designed in this architecture and will be authored during the Phase 1 Pilot:
+
+### 3.1 Specification of `.agents/SKILL_ROUTER.md`
+- **Purpose:** Compact fallback mapping from task intent to runtime skill directory when native metadata discovery is ambiguous.
+- **Constraint:** Strictly $\le 50$ lines. Zero instruction duplication.
+- **Location:** Direct child of `.agents/` (`.agents/SKILL_ROUTER.md`).
+- **Target Pilot Schema:**
+  ```markdown
+  # KONFRM Skill Router (Fallback)
+
+  | Trigger Intent / Task Category | Direct Runtime Path | Activation Mode |
+  | :--- | :--- | :--- |
+  | BUG / FAILING TEST / RUNTIME ERROR | `.agents/skills/konfrm-systematic-debugging/` | MANDATORY_ON_TRIGGER |
+  | FLUTTER WIDGET / REGRESSION TEST | `.agents/skills/konfrm-flutter-widget-testing/` | MANDATORY_ON_TRIGGER |
+  | DART / FLUTTER STATIC ANALYSIS GATE | `.agents/skills/konfrm-dart-static-analysis/` | MANDATORY_ON_TRIGGER |
+  | ARABIC RTL / BIDI / NUMERAL FORMATTING | `.agents/skills/konfrm-rtl-arabic/` | MANDATORY_ON_TRIGGER |
+  | ACCESSIBILITY / TALKBACK SEMANTICS | `.agents/skills/konfrm-accessibility/` | MANDATORY_ON_TRIGGER |
+  | PR REVIEW / CLOSURE AUDIT | `.agents/skills/konfrm-code-review/` | MANDATORY_ON_TRIGGER |
+  ```
+
+### 3.2 Specification of `.agents/SKILL_MANIFEST.yaml`
+- **Purpose:** Machine-readable catalog for automated tooling, CI checks, and deterministic subagent dispatch.
+- **Constraint:** Compact YAML; one entry per governed skill; zero prose instruction text.
+- **Target Pilot Schema:**
+  ```yaml
+  - id: konfrm-systematic-debugging
+    path: skills/konfrm-systematic-debugging
+    surface: universal
+    trigger: bug_failure_unexpected_behavior
+    activation: mandatory_on_trigger
+    priority: P1
+    network: local_only
+
+  - id: konfrm-flutter-widget-testing
+    path: skills/konfrm-flutter-widget-testing
+    surface: flutter
+    trigger: flutter_widget_testing_pumping
+    activation: mandatory_on_trigger
+    priority: P1
+    network: local_only
+
+  - id: konfrm-dart-static-analysis
+    path: skills/konfrm-dart-static-analysis
+    surface: flutter_dart
+    trigger: dart_static_analysis_gate
+    activation: mandatory_on_trigger
+    priority: P1
+    network: local_only
+  ```
+
+---
+
+## 4. Master Upstream Pinning & Bundle Manifest Table
 
 The following table records the authoritative upstream targets, verified full 40-character commit SHAs (`AUDITED_COMMIT`), exact file paths, file/blob SHAs, network classifications, host-specific metadata normalization, cross-skill dependency handling, and runtime profiles for candidate skills approved for phased implementation:
 
-| # | Upstream Skill Name | KONFRM Runtime Name | Upstream Repo & Path | Audited Commit SHA | Root Skill Blob SHA | Supporting Companion Files & Manifest Status | Network Class | Host-Specific Metadata Handled | Cross-Skill Dependencies Handled | Runtime Profile | Install Status |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :---: | :--- | :--- | :--- | :---: |
-| **01** | `systematic-debugging` | `konfrm-systematic-debugging` | `obra/superpowers`<br>`skills/systematic-debugging/SKILL.md` | `8ca22dba9a94f28898bbce59f2537ff4d87c747d` | `095d194ac041502905f15b01d22d294fb94db8b2` | `root-cause-tracing.md` (`RUNTIME_REQUIRED`)<br>`defense-in-depth.md` (`RUNTIME_REQUIRED`)<br>`condition-based-waiting.md` (`RUNTIME_REQUIRED`)<br>`find-polluter.sh` (`AUDIT_ONLY`) | `LOCAL_ONLY` | Standardized (universal) | Unresolved upstream links to `test-driven-development` and `verification-before-completion` are rewritten to map to KONFRM Quality Gates. | `QA_REVIEW`, All | **PHASE 1 PILOT** (Pending Bridge Approval) |
-| **02** | `flutter-add-widget-test` | `konfrm-flutter-widget-testing` | `flutter/agent-plugins`<br>`skills/flutter-add-widget-test/SKILL.md` | `0ef3972f93e2baa4156ba1cbb1e515cd53079c68` | `01ac7ac645a7f6f66603cb1c78a2a28dba3a5d32` | None (Single file self-contained) | `LOCAL_ONLY` | Strips upstream `model: models/gemini-3.1-pro-preview` | None | Mobile, `QA_REVIEW` | **PHASE 1 PILOT** (Pending Bridge Approval) |
-| **03** | `dart-run-static-analysis` | `konfrm-dart-static-analysis` | `dart-lang/skills`<br>`skills/dart-run-static-analysis/SKILL.md` | `0d9f1c4a0ae29d6f5180bf6143d7997ec3bacf49` | `27ca6546684accbc8f96091d0b992f6f43a16d15` | None (Single file self-contained) | `LOCAL_ONLY` | Strips upstream `model: models/gemini-3.1-pro-preview` | None | All Dart/Flutter | **PHASE 1 PILOT** (Pending Bridge Approval) |
-| **04** | `flutter-add-integration-test`| `konfrm-flutter-integration-test`| `flutter/agent-plugins`<br>`skills/flutter-add-integration-test/SKILL.md`| `0ef3972f93e2baa4156ba1cbb1e515cd53079c68`| `60902f1aa3156fa0c8e28df5448864dd5cc6c014` | None | `LOCAL_ONLY` | Strips upstream model metadata | Requires dedicated entrypoint (`lib/main_test.dart`); forbids mutating `lib/main.dart`. | `QA_REVIEW` (`ON_DEMAND`) | Phase 2 Candidate |
-| **05** | `flutter-build-responsive-layout`| `konfrm-flutter-responsive-layout`| `flutter/agent-plugins`<br>`skills/flutter-build-responsive-layout/SKILL.md`| `0ef3972f93e2baa4156ba1cbb1e515cd53079c68`| `b85bfd7e82e30ac676d2140ddb436bfebd0992cb` | None | `LOCAL_ONLY` | Strips upstream model metadata | Bound to phone/tablet density and DF2 4–32 spacing scale. | `CUSTOMER_FLUTTER`, `OWNER_FLUTTER` | Phase 2 Candidate |
-| **06** | `flutter-fix-layout-issues` | `konfrm-flutter-layout-fixer` | `flutter/agent-plugins`<br>`skills/flutter-fix-layout-issues/SKILL.md` | `0ef3972f93e2baa4156ba1cbb1e515cd53079c68` | `3804a3c1d9fd2b88ee1ddc74716799cf2cd770c1` | None | `LOCAL_ONLY` | Strips upstream model metadata | None | Mobile, `QA_REVIEW` | Phase 2 Candidate |
-| **07** | `flutter-apply-architecture-best-practices`| `konfrm-flutter-architecture` | `flutter/agent-plugins`<br>`skills/flutter-apply-architecture-best-practices/SKILL.md` | `0ef3972f93e2baa4156ba1cbb1e515cd53079c68` | `791994b12280e5734479079bd6255fa705e983c5` | None | `LOCAL_ONLY` | Strips upstream model metadata | Replaces MVVM/ChangeNotifier, hybrid structure, and offline sync with Feature-First, Riverpod without codegen, and fail-closed error handling. | Mobile Profiles | Phase 3 Candidate |
-| **08** | `flutter-setup-declarative-routing`| `konfrm-flutter-routing` | `flutter/agent-plugins`<br>`skills/flutter-setup-declarative-routing/SKILL.md`| `0ef3972f93e2baa4156ba1cbb1e515cd53079c68`| `272031181bc8d8598c934a14b1d12cf08c7aa1bc` | None | `LOCAL_ONLY` | Strips upstream model metadata | Deep link architecture preserved; concrete URL schemes deferred. | Mobile Profiles | Phase 3 Candidate |
-| **09** | `flutter-setup-localization` | `konfrm-flutter-localization` | `flutter/agent-plugins`<br>`skills/flutter-setup-localization/SKILL.md` | `0ef3972f93e2baa4156ba1cbb1e515cd53079c68` | `d3dd4596da225df783e1816c658125206566902b` | None | `LOCAL_ONLY` | Strips upstream model metadata | Enforces Western Arabic digits (`0-9`) default and Egyptian currency formatting. | Mobile Profiles | Phase 4 Candidate |
-| **10** | `flutter-use-http-package` | `konfrm-flutter-http` | `flutter/agent-plugins`<br>`skills/flutter-use-http-package/SKILL.md` | `0ef3972f93e2baa4156ba1cbb1e515cd53079c68` | `bb60468d6448259b1708a2c34a01f43e77529437` | None | `LOCAL_ONLY` | Strips upstream model metadata | Enforces fail-closed handling; Dio deferred. | Mobile Profiles, Backend | Phase 3 Candidate |
-| **11** | `dart-add-unit-test` | `konfrm-dart-unit-test` | `dart-lang/skills`<br>`skills/dart-add-unit-test/SKILL.md` | `0d9f1c4a0ae29d6f5180bf6143d7997ec3bacf49` | `a4921a529000ddbfa6c98360dbc0b68f11fc4d4a` | None | `LOCAL_ONLY` | Strips upstream model metadata | None | All Profiles | Phase 2 Candidate |
-| **12** | `dart-collect-coverage` | `konfrm-dart-coverage` | `dart-lang/skills`<br>`skills/dart-collect-coverage/SKILL.md` | `0d9f1c4a0ae29d6f5180bf6143d7997ec3bacf49` | `60dad77533dc0a98b7f4a8363ac1b56d589d353a` | None | `LOCAL_ONLY` | Strips upstream model metadata | None | `QA_REVIEW` | Phase 2 Candidate |
-| **13** | `tdd` | `konfrm-tdd` | `mattpocock/skills`<br>`skills/engineering/tdd/SKILL.md` | `f3fc5632f401156837ee3872f14fe33ccf1024ea` | `01eadaa34e7c9a63a67d6dc3cce1cc81b0e49985` | `tests.md` (`RUNTIME_REQUIRED`)<br>`mocking.md` (`RUNTIME_REQUIRED`)<br>`agents/openai.yaml` (`AUDIT_ONLY`) | `LOCAL_ONLY` | Standardized (universal) | Enforces Founder Interruption Policy: do NOT interrupt for established seams. | All Profiles | Phase 3 Candidate |
-| **14** | `code-review` | `konfrm-code-review` | `mattpocock/skills`<br>`skills/engineering/code-review/SKILL.md` | `f3fc5632f401156837ee3872f14fe33ccf1024ea` | `373a4f26e6cfa3617778397945bb069d9cb184bc` | `agents/openai.yaml` (`AUDIT_ONLY`) | `LOCAL_ONLY` | Standardized (universal) | Derives fixed points directly from mission contracts. | `QA_REVIEW`, `BRIDGE` | Phase 3 Candidate |
-| **15** | `anti-ui-slop` | `anti-ui-slop-wrapper` | `uizze/uizze`<br>`skills/anti-ui-slop/SKILL.md` | `4a0224f578f65a87f328e9c533b3d8bf1023c1f7` | `81761062c1e482ddc7ea30e4f4e250ef67b73c0e` | `reference/audit.md` (`RUNTIME_REQUIRED`)<br>`craft.md` (`RUNTIME_REQUIRED`)<br>`distill.md` (`RUNTIME_REQUIRED`)<br>`polish.md` (`RUNTIME_REQUIRED`)<br>`ios.md` (`AUDIT_ONLY`)<br>`references/uizze-reference-policy.md` (`AUDIT_ONLY`) | `NETWORK_OPTIONAL_EXPLICIT` | Standardized (universal) | Defaults to Local Core Mode (`LOCAL_ONLY`). Remote reference mode requires explicit Founder approval. Subordinated to DF2 Canon. | Mobile & Web Profiles | Phase 2 Candidate |
-| **16** | `caveman-explore` | `caveman-explore` | `JuliusBrussee/caveman`<br>`skills/caveman-explore/SKILL.md` | `99aafe151a1be72be783e662858e8a0955add59f` | `5bc2aa79833d34c411b5680ed0e7c60496982426` | None | `LOCAL_ONLY` | Strips upstream `model: haiku` | Must remain strictly read-only and invoked only via isolated subagent. Full adoption deferred pending pilot evidence. | Subagent Explorer (`ON_DEMAND`) | Phase 4 Candidate |
+| # | Upstream Skill Name | KONFRM Runtime Name | Governed Taxonomy Category | Upstream Repo & Path | Audited Commit SHA | Root Skill Blob SHA | Supporting Companion Files & Manifest Status | Network Class | Host-Specific Metadata Handled | Cross-Skill Dependencies Handled | Runtime Profile | Install Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :---: | :--- | :--- | :--- | :---: |
+| **01** | `systematic-debugging` | `konfrm-systematic-debugging` | `konfrm-qa-*` | `obra/superpowers`<br>`skills/systematic-debugging/SKILL.md` | `8ca22dba9a94f28898bbce59f2537ff4d87c747d` | `095d194ac041502905f15b01d22d294fb94db8b2` | `root-cause-tracing.md` (`RUNTIME_REQUIRED`)<br>`defense-in-depth.md` (`RUNTIME_REQUIRED`)<br>`condition-based-waiting.md` (`RUNTIME_REQUIRED`)<br>`find-polluter.sh` (`AUDIT_ONLY`) | `LOCAL_ONLY` | Standardized (universal) | Unresolved upstream links to `test-driven-development` and `verification-before-completion` are rewritten to map to KONFRM Quality Gates. | `QA_REVIEW`, All | **PHASE 1 PILOT** (Pending Bridge Approval) |
+| **02** | `flutter-add-widget-test` | `konfrm-flutter-widget-testing` | `konfrm-flutter-*` | `flutter/agent-plugins`<br>`skills/flutter-add-widget-test/SKILL.md` | `0ef3972f93e2baa4156ba1cbb1e515cd53079c68` | `01ac7ac645a7f6f66603cb1c78a2a28dba3a5d32` | None (Single file self-contained) | `LOCAL_ONLY` | Strips upstream `model: models/gemini-3.1-pro-preview` | None | Mobile, `QA_REVIEW` | **PHASE 1 PILOT** (Pending Bridge Approval) |
+| **03** | `dart-run-static-analysis` | `konfrm-dart-static-analysis` | `konfrm-flutter-*` / `konfrm-qa-*` | `dart-lang/skills`<br>`skills/dart-run-static-analysis/SKILL.md` | `0d9f1c4a0ae29d6f5180bf6143d7997ec3bacf49` | `27ca6546684accbc8f96091d0b992f6f43a16d15` | None (Single file self-contained) | `LOCAL_ONLY` | Strips upstream `model: models/gemini-3.1-pro-preview` | None | All Dart/Flutter | **PHASE 1 PILOT** (Pending Bridge Approval) |
+| **04** | `flutter-add-integration-test`| `konfrm-flutter-integration-test`| `konfrm-flutter-*` / `konfrm-qa-*` | `flutter/agent-plugins`<br>`skills/flutter-add-integration-test/SKILL.md`| `0ef3972f93e2baa4156ba1cbb1e515cd53079c68`| `60902f1aa3156fa0c8e28df5448864dd5cc6c014` | None | `LOCAL_ONLY` | Strips upstream model metadata | Requires dedicated entrypoint (`lib/main_test.dart`); forbids mutating `lib/main.dart`. | `QA_REVIEW` (`ON_DEMAND`) | Phase 2 Candidate |
+| **05** | `flutter-build-responsive-layout`| `konfrm-flutter-responsive-layout`| `konfrm-flutter-*` | `flutter/agent-plugins`<br>`skills/flutter-build-responsive-layout/SKILL.md`| `0ef3972f93e2baa4156ba1cbb1e515cd53079c68`| `b85bfd7e82e30ac676d2140ddb436bfebd0992cb` | None | `LOCAL_ONLY` | Strips upstream model metadata | Bound to phone/tablet density and DF2 4–32 spacing scale. | `CUSTOMER_FLUTTER`, `OWNER_FLUTTER` | Phase 2 Candidate |
+| **06** | `flutter-fix-layout-issues` | `konfrm-flutter-layout-fixer` | `konfrm-flutter-*` / `konfrm-qa-*` | `flutter/agent-plugins`<br>`skills/flutter-fix-layout-issues/SKILL.md` | `0ef3972f93e2baa4156ba1cbb1e515cd53079c68` | `3804a3c1d9fd2b88ee1ddc74716799cf2cd770c1` | None | `LOCAL_ONLY` | Strips upstream model metadata | None | Mobile, `QA_REVIEW` | Phase 2 Candidate |
+| **07** | `flutter-apply-architecture-best-practices`| `konfrm-flutter-architecture` | `konfrm-flutter-*` | `flutter/agent-plugins`<br>`skills/flutter-apply-architecture-best-practices/SKILL.md` | `0ef3972f93e2baa4156ba1cbb1e515cd53079c68` | `791994b12280e5734479079bd6255fa705e983c5` | None | `LOCAL_ONLY` | Strips upstream model metadata | Replaces MVVM/ChangeNotifier, hybrid structure, and offline sync with Feature-First, Riverpod without codegen, and fail-closed error handling. | Mobile Profiles | Phase 3 Candidate |
+| **08** | `flutter-setup-declarative-routing`| `konfrm-flutter-routing` | `konfrm-flutter-*` | `flutter/agent-plugins`<br>`skills/flutter-setup-declarative-routing/SKILL.md`| `0ef3972f93e2baa4156ba1cbb1e515cd53079c68`| `272031181bc8d8598c934a14b1d12cf08c7aa1bc` | None | `LOCAL_ONLY` | Strips upstream model metadata | Deep link architecture preserved; concrete URL schemes deferred. | Mobile Profiles | Phase 3 Candidate |
+| **09** | `flutter-setup-localization` | `konfrm-flutter-localization` | `konfrm-flutter-*` | `flutter/agent-plugins`<br>`skills/flutter-setup-localization/SKILL.md` | `0ef3972f93e2baa4156ba1cbb1e515cd53079c68` | `d3dd4596da225df783e1816c658125206566902b` | None | `LOCAL_ONLY` | Strips upstream model metadata | Enforces Western Arabic digits (`0-9`) default and Egyptian currency formatting. | Mobile Profiles | Phase 4 Candidate |
+| **10** | `flutter-use-http-package` | `konfrm-flutter-http` | `konfrm-flutter-*` | `flutter/agent-plugins`<br>`skills/flutter-use-http-package/SKILL.md` | `0ef3972f93e2baa4156ba1cbb1e515cd53079c68` | `bb60468d6448259b1708a2c34a01f43e77529437` | None | `LOCAL_ONLY` | Strips upstream model metadata | Enforces fail-closed handling; Dio deferred. | Mobile Profiles, Backend | Phase 3 Candidate |
+| **11** | `dart-add-unit-test` | `konfrm-dart-unit-test` | `konfrm-flutter-*` / `konfrm-qa-*` | `dart-lang/skills`<br>`skills/dart-add-unit-test/SKILL.md` | `0d9f1c4a0ae29d6f5180bf6143d7997ec3bacf49` | `a4921a529000ddbfa6c98360dbc0b68f11fc4d4a` | None | `LOCAL_ONLY` | Strips upstream model metadata | None | All Profiles | Phase 2 Candidate |
+| **12** | `dart-collect-coverage` | `konfrm-dart-coverage` | `konfrm-qa-*` | `dart-lang/skills`<br>`skills/dart-collect-coverage/SKILL.md` | `0d9f1c4a0ae29d6f5180bf6143d7997ec3bacf49` | `60dad77533dc0a98b7f4a8363ac1b56d589d353a` | None | `LOCAL_ONLY` | Strips upstream model metadata | None | `QA_REVIEW` | Phase 2 Candidate |
+| **13** | `tdd` | `konfrm-tdd` | `konfrm-qa-*` | `mattpocock/skills`<br>`skills/engineering/tdd/SKILL.md` | `f3fc5632f401156837ee3872f14fe33ccf1024ea` | `01eadaa34e7c9a63a67d6dc3cce1cc81b0e49985` | `tests.md` (`RUNTIME_REQUIRED`)<br>`mocking.md` (`RUNTIME_REQUIRED`)<br>`agents/openai.yaml` (`AUDIT_ONLY`) | `LOCAL_ONLY` | Standardized (universal) | Enforces Founder Interruption Policy: do NOT interrupt for established seams. | All Profiles | Phase 3 Candidate |
+| **14** | `code-review` | `konfrm-code-review` | `konfrm-qa-*` | `mattpocock/skills`<br>`skills/engineering/code-review/SKILL.md` | `f3fc5632f401156837ee3872f14fe33ccf1024ea` | `373a4f26e6cfa3617778397945bb069d9cb184bc` | `agents/openai.yaml` (`AUDIT_ONLY`) | `LOCAL_ONLY` | Standardized (universal) | Derives fixed points directly from mission contracts. | `QA_REVIEW`, `BRIDGE` | Phase 3 Candidate |
+| **15** | `anti-ui-slop` | `anti-ui-slop-wrapper` | `konfrm-design-*` | `uizze/uizze`<br>`skills/anti-ui-slop/SKILL.md` | `4a0224f578f65a87f328e9c533b3d8bf1023c1f7` | `81761062c1e482ddc7ea30e4f4e250ef67b73c0e` | `reference/audit.md` (`RUNTIME_REQUIRED`)<br>`craft.md` (`RUNTIME_REQUIRED`)<br>`distill.md` (`RUNTIME_REQUIRED`)<br>`polish.md` (`RUNTIME_REQUIRED`)<br>`ios.md` (`AUDIT_ONLY`)<br>`references/uizze-reference-policy.md` (`AUDIT_ONLY`) | `NETWORK_OPTIONAL_EXPLICIT` | Standardized (universal) | Defaults to Local Core Mode (`LOCAL_ONLY`). Remote reference mode requires explicit Founder approval. Subordinated to DF2 Canon. | Mobile & Web Profiles | Phase 2 Candidate |
+| **16** | `caveman-explore` | `caveman-explore` | `konfrm-core-*` / Explorer | `JuliusBrussee/caveman`<br>`skills/caveman-explore/SKILL.md` | `99aafe151a1be72be783e662858e8a0955add59f` | `5bc2aa79833d34c411b5680ed0e7c60496982426` | None | `LOCAL_ONLY` | Strips upstream `model: haiku` | Must remain strictly read-only and invoked only via isolated subagent. Full adoption deferred pending pilot evidence. | Subagent Explorer (`ON_DEMAND`) | Phase 4 Candidate |
 
 ---
 
-## 4. Adaptation Blueprints for Governed Bundles
+## 5. Adaptation Blueprints for Governed Bundles
 
 ### Blueprint A: `konfrm-flutter-architecture` (Adapting `flutter-apply-architecture-best-practices`)
 - **Upstream Path:** `skills/flutter-apply-architecture-best-practices/SKILL.md`
@@ -156,13 +215,13 @@ The following table records the authoritative upstream targets, verified full 40
 
 ---
 
-## 5. Phased Installation Roadmap & Initial Pilot
+## 6. Phased Installation Roadmap & Initial Pilot
 
 When approved by Bridge, installation proceeds in discrete, verifiable phases:
 
 ```mermaid
 flowchart TD
-    P1["Phase 1: Initial Three-Skill Pilot\n- konfrm-systematic-debugging\n- konfrm-flutter-widget-testing\n- konfrm-dart-static-analysis"]
+    P1["Phase 1: Initial Three-Skill Pilot\n- konfrm-systematic-debugging\n- konfrm-flutter-widget-testing\n- konfrm-dart-static-analysis\n(Plus SKILL_ROUTER.md & SKILL_MANIFEST.yaml)"]
 
     P2["Phase 2: Mobile UI & Accessibility\n- konfrm-flutter-layout-fixer\n- konfrm-flutter-responsive-layout\n- anti-ui-slop-wrapper (Local Core)\n- konfrm-flutter-accessibility (internal candidate)"]
 
@@ -175,25 +234,56 @@ flowchart TD
     P3 --> P4
 ```
 
-### Phase 1: Representative Three-Skill Pilot
+### 6.1 Phase 1: Representative Three-Skill Pilot Scope
 Before any wider rollout, exactly three representative governed skill bundles will be installed into `.agents/skills/`:
 1. `konfrm-systematic-debugging`
 2. `konfrm-flutter-widget-testing`
 3. `konfrm-dart-static-analysis`
 
-### Pilot Verification Gates
-The pilot must verify:
-- Antigravity discovers the bundles from repo-local `.agents/skills/`.
-- Codex discovers the exact same repo-local versions.
-- Descriptions trigger activation accurately without cross-talk.
-- No global duplicate in user home directories takes precedence.
-- Bundled references resolve locally without broken paths.
-- Network activity is confirmed `LOCAL_ONLY`.
-- Context footprint remains bounded.
+Along with the authoring of:
+- `.agents/SKILL_ROUTER.md`
+- `.agents/SKILL_MANIFEST.yaml`
+
+### 6.2 Pilot Discovery and Context Efficiency Acceptance Gates
+The pilot must verify discovery performance and context efficiency alongside functional testing:
+
+1. **Auto-Discovery Positive Evals:**
+   - Without explicitly naming the skill:
+     - A task describing a bug, test failure, or unexpected behavior must automatically route to `konfrm-systematic-debugging`.
+     - A task describing Flutter widget testing or component verification must automatically route to `konfrm-flutter-widget-testing`.
+     - A task describing Dart/Flutter code analysis or lint verification must automatically route to `konfrm-dart-static-analysis`.
+2. **Negative Evals:**
+   - Verify that irrelevant skills are **NOT** activated.
+   - *Example:* A pure documentation edit or chore task must not load Flutter testing or systematic debugging skills.
+   - *Example:* A backend task must not load mobile widget testing skills.
+3. **Lookup Efficiency Checks:**
+   - Verify agents do **NOT** recursively scan `.agents/skills/`.
+   - Verify agents do **NOT** open all `SKILL.md` files to make a selection.
+   - Verify agents do **NOT** open vendor/audit files in `docs/ai/skills/`.
+   - Verify agents do **NOT** load unused Level 2 references.
+4. **Direct Path Resolution Check:**
+   - Selected skill must resolve directly from metadata or router to the exact path `.agents/skills/<name>/SKILL.md`.
+5. **Functional Multi-Agent Discovery:**
+   - Antigravity discovers the bundles from repo-local `.agents/skills/`.
+   - Codex discovers the exact same repo-local versions.
+   - Zero precedence given to any global duplicate in user home directories.
+   - Network activity confirmed 100% `LOCAL_ONLY`.
+
+### 6.3 Observable Pilot Evaluation Metrics
+During the pilot, qualitative and observable metrics will be recorded:
+- **Selected Skill:** Match accuracy against task category.
+- **Unexpected Skills Loaded:** Count of spurious skill activations (target: 0).
+- **Runtime Skill Files Opened:** Count of `SKILL.md` files read (target: 1 per active domain).
+- **Supporting References Opened:** Only specific Level 2 files needed for subtasks (target: $\le 1$).
+- **Vendor/Audit Files Opened Unexpectedly:** Target: 0.
+- **Routing Success / Failure:** Deterministic match vs. fallback requirement.
+- **Activation Mode:** Explicit Bridge directive vs. automatic discovery.
+- **Network Telemetry:** Confirmed 100% `LOCAL_ONLY` execution.
+- **Broken Reference Count:** Target: 0.
 
 ---
 
-## 6. Pre-Installation Security & Trust Verification Checklist
+## 7. Pre-Installation Security & Trust Verification Checklist
 
 Before any single external skill bundle is approved for installation:
 
@@ -206,10 +296,11 @@ Before any single external skill bundle is approved for installation:
 - [ ] **Frontmatter Normalization:** Confirmed host-specific model metadata or unsupported tools are stripped.
 - [ ] **Dependency Manifest Verified:** All `RUNTIME_REQUIRED` companion files exist and resolve locally; zero broken links.
 - [ ] **Commit SHA Pinning:** Confirmed exact 40-character commit SHA is recorded and snapshot committed to `docs/ai/skills/<name>/vendor/`.
+- [ ] **Flat Runtime Placement:** Verified destination path is a direct child of `.agents/skills/`.
 
 ---
 
-## 7. Version Upgrade Governance
+## 8. Version Upgrade Governance
 
 To prevent silent behavior drift, external skills must never be automatically updated.
 

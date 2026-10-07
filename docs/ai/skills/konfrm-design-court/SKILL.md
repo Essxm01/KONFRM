@@ -1,6 +1,6 @@
 ---
 name: konfrm-design-court
-description: "Governed collaborative design-adjudication layer for materially ambiguous KONFRM design decisions. Convenes a minimal panel of specialist roles, synthetic role-lens personas, an original-idea defender, a challenger and a red-team prosecutor; applies evidence classification and hard gates; and returns an advisory collective verdict with consensus class, minority opinion and Founder escalation when needed. Advisory only: it does not replace Founder authority, promote Canon, constitute user research, or guarantee multi-agent execution."
+description: "Special escalation only for materially ambiguous design conflicts. Use only when invoked or escalated by konfrm-design. Do not use as primary design authority or routing; use konfrm-design for design guidance, konfrm-flutter for implementation, and konfrm-quality for verification."
 ---
 
 # KONFRM Design Court v1

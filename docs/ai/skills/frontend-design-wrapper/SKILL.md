@@ -1,6 +1,6 @@
 ---
 name: frontend-design-wrapper
-description: "KONFRM-governed wrapper for Anthropic's frontend-design skill. Leverages anti-generic layout reasoning and visual hierarchy while strictly adhering to KONFRM's monochrome-first brand direction, candidate typography rules, and native Arabic RTL requirements."
+description: "Reference only. Subordinated to konfrm-design. Advisory input on visual anti-generic layout invoked only by konfrm-design when needed. Do not use as primary design authority; use konfrm-design."
 ---
 
 # Frontend Design — KONFRM Governed Wrapper

@@ -1,6 +1,6 @@
 ---
 name: vercel-web-guidelines-wrapper
-description: "KONFRM-governed wrapper for Vercel's web interface guidelines. Applies static web quality, performance, and accessibility checks strictly from a local pinned snapshot to the Admin web app and current web implementations, with zero network egress and full mobile Flutter isolation."
+description: "Reference only. Reserved for future konfrm-admin-web web interface quality. Do not use as primary design authority; use konfrm-design for design guidance and konfrm-quality for verification."
 ---
 
 # Web Design Guidelines — KONFRM Governed Wrapper

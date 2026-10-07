@@ -1,6 +1,6 @@
 ---
 name: vercel-composition-wrapper
-description: "KONFRM-governed wrapper for Vercel's React component composition patterns. Provides architectural patterns for compound components, flexible prop contracts, and hook composition strictly for React web applications while preventing Flutter architectural contamination."
+description: "Reference only. Reserved for future konfrm-admin-web React component architecture. Do not use as primary design authority; use konfrm-design for design foundation authority."
 ---
 
 # React Composition Patterns — KONFRM Governed Wrapper

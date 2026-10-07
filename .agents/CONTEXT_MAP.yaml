@@ -1,0 +1,79 @@
+version: 1.0.0
+system: KONFRM Project Context Map V1
+purpose: "Direct semantic retrieval of project truth to authoritative source locators. Locators only; zero duplicated Canon."
+
+authoritative_locators:
+  business_and_product:
+    primary_rules: "docs/BUSINESS_RULES.md"
+    master_invariants: "docs/codex/KONFRM_MASTER_RULES.md"
+    decision_records: "docs/DECISIONS.md"
+    conflicts_log: "docs/codex/KONFRM_DECISION_CONFLICTS.md"
+
+  founder_operating_context:
+    document: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md"
+    targeted_sections:
+      persona_and_communication: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#1-founder-persona--communication-principles"
+      delegation_and_resources: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#2-resource-management--agent-delegation-model"
+      engineering_and_delivery_laws: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#3-engineering--delivery-laws"
+      role_mental_models: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#4-role-mental-models"
+      autonomy_boundary: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#5-phase-47-entry--automation-boundary"
+      project_local_memory: "docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md#6-project-local-memory-preference"
+
+  epistemic_reality_model:
+    documentary_current_state: "docs/CURRENT_STATE.md"
+    documentary_active_task: "tasks/CURRENT_TASK.md"
+    physical_repository_reality: "exact git HEAD + source inspection + runtime/backend evidence when required"
+
+  mobile_architecture:
+    foundation: "docs/architecture/KONFRM_MOBILE_ARCHITECTURE_FOUNDATION_V1.md"
+    boundaries: "docs/architecture/KONFRM_MOBILE_ARCHITECTURE_BOUNDARIES_V1.md"
+    topology: "docs/architecture/KONFRM_MOBILE_REPOSITORY_TOPOLOGY_V1.md"
+    api_contracts: "docs/architecture/KONFRM_CANONICAL_API_CONTRACT_GOVERNANCE_V1.md"
+
+  design_system_df2:
+    audit_report: "DESIGN_SYSTEM/AUDIT_REPORT.md"
+    tokens: "DESIGN_SYSTEM/TOKENS/"
+    guidelines_rtl: "DESIGN_SYSTEM/GUIDELINES/rtl.md"
+    guidelines_accessibility: "DESIGN_SYSTEM/GUIDELINES/accessibility.md"
+    guidelines_financial: "DESIGN_SYSTEM/GUIDELINES/financial-display.md"
+    guidelines_roles: "DESIGN_SYSTEM/GUIDELINES/roles.md"
+
+  quality_and_governance:
+    quality_gates: "docs/codex/KONFRM_QUALITY_GATES.md"
+    current_state: "docs/CURRENT_STATE.md"
+    current_task: "tasks/CURRENT_TASK.md"
+    brain_sync_protocol: "docs/BRAIN_SYNC_PROTOCOL.md"
+    blueprint_authority: "docs/agents/KONFRM_SKILL_CONSOLIDATION_BLUEPRINT_V1.md"
+
+physical_repository_surface_triggers:
+  admin_web:
+    paths:
+      - "admin-app/**"
+    governing_brain: "konfrm-admin-web (Deferred / Web Admin Guidelines)"
+
+  backend_edge:
+    paths:
+      - "backend/**"
+    governing_brain: "konfrm-backend (Deferred / Supabase-Worker Architecture)"
+
+  current_web_apps:
+    paths:
+      - "customer-app/**"
+      - "owner-app/**"
+    governing_brain: "React Web (Legacy / Current Web Prototypes)"
+
+  future_mobile:
+    paths:
+      - "mobile/**"
+    governing_brain: "konfrm-flutter (Pilot Active)"
+
+  design_system:
+    paths:
+      - "DESIGN_SYSTEM/**"
+    governing_brain: "konfrm-design (Active Consolidated Runtime Brain / Design Foundation Authority)"
+
+  documentation_and_tasks:
+    paths:
+      - "docs/**"
+      - "tasks/**"
+    governing_brain: "Context Router / Quality Gate"

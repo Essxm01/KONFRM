@@ -40,7 +40,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
    - High tolerance for fair pricing; zero tolerance for hidden surprise fees.
    - Always present three transparent values:
      - **إجمالي الإقامة (Total Stay):** Complete price for all nights.
-     - **العربون المطلوب (Deposit Due):** Upfront amount (equal to the first-night price).
+     - **العربون المطلوب (Deposit Due):** Upfront deposit amount retrieved from canonical server-side quote / financial summary per Canon (conceptually corresponds to deposit policy in MR-13; retrieve current policy dynamically).
      - **المتبقي (Remaining Balance):** Total stay price minus upfront deposit (collection method remains OPEN / UNCONFIRMED per MR-15, DC-08; Customers must NEVER be shown platform commission or internal financial splits).
 3. **Request-Not-Instant Booking Mental Model:**
    - Customers understand that high-value vacation rentals require host approval.
@@ -117,7 +117,7 @@ To prevent dangerous information leaks and privilege escalation, the following v
 | Data / Concept | Customer Surface | Owner Surface | Admin Surface |
 | :--- | :--- | :--- | :--- |
 | **Total Booking Price** | VISIBLE (`إجمالي الإقامة`) | VISIBLE (`إجمالي الحجز`) | VISIBLE |
-| **Upfront Deposit** | VISIBLE (`العربون المطلوب`) | VISIBLE (`العربون المدفوع`) | VISIBLE |
+| **Upfront Deposit** | VISIBLE (`العربون المطلوب`) | VISIBLE (`العربون المطلوب / بحسب حالة الحجز`) | VISIBLE |
 | **Remaining Balance** | VISIBLE (`المتبقي`) | VISIBLE (`المتبقي`) | VISIBLE |
 | **Platform Commission** | **STRICTLY PROHIBITED** | VISIBLE (`عمولة المنصة`) | VISIBLE |
 | **Owner Net Deposit** | **STRICTLY PROHIBITED** | VISIBLE (`صافي مستحقاتك`) | VISIBLE |

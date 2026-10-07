@@ -2,9 +2,14 @@
 /**
  * KONFRM Product Brain — Routing & Domain Truth Contract Test
  *
- * Deterministically tests the 5 Positive and 4 Negative evaluation cases
- * plus regression assertions for contact privacy, remaining-balance openness,
- * endpoint-specific admin reason codes, and zero mutable numeric duplication.
+ * Deterministically derives and asserts:
+ * 1. Routing outcomes against the published SKILL_ROUTER.md decision matrix & SKILL_MANIFEST.yaml
+ * 2. Epistemic outcomes against Canon (BUSINESS_RULES.md & KONFRM_MASTER_RULES.md)
+ * 3. Substantive domain truth in Product Brain modules
+ * 4. Zero mutable numeric formula duplication
+ * 5. Regression invariants REG-1 through REG-7
+ * 6. Negative test harness: Evaluator fails closed upon corrupted input
+ *
  * Built-in Node APIs only. Zero network calls. Zero model calls.
  */
 
@@ -21,25 +26,34 @@ const pass = (m) => console.log(`✓ [PASS]: ${m}`);
 
 console.log('====================================================');
 console.log('KONFRM Product Brain — Routing & Invariant Evaluation');
+console.log('--- [STATIC ROUTING-CONTRACT & CANONICAL EPISTEMIC VERIFICATION] ---');
+console.log('(Evaluation strictly verifies static contracts, SKILL_ROUTER matrix, and Canon; zero live LLM/agent calls)');
 console.log('====================================================');
 
-// 1. Verify router and skill files
+// 1. Verify router, manifest, skill, and Canon files
 const routerPath = path.join(projectRoot, '.agents', 'SKILL_ROUTER.md');
 const manifestPath = path.join(projectRoot, '.agents', 'SKILL_MANIFEST.yaml');
 const productSkillPath = path.join(projectRoot, '.agents', 'skills', 'konfrm-product', 'SKILL.md');
 const retrievalPath = path.join(projectRoot, '.agents', 'skills', 'konfrm-product', 'references', 'product_state_retrieval.md');
 const mentalModelsPath = path.join(projectRoot, '.agents', 'skills', 'konfrm-product', 'references', 'role_mental_models.md');
+const businessRulesPath = path.join(projectRoot, 'docs', 'BUSINESS_RULES.md');
+const masterRulesPath = path.join(projectRoot, 'docs', 'codex', 'KONFRM_MASTER_RULES.md');
 
 if (!fs.existsSync(routerPath)) fail('SKILL_ROUTER.md missing');
 if (!fs.existsSync(manifestPath)) fail('SKILL_MANIFEST.yaml missing');
 if (!fs.existsSync(productSkillPath)) fail('konfrm-product SKILL.md missing');
 if (!fs.existsSync(retrievalPath)) fail('product_state_retrieval.md missing');
 if (!fs.existsSync(mentalModelsPath)) fail('role_mental_models.md missing');
+if (!fs.existsSync(businessRulesPath)) fail('docs/BUSINESS_RULES.md missing');
+if (!fs.existsSync(masterRulesPath)) fail('docs/codex/KONFRM_MASTER_RULES.md missing');
 
 const routerContent = fs.readFileSync(routerPath, 'utf8');
+const manifestContent = fs.readFileSync(manifestPath, 'utf8');
 const productSkillContent = fs.readFileSync(productSkillPath, 'utf8');
 const retrievalContent = fs.readFileSync(retrievalPath, 'utf8');
 const mentalModelsContent = fs.readFileSync(mentalModelsPath, 'utf8');
+const businessRulesContent = fs.readFileSync(businessRulesPath, 'utf8');
+const masterRulesContent = fs.readFileSync(masterRulesPath, 'utf8');
 
 const allProductModules = [
   { name: 'SKILL.md', text: productSkillContent },
@@ -47,16 +61,118 @@ const allProductModules = [
   { name: 'role_mental_models.md', text: mentalModelsContent },
 ];
 
-// 2. Evaluation Cases (5 Positive, 4 Negative)
+const canonContext = {
+  businessRulesContent,
+  masterRulesContent,
+  retrievalContent,
+};
+
+// 2. Parse Decision Matrix from SKILL_ROUTER.md
+function parseRouterDecisionMatrix(markdown) {
+  const lines = markdown.split(/\r?\n/);
+  const matrix = new Map();
+  let inMatrix = false;
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (line.includes('## 2. DETERMINISTIC DECISION MATRIX')) {
+      inMatrix = true;
+      continue;
+    }
+    if (inMatrix && line.startsWith('## 3.')) {
+      break;
+    }
+    if (!inMatrix) continue;
+
+    if (line.startsWith('|') && line.endsWith('|')) {
+      const parts = line.split('|');
+      if (parts.length >= 4) {
+        const intent = parts[1].trim();
+        const rawBrain = parts[2].trim().replace(/\*+/g, '');
+        if (intent && rawBrain && !intent.includes('TASK CLASS') && !intent.startsWith('---')) {
+          matrix.set(intent, rawBrain);
+        }
+      }
+    }
+  }
+  return matrix;
+}
+
+const parsedMatrix = parseRouterDecisionMatrix(routerContent);
+
+// 3. Deterministic Routing & Epistemic Derivation Engines
+function deriveRoutingOutcome(tc, matrix, manifest) {
+  const mappedBrain = matrix.get(tc.taskClass);
+  if (!mappedBrain) {
+    throw new Error(`Task class "${tc.taskClass}" not found in SKILL_ROUTER.md decision matrix`);
+  }
+
+  // Check negative routing rules (SKILL_ROUTER.md Section 4.6)
+  if (tc.prohibitedBrain === 'konfrm-product') {
+    const isCodePrompt = /Flutter|widget|Riverpod|Dart/i.test(tc.prompt);
+    const isDesignPrompt = /DF2|typography|tokens|spacing|contrast/i.test(tc.prompt);
+    const isQualityPrompt = /failing test|RCA|assertion error|debugging/i.test(tc.prompt);
+    const isBackendPrompt = /SQL|migration|PostgreSQL|database tables/i.test(tc.prompt);
+
+    if (mappedBrain === 'konfrm-product' && (isCodePrompt || isDesignPrompt || isQualityPrompt || isBackendPrompt)) {
+      throw new Error(`Negative routing rule violated: prompt matches implementation/design/quality/sql but mapped to konfrm-product`);
+    }
+  }
+
+  // Verify target brain is registered in manifest
+  if (!manifest.includes(`id: ${mappedBrain}`) && !manifest.includes(`- id: ${mappedBrain}`)) {
+    throw new Error(`Target brain "${mappedBrain}" is not declared in SKILL_MANIFEST.yaml`);
+  }
+
+  return mappedBrain;
+}
+
+function deriveEpistemicClassification(tc, canon) {
+  const { businessRulesContent: br, masterRulesContent: mr, retrievalContent: ret } = canon;
+
+  // Check if topic touches open / unconfirmed decisions
+  const touchesRenterCancellation = /cancellation|refund/i.test(tc.prompt) && !/owner fault/i.test(tc.prompt);
+  const touchesRemainingBalanceMethod = /remaining balance/i.test(tc.prompt) && /collected/i.test(tc.prompt);
+
+  if (touchesRenterCancellation || touchesRemainingBalanceMethod) {
+    const isOpenInBusinessRules = /Needs product confirmation[\s\S]*?(renter cancellation|remaining-balance payment method)/i.test(br);
+    const isOpenInMasterRules = /MR-15[\s\S]*?Open/i.test(mr);
+    const isOpenInRetrieval = /What is an OPEN_ASSUMPTION[\s\S]*?(Renter Cancellation|remaining balance)/i.test(ret);
+
+    if (isOpenInBusinessRules && isOpenInMasterRules && isOpenInRetrieval) {
+      return 'OPEN_ASSUMPTION';
+    }
+    return 'UNCERTAIN_OPEN';
+  }
+
+  // Check if topic touches accepted Canon
+  const touchesBookingLifecycle = /booking request|confirmed right now|dates blocked/i.test(tc.prompt);
+  const touchesOwnerLedgerStatus = /deposit marked as paid|available payout balance|pending/i.test(tc.prompt);
+  const touchesCrossRolePermissions = /access rights|permissions|identity capabilities/i.test(tc.prompt);
+
+  if (touchesBookingLifecycle || touchesOwnerLedgerStatus || touchesCrossRolePermissions) {
+    const isConfirmedInMasterRules = /MR-(10|11|12|16)[\s\S]*?Confirmed/i.test(mr);
+    const isDeclaredInRetrieval = /What is ACCEPTED_CANON|PENDING_OWNER_APPROVAL|pending_balance/i.test(ret);
+
+    if (isConfirmedInMasterRules && isDeclaredInRetrieval) {
+      return 'ACCEPTED_CANON';
+    }
+    return 'UNCERTAIN_CANON';
+  }
+
+  return 'UNKNOWN_EPISTEMIC';
+}
+
+// 4. Evaluation Cases (5 Positive, 4 Negative)
 const testCases = [
   {
     id: 'POS-1',
     name: 'Clarify whether a booking request is confirmed',
     prompt: 'A guest just submitted the booking form on the customer app. Is this booking confirmed right now and are the calendar dates blocked?',
+    taskClass: 'Booking lifecycle semantics / request vs confirm',
     expectedBrain: 'konfrm-product',
     expectedEpistemic: 'ACCEPTED_CANON',
     verification: () => {
-      // Must state booking is a request awaiting owner review; dates not blocked until approved
       const hasRequestConcept = retrievalContent.includes('PENDING_OWNER_APPROVAL') &&
                                 /Instant booking does (\*\*|__)?NOT(\*\*|__)? exist/i.test(retrievalContent);
       const hasBlockingRule = retrievalContent.includes('DO NOT BLOCK') &&
@@ -68,10 +184,10 @@ const testCases = [
     id: 'POS-2',
     name: 'Interpret an Owner-visible payment status',
     prompt: 'An owner sees a booking deposit marked as paid, but their available payout balance hasn\'t increased yet. Can you explain why and what this financial status means?',
+    taskClass: 'Financial model meaning / deposit vs commission',
     expectedBrain: 'konfrm-product',
     expectedEpistemic: 'ACCEPTED_CANON',
     verification: () => {
-      // Must state deposit credits pending balance initially; released post-check-in per Canon
       const hasPendingRule = retrievalContent.includes('pending_balance');
       const hasReleaseClockRule = /release clock|post-check-in/i.test(retrievalContent);
       return hasPendingRule && hasReleaseClockRule;
@@ -81,10 +197,10 @@ const testCases = [
     id: 'POS-3',
     name: 'Assess a proposed change to cancellation behavior',
     prompt: 'We want to allow guests to cancel for a full refund up to 48 hours before check-in. Can we add this cancellation policy right now?',
+    taskClass: 'Cancellation / refund policy interpretation',
     expectedBrain: 'konfrm-product',
     expectedEpistemic: 'OPEN_ASSUMPTION',
     verification: () => {
-      // Must flag renter cancellation as open and forbid arbitrary 48h full refund invention
       const isOpen = retrievalContent.includes('OPEN / UNRESOLVED') &&
                      retrievalContent.includes('BLOCKED_OPEN_DECISION');
       const noFabrication = !retrievalContent.includes('free cancellation up to 48');
@@ -95,10 +211,10 @@ const testCases = [
     id: 'POS-4',
     name: 'Explain the difference between Customer, Owner, and Admin permissions',
     prompt: 'How are access rights, permissions, and identity capabilities differentiated between Customers, Owners, and Admins across our apps?',
+    taskClass: 'Role mental model definition / cross-role boundary',
     expectedBrain: 'konfrm-product',
     expectedEpistemic: 'ACCEPTED_CANON',
     verification: () => {
-      // Must differentiate human identity users from optional owners, and enforce boundary matrix
       const hasIdentityModel = /`?users`? represents human identity/i.test(retrievalContent) &&
                                /`?owners`? is an optional capability/i.test(retrievalContent);
       const hasBoundaryMatrix = mentalModelsContent.includes('CROSS-ROLE INFORMATION BOUNDARY MATRIX') &&
@@ -110,10 +226,10 @@ const testCases = [
     id: 'POS-5',
     name: 'Identify an unresolved product decision without inventing its answer',
     prompt: 'What is our exact policy for how the remaining balance of a stay is collected, and what happens if the guest cancels after the deposit is paid?',
+    taskClass: 'Epistemic audit (Canon vs Insight vs Hypo vs Open)',
     expectedBrain: 'konfrm-product',
     expectedEpistemic: 'OPEN_ASSUMPTION',
     verification: () => {
-      // Must identify remaining payment method and renter cancellation as open
       const hasOpenRemaining = retrievalContent.includes('OPEN / UNCONFIRMED');
       const hasOpenCancellation = retrievalContent.includes('Renter Cancellation & Refund Matrix') &&
                                   retrievalContent.includes('OPEN / UNRESOLVED');
@@ -124,10 +240,10 @@ const testCases = [
     id: 'NEG-1',
     name: 'Implement a Flutter widget',
     prompt: 'Implement a new responsive booking summary card in Flutter with Riverpod state bindings and Cairo typography.',
+    taskClass: 'New Flutter widget / layout implementation',
     expectedBrain: 'konfrm-flutter',
     prohibitedBrain: 'konfrm-product',
     verification: () => {
-      // Router routes widget implementation to konfrm-flutter, product brain excludes code
       const routerRoutesFlutter = routerContent.includes('New Flutter widget / layout implementation          | konfrm-flutter');
       const productExcludesCode = productSkillContent.includes('Write Flutter Dart code, widgets, or Riverpod controllers (hands off to `konfrm-flutter`)');
       return routerRoutesFlutter && productExcludesCode;
@@ -137,10 +253,10 @@ const testCases = [
     id: 'NEG-2',
     name: 'Review visual hierarchy',
     prompt: 'Review the typography scale, spacing tiers, and monochrome contrast of the owner home screen per DF2.',
+    taskClass: 'Visual hierarchy / DF2 token consumption / spacing',
     expectedBrain: 'konfrm-design',
     prohibitedBrain: 'konfrm-product',
     verification: () => {
-      // Router routes visual hierarchy to konfrm-design, product brain excludes tokens/styles
       const routerRoutesDesign = routerContent.includes('Visual hierarchy / DF2 token consumption / spacing  | konfrm-design');
       const productExcludesTokens = productSkillContent.includes('Author DF2 design tokens, color hexes, typography scales, or component styling');
       return routerRoutesDesign && productExcludesTokens;
@@ -150,10 +266,10 @@ const testCases = [
     id: 'NEG-3',
     name: 'Diagnose a failing test',
     prompt: 'The booking flow integration test failed with an assertion error. Diagnose the root cause with 4-phase RCA.',
+    taskClass: 'Bug diagnosis / unexpected test failure / crash',
     expectedBrain: 'konfrm-quality',
     prohibitedBrain: 'konfrm-product',
     verification: () => {
-      // Router routes test diagnosis to konfrm-quality, product brain excludes RCA execution
       const routerRoutesQuality = routerContent.includes('Bug diagnosis / unexpected test failure / crash     | konfrm-quality');
       const productExcludesRCA = productSkillContent.includes('Execute automated tests or conduct 4-phase RCA debugging');
       return routerRoutesQuality && productExcludesRCA;
@@ -163,10 +279,10 @@ const testCases = [
     id: 'NEG-4',
     name: 'Write backend SQL',
     prompt: 'Write a Supabase PostgreSQL migration to alter the bookings table schema and add an index.',
+    taskClass: 'Backend SQL migration / Cloudflare Worker proxy',
     expectedBrain: 'konfrm-backend',
     prohibitedBrain: 'konfrm-product',
     verification: () => {
-      // Router routes SQL to konfrm-backend, product brain excludes SQL migrations
       const routerRoutesBackend = routerContent.includes('Backend SQL migration / Cloudflare Worker proxy     | konfrm-backend');
       const productExcludesSQL = productSkillContent.includes('Write SQL migrations, database tables, or backend server code');
       return routerRoutesBackend && productExcludesSQL;
@@ -174,17 +290,61 @@ const testCases = [
   }
 ];
 
-// 3. Execute all routing evaluations
+// Execute and Assert all Routing & Epistemic Evaluations
 for (const tc of testCases) {
-  const result = tc.verification();
-  if (result) {
-    pass(`[${tc.id}] ${tc.name} -> Target: ${tc.expectedBrain || tc.prohibitedBrain} (Rule Verified)`);
+  let routePassed = false;
+  let epistemicPassed = false;
+  let verificationPassed = false;
+
+  // 1. Derive & assert routing outcome
+  try {
+    const actualBrain = deriveRoutingOutcome(tc, parsedMatrix, manifestContent);
+    if (tc.expectedBrain && actualBrain !== tc.expectedBrain) {
+      fail(`[${tc.id}] Routing mismatch: expected "${tc.expectedBrain}", derived "${actualBrain}"`);
+    } else if (tc.prohibitedBrain && actualBrain === tc.prohibitedBrain) {
+      fail(`[${tc.id}] Negative routing violation: prohibited brain "${tc.prohibitedBrain}" was derived`);
+    } else {
+      routePassed = true;
+    }
+  } catch (err) {
+    fail(`[${tc.id}] Routing derivation failed: ${err.message}`);
+  }
+
+  // 2. Derive & assert epistemic outcome (for positive cases)
+  if (tc.expectedEpistemic) {
+    try {
+      const actualEpistemic = deriveEpistemicClassification(tc, canonContext);
+      if (actualEpistemic !== tc.expectedEpistemic) {
+        fail(`[${tc.id}] Epistemic mismatch: expected "${tc.expectedEpistemic}", derived "${actualEpistemic}"`);
+      } else {
+        epistemicPassed = true;
+      }
+    } catch (err) {
+      fail(`[${tc.id}] Epistemic derivation failed: ${err.message}`);
+    }
   } else {
-    fail(`[${tc.id}] ${tc.name} failed verification`);
+    epistemicPassed = true; // Not applicable for negative routing cases
+  }
+
+  // 3. Substantive content verification callback
+  try {
+    if (tc.verification()) {
+      verificationPassed = true;
+    } else {
+      fail(`[${tc.id}] Substantive content verification callback returned false`);
+    }
+  } catch (err) {
+    fail(`[${tc.id}] Substantive content verification threw error: ${err.message}`);
+  }
+
+  if (routePassed && epistemicPassed && verificationPassed) {
+    const targetDesc = tc.expectedBrain || `NOT ${tc.prohibitedBrain}`;
+    const epistemicDesc = tc.expectedEpistemic ? ` | Epistemic: ${tc.expectedEpistemic}` : '';
+    pass(`[${tc.id}] ${tc.name} -> Target: ${targetDesc}${epistemicDesc} (All Outcomes Derived & Verified)`);
   }
 }
 
-// 4. Invariant checks: zero duplicated mutable numbers across entire Product Brain
+// 5. Invariant checks: zero duplicated mutable numbers across entire Product Brain
 console.log('--- Checking for prohibited mutable formula duplication across entire Product Brain ---');
 const prohibitedNumericHardcodes = [
   '20% of deposit',
@@ -196,6 +356,7 @@ const prohibitedNumericHardcodes = [
   '2–30 nights',
   'Nightly rate × nights',
   'PENDING_OWNER_APPROVAL -> APPROVED_PENDING_PAYMENT',
+  'equal to the first-night price',
 ];
 
 for (const mod of allProductModules) {
@@ -208,7 +369,7 @@ for (const mod of allProductModules) {
   }
 }
 
-// 5. Deterministic Regression Tests for PR #102 Targeted Remediation
+// 6. Deterministic Regression Tests for PR #102 Targeted Remediation
 console.log('--- Checking PR #102 Targeted Remediation Regression Invariants ---');
 
 // REG-1: Contact Privacy (No post-confirmation phone exposure)
@@ -302,11 +463,131 @@ if (/المتبقي[\s\S]*?zero platform commission/i.test(customerPricingSectio
   pass('[REG-5] Customer Pricing Commission Secrecy: Customer 3-amount model contains zero commission leakage');
 }
 
+// REG-6: Deposit State Truth (No premature paid-deposit label during pending triage)
+const prohibitedPaidDepositPhrases = [
+  'VISIBLE (`العربون المدفوع`)',
+  'VISIBLE (العربون المدفوع)',
+];
+let reg6Passed = true;
+for (const mod of allProductModules) {
+  for (const phrase of prohibitedPaidDepositPhrases) {
+    if (mod.text.includes(phrase)) {
+      fail(`[REG-6] Unconditional paid-deposit label in ${mod.name}: "${phrase}"`);
+      reg6Passed = false;
+    }
+  }
+}
+const hasStateNeutralDepositLabel = mentalModelsContent.includes('VISIBLE (`العربون المطلوب / بحسب حالة الحجز`)') ||
+                                    mentalModelsContent.includes('VISIBLE (`العربون`)');
+if (!hasStateNeutralDepositLabel) {
+  fail('[REG-6] Cross-role information boundary matrix missing state-neutral deposit label for Owner');
+  reg6Passed = false;
+}
+if (reg6Passed) {
+  pass('[REG-6] Deposit State Truth: Cross-role matrix uses state-neutral deposit label; no premature paid-deposit claim');
+}
+
+// REG-7: Deposit Rule Canonical Retrieval (Zero duplication of mutable first-night calculation rule)
+const prohibitedDepositRuleHardcodes = [
+  'equal to the first-night price',
+  'equals the first night',
+  'equal to first night',
+];
+let reg7Passed = true;
+for (const phrase of prohibitedDepositRuleHardcodes) {
+  if (mentalModelsContent.includes(phrase)) {
+    fail(`[REG-7] Duplicated mutable deposit calculation rule in role_mental_models.md: "${phrase}"`);
+    reg7Passed = false;
+  }
+}
+const customerDepositRetrievesQuote = /العربون المطلوب[\s\S]*?retrieved from canonical server-side quote/i.test(mentalModelsContent);
+if (!customerDepositRetrievesQuote) {
+  fail('[REG-7] Customer deposit description does not specify canonical server-side quote retrieval');
+  reg7Passed = false;
+}
+if (reg7Passed) {
+  pass('[REG-7] Retrieval Over Duplication: Upfront deposit rule dynamically retrieved from canonical quote per MR-13');
+}
+
+// 7. Negative Test Harness: Verify Evaluator Fails Closed on Corrupted Input
+console.log('--- [NEGATIVE TEST HARNESS: FAIL-CLOSED VERIFICATION] ---');
+let harnessFailures = 0;
+
+// Harness 1: Corrupted Routing Outcome must fail closed
+try {
+  const corruptedRoutingCase = {
+    id: 'CORRUPT-ROUTING-TEST',
+    taskClass: 'Booking lifecycle semantics / request vs confirm',
+    expectedBrain: 'konfrm-flutter', // Deliberately corrupted expectation
+    prompt: 'Is this booking confirmed?'
+  };
+  const derivedBrain = deriveRoutingOutcome(corruptedRoutingCase, parsedMatrix, manifestContent);
+  if (derivedBrain === corruptedRoutingCase.expectedBrain) {
+    harnessFailures++;
+    fail('Negative Harness 1: Corrupted routing unexpectedly matched');
+  } else {
+    pass('Negative Harness 1: Corrupted routing outcome detected and failed closed as expected');
+  }
+} catch (err) {
+  harnessFailures++;
+  fail(`Negative Harness 1 unexpected error: ${err.message}`);
+}
+
+// Harness 2: Corrupted Epistemic Classification must fail closed
+try {
+  const corruptedEpistemicCase = {
+    id: 'CORRUPT-EPISTEMIC-TEST',
+    prompt: 'We want to allow guests to cancel for a full refund up to 48 hours before check-in.',
+    expectedEpistemic: 'ACCEPTED_CANON' // Deliberately corrupted expectation (Canon is OPEN_ASSUMPTION)
+  };
+  const derivedEpistemic = deriveEpistemicClassification(corruptedEpistemicCase, canonContext);
+  if (derivedEpistemic === corruptedEpistemicCase.expectedEpistemic) {
+    harnessFailures++;
+    fail('Negative Harness 2: Corrupted epistemic classification unexpectedly matched');
+  } else {
+    pass('Negative Harness 2: Corrupted epistemic outcome detected and failed closed as expected');
+  }
+} catch (err) {
+  harnessFailures++;
+  fail(`Negative Harness 2 unexpected error: ${err.message}`);
+}
+
+// Harness 3: Unregistered Target Brain in Matrix must fail closed
+try {
+  const corruptedMatrix = new Map(parsedMatrix);
+  corruptedMatrix.set('Booking lifecycle semantics / request vs confirm', 'konfrm-nonexistent-brain');
+  let threwExpected = false;
+  try {
+    deriveRoutingOutcome({
+      taskClass: 'Booking lifecycle semantics / request vs confirm',
+      expectedBrain: 'konfrm-product',
+      prompt: 'Is this booking confirmed?'
+    }, corruptedMatrix, manifestContent);
+  } catch {
+    threwExpected = true;
+  }
+  if (threwExpected) {
+    pass('Negative Harness 3: Unregistered target brain in matrix caught by manifest validation');
+  } else {
+    harnessFailures++;
+    fail('Negative Harness 3: Unregistered target brain failed to fail closed');
+  }
+} catch (err) {
+  harnessFailures++;
+  fail(`Negative Harness 3 unexpected error: ${err.message}`);
+}
+
+if (harnessFailures > 0) {
+  fail(`Negative test harness failed closed verification (${harnessFailures} failure(s))`);
+} else {
+  pass('Negative test harness verified: Evaluator strictly fails closed upon routing or epistemic corruption');
+}
+
 console.log('====================================================');
 if (failures > 0) {
   console.error(`FAILED: ${failures} evaluation failure(s).`);
   process.exit(1);
 } else {
-  console.log('ALL PRODUCT ROUTING, INVARIANT & REGRESSION CHECKS PASSED.');
+  console.log('ALL PRODUCT ROUTING, INVARIANT, REGRESSION & NEGATIVE HARNESS CHECKS PASSED.');
   console.log('====================================================');
 }

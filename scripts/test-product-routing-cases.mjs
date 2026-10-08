@@ -756,17 +756,50 @@ if (/verified record in `owners`/i.test(retrievalContent)) {
   fail('[REG-23] product_state_retrieval.md missing canonical Owner record and validated Owner session requirement');
 }
 
-// REG-24: Canonical Remaining Balance Retrieval (Read remainingAmount/remainingBalance from quote/summary; arithmetic for fail-closed check only)
-const retrievalReadsCanonicalRemaining = retrievalContent.includes('remainingAmount') &&
-                                         retrievalContent.includes('remainingBalance') &&
-                                         retrievalContent.includes('ownerCore.ts:362-373');
-const mentalModelsReadsCanonicalRemaining = mentalModelsContent.includes('remainingAmount') &&
-                                            mentalModelsContent.includes('remainingBalance') &&
-                                            mentalModelsContent.includes('ownerCore.ts:362-373');
+// REG-24: Canonical Remaining Balance Retrieval & Prohibition of Client-Side Recomputation
+const retrievalReadsCanonicalRemaining =
+  retrievalContent.includes('remainingAmount') &&
+  retrievalContent.includes('remainingBalance') &&
+  retrievalContent.includes('ownerCore.ts:362-373') &&
+  /Remaining Balance:[\s\S]*?Retrieved directly from the canonical server-side quote \/ persisted booking financial summary field/i.test(retrievalContent);
+
+const mentalModelsReadsCanonicalRemaining =
+  mentalModelsContent.includes('remainingAmount') &&
+  mentalModelsContent.includes('remainingBalance') &&
+  mentalModelsContent.includes('ownerCore.ts:362-373') &&
+  /المتبقي \(Remaining Balance\):[\s\S]*?Remaining balance retrieved directly from the canonical server-side quote \/ financial summary field/i.test(mentalModelsContent);
+
+const prohibitsClientRecomputation =
+  /never recomputed locally as a substitute for the canonical field/i.test(retrievalContent) &&
+  /using arithmetic only for fail-closed consistency validation/i.test(mentalModelsContent);
+
+const prohibitedContradictoryRecomputationPatterns = [
+  /(?:recompute|compute|calculate|reconstruct) (?:the )?remaining (?:balance|amount) locally/i,
+  /locally (?:recompute|compute|calculate|reconstruct) (?:the )?remaining/i,
+  /derive (?:the )?remaining (?:balance|amount) (?:locally|by subtracting)/i,
+  /subtract (?:the )?(?:upfront )?deposit from (?:the )?(?:total|stay)/i,
+  /remaining (?:balance|amount) (?:is|=|equals) (?:the )?total (?:stay )?(?:price )?minus/i,
+  /client[- ]side (?:recomputation|calculation|subtraction) of remaining/i,
+];
+
+let contradictoryInstructionFound = false;
+for (const mod of allProductModules) {
+  for (const pat of prohibitedContradictoryRecomputationPatterns) {
+    if (pat.test(mod.text)) {
+      fail(`[REG-24] Contradictory client-side recomputation instruction found in ${mod.name} matching ${pat}`);
+      contradictoryInstructionFound = true;
+    }
+  }
+}
+
 if (!retrievalReadsCanonicalRemaining || !mentalModelsReadsCanonicalRemaining) {
   fail('[REG-24] Product Brain missing canonical remainingAmount/remainingBalance field retrieval requirement');
+} else if (!prohibitsClientRecomputation) {
+  fail('[REG-24] Product Brain does not explicitly prohibit client-side recomputation outside fail-closed consistency validation');
+} else if (contradictoryInstructionFound) {
+  // Already recorded specific failure
 } else {
-  pass('[REG-24] Canonical Remaining Balance: Remaining balance retrieved from canonical server quote/summary field (arithmetic used only for fail-closed validation)');
+  pass('[REG-24] Canonical Remaining Balance: Retrieved from server quote/summary; client-side recomputation strictly prohibited except fail-closed validation');
 }
 
 // REG-25: Business-Rule Documentation Routing (Product Canon excluded from generic docs bypass and mapped to konfrm-product)
@@ -807,19 +840,35 @@ try {
   fail(`Negative Harness 1 unexpected error: ${err.message}`);
 }
 
-// Harness 2: Corrupted Epistemic Classification must fail closed
+// Harness 2: Corrupted Epistemic Classification on recognized canonical scenario must fail closed
 try {
+  const recognizedCase = testCases.find((tc) => tc.id === 'POS-3');
+  if (!recognizedCase) {
+    throw new Error('Recognized canonical scenario POS-3 not found in testCases');
+  }
+
+  // Create recognized scenario fixture with deliberately corrupted expectation (genuine Canon derivation is OPEN_ASSUMPTION)
   const corruptedEpistemicCase = {
-    id: 'CORRUPT-EPISTEMIC-TEST',
-    prompt: 'We want to allow guests to cancel for a full refund up to 48 hours before check-in.',
-    expectedEpistemic: 'ACCEPTED_CANON' // Deliberately corrupted expectation (Canon is OPEN_ASSUMPTION)
+    ...recognizedCase,
+    expectedEpistemic: 'ACCEPTED_CANON',
   };
+
   const derivedEpistemic = deriveEpistemicClassification(corruptedEpistemicCase, canonContext);
-  if (derivedEpistemic === corruptedEpistemicCase.expectedEpistemic) {
+
+  // 1. Must genuinely evaluate the recognized scenario, rejecting unhandled/unknown IDs
+  if (derivedEpistemic === 'UNKNOWN_EPISTEMIC') {
     harnessFailures++;
-    fail('Negative Harness 2: Corrupted epistemic classification unexpectedly matched');
+    fail('Negative Harness 2: Recognized canonical scenario POS-3 returned UNKNOWN_EPISTEMIC instead of evaluating');
+  } else if (derivedEpistemic === corruptedEpistemicCase.expectedEpistemic) {
+    // 2. Must reject the corrupted expectation
+    harnessFailures++;
+    fail('Negative Harness 2: Corrupted epistemic expectation unexpectedly matched derived outcome');
+  } else if (derivedEpistemic === recognizedCase.expectedEpistemic) {
+    // 3. Genuine canonical derivation matched (OPEN_ASSUMPTION) and correctly diverged from corrupted expectation (ACCEPTED_CANON)
+    pass(`Negative Harness 2: Recognized canonical scenario (${recognizedCase.id}) genuinely evaluated as "${derivedEpistemic}" and correctly rejected corrupted expectation "${corruptedEpistemicCase.expectedEpistemic}"`);
   } else {
-    pass('Negative Harness 2: Corrupted epistemic outcome detected and failed closed as expected');
+    harnessFailures++;
+    fail(`Negative Harness 2: Unexpected derived classification: ${derivedEpistemic}`);
   }
 } catch (err) {
   harnessFailures++;

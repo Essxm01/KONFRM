@@ -1,0 +1,19 @@
+# ==============================================================================
+# KONFRM actionlint Configuration (Stage A Baseline)
+# ==============================================================================
+#
+# PURPOSE:
+# Configures static analysis policies for GitHub Actions workflows.
+# Suppresses SC2155 (masking return values during inline export) in legacy bash
+# run scripts, while preserving strict syntax, expression, and runner checks.
+# ==============================================================================
+
+self-hosted-runner:
+  labels: []
+
+config-variables: null
+
+paths:
+  .github/workflows/**/*.yml:
+    ignore:
+      - 'SC2155'

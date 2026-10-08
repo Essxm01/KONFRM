@@ -57,12 +57,18 @@ jobs:
           zizmor --version
 
       - name: Run CI safety and negative verification harness
+        env:
+          CI_SAFETY_REPORT_PATH: ${{ runner.temp }}/ci-safety-report.json
+          CI_EXECUTION_NONCE: ${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           set -euo pipefail
           node scripts/test-ci-safety.mjs
 
       - name: Render CI Evidence Mesh summary
         if: always()
+        env:
+          CI_SAFETY_REPORT_PATH: ${{ runner.temp }}/ci-safety-report.json
+          CI_EXECUTION_NONCE: ${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           set -euo pipefail
           node scripts/render-ci-summary.mjs

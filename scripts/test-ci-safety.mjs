@@ -21,12 +21,14 @@
  * 8. Baseline drift detection: adding a new unpinned action to an existing legacy workflow triggers detection.
  * 9. Harness self-verification: meta-tests verify `verifyScannerRejection` rejects false-passes,
  *    empty output, scanner crashes, and wrong rules.
+ * 10. Markdown safe encoding & stale-report fail-closed lifecycle: adversarial string escaping (CodeQL
+ *     compliant backslash-first sanitization) and fail-closed rejection of stale/interrupted reports.
  *
  * Strict Isolation & Safety Guarantees:
  * - ZERO modifications or temporary file writes to `.github/workflows/`.
  * - All fixtures execute in isolated OS temporary directories with deterministic cleanup.
  * - Zero secret access; read-only repository inspection.
- * - Machine-readable test report generated at `docs/security/ci-safety-report.json`.
+ * - Runtime execution report generated outside tracked source files.
  * ==============================================================================
  */
 
@@ -35,6 +37,11 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import {
+  resolveReportPath,
+  escapeMarkdownTableCell,
+  loadAndValidateReport,
+} from './render-ci-summary.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,7 +49,18 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const WORKFLOWS_DIR = path.join(REPO_ROOT, '.github', 'workflows');
 const ZIZMOR_CONFIG = path.join(REPO_ROOT, '.zizmor.yml');
 const BASELINE_INVENTORY_PATH = path.join(REPO_ROOT, 'docs', 'security', 'ci-findings-baseline.json');
-const REPORT_OUTPUT_PATH = path.join(REPO_ROOT, 'docs', 'security', 'ci-safety-report.json');
+const REPORT_OUTPUT_PATH = resolveReportPath();
+
+// Clean up any pre-existing report at runtime path to prevent stale report consumption
+try {
+  if (fs.existsSync(REPORT_OUTPUT_PATH)) {
+    fs.unlinkSync(REPORT_OUTPUT_PATH);
+  }
+} catch {
+  // ignore
+}
+
+const executionNonce = process.env.CI_EXECUTION_NONCE || `run-${Date.now()}-${process.pid}`;
 
 // -----------------------------------------------------------------------------
 // Binary Resolution
@@ -97,6 +115,11 @@ const zizmorBin = resolveBinary('zizmor', [
 // -----------------------------------------------------------------------------
 const testReport = {
   timestamp: new Date().toISOString(),
+  executionNonce,
+  pid: process.pid,
+  isCompleted: false,
+  setupBlocked: false,
+  setupBlockedReason: null,
   overallStatus: 'PENDING',
   summary: {
     totalSuites: 0,
@@ -353,6 +376,8 @@ console.log(`Repository root : ${REPO_ROOT}`);
 console.log(`Actionlint path : ${actionlintBin || 'NOT FOUND'}`);
 console.log(`Zizmor path     : ${zizmorBin || 'NOT FOUND'}`);
 console.log(`Baseline file   : ${BASELINE_INVENTORY_PATH}`);
+console.log(`Runtime report  : ${REPORT_OUTPUT_PATH}`);
+console.log(`Execution nonce : ${executionNonce}`);
 console.log('====================================================\n');
 
 if (!actionlintBin) {
@@ -362,7 +387,10 @@ if (!actionlintBin) {
     status: 'BLOCKED',
     details: 'actionlint binary not found. Please install actionlint v1.7.12.',
   });
-  testReport.overallStatus = 'FAIL';
+  testReport.setupBlocked = true;
+  testReport.setupBlockedReason = 'actionlint binary not found';
+  testReport.overallStatus = 'BLOCKED';
+  testReport.isCompleted = true;
   fs.writeFileSync(REPORT_OUTPUT_PATH, JSON.stringify(testReport, null, 2) + '\n', 'utf-8');
   process.exit(1);
 }
@@ -374,7 +402,10 @@ if (!zizmorBin) {
     status: 'BLOCKED',
     details: 'zizmor binary not found. Please install zizmor v1.30.1.',
   });
-  testReport.overallStatus = 'FAIL';
+  testReport.setupBlocked = true;
+  testReport.setupBlockedReason = 'zizmor binary not found';
+  testReport.overallStatus = 'BLOCKED';
+  testReport.isCompleted = true;
   fs.writeFileSync(REPORT_OUTPUT_PATH, JSON.stringify(testReport, null, 2) + '\n', 'utf-8');
   process.exit(1);
 }
@@ -382,7 +413,7 @@ if (!zizmorBin) {
 // -----------------------------------------------------------------------------
 // Suite 1: Actionlint on Tracked Workflows
 // -----------------------------------------------------------------------------
-console.log('[1/9] Running actionlint on tracked repository workflows...');
+console.log('[1/10] Running actionlint on tracked repository workflows...');
 const alRun = spawnSync(actionlintBin, ['-color'], {
   cwd: REPO_ROOT,
   encoding: 'utf-8',
@@ -407,7 +438,7 @@ if (alRun.status === 0) {
 // -----------------------------------------------------------------------------
 // Suite 2: Zizmor on Tracked Workflows with Traceable Baseline (.zizmor.yml)
 // -----------------------------------------------------------------------------
-console.log('\n[2/9] Running zizmor audit against .zizmor.yml baseline...');
+console.log('\n[2/10] Running zizmor audit against .zizmor.yml baseline...');
 const zmRun = spawnSync(
   zizmorBin,
   ['--config', ZIZMOR_CONFIG, '--format', 'plain', '--offline', '.github/workflows'],
@@ -436,7 +467,7 @@ if (zmRun.status === 0) {
 // -----------------------------------------------------------------------------
 // Suite 3: Deterministic Baseline Identity Inventory Audit
 // -----------------------------------------------------------------------------
-console.log('\n[3/9] Verifying acknowledged legacy findings baseline identities...');
+console.log('\n[3/10] Verifying acknowledged legacy findings baseline identities...');
 let rawFindings = [];
 try {
   const rawZizmor = spawnSync(
@@ -481,7 +512,7 @@ try {
 // -----------------------------------------------------------------------------
 // Suite 4: Baseline Identity Negative Proofs (Cases A, B, C, D, E)
 // -----------------------------------------------------------------------------
-console.log('\n[4/9] Verifying baseline identity negative proofs (Cases A, B, C, D, E)...');
+console.log('\n[4/10] Verifying baseline identity negative proofs (Cases A, B, C, D, E)...');
 try {
   const baselineDoc = JSON.parse(fs.readFileSync(BASELINE_INVENTORY_PATH, 'utf-8'));
   const baseFindings = baselineDoc.findings;
@@ -544,7 +575,7 @@ try {
 // -----------------------------------------------------------------------------
 // Suite 5: Auditor-Mode Visibility Audit
 // -----------------------------------------------------------------------------
-console.log('\n[5/9] Running auditor-mode visibility audit (--persona auditor --no-ignores)...');
+console.log('\n[5/10] Running auditor-mode visibility audit (--persona auditor --no-ignores)...');
 try {
   const auditorRun = spawnSync(
     zizmorBin,
@@ -596,7 +627,7 @@ try {
 // -----------------------------------------------------------------------------
 // Suite 6: Controlled Negative Test for Actionlint (Isolated Temp Directory)
 // -----------------------------------------------------------------------------
-console.log('\n[6/9] Running controlled negative test for actionlint in isolated tmpDir...');
+console.log('\n[6/10] Running controlled negative test for actionlint in isolated tmpDir...');
 const alTmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'konfrm-al-neg-'));
 try {
   const badFixture = path.join(alTmpDir, 'bad-syntax.yml');
@@ -664,7 +695,7 @@ jobs:
 // -----------------------------------------------------------------------------
 // Suite 7: Controlled Negative Test for Zizmor (Genuine Template Injection)
 // -----------------------------------------------------------------------------
-console.log('\n[7/9] Running controlled negative test for zizmor (genuine template-injection in isolated tmpDir)...');
+console.log('\n[7/10] Running controlled negative test for zizmor (genuine template-injection in isolated tmpDir)...');
 const zmTmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'konfrm-zm-neg-'));
 try {
   const badFixture = path.join(zmTmpDir, 'ti-insecure.yml');
@@ -774,7 +805,7 @@ jobs:
 // -----------------------------------------------------------------------------
 // Suite 8: Baseline Drift Detection (Legacy Workflow Mutation in Temp Dir)
 // -----------------------------------------------------------------------------
-console.log('\n[8/9] Running baseline drift detection (mutating legacy workflow copy in isolated tmpDir)...');
+console.log('\n[8/10] Running baseline drift detection (mutating legacy workflow copy in isolated tmpDir)...');
 const driftTmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'konfrm-drift-'));
 try {
   const originalCiVal = fs.readFileSync(path.join(WORKFLOWS_DIR, 'ci-validation.yml'), 'utf-8');
@@ -821,7 +852,7 @@ try {
 // -----------------------------------------------------------------------------
 // Suite 9: Harness Self-Verification (Anti-False-Positive Meta-Tests)
 // -----------------------------------------------------------------------------
-console.log('\n[9/9] Running test harness self-verification (meta-evaluation of verifyScannerRejection)...');
+console.log('\n[9/10] Running test harness self-verification (meta-evaluation of verifyScannerRejection)...');
 const metaFakePass = verifyScannerRejection(
   { status: 0, stdout: 'clean run', stderr: '' },
   { expectedRule: 'template-injection', expectedFile: 'test.yml' }
@@ -877,10 +908,121 @@ if (selfTestPassed) {
 }
 
 // -----------------------------------------------------------------------------
+// Suite 10: Markdown Table Cell Safe Encoding & Stale-Report Fail-Closed Verification
+// -----------------------------------------------------------------------------
+console.log('\n[10/10] Verifying markdown table safe encoding & stale-report fail-closed lifecycle...');
+try {
+  // Part A: Adversarial Escaping Tests
+  // 1. Backslashes must be escaped before pipes
+  const adv1 = 'C:\\path\\with\\backslashes|and|pipes';
+  const esc1 = escapeMarkdownTableCell(adv1);
+  const correctEsc1 = esc1 === 'C:\\\\path\\\\with\\\\backslashes\\|and\\|pipes';
+
+  // 2. Multiline strings and carriage returns must be flattened
+  const adv2 = "line1\r\nline2\nline3 | with | pipes";
+  const esc2 = escapeMarkdownTableCell(adv2);
+  const correctEsc2 = !esc2.includes('\n') && !esc2.includes('\r') && esc2.includes('\\|');
+
+  // 3. Control characters must be stripped
+  const adv3 = 'clean\x00text\x08with\x1Fcontrol\x7Fchars|pipe';
+  const esc3 = escapeMarkdownTableCell(adv3);
+  const correctEsc3 = esc3 === 'cleantextwithcontrolchars\\|pipe';
+
+  // 4. Backslash preceding pipe: \|
+  const adv4 = 'already\\|escaped';
+  const esc4 = escapeMarkdownTableCell(adv4);
+  const correctEsc4 = esc4 === 'already\\\\\\|escaped';
+
+  // 5. Table integrity test: verify rendered cell inside row produces valid row without splitting
+  const row = `| 1 | Test | **PASS** | ${esc1} |`;
+  const pipeCount = (row.match(/(?<!\\)\|/g) || []).length;
+  // A table row with 4 columns has exactly 5 unescaped delimiters: | 1 | Test | **PASS** | details |
+  const correctTableFormat = pipeCount === 5;
+
+  const escapingPassed = correctEsc1 && correctEsc2 && correctEsc3 && correctEsc4 && correctTableFormat;
+
+  // Part B: Stale-Report Fail-Closed Tests
+  const tmpLifecycleDir = fs.mkdtempSync(path.join(os.tmpdir(), 'konfrm-report-lifecycle-'));
+  const testReportFile = path.join(tmpLifecycleDir, 'test-report.json');
+
+  let lifecyclePassed = false;
+  try {
+    // 1. Missing report -> BLOCKED
+    const checkMissing = loadAndValidateReport(testReportFile, 'nonce-123');
+    const missingOk = checkMissing.valid === false && checkMissing.status === 'BLOCKED';
+
+    // 2. Older report with stale nonce -> BLOCKED (mismatched nonce)
+    const staleReportData = {
+      overallStatus: 'PASS',
+      executionNonce: 'old-nonce-456',
+      isCompleted: true,
+      summary: { totalSuites: 10, passed: 10, failed: 0, blocked: 0, skipped: 0 },
+      suites: new Array(10).fill({ id: 1, name: 'dummy', status: 'PASS', details: 'ok' }),
+    };
+    fs.writeFileSync(testReportFile, JSON.stringify(staleReportData));
+    const checkStale = loadAndValidateReport(testReportFile, 'current-nonce-789');
+    const staleOk = checkStale.valid === false && checkStale.status === 'BLOCKED';
+
+    // 3. Interrupted execution (isCompleted: false) -> FAIL
+    const interruptedData = {
+      overallStatus: 'PASS',
+      executionNonce: 'current-nonce-789',
+      isCompleted: false,
+      summary: { totalSuites: 10, passed: 5, failed: 0, blocked: 0, skipped: 0 },
+      suites: new Array(5).fill({ id: 1, name: 'dummy', status: 'PASS', details: 'ok' }),
+    };
+    fs.writeFileSync(testReportFile, JSON.stringify(interruptedData));
+    const checkInterrupted = loadAndValidateReport(testReportFile, 'current-nonce-789');
+    const interruptedOk = checkInterrupted.valid === false && checkInterrupted.status === 'FAIL';
+
+    // 4. Setup blocked report -> BLOCKED, never PASS
+    const blockedData = {
+      overallStatus: 'BLOCKED',
+      setupBlocked: true,
+      executionNonce: 'current-nonce-789',
+      isCompleted: true,
+      summary: { totalSuites: 10, passed: 0, failed: 0, blocked: 1, skipped: 9 },
+      suites: new Array(10).fill({ id: 1, name: 'dummy', status: 'BLOCKED', details: 'Tool resolution blocked' }),
+    };
+    fs.writeFileSync(testReportFile, JSON.stringify(blockedData));
+    const checkBlocked = loadAndValidateReport(testReportFile, 'current-nonce-789');
+    const blockedOk = checkBlocked.valid === true && checkBlocked.status === 'BLOCKED';
+
+    lifecyclePassed = missingOk && staleOk && interruptedOk && blockedOk;
+  } finally {
+    fs.rmSync(tmpLifecycleDir, { recursive: true, force: true });
+  }
+
+  if (escapingPassed && lifecyclePassed) {
+    recordSuite({
+      id: 10,
+      name: 'Markdown safe encoding & stale-report fail-closed verification',
+      status: 'PASS',
+      details: 'Verified backslash-first escaping, multiline/control sanitization, and fail-closed rejection of missing, stale-nonce, interrupted, or blocked reports',
+    });
+  } else {
+    recordSuite({
+      id: 10,
+      name: 'Markdown safe encoding & stale-report fail-closed verification',
+      status: 'FAIL',
+      details: `Escaping checks passed: ${escapingPassed}, Lifecycle checks passed: ${lifecyclePassed}`,
+    });
+  }
+} catch (err) {
+  recordSuite({
+    id: 10,
+    name: 'Markdown safe encoding & stale-report fail-closed verification',
+    status: 'FAIL',
+    details: `Evaluation error: ${err.message}`,
+  });
+}
+
+// -----------------------------------------------------------------------------
 // Write Machine-Readable Report & Exit
 // -----------------------------------------------------------------------------
 testReport.summary.totalSuites = testReport.suites.length;
 testReport.overallStatus = (testReport.summary.failed === 0 && testReport.summary.blocked === 0) ? 'PASS' : 'FAIL';
+testReport.isCompleted = true;
 
 fs.writeFileSync(REPORT_OUTPUT_PATH, JSON.stringify(testReport, null, 2) + '\n', 'utf-8');
 console.log(`\nMachine-readable test report written to: ${REPORT_OUTPUT_PATH}`);

@@ -5,62 +5,174 @@
  * KONFRM Quality Evidence Mesh — Truthful CI Summary Renderer (Stage A)
  * ==============================================================================
  *
- * Reads machine-readable `docs/security/ci-safety-report.json` and renders an
- * authoritative, truthful GitHub Actions Job Summary to `$GITHUB_STEP_SUMMARY`.
+ * Reads machine-readable runtime execution report and renders an authoritative,
+ * truthful GitHub Actions Job Summary to `$GITHUB_STEP_SUMMARY`.
  *
- * Truthfulness Guarantees:
- * - PASS only for checks that genuinely executed and passed.
- * - FAIL for executed checks that failed.
- * - BLOCKED for missing dependencies or blockers.
- * - SKIPPED for checks intentionally bypassed with reasons.
- * - Never turns a failing check green through reporting logic.
- * - Separates acknowledged legacy findings from unresolved findings.
- * - Zero secrets, credentials, or sensitive diagnostic material exposed.
+ * Truthfulness & Security Guarantees:
+ * - Runtime Isolation: Consumes reports strictly from runtime temp storage, never
+ *   from stale committed source files.
+ * - Identity Verification: Validates execution nonce and completion flags to prevent
+ *   stale report reuse.
+ * - Fail-Closed: Interrupted, missing, corrupted, or mismatched reports result in
+ *   immediate BLOCKED / FAIL status.
+ * - Safe Markdown Escaping: Complete sanitization (backslashes escaped before pipes,
+ *   newlines flattened, control chars stripped) on all dynamic table cells.
+ * - Zero Secrets: No credentials, tokens, or environment values exposed.
  * ==============================================================================
  */
 
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
-const REPORT_PATH = path.join(REPO_ROOT, 'docs', 'security', 'ci-safety-report.json');
 
-function renderSummary() {
-  let report = null;
-  let reportLoadError = null;
+/**
+ * Resolves the shared runtime execution report path outside tracked source files.
+ */
+export function resolveReportPath() {
+  if (process.env.CI_SAFETY_REPORT_PATH) {
+    return path.resolve(process.env.CI_SAFETY_REPORT_PATH);
+  }
+  if (process.env.RUNNER_TEMP) {
+    return path.join(process.env.RUNNER_TEMP, 'ci-safety-report.json');
+  }
+  return path.join(os.tmpdir(), 'konfrm-ci-safety-report.json');
+}
 
-  try {
-    if (fs.existsSync(REPORT_PATH)) {
-      report = JSON.parse(fs.readFileSync(REPORT_PATH, 'utf-8'));
-    } else {
-      reportLoadError = `Report file not found: ${REPORT_PATH}`;
-    }
-  } catch (err) {
-    reportLoadError = `Failed to parse report file: ${err.message}`;
+/**
+ * Safely encodes untrusted dynamic strings for GitHub Markdown table cells.
+ *
+ * Security Requirements (CodeQL js/incomplete-string-escaping compliant):
+ * 1. Normalize line endings and replace newlines with spaces to preserve table rows.
+ * 2. Strip non-printable control characters.
+ * 3. Escape backslashes FIRST before delimiters.
+ * 4. Escape pipe characters SECOND.
+ */
+export function escapeMarkdownTableCell(value) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  return String(value)
+    // 1. Flatten line breaks so table rows are not split
+    .replace(/\r\n|\r|\n/g, ' ')
+    // 2. Strip ASCII control characters (0x00-0x08, 0x0B, 0x0C, 0x0E-0x1F, 0x7F)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+    // 3. Escape backslashes first (critical for CodeQL security and escaping precedence)
+    .replace(/\\/g, '\\\\')
+    // 4. Escape Markdown table delimiter (pipe)
+    .replace(/\|/g, '\\|')
+    .trim();
+}
+
+/**
+ * Validates report lifecycle, identity nonce, and execution completion.
+ */
+export function loadAndValidateReport(customPath = null, expectedNonce = null) {
+  const targetPath = customPath || resolveReportPath();
+  const targetNonce = expectedNonce !== null ? expectedNonce : (process.env.CI_EXECUTION_NONCE || null);
+
+  if (!fs.existsSync(targetPath)) {
+    return {
+      valid: false,
+      status: 'BLOCKED',
+      reason: `NO_REPORT_FOUND: Report file does not exist at '${targetPath}'`,
+      report: null,
+    };
   }
 
+  let report = null;
+  try {
+    const raw = fs.readFileSync(targetPath, 'utf-8');
+    report = JSON.parse(raw);
+  } catch (err) {
+    return {
+      valid: false,
+      status: 'FAIL',
+      reason: `INVALID_JSON: Failed to parse report JSON: ${err.message}`,
+      report: null,
+    };
+  }
+
+  // Nonce identity matching
+  if (targetNonce && report.executionNonce && report.executionNonce !== targetNonce) {
+    return {
+      valid: false,
+      status: 'BLOCKED',
+      reason: `MISMATCHED_EXECUTION_IDENTITY: Report nonce '${report.executionNonce}' does not match expected nonce '${targetNonce}'`,
+      report: null,
+    };
+  }
+
+  // Completion check
+  if (report.isCompleted !== true) {
+    return {
+      valid: false,
+      status: 'FAIL',
+      reason: 'INTERRUPTED_EXECUTION: Test harness aborted before completing all verification suites (isCompleted: false)',
+      report: null,
+    };
+  }
+
+  // Suite completeness check
+  const total = report.summary?.totalSuites;
+  if (!Array.isArray(report.suites) || report.suites.length !== total || total < 10) {
+    return {
+      valid: false,
+      status: 'FAIL',
+      reason: `INCOMPLETE_RESULTS: Report contains ${report.suites?.length || 0} suites, expected ${total || 10}`,
+      report: null,
+    };
+  }
+
+  // Setup blocked check
+  if (report.setupBlocked === true || report.summary.blocked > 0) {
+    return {
+      valid: true,
+      status: 'BLOCKED',
+      reason: report.setupBlockedReason || 'SETUP_BLOCKED: Execution was blocked during setup/pre-flight',
+      report,
+    };
+  }
+
+  const overallStatus = (report.summary.failed === 0 && report.summary.blocked === 0) ? 'PASS' : 'FAIL';
+  return {
+    valid: true,
+    status: overallStatus,
+    reason: null,
+    report,
+  };
+}
+
+/**
+ * Renders the markdown summary from the validated execution report.
+ */
+export function renderSummary(validation = null) {
+  const result = validation || loadAndValidateReport();
   const lines = [];
 
-  if (!report || reportLoadError) {
-    lines.push('# ❌ Quality Evidence Mesh — Stage A CI Safety Report (FAILED)\n');
+  if (!result.valid || !result.report) {
+    const icon = result.status === 'BLOCKED' ? '⛔' : '❌';
+    lines.push(`# ${icon} Quality Evidence Mesh — Stage A CI Safety Report (${result.status})\n`);
     lines.push('> [!CAUTION]');
-    lines.push(`> **CRITICAL EXECUTION BLOCKER**: Test harness failed to generate a machine-readable report.`);
-    if (reportLoadError) {
-      lines.push(`> Reason: ${reportLoadError}`);
-    }
+    lines.push(`> **CRITICAL EXECUTION NOTICE**: Test harness failed validation or did not produce a valid report.`);
+    lines.push(`> Reason: ${escapeMarkdownTableCell(result.reason)}`);
     lines.push('\n### Result');
-    lines.push('| Check Category | Status | Details |');
+    lines.push('| Check Category | Status | Execution Details |');
     lines.push('| :--- | :--- | :--- |');
-    lines.push('| **CI Safety Test Harness** | **FAIL** | Harness execution failed or aborted prematurely |');
+    lines.push(`| **CI Safety Test Harness** | **${result.status}** | ${escapeMarkdownTableCell(result.reason)} |`);
     return lines.join('\n');
   }
 
-  const isPassed = report.overallStatus === 'PASS';
-  const headerIcon = isPassed ? '✅' : '❌';
-  lines.push(`# ${headerIcon} Quality Evidence Mesh — Stage A CI Safety Report (${report.overallStatus})\n`);
+  const report = result.report;
+  const isPassed = result.status === 'PASS';
+  const isBlocked = result.status === 'BLOCKED';
+  const headerIcon = isPassed ? '✅' : (isBlocked ? '⛔' : '❌');
+
+  lines.push(`# ${headerIcon} Quality Evidence Mesh — Stage A CI Safety Report (${result.status})\n`);
 
   lines.push('### Verification Suites Execution Matrix');
   lines.push('| # | Verification Suite | Status | Execution Details |');
@@ -72,8 +184,10 @@ function renderSummary() {
     else if (suite.status === 'BLOCKED') statusBadge = '**BLOCKED**';
     else if (suite.status === 'SKIPPED') statusBadge = '**SKIPPED**';
 
-    const safeDetails = (suite.details || '').replace(/\|/g, '\\|');
-    lines.push(`| ${suite.id} | ${suite.name} | ${statusBadge} | ${safeDetails} |`);
+    const safeId = escapeMarkdownTableCell(suite.id);
+    const safeName = escapeMarkdownTableCell(suite.name);
+    const safeDetails = escapeMarkdownTableCell(suite.details);
+    lines.push(`| ${safeId} | ${safeName} | ${statusBadge} | ${safeDetails} |`);
   }
 
   lines.push('\n### Acknowledged Legacy Baseline Inventory (Tracked Separately)');
@@ -101,13 +215,14 @@ function renderSummary() {
     lines.push('- **Advisory Observations Breakdown**:');
     for (const [r, count] of Object.entries(av.breakdownByRule || {})) {
       if (r !== 'unpinned-uses' && r !== 'artipacked' && r !== 'excessive-permissions' && r !== 'cache-poisoning') {
-        lines.push(`  - \`${r}\`: ${count} findings`);
+        lines.push(`  - \`${escapeMarkdownTableCell(r)}\`: ${count} findings`);
       }
     }
     lines.push('> *Note: Lower-tier findings are cataloged under auditor mode to guarantee complete visibility. They are never silently mistaken for zero risk.*');
   }
 
-  lines.push('\n### Zero-Trust Policy Verification');
+  lines.push('\n### Execution Identity & Zero-Trust Policy Verification');
+  lines.push(`- **Execution Nonce**: \`${escapeMarkdownTableCell(report.executionNonce || 'N/A')}\``);
   lines.push('- **GitHub Token Permissions**: `contents: read` (read-only least privilege)');
   lines.push('- **Secret References**: Zero credentials, API keys, or `.env` secrets accessed or exposed');
   lines.push('- **Production Integrity**: Zero modifications to production applications, backend, or databases');
@@ -116,12 +231,17 @@ function renderSummary() {
   return lines.join('\n');
 }
 
-const summaryMarkdown = renderSummary();
+// -----------------------------------------------------------------------------
+// CLI Execution Entry Point (only when executed directly)
+// -----------------------------------------------------------------------------
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename)) {
+  const summaryMarkdown = renderSummary();
 
-if (process.env.GITHUB_STEP_SUMMARY) {
-  fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summaryMarkdown + '\n', 'utf-8');
-  console.log('Successfully wrote CI summary to GITHUB_STEP_SUMMARY.');
-} else {
-  console.log('\n--- RENDERED CI STEP SUMMARY ---\n');
-  console.log(summaryMarkdown);
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summaryMarkdown + '\n', 'utf-8');
+    console.log('Successfully wrote CI summary to GITHUB_STEP_SUMMARY.');
+  } else {
+    console.log('\n--- RENDERED CI STEP SUMMARY ---\n');
+    console.log(summaryMarkdown);
+  }
 }

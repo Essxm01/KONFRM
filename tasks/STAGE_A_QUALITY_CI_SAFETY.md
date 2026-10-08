@@ -34,3 +34,5 @@ Implement and remediate the first stage of the KONFRM Quality Evidence Mesh usin
 - [x] Genuine Negative Test Fixture: Zizmor negative test triggers genuine `template-injection` at exact line 13 of `ti-insecure.yml` and verifies clean resolution upon environment isolation cure.
 - [x] Unified Diagnostic Verification Engine: Production negative tests and self-tests execute identical `verifyScannerRejection` logic rejecting false passes, empty output, tool crashes, and mismatched rules.
 - [x] Auditor-Mode Visibility Audit: Cataloged all 51 findings under auditor persona (`--persona auditor --no-ignores`), proving 0 uncataloged high-risk vulnerabilities exist.
+- [x] CodeQL String Escaping Remediation: Safe Markdown table cell encoding escaping backslashes before pipes, flattening multiline strings, and stripping control characters across all dynamic table fields.
+- [x] Stale Report Lifecycle Hardening: Removed committed historical PASS report from source control, moved runtime reports to ephemeral temp storage shared via `CI_SAFETY_REPORT_PATH`, and implemented fail-closed validation on execution nonce, completion, and setup blockers.

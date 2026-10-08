@@ -36,3 +36,5 @@ __pycache__/
 *.sw?
 *.tsbuildinfo
 .mimosa/
+docs/security/ci-safety-report.json
+.ci-safety-report*.json

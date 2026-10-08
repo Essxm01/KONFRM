@@ -941,54 +941,153 @@ try {
 
   const escapingPassed = correctEsc1 && correctEsc2 && correctEsc3 && correctEsc4 && correctTableFormat;
 
-  // Part B: Stale-Report Fail-Closed Tests
+  // Part B: Stale-Report Fail-Closed & Report-Consistency Tests
   const tmpLifecycleDir = fs.mkdtempSync(path.join(os.tmpdir(), 'konfrm-report-lifecycle-'));
   const testReportFile = path.join(tmpLifecycleDir, 'test-report.json');
 
   let lifecyclePassed = false;
   try {
-    // 1. Missing report -> BLOCKED
+    const makeBaseReport = (nonce = 'valid-nonce-100') => ({
+      overallStatus: 'PASS',
+      executionNonce: nonce,
+      isCompleted: true,
+      setupBlocked: false,
+      setupBlockedReason: null,
+      summary: {
+        totalSuites: 10,
+        passed: 10,
+        failed: 0,
+        blocked: 0,
+        skipped: 0,
+      },
+      suites: Array.from({ length: 10 }, (_, i) => ({
+        id: i + 1,
+        name: `Suite ${i + 1}`,
+        status: 'PASS',
+        details: 'Verified successfully',
+      })),
+    });
+
+    // 0. Missing report file -> BLOCKED
     const checkMissing = loadAndValidateReport(testReportFile, 'nonce-123');
     const missingOk = checkMissing.valid === false && checkMissing.status === 'BLOCKED';
 
-    // 2. Older report with stale nonce -> BLOCKED (mismatched nonce)
-    const staleReportData = {
-      overallStatus: 'PASS',
-      executionNonce: 'old-nonce-456',
-      isCompleted: true,
-      summary: { totalSuites: 10, passed: 10, failed: 0, blocked: 0, skipped: 0 },
-      suites: new Array(10).fill({ id: 1, name: 'dummy', status: 'PASS', details: 'ok' }),
-    };
-    fs.writeFileSync(testReportFile, JSON.stringify(staleReportData));
-    const checkStale = loadAndValidateReport(testReportFile, 'current-nonce-789');
-    const staleOk = checkStale.valid === false && checkStale.status === 'BLOCKED';
+    // 1. Correct execution nonce -> accepted
+    const r1 = makeBaseReport('nonce-match-1');
+    fs.writeFileSync(testReportFile, JSON.stringify(r1));
+    const check1 = loadAndValidateReport(testReportFile, 'nonce-match-1');
+    const case1Ok = check1.valid === true && check1.status === 'PASS';
 
-    // 3. Interrupted execution (isCompleted: false) -> FAIL
-    const interruptedData = {
-      overallStatus: 'PASS',
-      executionNonce: 'current-nonce-789',
-      isCompleted: false,
-      summary: { totalSuites: 10, passed: 5, failed: 0, blocked: 0, skipped: 0 },
-      suites: new Array(5).fill({ id: 1, name: 'dummy', status: 'PASS', details: 'ok' }),
-    };
+    // 2. Missing nonce -> rejected (missing property, empty string, or whitespace)
+    const r2a = makeBaseReport();
+    delete r2a.executionNonce;
+    fs.writeFileSync(testReportFile, JSON.stringify(r2a));
+    const check2a = loadAndValidateReport(testReportFile, 'expected-nonce-2');
+    const check2b = loadAndValidateReport(testReportFile, null); // missing nonce rejected even without expected nonce
+    const r2c = makeBaseReport('');
+    fs.writeFileSync(testReportFile, JSON.stringify(r2c));
+    const check2c = loadAndValidateReport(testReportFile, 'expected-nonce-2');
+    const case2Ok = check2a.valid === false && check2b.valid === false && check2c.valid === false;
+
+    // 3. Previous-run nonce -> rejected
+    const r3 = makeBaseReport('previous-run-nonce-123');
+    fs.writeFileSync(testReportFile, JSON.stringify(r3));
+    const check3 = loadAndValidateReport(testReportFile, 'current-run-nonce-456');
+    const case3Ok = check3.valid === false && check3.status === 'BLOCKED';
+
+    // 4. All suites SKIPPED but summary claims PASS -> rejected
+    // Subcase 4A: summary counters claim PASS (passed: 10, skipped: 0) while records are SKIPPED
+    const r4a = makeBaseReport('nonce-case-4');
+    r4a.suites = Array.from({ length: 10 }, (_, i) => ({
+      id: i + 1,
+      name: `Suite ${i + 1}`,
+      status: 'SKIPPED',
+      details: 'Skipped suite',
+    }));
+    fs.writeFileSync(testReportFile, JSON.stringify(r4a));
+    const check4a = loadAndValidateReport(testReportFile, 'nonce-case-4');
+
+    // Subcase 4B: summary counters reflect skipped: 10, passed: 0, but overallStatus claims 'PASS'
+    const r4b = makeBaseReport('nonce-case-4');
+    r4b.suites = Array.from({ length: 10 }, (_, i) => ({
+      id: i + 1,
+      name: `Suite ${i + 1}`,
+      status: 'SKIPPED',
+      details: 'Skipped suite',
+    }));
+    r4b.summary = { totalSuites: 10, passed: 0, failed: 0, blocked: 0, skipped: 10 };
+    r4b.overallStatus = 'PASS';
+    fs.writeFileSync(testReportFile, JSON.stringify(r4b));
+    const check4b = loadAndValidateReport(testReportFile, 'nonce-case-4');
+    const case4Ok = check4a.valid === false && check4b.valid === false;
+
+    // 5. Duplicate or missing suite identity -> rejected
+    // Subcase 5A: duplicate ID [1, 1, 3, 4, 5, 6, 7, 8, 9, 10]
+    const r5a = makeBaseReport('nonce-case-5');
+    r5a.suites[1] = { id: 1, name: 'Duplicate Suite 1', status: 'PASS', details: 'dup' };
+    fs.writeFileSync(testReportFile, JSON.stringify(r5a));
+    const check5a = loadAndValidateReport(testReportFile, 'nonce-case-5');
+
+    // Subcase 5B: 9 suites instead of 10
+    const r5b = makeBaseReport('nonce-case-5');
+    r5b.suites = r5b.suites.slice(0, 9);
+    r5b.summary.totalSuites = 9;
+    r5b.summary.passed = 9;
+    fs.writeFileSync(testReportFile, JSON.stringify(r5b));
+    const check5b = loadAndValidateReport(testReportFile, 'nonce-case-5');
+
+    // Subcase 5C: suite with unexpected ID 99
+    const r5c = makeBaseReport('nonce-case-5');
+    r5c.suites[9] = { id: 99, name: 'Invalid Suite 99', status: 'PASS', details: 'invalid id' };
+    fs.writeFileSync(testReportFile, JSON.stringify(r5c));
+    const check5c = loadAndValidateReport(testReportFile, 'nonce-case-5');
+    const case5Ok = check5a.valid === false && check5b.valid === false && check5c.valid === false;
+
+    // 6. Summary counters disagree with suite records -> rejected
+    const r6 = makeBaseReport('nonce-case-6');
+    r6.suites[2].status = 'FAIL'; // suite 3 is FAIL, but summary claims passed: 10, failed: 0
+    fs.writeFileSync(testReportFile, JSON.stringify(r6));
+    const check6 = loadAndValidateReport(testReportFile, 'nonce-case-6');
+    const case6Ok = check6.valid === false;
+
+    // 7. Authentic completed 10/10 PASS report -> accepted
+    const r7 = makeBaseReport('authentic-nonce-777');
+    fs.writeFileSync(testReportFile, JSON.stringify(r7));
+    const check7 = loadAndValidateReport(testReportFile, 'authentic-nonce-777');
+    const case7Ok = check7.valid === true && check7.status === 'PASS';
+
+    // Interrupted execution (isCompleted: false) -> FAIL
+    const interruptedData = makeBaseReport('nonce-interrupted');
+    interruptedData.isCompleted = false;
     fs.writeFileSync(testReportFile, JSON.stringify(interruptedData));
-    const checkInterrupted = loadAndValidateReport(testReportFile, 'current-nonce-789');
+    const checkInterrupted = loadAndValidateReport(testReportFile, 'nonce-interrupted');
     const interruptedOk = checkInterrupted.valid === false && checkInterrupted.status === 'FAIL';
 
-    // 4. Setup blocked report -> BLOCKED, never PASS
+    // Setup blocked report -> BLOCKED, never PASS
     const blockedData = {
       overallStatus: 'BLOCKED',
       setupBlocked: true,
-      executionNonce: 'current-nonce-789',
+      setupBlockedReason: 'Tool resolution blocked',
+      executionNonce: 'nonce-blocked',
       isCompleted: true,
-      summary: { totalSuites: 10, passed: 0, failed: 0, blocked: 1, skipped: 9 },
-      suites: new Array(10).fill({ id: 1, name: 'dummy', status: 'BLOCKED', details: 'Tool resolution blocked' }),
+      summary: { totalSuites: 1, passed: 0, failed: 0, blocked: 1, skipped: 0 },
+      suites: [{ id: 0, name: 'Tool resolution pre-flight', status: 'BLOCKED', details: 'Tool resolution blocked' }],
     };
     fs.writeFileSync(testReportFile, JSON.stringify(blockedData));
-    const checkBlocked = loadAndValidateReport(testReportFile, 'current-nonce-789');
+    const checkBlocked = loadAndValidateReport(testReportFile, 'nonce-blocked');
     const blockedOk = checkBlocked.valid === true && checkBlocked.status === 'BLOCKED';
 
-    lifecyclePassed = missingOk && staleOk && interruptedOk && blockedOk;
+    lifecyclePassed =
+      missingOk &&
+      case1Ok &&
+      case2Ok &&
+      case3Ok &&
+      case4Ok &&
+      case5Ok &&
+      case6Ok &&
+      case7Ok &&
+      interruptedOk &&
+      blockedOk;
   } finally {
     fs.rmSync(tmpLifecycleDir, { recursive: true, force: true });
   }
@@ -998,7 +1097,7 @@ try {
       id: 10,
       name: 'Markdown safe encoding & stale-report fail-closed verification',
       status: 'PASS',
-      details: 'Verified backslash-first escaping, multiline/control sanitization, and fail-closed rejection of missing, stale-nonce, interrupted, or blocked reports',
+      details: 'Verified backslash-first escaping, multiline/control sanitization, and 7 fail-closed report consistency proofs (nonce matching, suite identities, counter reconciliation)',
     });
   } else {
     recordSuite({

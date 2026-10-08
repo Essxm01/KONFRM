@@ -68,12 +68,24 @@ export function escapeMarkdownTableCell(value) {
     .trim();
 }
 
+const EXPECTED_SUITE_COUNT = 10;
+const EXPECTED_SUITE_IDS = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+const RECOGNIZED_STATUSES = new Set(['PASS', 'FAIL', 'BLOCKED', 'SKIPPED']);
+
 /**
  * Validates report lifecycle, identity nonce, and execution completion.
+ *
+ * Fail-Closed Guarantees:
+ * - Fix 1: Enforces a nonempty execution identity and exact match against expected nonce.
+ *   Missing, empty, malformed, or mismatched execution identity never validates as PASS.
+ * - Fix 2: Validates actual suite records (exactly 10 suites with unique correct IDs 1..10,
+ *   recognized statuses, recalculated counters matching summary, no non-pass suites allowing PASS,
+ *   and overallStatus consistency).
  */
 export function loadAndValidateReport(customPath = null, expectedNonce = null) {
   const targetPath = customPath || resolveReportPath();
-  const targetNonce = expectedNonce !== null ? expectedNonce : (process.env.CI_EXECUTION_NONCE || null);
+  const envNonce = process.env.CI_EXECUTION_NONCE ? process.env.CI_EXECUTION_NONCE.trim() : null;
+  const targetNonce = expectedNonce !== null ? expectedNonce : (envNonce || null);
 
   if (!fs.existsSync(targetPath)) {
     return {
@@ -97,14 +109,36 @@ export function loadAndValidateReport(customPath = null, expectedNonce = null) {
     };
   }
 
-  // Nonce identity matching
-  if (targetNonce && report.executionNonce && report.executionNonce !== targetNonce) {
+  if (!report || typeof report !== 'object') {
+    return {
+      valid: false,
+      status: 'FAIL',
+      reason: 'MALFORMED_REPORT: Report content is not a valid JSON object',
+      report: null,
+    };
+  }
+
+  // Fix 1 — Execution identity validation
+  const reportNonce = typeof report.executionNonce === 'string' ? report.executionNonce.trim() : '';
+  if (!reportNonce) {
     return {
       valid: false,
       status: 'BLOCKED',
-      reason: `MISMATCHED_EXECUTION_IDENTITY: Report nonce '${report.executionNonce}' does not match expected nonce '${targetNonce}'`,
+      reason: 'MISSING_EXECUTION_IDENTITY: Report does not contain a valid nonempty executionNonce',
       report: null,
     };
+  }
+
+  if (targetNonce !== null && targetNonce !== undefined) {
+    const expectedStr = typeof targetNonce === 'string' ? targetNonce.trim() : String(targetNonce).trim();
+    if (!expectedStr || reportNonce !== expectedStr) {
+      return {
+        valid: false,
+        status: 'BLOCKED',
+        reason: `MISMATCHED_EXECUTION_IDENTITY: Report nonce '${report.executionNonce}' does not match expected nonce '${targetNonce}'`,
+        report: null,
+      };
+    }
   }
 
   // Completion check
@@ -117,19 +151,16 @@ export function loadAndValidateReport(customPath = null, expectedNonce = null) {
     };
   }
 
-  // Suite completeness check
-  const total = report.summary?.totalSuites;
-  if (!Array.isArray(report.suites) || report.suites.length !== total || total < 10) {
-    return {
-      valid: false,
-      status: 'FAIL',
-      reason: `INCOMPLETE_RESULTS: Report contains ${report.suites?.length || 0} suites, expected ${total || 10}`,
-      report: null,
-    };
-  }
-
-  // Setup blocked check
-  if (report.setupBlocked === true || report.summary.blocked > 0) {
+  // Setup blocked check (must not result in PASS, even if attempted)
+  if (report.setupBlocked === true) {
+    if (report.overallStatus === 'PASS') {
+      return {
+        valid: false,
+        status: 'BLOCKED',
+        reason: 'REPORT_INCONSISTENCY: Report marked setupBlocked but declared overallStatus is PASS',
+        report: null,
+      };
+    }
     return {
       valid: true,
       status: 'BLOCKED',
@@ -138,10 +169,144 @@ export function loadAndValidateReport(customPath = null, expectedNonce = null) {
     };
   }
 
-  const overallStatus = (report.summary.failed === 0 && report.summary.blocked === 0) ? 'PASS' : 'FAIL';
+  // Fix 2 — Suite records validation & consistency
+  if (!Array.isArray(report.suites) || report.suites.length !== EXPECTED_SUITE_COUNT) {
+    return {
+      valid: false,
+      status: 'FAIL',
+      reason: `INCOMPLETE_RESULTS: Report contains ${Array.isArray(report.suites) ? report.suites.length : 0} suites, expected exactly ${EXPECTED_SUITE_COUNT}`,
+      report: null,
+    };
+  }
+
+  const seenIds = new Set();
+  let recalculatedPassed = 0;
+  let recalculatedFailed = 0;
+  let recalculatedBlocked = 0;
+  let recalculatedSkipped = 0;
+
+  for (const suite of report.suites) {
+    if (!suite || typeof suite !== 'object') {
+      return {
+        valid: false,
+        status: 'FAIL',
+        reason: 'MALFORMED_SUITE_RECORD: Suite entry is not an object',
+        report: null,
+      };
+    }
+
+    const suiteId = typeof suite.id === 'number' ? suite.id : Number(suite.id);
+    if (!Number.isInteger(suiteId) || !EXPECTED_SUITE_IDS.has(suiteId)) {
+      return {
+        valid: false,
+        status: 'FAIL',
+        reason: `INVALID_SUITE_IDENTITY: Suite ID '${suite.id}' is not an expected suite ID (expected 1..10)`,
+        report: null,
+      };
+    }
+
+    if (seenIds.has(suiteId)) {
+      return {
+        valid: false,
+        status: 'FAIL',
+        reason: `DUPLICATE_SUITE_IDENTITY: Duplicate suite ID '${suiteId}' detected in suite records`,
+        report: null,
+      };
+    }
+    seenIds.add(suiteId);
+
+    if (!RECOGNIZED_STATUSES.has(suite.status)) {
+      return {
+        valid: false,
+        status: 'FAIL',
+        reason: `UNRECOGNIZED_SUITE_STATUS: Suite ${suiteId} has unrecognized status '${suite.status}'`,
+        report: null,
+      };
+    }
+
+    if (suite.status === 'PASS') recalculatedPassed++;
+    else if (suite.status === 'FAIL') recalculatedFailed++;
+    else if (suite.status === 'BLOCKED') recalculatedBlocked++;
+    else if (suite.status === 'SKIPPED') recalculatedSkipped++;
+  }
+
+  if (seenIds.size !== EXPECTED_SUITE_COUNT) {
+    return {
+      valid: false,
+      status: 'FAIL',
+      reason: `MISSING_SUITE_IDENTITY: Expected ${EXPECTED_SUITE_COUNT} unique suite IDs, found ${seenIds.size}`,
+      report: null,
+    };
+  }
+
+  // Declared summary counter verification
+  const declared = report.summary;
+  if (!declared || typeof declared !== 'object') {
+    return {
+      valid: false,
+      status: 'FAIL',
+      reason: 'MISSING_SUMMARY: Report is missing summary counters object',
+      report: null,
+    };
+  }
+
+  const summaryMatches =
+    declared.totalSuites === EXPECTED_SUITE_COUNT &&
+    declared.passed === recalculatedPassed &&
+    declared.failed === recalculatedFailed &&
+    declared.blocked === recalculatedBlocked &&
+    declared.skipped === recalculatedSkipped;
+
+  if (!summaryMatches) {
+    return {
+      valid: false,
+      status: 'FAIL',
+      reason: `SUMMARY_MISMATCH: Declared summary does not match recalculated suite records (passed=${recalculatedPassed}, failed=${recalculatedFailed}, blocked=${recalculatedBlocked}, skipped=${recalculatedSkipped})`,
+      report: null,
+    };
+  }
+
+  // Determine computed outcome: no skipped, blocked, failed, or missing suite may result in PASS
+  let computedStatus;
+  if (recalculatedBlocked > 0) {
+    computedStatus = 'BLOCKED';
+  } else if (recalculatedFailed > 0 || recalculatedSkipped > 0 || recalculatedPassed !== EXPECTED_SUITE_COUNT) {
+    computedStatus = 'FAIL';
+  } else {
+    computedStatus = 'PASS';
+  }
+
+  // Verify overallStatus is consistent with computed outcome
+  if (report.overallStatus !== computedStatus) {
+    return {
+      valid: false,
+      status: 'FAIL',
+      reason: `REPORT_INCONSISTENCY: Declared overallStatus '${report.overallStatus}' does not match computed outcome '${computedStatus}'`,
+      report: null,
+    };
+  }
+
+  if (computedStatus === 'BLOCKED') {
+    return {
+      valid: true,
+      status: 'BLOCKED',
+      reason: report.setupBlockedReason || 'BLOCKED_SUITES: One or more suites were blocked',
+      report,
+    };
+  }
+
+  if (computedStatus === 'FAIL') {
+    return {
+      valid: true,
+      status: 'FAIL',
+      reason: 'TESTS_FAILED: One or more verification suites failed or were skipped',
+      report,
+    };
+  }
+
   return {
     valid: true,
-    status: overallStatus,
+    status: 'PASS',
     reason: null,
     report,
   };

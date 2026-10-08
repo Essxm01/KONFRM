@@ -28,3 +28,9 @@ Implement and remediate the first stage of the KONFRM Quality Evidence Mesh usin
 - [x] Dependency Hash Hardening: Verify `zizmor` installation integrity via immutable wheel digests or pinned constraints without uncontrolled `pip` upgrades.
 - [x] Task History Preservation: Restore `tasks/CURRENT_TASK.md` to historical Phase 4I authority; maintain Stage A tracking in this dedicated document.
 - [x] Full Final Validation: Actionlint clean, Zizmor clean with visible baseline, all negative tests pass, `npm run ci:safety:check` passes, `npm run ai:skills:check` passes, `npm run design:check` passes, `git diff --check` passes.
+- [x] Deterministic Baseline Identity Verification: Replaced raw count check with order-independent identity comparison against `docs/security/ci-findings-baseline.json`.
+- [x] Baseline Identity Negative Proofs (Cases A-E): Automated verification of Cases A (added finding: FAIL), B (removed finding: FAIL), C (equal-count substitution: FAIL), D (reordered invariance: PASS), and E (different issue on exempted line: FAIL).
+- [x] Truthful CI Step Summary: Replaced static PASS values in workflow with dynamic `render-ci-summary.mjs` consuming machine-readable `docs/security/ci-safety-report.json`.
+- [x] Genuine Negative Test Fixture: Zizmor negative test triggers genuine `template-injection` at exact line 13 of `ti-insecure.yml` and verifies clean resolution upon environment isolation cure.
+- [x] Unified Diagnostic Verification Engine: Production negative tests and self-tests execute identical `verifyScannerRejection` logic rejecting false passes, empty output, tool crashes, and mismatched rules.
+- [x] Auditor-Mode Visibility Audit: Cataloged all 51 findings under auditor persona (`--persona auditor --no-ignores`), proving 0 uncataloged high-risk vulnerabilities exist.

@@ -61,29 +61,8 @@ jobs:
           set -euo pipefail
           node scripts/test-ci-safety.mjs
 
-      - name: Generate CI Evidence Mesh summary
+      - name: Render CI Evidence Mesh summary
         if: always()
         run: |
-          cat << 'EOF' >> "$GITHUB_STEP_SUMMARY"
-          # Quality Evidence Mesh — Stage A CI Safety Report
-
-          ### Execution Status
-          | Check Category | Result | Engine | Details |
-          | :--- | :--- | :--- | :--- |
-          | **Workflow Syntax & Expressions** | **PASS** | actionlint v1.7.12 | 0 syntax, expression, or runner errors |
-          | **Static Security Audit** | **PASS** | zizmor 1.30.1 | 0 unexempted security vulnerabilities |
-          | **Controlled Negative Testing** | **PASS** | Automated Harness | Malformed & insecure fixtures failed closed |
-          | **Baseline Drift Detection** | **PASS** | Line-level .zizmor.yml | Unexempted drift in legacy workflows detected |
-          | **Acknowledged Legacy Findings** | **29 TRACKED** | Baseline Inventory | Pinned to exact file & line in docs/security |
-
-          ### Accepted Legacy Findings Summary
-          - `unpinned-uses`: 15 findings (actions pinned to tags awaiting scheduled migration)
-          - `excessive-permissions`: 6 findings (jobs omitting explicit permissions: block)
-          - `artipacked`: 7 findings (checkouts omitting persist-credentials: false)
-          - `cache-poisoning`: 1 finding (backend cache alongside deploy step)
-
-          ### Zero-Trust Policy Verification
-          - GitHub Token Permissions: `contents: read` (read-only)
-          - Zero Secret References: 0 production credentials accessed or exposed
-          - Auto-merge & Deployment: Disabled
-          EOF
+          set -euo pipefail
+          node scripts/render-ci-summary.mjs

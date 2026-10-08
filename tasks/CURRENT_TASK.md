@@ -1,37 +1,64 @@
-# Active Task — QUALITY_EVIDENCE_MESH_STAGE_A
+# Active Task — PHASE_4I_NATIVE_VALIDATION_PUBLICATION
 
-TASK_ID: QUALITY_EVIDENCE_MESH_STAGE_A
-TASK_CLASS: CI_SECURITY_EVIDENCE_MESH_IMPLEMENTATION
-STATUS: IMPLEMENTED / VALIDATED / READY_FOR_BRIDGE_REVIEW
-PR: #104 (DRAFT - DO NOT MERGE)
-HEAD_SHA: ec100ea241b312a02b3c1042795ecbc4876fe66b
-BASE_MAIN_SHA: dd53b5dcb1d967dfdfabfea637dad2d2bf037540
-BRANCH: feat/quality-ci-safety-stage-a
-GOVERNING_SPEC: docs/agents/KONFRM_QUALITY_EVIDENCE_MESH_PILOT.md (Stage A)
-SCOPE: Implement the first stage of the KONFRM Quality Evidence Mesh using `actionlint` and `zizmor`, under strict security, privacy, and repository isolation requirements.
+TASK_ID: PHASE_4I_NATIVE_VALIDATION_PUBLICATION
+TASK_CLASS: NATIVE_DESIGN_SYSTEM_INTEGRATION_CLOSURE
+STATUS: ANDROID_FINAL_TREE_REVALIDATED / PR_100_OPEN / READY_FOR_FINAL_REVIEW
+PR: #100 (OPEN)
+EXECUTION_STARTED: YES
+BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
+BASE_MISSION_A_SHA: 9f24b2bea5130faeaa05e39b204ef4c8abc7b464
+BASE_MISSION_B_SHA: 82f98db300a15a9cf790dc8834e85c07670f38d4
+FINAL_RUNTIME_VALIDATED_SOURCE_HEAD: 0576f06a8f7675ea558efd0188b8bf8bae2c1026
+BRANCH: phase4i/android-runtime-validation
+SCOPE: Phase 4I Native Flutter Foundation integration closure and publication preparation — reconciling documentation state after Bridge acceptance of Mission A bootstrap, Mission B shared primitives/scenarios, Mission C physical Android runtime validation, PR #100 P2 remediations, and final-tree physical Android targeted revalidation (`NATIVE_ACCEPTED_ON_ANDROID`) on Samsung Galaxy A56 5G (Android 16 / API 36) at source revision `0576f06a8f7675ea558efd0188b8bf8bae2c1026`. Note: subsequent commit is documentation-only reconciliation.
 
-## Boundaries Preserved
-- ZERO SECRET ACCESS: No .env, credentials, API keys, tokens, or private environment variables read, printed, or exported.
-- STRICT ISOLATION: Feature branch `feat/quality-ci-safety-stage-a` based on verified `origin/main` (`dd53b5dcb1d967dfdfabfea637dad2d2bf037540`).
-- OUT OF SCOPE: Does NOT modify PR #102, PR #103, PR #99, `main`, production apps (`customer-app/`, `owner-app/`, `admin-app/`), backend logic, database/migrations, Cloudflare configuration, or business/financial Canon.
-- NO DEPLOYMENT / NO AUTO-MERGE: Read-only `contents: read` GitHub token permissions; no push to production.
-- NO CODEX REVIEWS: Codex reviews prohibited due to quota exhaustion.
+## Boundaries
+- Does NOT build Customer or Owner production Flutter applications.
+- Does NOT start Phase 5 or Phase 6 implementation.
+- Does NOT modify production applications (`customer-app/`, `owner-app/`, `admin-app/`).
+- Does NOT modify backend business logic, database schema, Supabase, Cloudflare, API contracts, or token JSON.
+- Preserves cross-platform limitation: `IOS_REALITY_GATE_PENDING` (Android validation is `NATIVE_ACCEPTED_ON_ANDROID` only; not final cross-platform Canon, iOS accepted, or universal native acceptance).
+- Preserves overlay limitation: BottomSheet/Dialog runtime scenarios were `NOT_REPRESENTED_IN_MISSION_B_VALIDATION_SUBSET` (governed Phase 4F contracts remain valid; exact native overlay realization remains pending future product/runtime implementation).
+- Preserves all open values as `OPEN` (Exact Blue, Exact Neutrals, Semantic Colors, Shadows, Scrim, Toast Duration, Secondary Button Radius, Native Field Height, Native Focus, Sheet Detents, Motion Curves); validation references are not promoted to Canon.
+- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E), Role-Aware Contextual Navigation & Overlays + 16px Sheet Radius + 12px Dialog Radius + DF2 v1.5 + CHANGELOG 2.1.10 (4F), Role-Aware Layered State System + Four-Layer State Delivery + Canonical Domain Status Mappings + DF2 v1.6 + CHANGELOG 2.1.11 (4G), Component Contract Catalog + DF2 v1.7 + CHANGELOG 2.1.12 (4H).
 
-## Closure Gates — Stage A
-- [x] Phase 1 Security Audit: Complete inventory of CI jobs, triggers, permissions, and tool versions across existing workflows.
-- [x] Phase 2 Implementation: Dedicated least-privilege workflow `.github/workflows/quality-evidence-mesh.yml` authored with pinned immutable action SHAs, read-only permissions, and clear PASS/FAIL/WARNING reporting.
-- [x] Phase 2 Triage Configuration: Baseline configuration `.zizmor.yml` established to document legacy exceptions without weakening security policies for new or unexempted workflows.
-- [x] Phase 3 Negative Test Verification (Verify the Verifiers):
-  - [x] Negative Test 1 (`actionlint`): Proved intentional malformed expression in temporary fixture fails closed with non-zero exit code.
-  - [x] Negative Test 2 (`zizmor`): Proved intentional insecure workflow (untrusted checkout/PR head) in temporary fixture fails closed with non-zero exit code.
-  - [x] Tracked workflows audit: Both scanners run cleanly on actual tracked workflows under `.zizmor.yml` baseline.
-- [x] Phase 4 Complete Validation:
-  - [x] `npm run ai:skills:check` passed 100% (21/21 required artifacts verified, 0 defects).
-  - [x] `npm run design:check` passed 100% (0 new drift).
-  - [x] `git diff --check` passed (0 whitespace errors).
-  - [x] `npm run ci:safety:check` passed 100% (4/4 test suites).
-  - [x] Production isolation preserved.
-- [x] Phase 5 Delivery: Committed, pushed to `origin feat/quality-ci-safety-stage-a`, and Draft PR #104 opened (`READY_FOR_BRIDGE_REVIEW / DO_NOT_MERGE`).
+## Closure Gates — Phase 4I Publication & Integration
+
+### Completed Gates
+- [x] Mission A bootstrap accepted (`9f24b2bea5130faeaa05e39b204ef4c8abc7b464`).
+- [x] Mission B implementation accepted (`f933900` / `82f98db300a15a9cf790dc8834e85c07670f38d4`).
+- [x] Mission B package/app verification accepted.
+- [x] Mission C physical Android runtime accepted on Samsung Galaxy A56 5G (`SM_A566B`), Android 16 / API 36 (`NATIVE_ACCEPTED_ON_ANDROID` at historical checkpoint `e3fa755cd5f2636c4e10ac55d6651ed58ccc3932`).
+- [x] Android screenshots/runtime evidence accepted for typography, RTL/Bidi, inputs/keyboard, state system, Owner grouping, Customer navigation, Sticky Action, Android Back, and safe areas.
+- [x] Historical Mission C package test suite `18/18 PASS`.
+- [x] StickyAction / PrimaryButton full-height runtime defect (`DEFECT-01`) `CLOSED` (`Center(heightFactor: 1, ...)`).
+- [x] PrimaryButton accessibility-label duplication `CLOSED` (`excludeSemantics: true` with outer semantic `onTap`).
+- [x] PR #100 opened to `main` (`ab669c7fee8b3f76d885f42134be57d281ae3d84`).
+- [x] PR #100 initial 5-finding P2 review remediation verified and committed (`f063807af9be68bb5b0f670ca53b58294d1c8c9e`): SearchField keyboard submission, CustomerBottomNavigation Bookings calendar icon, StateView live-region distinctions, SecondaryButton semantics boundary, and `mobile/README.md`.
+- [x] PR #100 SectionAlert P2 review remediation verified and committed (`97e09d80c6ccfb2c6dc863990042fe900319ac8e`): informational and error live announcements (`liveRegion: true`) with test matcher correction.
+- [x] PR #100 SearchField decorative-icon P2 review remediation verified, committed (`0576f06a8f7675ea558efd0188b8bf8bae2c1026`), and targeted physically revalidated on Samsung Galaxy A56 5G (`SM-A566B`, Android 16 / API 36): decorative icon excluded from semantics, test matcher updated with `hasSelectedState: true`, no standalone `بحث` node, clear action `مسح البحث` functional.
+- [x] Final package test suite `20/20 PASS` (`flutter test` in `mobile/packages/konfrm_design_system`) and package analyze `No issues found!`.
+- [x] Validation app test suite `6/6 PASS` (`flutter test` in `mobile/apps/design_system_validation`) and app analyze `No issues found!`.
+- [x] P1 final-tree physical Android targeted revalidation on Samsung Galaxy A56 5G (`SM-A566B`, Android 16 / API 36) `CLOSED`:
+  - `PHYSICAL_ANDROID_INTERACTION = PASS` (SearchField text clear demonstrated; Back and Close ordinary buttons demonstrated clickable and activated).
+  - `FLUTTER_SELECTED_STATE_SEMANTICS = PASS` (verified by explicit test assertions: ordinary `IconActionButton` and `SearchField` clear controls omit `hasSelectedState` capability entirely; toggle selection capability present only on explicit toggles).
+  - `TALKBACK_SPOKEN_OUTPUT = NOT_DIRECTLY_VERIFIED` (explicit Founder-approved adjustment: manual auditory confirmation not performed; broader accessibility testing preserved as ongoing product-quality requirement).
+- [x] SectionAlert informational runtime scenario limitation recorded (`INFORMATIONAL_SECTIONALERT_RUNTIME_SCENARIO = NOT_REPRESENTED / TEST_BACKED`).
+- [x] PR #100 remains OPEN and mergeable.
+
+### Pending Gates (`PHASE_4I_FINAL_PR_REVIEW_AND_MERGE_GOVERNANCE`)
+- [ ] Final PR review on post-documentation head
+- [ ] Required PR checks
+- [ ] Merge governance
+- [ ] Post-merge verification
+- [ ] Final publication checkpoint
+- [ ] Cross-platform gate preserved: `IOS_REALITY_GATE_PENDING`
+
+## Immediate Next Roadmap Action
+- **NEXT_ACTION:** `PHASE_4I_FINAL_PR_REVIEW_AND_MERGE_GOVERNANCE`
+  - **STATUS:** `READY_FOR_FINAL_REVIEW`
+  - **CROSS_PLATFORM_LIMITATION:** `IOS_REALITY_GATE_PENDING`
+  - **PHASE_5_6_FLUTTER_IMPLEMENTATION:** `NOT_STARTED`
 
 ---
 

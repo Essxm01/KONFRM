@@ -431,6 +431,7 @@ const prohibitedNumericHardcodes = [
   'first-night deposit amount',
   '12px',
   'PAYMENT_MODE=PROTOTYPE',
+  'Total stay price minus upfront deposit',
 ];
 
 for (const mod of allProductModules) {
@@ -753,6 +754,33 @@ if (/verified record in `owners`/i.test(retrievalContent)) {
   pass('[REG-23] Owner Session Auth: Owner session requires canonical Owner record and validated session, not completed KYC');
 } else {
   fail('[REG-23] product_state_retrieval.md missing canonical Owner record and validated Owner session requirement');
+}
+
+// REG-24: Canonical Remaining Balance Retrieval (Read remainingAmount/remainingBalance from quote/summary; arithmetic for fail-closed check only)
+const retrievalReadsCanonicalRemaining = retrievalContent.includes('remainingAmount') &&
+                                         retrievalContent.includes('remainingBalance') &&
+                                         retrievalContent.includes('ownerCore.ts:362-373');
+const mentalModelsReadsCanonicalRemaining = mentalModelsContent.includes('remainingAmount') &&
+                                            mentalModelsContent.includes('remainingBalance') &&
+                                            mentalModelsContent.includes('ownerCore.ts:362-373');
+if (!retrievalReadsCanonicalRemaining || !mentalModelsReadsCanonicalRemaining) {
+  fail('[REG-24] Product Brain missing canonical remainingAmount/remainingBalance field retrieval requirement');
+} else {
+  pass('[REG-24] Canonical Remaining Balance: Remaining balance retrieved from canonical server quote/summary field (arithmetic used only for fail-closed validation)');
+}
+
+// REG-25: Business-Rule Documentation Routing (Product Canon excluded from generic docs bypass and mapped to konfrm-product)
+const contextMapPath = path.join(projectRoot, '.agents', 'CONTEXT_MAP.yaml');
+const contextMapContent = fs.readFileSync(contextMapPath, 'utf8');
+const routerExcludesProductCanonFromBypass = routerContent.includes('Excludes Product Canon (docs/BUSINESS_RULES.md, docs/codex/KONFRM_MASTER_RULES.md, docs/DECISIONS.md, docs/codex/KONFRM_DECISION_CONFLICTS.md -> konfrm-product)') &&
+                                             !routerContent.includes('Pure documentation task (Markdown docs only)');
+const contextMapHasProductCanonTrigger = contextMapContent.includes('product_canon:') &&
+                                         contextMapContent.includes('governing_brain: "konfrm-product (Active Consolidated Runtime Brain / Product Soul & Domain Truth)"') &&
+                                         contextMapContent.includes('excluded_paths:');
+if (!routerExcludesProductCanonFromBypass || !contextMapHasProductCanonTrigger) {
+  fail('[REG-25] SKILL_ROUTER.md or CONTEXT_MAP.yaml does not exclude Product Canon from documentation bypass and route it to konfrm-product');
+} else {
+  pass('[REG-25] Product Canon Routing: Business-rule documentation excluded from generic docs bypass and mapped to konfrm-product');
 }
 
 // 7. Negative Test Harness: Verify Evaluator Fails Closed on Corrupted Input

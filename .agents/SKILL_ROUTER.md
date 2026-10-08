@@ -21,7 +21,7 @@ DEFERRED_BRAINS:
 
 1. **Combined Signals Routing:** Route based on task intent, affected file scope, product surface, user role, and risk level. Never route on naive keyword matching alone.
 2. **Domain-Scoped Authority:** Route tasks strictly to the governing brain owning that lifecycle phase:
-   - Business invariants, booking lifecycle, financial meaning, role mental models -> `konfrm-product`
+   - Business invariants, booking lifecycle, financial meaning, role mental models, and Product Canon (`docs/BUSINESS_RULES.md`, `docs/codex/KONFRM_MASTER_RULES.md`, `docs/DECISIONS.md`, `docs/codex/KONFRM_DECISION_CONFLICTS.md`) -> `konfrm-product` (takes strict precedence over generic `docs/**` bypass rules)
    - Design interpretation, visual hierarchy, DF2 tokens, Arabic RTL semantics, A11y design intent -> `konfrm-design`
    - Client implementation mechanics (Flutter Dart code, widgets, Riverpod) -> `konfrm-flutter`
    - Defect diagnosis, verification, review, and completion proof -> `konfrm-quality`
@@ -37,7 +37,7 @@ DEFERRED_BRAINS:
 | TASK CLASS / INTENT                                 | PRIMARY BRAIN      | HANDOFF / GATE     |
 +-----------------------------------------------------+--------------------+--------------------+
 | Business rule interpretation / invariant inquiry    | konfrm-product     | konfrm-design /    |
-|                                                     |                    | konfrm-flutter     |
+| (incl. Product Canon docs edits & inquiries)***     |                    | konfrm-flutter     |
 | Booking lifecycle semantics / request vs confirm    | konfrm-product     | konfrm-design      |
 | Financial model meaning / deposit vs commission     | konfrm-product     | konfrm-design      |
 | Role mental model definition / cross-role boundary  | konfrm-product     | konfrm-design      |
@@ -66,13 +66,14 @@ DEFERRED_BRAINS:
 | Security & OWASP MASVS verification                 | konfrm-quality     | konfrm-flutter*    |
 | Physical runtime evidence audit / completion proof  | konfrm-quality     | None (Verdicts)    |
 +-----------------------------------------------------+--------------------+--------------------+
-| Pure documentation task (Markdown docs only)        | NONE (Bypass)      | None               |
+| Non-Canon documentation task (general docs/tasks)***| NONE (Bypass)      | None               |
 | Backend SQL migration / Cloudflare Worker proxy     | konfrm-backend**   | Docs / Database Canon            |
 | Web Admin dashboard (React 19 / Vite in admin-app)  | konfrm-admin-web** | Web Admin Guidelines             |
 +-----------------------------------------------------+--------------------+--------------------+
 
 * Handoff to konfrm-flutter occurs when code modification of Flutter client source is required.
 ** Deferred brains until later rollout stages.
+*** Excludes Product Canon (docs/BUSINESS_RULES.md, docs/codex/KONFRM_MASTER_RULES.md, docs/DECISIONS.md, docs/codex/KONFRM_DECISION_CONFLICTS.md -> konfrm-product) and Design Canon (DESIGN_SYSTEM/** -> konfrm-design).
 ```
 
 ---
@@ -126,7 +127,7 @@ Task: "Review, structure, or refine UI/UX hierarchy, Arabic RTL layout, or visua
 
 ## 4. NEGATIVE ROUTING RULES
 
-1. **Pure Documentation / Policy Edits:** Do NOT load `konfrm-flutter`, `konfrm-quality`, or `konfrm-design` when editing markdown files in `docs/` that do not involve design or code verification.
+1. **Non-Canon Documentation / Administrative Edits:** Do NOT load `konfrm-flutter`, `konfrm-quality`, `konfrm-design`, or `konfrm-product` when editing general administrative or handoff markdown files (e.g., `docs/CURRENT_STATE.md` or task files in `tasks/**`) that do not involve Product Canon (`docs/BUSINESS_RULES.md`, `docs/codex/KONFRM_MASTER_RULES.md`, `docs/DECISIONS.md`, `docs/codex/KONFRM_DECISION_CONFLICTS.md` -> route to `konfrm-product`), Design Canon (`DESIGN_SYSTEM/**` -> route to `konfrm-design`), or code verification.
 2. **Backend / SQL Tasks:** Do NOT activate `konfrm-flutter` or `konfrm-design` for tasks touching exclusively `backend/` or `supabase/`.
 3. **Web Admin Implementation:** Do NOT activate `konfrm-flutter` for tasks touching exclusively `admin-app/` implementation code.
 4. **No Premature Gate Loading:** Do NOT load `konfrm-quality` security or performance modules for routine typographical or layout adjustments unless an explicit security boundary or frame-rate risk is touched.

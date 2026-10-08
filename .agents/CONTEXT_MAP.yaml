@@ -72,8 +72,21 @@ physical_repository_surface_triggers:
       - "DESIGN_SYSTEM/**"
     governing_brain: "konfrm-design (Active Consolidated Runtime Brain / Design Foundation Authority)"
 
+  product_canon:
+    paths:
+      - "docs/BUSINESS_RULES.md"
+      - "docs/codex/KONFRM_MASTER_RULES.md"
+      - "docs/DECISIONS.md"
+      - "docs/codex/KONFRM_DECISION_CONFLICTS.md"
+    governing_brain: "konfrm-product (Active Consolidated Runtime Brain / Product Soul & Domain Truth)"
+
   documentation_and_tasks:
     paths:
       - "docs/**"
       - "tasks/**"
-    governing_brain: "Context Router / Quality Gate"
+    excluded_paths:
+      - "docs/BUSINESS_RULES.md"
+      - "docs/codex/KONFRM_MASTER_RULES.md"
+      - "docs/DECISIONS.md"
+      - "docs/codex/KONFRM_DECISION_CONFLICTS.md"
+    governing_brain: "Context Router / Quality Gate (Non-Canon docs/tasks only; product_canon routes to konfrm-product)"

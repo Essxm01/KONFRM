@@ -38,10 +38,10 @@ KONFRM is a three-role platform. Designing or implementing features without unde
    - Auth is prompted only when taking a committed action (saving to favorites, submitting a booking request).
 2. **Absolute Pricing Clarity (The 3-Amount Truth):**
    - High tolerance for fair pricing; zero tolerance for hidden surprise fees.
-   - Always present three transparent values:
-     - **إجمالي الإقامة (Total Stay):** Complete price for all nights.
+   - Always present three transparent values retrieved from the canonical server-side quote / persisted booking financial summary:
+     - **إجمالي الإقامة (Total Stay):** Complete price for all nights retrieved from canonical server-side quote / financial summary.
      - **العربون المطلوب (Deposit Due):** Upfront deposit amount retrieved from canonical server-side quote / financial summary per Canon (conceptually corresponds to deposit policy in MR-13; retrieve current policy dynamically).
-     - **المتبقي (Remaining Balance):** Total stay price minus upfront deposit (collection method remains OPEN / UNCONFIRMED per MR-15, DC-08; Customers must NEVER be shown platform commission or internal financial splits).
+     - **المتبقي (Remaining Balance):** Remaining balance retrieved directly from the canonical server-side quote / financial summary field (`remainingAmount` / `remainingBalance`, using arithmetic only for fail-closed consistency validation per `backend/server/src/contracts/ownerCore.ts:362-373`; collection method remains OPEN / UNCONFIRMED per MR-15, DC-08; Customers must NEVER be shown platform commission or internal financial splits).
 3. **Request-Not-Instant Booking Mental Model:**
    - Customers understand that high-value vacation rentals require host approval.
    - The UI must project calm expectation: *"Your booking request has been sent. The host will review your dates."*

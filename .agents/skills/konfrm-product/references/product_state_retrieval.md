@@ -58,10 +58,10 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
 
 ### Retrieval & Interpretation Procedure
 1. **Customer Pricing Presentation:**
-   - Always retrieve and display three distinct customer-relevant amounts from canonical server-side pricing calculations or booking financial summaries (never locally reconstructed from a naive nightly-rate formula):
+   - Always retrieve and display three distinct customer-relevant amounts from canonical server-side pricing calculations or booking financial summaries (never locally reconstructed from a naive nightly-rate formula or client-side subtraction):
      - **Total Stay Price:** Retrieved from canonical server-side quote / financial summary.
      - **Upfront Deposit:** Retrieved dynamically from canonical server-side quote / financial summary per Canon (retrieve current deposit policy from `docs/BUSINESS_RULES.md` and MR-13; never hardcode or duplicate the deposit calculation rule).
-     - **Remaining Balance:** Total stay price minus upfront deposit.
+     - **Remaining Balance:** Retrieved directly from the canonical server-side quote / persisted booking financial summary field (`remainingAmount` / `remainingBalance`); never recomputed locally as a substitute for the canonical field (arithmetic consistency checks such as `total - deposit === remaining` may be used only to fail closed on malformed data, as in `backend/server/src/contracts/ownerCore.ts:362-373`).
 2. **Marketplace Commission & Splits (Internal Economics):**
    - Platform commission applies strictly to the deposit amount, never to the total stay price (MR-13). Retrieve exact commission percentage from `docs/BUSINESS_RULES.md` (Section: Prototype deposit payment) and MR-13.
    - Owner net share applies to the deposit amount. Retrieve exact split percentage from `docs/BUSINESS_RULES.md` and MR-13.

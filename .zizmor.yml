@@ -1,0 +1,40 @@
+# ==============================================================================
+# KONFRM Quality Evidence Mesh — Stage A Security Baseline Configuration
+# ==============================================================================
+#
+# PURPOSE:
+# This configuration defines the triage baseline for `zizmor` static security audits.
+# It records approved temporary exceptions for legacy workflows awaiting scheduled
+# remediation, while enforcing zero-tolerance security policies for all new workflows
+# and unexempted security rules.
+#
+# EXCEPTION POLICY:
+# - Legacy workflows: unpinned-uses, artipacked, excessive-permissions, and
+#   cache-poisoning are documented baseline exceptions pending their migration.
+# - Critical rules (template-injection, dangerous-triggers, untrusted-checkout,
+#   arbitrary execution, etc.) are NEVER exempted on any workflow.
+# - Any new workflow (including quality-evidence-mesh.yml) must pass with 0 findings.
+# ==============================================================================
+
+rules:
+  unpinned-uses:
+    ignore:
+      - ci-validation.yml
+      - auth-v2-founder-qa.yml
+      - email-first-founder-qa-temp.yml
+
+  excessive-permissions:
+    ignore:
+      - ci-validation.yml
+      - auth-v2-founder-qa.yml
+      - email-first-founder-qa-temp.yml
+
+  artipacked:
+    ignore:
+      - ci-validation.yml
+      - auth-v2-founder-qa.yml
+      - email-first-founder-qa-temp.yml
+
+  cache-poisoning:
+    ignore:
+      - ci-validation.yml

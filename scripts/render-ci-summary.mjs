@@ -400,7 +400,8 @@ export function renderSummary(validation = null) {
 // CLI Execution Entry Point (only when executed directly)
 // -----------------------------------------------------------------------------
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename)) {
-  const summaryMarkdown = renderSummary();
+  const validation = loadAndValidateReport();
+  const summaryMarkdown = renderSummary(validation);
 
   if (process.env.GITHUB_STEP_SUMMARY) {
     fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summaryMarkdown + '\n', 'utf-8');
@@ -408,5 +409,10 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename
   } else {
     console.log('\n--- RENDERED CI STEP SUMMARY ---\n');
     console.log(summaryMarkdown);
+  }
+
+  // Fail-closed invariant: cannot exit successfully when rendering a FAIL or BLOCKED outcome
+  if (!validation.valid || validation.status !== 'PASS') {
+    process.exit(1);
   }
 }

@@ -41,6 +41,7 @@ import {
   resolveReportPath,
   escapeMarkdownTableCell,
   loadAndValidateReport,
+  renderSummary,
 } from './render-ci-summary.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -165,6 +166,7 @@ function recordSuite({ id, name, status, details, diagnostics = null }) {
     console.log(`⛔ [BLOCKED] Suite ${id}: ${name}`);
   } else if (status === 'SKIPPED') {
     testReport.summary.skipped++;
+    allPassed = false;
     console.log(`↷ [SKIPPED] Suite ${id}: ${name}`);
   }
   if (details) {
@@ -1077,6 +1079,75 @@ try {
     const checkBlocked = loadAndValidateReport(testReportFile, 'nonce-blocked');
     const blockedOk = checkBlocked.valid === true && checkBlocked.status === 'BLOCKED';
 
+    // 8. Focused Regression: Skip exit-code invariant (9 PASS + 1 SKIPPED)
+    // 8a. 9 PASS + 1 SKIPPED report validation & rendering
+    const r9Pass1Skip = makeBaseReport('nonce-9p1s');
+    r9Pass1Skip.suites[9] = { id: 10, name: 'Suite 10', status: 'SKIPPED', details: 'Skipped suite' };
+    r9Pass1Skip.summary.passed = 9;
+    r9Pass1Skip.summary.skipped = 1;
+    r9Pass1Skip.overallStatus = 'FAIL'; // truthfully declared fail due to skip
+    fs.writeFileSync(testReportFile, JSON.stringify(r9Pass1Skip));
+
+    const check9p1sVal = loadAndValidateReport(testReportFile, 'nonce-9p1s');
+    const check9p1sStatusFail = check9p1sVal.valid === true && check9p1sVal.status === 'FAIL';
+    const rendered9p1s = renderSummary(check9p1sVal);
+    const nonPassSummaryRendered = !rendered9p1s.includes('Report (PASS)') && rendered9p1s.includes('Report (FAIL)');
+
+    // 8b. 9 PASS + 1 SKIPPED claiming PASS is rejected
+    const r9Pass1SkipForged = makeBaseReport('nonce-9p1s-forged');
+    r9Pass1SkipForged.suites[9] = { id: 10, name: 'Suite 10', status: 'SKIPPED', details: 'Skipped suite' };
+    r9Pass1SkipForged.summary.passed = 9;
+    r9Pass1SkipForged.summary.skipped = 1;
+    r9Pass1SkipForged.overallStatus = 'PASS';
+    fs.writeFileSync(testReportFile, JSON.stringify(r9Pass1SkipForged));
+    const checkForgedVal = loadAndValidateReport(testReportFile, 'nonce-9p1s-forged');
+    const forgedRejected = checkForgedVal.valid === false && checkForgedVal.status === 'FAIL';
+
+    // 8c. CLI execution of render-ci-summary.mjs on 9 PASS + 1 SKIPPED exits nonzero
+    const render9p1sCli = spawnSync(process.execPath, [path.join(REPO_ROOT, 'scripts', 'render-ci-summary.mjs')], {
+      env: {
+        ...process.env,
+        CI_SAFETY_REPORT_PATH: testReportFile,
+        CI_EXECUTION_NONCE: 'nonce-9p1s-forged',
+      },
+      encoding: 'utf-8',
+    });
+    const renderCliExitsNonzero = render9p1sCli.status !== 0;
+
+    // 8d. Simulated harness execution with 9 PASS + 1 SKIPPED exits nonzero
+    const harnessSkipProc = spawnSync(process.execPath, ['-e', `
+      let allPassed = true;
+      const s = { passed: 0, failed: 0, blocked: 0, skipped: 0, totalSuites: 10 };
+      for (let i = 0; i < 9; i++) s.passed++;
+      s.skipped++;
+      allPassed = false;
+      const overall = (s.failed === 0 && s.blocked === 0 && s.skipped === 0 && s.passed === s.totalSuites) ? 'PASS' : 'FAIL';
+      if (allPassed && s.skipped === 0 && overall === 'PASS') process.exit(0);
+      else process.exit(1);
+    `]);
+    const harnessExitsNonzeroOnSkip = harnessSkipProc.status !== 0;
+
+    // 8e. 10 PASS continues to succeed in CLI and summary
+    const r10Pass = makeBaseReport('nonce-10p-verify');
+    fs.writeFileSync(testReportFile, JSON.stringify(r10Pass));
+    const render10pCli = spawnSync(process.execPath, [path.join(REPO_ROOT, 'scripts', 'render-ci-summary.mjs')], {
+      env: {
+        ...process.env,
+        CI_SAFETY_REPORT_PATH: testReportFile,
+        CI_EXECUTION_NONCE: 'nonce-10p-verify',
+      },
+      encoding: 'utf-8',
+    });
+    const render10pExitsZero = render10pCli.status === 0;
+
+    const skipInvariantPassed =
+      check9p1sStatusFail &&
+      nonPassSummaryRendered &&
+      forgedRejected &&
+      renderCliExitsNonzero &&
+      harnessExitsNonzeroOnSkip &&
+      render10pExitsZero;
+
     lifecyclePassed =
       missingOk &&
       case1Ok &&
@@ -1087,7 +1158,8 @@ try {
       case6Ok &&
       case7Ok &&
       interruptedOk &&
-      blockedOk;
+      blockedOk &&
+      skipInvariantPassed;
   } finally {
     fs.rmSync(tmpLifecycleDir, { recursive: true, force: true });
   }
@@ -1097,7 +1169,7 @@ try {
       id: 10,
       name: 'Markdown safe encoding & stale-report fail-closed verification',
       status: 'PASS',
-      details: 'Verified backslash-first escaping, multiline/control sanitization, and 7 fail-closed report consistency proofs (nonce matching, suite identities, counter reconciliation)',
+      details: 'Verified backslash-first escaping, multiline/control sanitization, and 7 fail-closed report consistency proofs (nonce matching, suite identities, counter reconciliation, and skip exit-code invariant)',
     });
   } else {
     recordSuite({
@@ -1120,7 +1192,12 @@ try {
 // Write Machine-Readable Report & Exit
 // -----------------------------------------------------------------------------
 testReport.summary.totalSuites = testReport.suites.length;
-testReport.overallStatus = (testReport.summary.failed === 0 && testReport.summary.blocked === 0) ? 'PASS' : 'FAIL';
+testReport.overallStatus = (
+  testReport.summary.failed === 0 &&
+  testReport.summary.blocked === 0 &&
+  testReport.summary.skipped === 0 &&
+  testReport.summary.passed === testReport.summary.totalSuites
+) ? 'PASS' : 'FAIL';
 testReport.isCompleted = true;
 
 fs.writeFileSync(REPORT_OUTPUT_PATH, JSON.stringify(testReport, null, 2) + '\n', 'utf-8');
@@ -1128,12 +1205,18 @@ console.log(`\nMachine-readable test report written to: ${REPORT_OUTPUT_PATH}`);
 
 console.log('\n====================================================');
 console.log(`SUMMARY: ${testReport.summary.passed}/${testReport.summary.totalSuites} TEST SUITES PASSED.`);
-if (allPassed) {
+if (
+  allPassed &&
+  testReport.summary.failed === 0 &&
+  testReport.summary.blocked === 0 &&
+  testReport.summary.skipped === 0 &&
+  testReport.summary.passed === testReport.summary.totalSuites
+) {
   console.log('ALL CI SAFETY & HARDENED VERIFICATION TESTS PASSED.');
   console.log('====================================================');
   process.exit(0);
 } else {
-  console.error('ONE OR MORE CI SAFETY TESTS FAILED.');
+  console.error('ONE OR MORE CI SAFETY TESTS FAILED OR SKIPPED.');
   console.log('====================================================');
   process.exit(1);
 }

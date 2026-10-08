@@ -152,14 +152,19 @@ function deriveEpistemicClassification(tc, canon) {
 
   // Case-specific Canon evaluation strictly bounded to the governing section
   if (tc.id === 'POS-1') {
-    // Governed by MR-12 and Booking lifecycle section
+    // Governed by MR-12 and Booking lifecycle section (both pending-review submission AND non-blocking rules)
     const mr12Row = getMasterRuleRow('MR-12');
-    const isMR12Confirmed = mr12Row.includes('Confirmed');
+    const isMR12Confirmed = mr12Row.includes('Confirmed') &&
+                            /pending does not block dates/i.test(mr12Row);
     const brBookingSection = getMarkdownSection(br, 'Booking lifecycle and availability');
-    const hasBrBookingClause = /not for `?PENDING_OWNER_APPROVAL`?/i.test(brBookingSection);
+    const hasBrSubmissionClause = /Booking requests begin pending Owner review/i.test(brBookingSection) &&
+                                  /Owner approval transitions an eligible request/i.test(brBookingSection);
+    const hasBrBlockingClause = /not for `?PENDING_OWNER_APPROVAL`?/i.test(brBookingSection);
     const retBookingSection = getMarkdownSection(ret, '2. BOOKING LIFECYCLE & INVENTORY HOLD RETRIEVAL');
-    const hasRetBookingClause = retBookingSection.includes('PENDING_OWNER_APPROVAL') && retBookingSection.includes('DO NOT BLOCK');
-    if (isMR12Confirmed && hasBrBookingClause && hasRetBookingClause) {
+    const hasRetSubmissionClause = /creates a booking in `?PENDING_OWNER_APPROVAL`?/i.test(retBookingSection) &&
+                                   /Instant booking does \*\*NOT\*\* exist/i.test(retBookingSection);
+    const hasRetBlockingClause = retBookingSection.includes('PENDING_OWNER_APPROVAL') && retBookingSection.includes('DO NOT BLOCK');
+    if (isMR12Confirmed && hasBrSubmissionClause && hasBrBlockingClause && hasRetSubmissionClause && hasRetBlockingClause) {
       return 'ACCEPTED_CANON';
     }
     return 'UNCERTAIN_CANON';
@@ -200,10 +205,12 @@ function deriveEpistemicClassification(tc, canon) {
     const isMR10Confirmed = mr10Row.includes('Confirmed');
     const hasIdentityInMR = /One human can be Customer plus optional Owner/i.test(mr10Row);
     const brIdentitySection = getMarkdownSection(br, 'Identity and access');
-    const hasBrIdentityClause = /`?users`? represents a human identity;\s*`?owners`? is an optional extension/i.test(brIdentitySection);
+    const hasBrIdentityClause = /`?users`? represents a human identity;\s*`?owners`? is an optional extension/i.test(brIdentitySection) &&
+                                /canonical Owner record and validated owner session/i.test(brIdentitySection);
     const retIdentitySection = getMarkdownSection(ret, '6. IDENTITY, PRIVACY & COMMUNICATION BOUNDARIES');
     const hasRetIdentityClause = /`?users`? represents human identity/i.test(retIdentitySection) &&
-                                 /`?owners`? is an optional capability/i.test(retIdentitySection);
+                                 /`?owners`? is an optional capability/i.test(retIdentitySection) &&
+                                 /canonical Owner record in `owners` and a validated Owner session/i.test(retIdentitySection);
     if (isMR10Confirmed && hasIdentityInMR && hasBrIdentityClause && hasRetIdentityClause) {
       return 'ACCEPTED_CANON';
     }
@@ -739,6 +746,15 @@ if (legacyProductUxText.includes('Defines the authoritative product user experie
   fail('[REG-22] docs/ai/skills/konfrm-product-ux/SKILL.md missing explicit subordination notice to konfrm-product');
 }
 
+// REG-23: Owner Session Authentication (Requires canonical Owner record and validated Owner session, not completed KYC)
+if (/verified record in `owners`/i.test(retrievalContent)) {
+  fail('[REG-23] product_state_retrieval.md requires "verified record" for Owner session, which would lock unverified Owners out of KYC onboarding');
+} else if (retrievalContent.includes('canonical Owner record in `owners` and a validated Owner session')) {
+  pass('[REG-23] Owner Session Auth: Owner session requires canonical Owner record and validated session, not completed KYC');
+} else {
+  fail('[REG-23] product_state_retrieval.md missing canonical Owner record and validated Owner session requirement');
+}
+
 // 7. Negative Test Harness: Verify Evaluator Fails Closed on Corrupted Input
 console.log('--- [NEGATIVE TEST HARNESS: FAIL-CLOSED VERIFICATION] ---');
 let harnessFailures = 0;
@@ -841,6 +857,24 @@ try {
 } catch (err) {
   harnessFailures++;
   fail(`Negative Harness 5 unexpected error: ${err.message}`);
+}
+
+// Harness 6: Booking Submission Pending-Review Clause Loss (Removing line 20 of BUSINESS_RULES.md must fail closed for POS-1)
+try {
+  const fakeCanon = {
+    ...canonContext,
+    businessRulesContent: canonContext.businessRulesContent.replace(/-\s*Booking requests begin pending Owner review\.[\s\S]*?\r?\n/, ''),
+  };
+  const derivedEpistemic = deriveEpistemicClassification(testCases[0], fakeCanon);
+  if (derivedEpistemic === testCases[0].expectedEpistemic) {
+    harnessFailures++;
+    fail('Negative Harness 6: POS-1 did not fail closed when booking-submission pending-review clause was removed');
+  } else {
+    pass('Negative Harness 6: POS-1 failed closed when booking-submission pending-review clause was removed from BUSINESS_RULES.md');
+  }
+} catch (err) {
+  harnessFailures++;
+  fail(`Negative Harness 6 unexpected error: ${err.message}`);
 }
 
 if (harnessFailures > 0) {

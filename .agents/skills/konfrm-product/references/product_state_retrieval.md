@@ -129,7 +129,7 @@ Hardcoded business values inevitably drift from reality when policy evolves. Ins
 ### Retrieval & Interpretation Procedure
 1. **Unified Identity Model:**
    - `users` represents human identity. `owners` is an optional capability sharing the exact same UUID.
-   - Merely entering the Owner app or logging in as a user does **NOT** grant Owner capability. Owner sessions require a verified record in `owners`.
+   - Merely entering the Owner app or logging in as a user does **NOT** grant Owner capability. Owner authentication requires a canonical Owner record in `owners` and a validated Owner session (`docs/BUSINESS_RULES.md:8`; KYC verification status does not block establishing an Owner session so Owners can access onboarding and KYC submission endpoints).
 2. **Session Cleanup:**
    - Changing identities or logging out must immediately purge all account-scoped Owner and Customer state from in-memory stores and secure caches.
 3. **Booking-Contextual Communication & Open Eligibility:**

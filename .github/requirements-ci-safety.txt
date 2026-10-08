@@ -1,0 +1,12 @@
+# ==============================================================================
+# KONFRM CI Security Baseline — Python Requirements with Immutable Hashes
+# ==============================================================================
+# Pinned release: zizmor 1.30.1
+# Cryptographic SHA256 digests verified from official PyPI release distribution:
+# https://pypi.org/project/zizmor/1.30.1/#files
+# ==============================================================================
+
+zizmor==1.30.1 \
+    --hash=sha256:eee12266b793cb87ad4a7e3af2e72404f8a63e3de5eb099b80bf7b1cfd232a8e \
+    --hash=sha256:06e039fae8e185e2a1a8b002f2d95a6f5c3b548048bdd79e004dcb501fcd0868 \
+    --hash=sha256:cbb7e5cb2fec471066d5c326bcaa69ed3eefdcf6a76d7ad38335b924acf86c07

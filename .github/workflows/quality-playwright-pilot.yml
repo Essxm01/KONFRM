@@ -1,0 +1,70 @@
+name: Quality Evidence Mesh — Playwright Customer Web Pilot (Stage B)
+
+on:
+  pull_request:
+    paths:
+      - 'customer-app/**'
+      - 'qa/web-playwright/**'
+      - '.github/workflows/quality-playwright-pilot.yml'
+  workflow_dispatch:
+
+# Least privilege: global read-only access to repository contents across all jobs
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  playwright-pilot:
+    name: Playwright Customer Web Smoke Pilot
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        with:
+          node-version: '24'
+
+      - name: Install customer-app dependencies
+        working-directory: customer-app
+        run: npm ci
+
+      - name: Build customer-app
+        working-directory: customer-app
+        run: npm run build
+
+      - name: Install Playwright QA dependencies
+        working-directory: qa/web-playwright
+        run: npm ci
+
+      - name: Install Playwright Chromium Browser
+        working-directory: qa/web-playwright
+        run: npx playwright install chromium --with-deps
+
+      - name: Run Playwright Customer Web Smoke Tests
+        working-directory: qa/web-playwright
+        run: npm run test:smoke
+
+      - name: Run Playwright Negative Control Verification
+        working-directory: qa/web-playwright
+        run: npm run test:negative
+
+      - name: Upload Test Results and Evidence Artifacts
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb99ba811e # v4.5.1
+        if: always()
+        with:
+          name: playwright-customer-pilot-evidence
+          path: |
+            qa/web-playwright/test-results/
+            qa/web-playwright/playwright-report/
+            qa/web-playwright/evidence/screenshots/
+          retention-days: 14

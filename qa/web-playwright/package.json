@@ -1,0 +1,15 @@
+{
+  "name": "konfrm-qa-web-playwright",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test tests/smoke",
+    "test:smoke": "playwright test tests/smoke",
+    "test:negative": "node scripts/run-negative-control.mjs",
+    "test:all": "playwright test tests/smoke && node scripts/run-negative-control.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.51.0"
+  }
+}

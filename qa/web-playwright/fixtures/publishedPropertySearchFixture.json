@@ -1,0 +1,39 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "prop-marassi-01",
+      "title": "شاليه فاخر بإطلالة مباشرة على اللاجون في مراسي",
+      "unitType": "chalet",
+      "propertyType": "شاليه",
+      "address": "مراسي، الساحل الشمالي",
+      "region": "الساحل الشمالي",
+      "resortName": "مراسي",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "maxGuests": 6,
+      "basePricePerNight": 8500,
+      "currency": "EGP",
+      "images": [
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      ]
+    },
+    {
+      "id": "prop-hacienda-02",
+      "title": "فيلا مستقلة مع حديقة خاصة في هاسيندا باي",
+      "unitType": "villa",
+      "propertyType": "فيلا",
+      "address": "هاسيندا باي، سيدي عبد الرحمن",
+      "region": "الساحل الشمالي",
+      "resortName": "هاسيندا باي",
+      "bedrooms": 4,
+      "bathrooms": 4,
+      "maxGuests": 8,
+      "basePricePerNight": 14000,
+      "currency": "EGP",
+      "images": [
+        "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80"
+      ]
+    }
+  ]
+}

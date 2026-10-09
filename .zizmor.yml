@@ -1,0 +1,79 @@
+# ==============================================================================
+# KONFRM Quality Evidence Mesh — Stage A Traceable Security Baseline
+# ==============================================================================
+#
+# POLICY:
+# - Blanket file ignores are STRICTLY PROHIBITED.
+# - Exceptions are pinned to exact file and line numbers.
+# - Newly added unpinned actions, excessive permissions, or credential exposures
+#   in legacy workflows are automatically DETECTED and REJECTED.
+# - High-risk rules (template-injection, untrusted-checkout, dangerous-triggers)
+#   are NEVER exempted on any file or line.
+# ==============================================================================
+
+rules:
+  # ----------------------------------------------------------------------------
+  # RULE: unpinned-uses (Severity: High)
+  # Acknowledged legacy action references pinned to tags rather than immutable commit SHAs.
+  # Remediation: Scheduled migration in subsequent CI modernization PR.
+  # ----------------------------------------------------------------------------
+  unpinned-uses:
+    ignore:
+      # auth-v2-founder-qa.yml (Founder QA manual dispatch)
+      - auth-v2-founder-qa.yml:36    # actions/checkout@v4
+      - auth-v2-founder-qa.yml:39    # actions/setup-node@v4
+
+      # ci-validation.yml (Main CI matrix)
+      - ci-validation.yml:25         # actions/checkout@v4 (changes job)
+      - ci-validation.yml:26         # dorny/paths-filter@v3 (changes job)
+      - ci-validation.yml:70         # actions/checkout@v4 (validate-admin job)
+      - ci-validation.yml:71         # actions/setup-node@v4 (validate-admin job)
+      - ci-validation.yml:91         # actions/checkout@v4 (validate-owner job)
+      - ci-validation.yml:92         # actions/setup-node@v4 (validate-owner job)
+      - ci-validation.yml:111        # actions/checkout@v4 (validate-customer job)
+      - ci-validation.yml:112        # actions/setup-node@v4 (validate-customer job)
+      - ci-validation.yml:169        # actions/checkout@v4 (validate-backend job)
+      - ci-validation.yml:170        # actions/setup-node@v4 (validate-backend job)
+      - ci-validation.yml:233        # cloudflare/wrangler-action@v3 (deploy-worker job)
+
+      # email-first-founder-qa-temp.yml (Temporary Founder QA)
+      - email-first-founder-qa-temp.yml:20 # actions/checkout@v4
+      - email-first-founder-qa-temp.yml:23 # actions/setup-node@v4
+
+  # ----------------------------------------------------------------------------
+  # RULE: excessive-permissions (Severity: Medium)
+  # Acknowledged legacy jobs omitting explicit job-level permissions: block.
+  # Remediation: Add explicit least-privilege permissions in subsequent CI PR.
+  # ----------------------------------------------------------------------------
+  excessive-permissions:
+    ignore:
+      - ci-validation.yml:1          # Top-level workflow definition
+      - ci-validation.yml:13         # changes job
+      - ci-validation.yml:64         # validate-admin job
+      - ci-validation.yml:85         # validate-owner job
+      - ci-validation.yml:105        # validate-customer job
+      - ci-validation.yml:149        # validate-backend job
+
+  # ----------------------------------------------------------------------------
+  # RULE: artipacked (Severity: Medium)
+  # Acknowledged legacy checkouts omitting persist-credentials: false.
+  # Remediation: Explicit persist-credentials: false in subsequent CI PR.
+  # ----------------------------------------------------------------------------
+  artipacked:
+    ignore:
+      - auth-v2-founder-qa.yml:36    # actions/checkout@v4
+      - ci-validation.yml:25         # actions/checkout@v4 (changes job)
+      - ci-validation.yml:70         # actions/checkout@v4 (validate-admin job)
+      - ci-validation.yml:91         # actions/checkout@v4 (validate-owner job)
+      - ci-validation.yml:111        # actions/checkout@v4 (validate-customer job)
+      - ci-validation.yml:169        # actions/checkout@v4 (validate-backend job)
+      - email-first-founder-qa-temp.yml:20 # actions/checkout@v4
+
+  # ----------------------------------------------------------------------------
+  # RULE: cache-poisoning (Severity: High, Confidence: Low)
+  # Acknowledged legacy backend cache alongside deployment step.
+  # Remediation: Separate build artifact verification from worker deployment.
+  # ----------------------------------------------------------------------------
+  cache-poisoning:
+    ignore:
+      - ci-validation.yml:235        # setup-node npm cache before wrangler action

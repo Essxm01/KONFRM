@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "data": {
+    "id": "prop-marassi-01",
+    "title": "شاليه فاخر متكامل مع تراس بانورامي في مراسي",
+    "unitType": "chalet",
+    "propertyType": "شاليه",
+    "address": "مراسي، الساحل الشمالي",
+    "region": "الساحل الشمالي",
+    "resortName": "مراسي",
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "maxGuests": 8,
+    "basePricePerNight": 9500,
+    "currency": "EGP",
+    "images": [
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "bedsCount": 5,
+    "areaSqM": 185,
+    "description": "شاليه متكامل الخدمات في قلب مراسي مع إطلالة بانورامية ساحرة على اللاجون الكريستالي، تشطيب فندقي راقي، وتراس واسع للاسترخاء.",
+    "amenities": [
+      "pool",
+      "central_ac",
+      "wifi",
+      "kitchen",
+      "security"
+    ],
+    "houseRules": {
+      "smokingAllowed": false,
+      "petsAllowed": false,
+      "partiesAllowed": false,
+      "checkInTime": "15:00",
+      "checkOutTime": "11:00"
+    }
+  }
+}

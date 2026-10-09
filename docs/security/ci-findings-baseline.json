@@ -1,0 +1,734 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "KONFRM CI Findings Baseline Inventory",
+  "description": "Traceable inventory of acknowledged legacy findings in CI workflows for Quality Evidence Mesh Stage A.",
+  "generated_at": "2026-10-08T03:06:26.181Z",
+  "total_acknowledged_findings": 29,
+  "exempted_rules": [
+    "unpinned-uses",
+    "excessive-permissions",
+    "artipacked",
+    "cache-poisoning"
+  ],
+  "unconditional_zero_tolerance_rules": [
+    "template-injection",
+    "untrusted-checkout",
+    "dangerous-triggers",
+    "arbitrary-code-execution",
+    "self-hosted-runner-execution"
+  ],
+  "findings": [
+    {
+      "identity_key": "artipacked::auth-v2-founder-qa.yml:36::auth-v2-founder-qa.yml:36:9",
+      "ident": "artipacked",
+      "file": "auth-v2-founder-qa.yml",
+      "line": 36,
+      "col": 9,
+      "severity": "Medium",
+      "confidence": "Low",
+      "locations": [
+        {
+          "file": "auth-v2-founder-qa.yml",
+          "line": 36,
+          "col": 9,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Legacy manual dispatch founder QA checkout step omits persist-credentials: false.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::auth-v2-founder-qa.yml:36::auth-v2-founder-qa.yml:36:9;auth-v2-founder-qa.yml:36:15",
+      "ident": "unpinned-uses",
+      "file": "auth-v2-founder-qa.yml",
+      "line": 36,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "auth-v2-founder-qa.yml",
+          "line": 36,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "auth-v2-founder-qa.yml",
+          "line": 36,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Legacy manual dispatch founder QA checkout pinned to semver tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::auth-v2-founder-qa.yml:39::auth-v2-founder-qa.yml:39:9;auth-v2-founder-qa.yml:39:15",
+      "ident": "unpinned-uses",
+      "file": "auth-v2-founder-qa.yml",
+      "line": 39,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "auth-v2-founder-qa.yml",
+          "line": 39,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "auth-v2-founder-qa.yml",
+          "line": 39,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/setup-node@v4",
+      "rationale": "Legacy manual dispatch founder QA setup-node pinned to semver tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "artipacked::ci-validation.yml:25::ci-validation.yml:25:9",
+      "ident": "artipacked",
+      "file": "ci-validation.yml",
+      "line": 25,
+      "col": 9,
+      "severity": "Medium",
+      "confidence": "Low",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 25,
+          "col": 9,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Changes filter job checkout omits persist-credentials: false.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "artipacked::ci-validation.yml:70::ci-validation.yml:70:9",
+      "ident": "artipacked",
+      "file": "ci-validation.yml",
+      "line": 70,
+      "col": 9,
+      "severity": "Medium",
+      "confidence": "Low",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 70,
+          "col": 9,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Admin app validation job checkout omits persist-credentials: false.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "artipacked::ci-validation.yml:91::ci-validation.yml:91:9",
+      "ident": "artipacked",
+      "file": "ci-validation.yml",
+      "line": 91,
+      "col": 9,
+      "severity": "Medium",
+      "confidence": "Low",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 91,
+          "col": 9,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Owner app validation job checkout omits persist-credentials: false.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "artipacked::ci-validation.yml:111::ci-validation.yml:111:9",
+      "ident": "artipacked",
+      "file": "ci-validation.yml",
+      "line": 111,
+      "col": 9,
+      "severity": "Medium",
+      "confidence": "Low",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 111,
+          "col": 9,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Customer app validation job checkout omits persist-credentials: false.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "artipacked::ci-validation.yml:169::ci-validation.yml:169:9",
+      "ident": "artipacked",
+      "file": "ci-validation.yml",
+      "line": 169,
+      "col": 9,
+      "severity": "Medium",
+      "confidence": "Low",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 169,
+          "col": 9,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Backend validation job checkout omits persist-credentials: false.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "excessive-permissions::ci-validation.yml:1::ci-validation.yml:1:1",
+      "ident": "excessive-permissions",
+      "file": "ci-validation.yml",
+      "line": 1,
+      "col": 1,
+      "severity": "Medium",
+      "confidence": "Medium",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 1,
+          "col": 1,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "name: SOLA Monorepo CI Validation",
+      "rationale": "Top-level workflow lacks permissions: block.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "excessive-permissions::ci-validation.yml:13::ci-validation.yml:13:3;ci-validation.yml:13:3",
+      "ident": "excessive-permissions",
+      "file": "ci-validation.yml",
+      "line": 13,
+      "col": 3,
+      "severity": "Medium",
+      "confidence": "Medium",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 13,
+          "col": 3,
+          "kind": "Related"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 13,
+          "col": 3,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "changes:",
+      "rationale": "changes job lacks job-level permissions: block.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "excessive-permissions::ci-validation.yml:64::ci-validation.yml:64:3;ci-validation.yml:64:3",
+      "ident": "excessive-permissions",
+      "file": "ci-validation.yml",
+      "line": 64,
+      "col": 3,
+      "severity": "Medium",
+      "confidence": "Medium",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 64,
+          "col": 3,
+          "kind": "Related"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 64,
+          "col": 3,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "validate-admin:",
+      "rationale": "validate-admin job lacks job-level permissions: block.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "excessive-permissions::ci-validation.yml:85::ci-validation.yml:85:3;ci-validation.yml:85:3",
+      "ident": "excessive-permissions",
+      "file": "ci-validation.yml",
+      "line": 85,
+      "col": 3,
+      "severity": "Medium",
+      "confidence": "Medium",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 85,
+          "col": 3,
+          "kind": "Related"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 85,
+          "col": 3,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "validate-owner:",
+      "rationale": "validate-owner job lacks job-level permissions: block.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "excessive-permissions::ci-validation.yml:105::ci-validation.yml:105:3;ci-validation.yml:105:3",
+      "ident": "excessive-permissions",
+      "file": "ci-validation.yml",
+      "line": 105,
+      "col": 3,
+      "severity": "Medium",
+      "confidence": "Medium",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 105,
+          "col": 3,
+          "kind": "Related"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 105,
+          "col": 3,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "validate-customer:",
+      "rationale": "validate-customer job lacks job-level permissions: block.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "excessive-permissions::ci-validation.yml:149::ci-validation.yml:149:3;ci-validation.yml:149:3",
+      "ident": "excessive-permissions",
+      "file": "ci-validation.yml",
+      "line": 149,
+      "col": 3,
+      "severity": "Medium",
+      "confidence": "Medium",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 149,
+          "col": 3,
+          "kind": "Related"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 149,
+          "col": 3,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "validate-backend:",
+      "rationale": "validate-backend job lacks job-level permissions: block.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::ci-validation.yml:25::ci-validation.yml:25:9;ci-validation.yml:25:15",
+      "ident": "unpinned-uses",
+      "file": "ci-validation.yml",
+      "line": 25,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 25,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 25,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Changes filter job checkout pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::ci-validation.yml:26::ci-validation.yml:26:9;ci-validation.yml:26:15",
+      "ident": "unpinned-uses",
+      "file": "ci-validation.yml",
+      "line": 26,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 26,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 26,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Changes filter job checkout pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::ci-validation.yml:70::ci-validation.yml:70:9;ci-validation.yml:70:15",
+      "ident": "unpinned-uses",
+      "file": "ci-validation.yml",
+      "line": 70,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 70,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 70,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Admin app validation job checkout pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::ci-validation.yml:71::ci-validation.yml:71:9;ci-validation.yml:71:15",
+      "ident": "unpinned-uses",
+      "file": "ci-validation.yml",
+      "line": 71,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 71,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 71,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Admin app validation job checkout pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::ci-validation.yml:91::ci-validation.yml:91:9;ci-validation.yml:91:15",
+      "ident": "unpinned-uses",
+      "file": "ci-validation.yml",
+      "line": 91,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 91,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 91,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Owner app validation job checkout pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::ci-validation.yml:92::ci-validation.yml:92:9;ci-validation.yml:92:15",
+      "ident": "unpinned-uses",
+      "file": "ci-validation.yml",
+      "line": 92,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 92,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 92,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Owner app validation job checkout pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::ci-validation.yml:111::ci-validation.yml:111:9;ci-validation.yml:111:15",
+      "ident": "unpinned-uses",
+      "file": "ci-validation.yml",
+      "line": 111,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 111,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 111,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Customer app validation job checkout pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::ci-validation.yml:112::ci-validation.yml:112:9;ci-validation.yml:112:15",
+      "ident": "unpinned-uses",
+      "file": "ci-validation.yml",
+      "line": 112,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 112,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 112,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Customer app validation job checkout pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::ci-validation.yml:169::ci-validation.yml:169:9;ci-validation.yml:169:15",
+      "ident": "unpinned-uses",
+      "file": "ci-validation.yml",
+      "line": 169,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 169,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 169,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Backend validation job checkout pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::ci-validation.yml:170::ci-validation.yml:170:9;ci-validation.yml:170:15",
+      "ident": "unpinned-uses",
+      "file": "ci-validation.yml",
+      "line": 170,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 170,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 170,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Backend validation job checkout pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::ci-validation.yml:235::ci-validation.yml:233:9;ci-validation.yml:235:15",
+      "ident": "unpinned-uses",
+      "file": "ci-validation.yml",
+      "line": 235,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 233,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 235,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "cloudflare/wrangler-action@v3",
+      "rationale": "Worker deployment job wrangler-action pinned to tag @v3 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "cache-poisoning::ci-validation.yml:170::ci-validation.yml:170:9;ci-validation.yml:170:9;ci-validation.yml:235:9",
+      "ident": "cache-poisoning",
+      "file": "ci-validation.yml",
+      "line": 170,
+      "col": 9,
+      "severity": "High",
+      "confidence": "Low",
+      "locations": [
+        {
+          "file": "ci-validation.yml",
+          "line": 170,
+          "col": 9,
+          "kind": "Primary"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 170,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "ci-validation.yml",
+          "line": 235,
+          "col": 9,
+          "kind": "Related"
+        }
+      ],
+      "feature": "        uses: cloudflare/wrangler-action@v3",
+      "rationale": "Legacy workflow finding awaiting scheduled migration.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "artipacked::email-first-founder-qa-temp.yml:20::email-first-founder-qa-temp.yml:20:9",
+      "ident": "artipacked",
+      "file": "email-first-founder-qa-temp.yml",
+      "line": 20,
+      "col": 9,
+      "severity": "Medium",
+      "confidence": "Low",
+      "locations": [
+        {
+          "file": "email-first-founder-qa-temp.yml",
+          "line": 20,
+          "col": 9,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Temporary founder QA workflow checkout omits persist-credentials: false.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::email-first-founder-qa-temp.yml:20::email-first-founder-qa-temp.yml:20:9;email-first-founder-qa-temp.yml:20:15",
+      "ident": "unpinned-uses",
+      "file": "email-first-founder-qa-temp.yml",
+      "line": 20,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "email-first-founder-qa-temp.yml",
+          "line": 20,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "email-first-founder-qa-temp.yml",
+          "line": 20,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/checkout@v4",
+      "rationale": "Temporary founder QA workflow checkout pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    },
+    {
+      "identity_key": "unpinned-uses::email-first-founder-qa-temp.yml:23::email-first-founder-qa-temp.yml:23:9;email-first-founder-qa-temp.yml:23:15",
+      "ident": "unpinned-uses",
+      "file": "email-first-founder-qa-temp.yml",
+      "line": 23,
+      "col": 15,
+      "severity": "High",
+      "confidence": "High",
+      "locations": [
+        {
+          "file": "email-first-founder-qa-temp.yml",
+          "line": 23,
+          "col": 9,
+          "kind": "Hidden"
+        },
+        {
+          "file": "email-first-founder-qa-temp.yml",
+          "line": 23,
+          "col": 15,
+          "kind": "Primary"
+        }
+      ],
+      "feature": "uses: actions/setup-node@v4",
+      "rationale": "Temporary founder QA workflow setup-node pinned to tag @v4 instead of commit hash.",
+      "remediation_status": "PENDING_SCHEDULED_APPLICATION_MIGRATION"
+    }
+  ]
+}

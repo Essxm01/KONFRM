@@ -36,3 +36,7 @@ __pycache__/
 *.sw?
 *.tsbuildinfo
 .mimosa/
+docs/security/ci-safety-report.json
+.ci-safety-report*.json
+qa/web-playwright/test-results/
+qa/web-playwright/playwright-report/

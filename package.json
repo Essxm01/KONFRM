@@ -15,7 +15,10 @@
     "design:generate": "node scripts/generate-design-tokens.mjs",
     "design:check": "node scripts/check-design-system.mjs",
     "ai:skills:sync": "node scripts/sync-agent-skills.mjs",
-    "ai:skills:check": "node scripts/check-ai-skills.mjs"
+    "ai:skills:check": "node scripts/check-ai-skills.mjs",
+    "ci:safety:check": "node scripts/test-ci-safety.mjs",
+    "qa:playwright:smoke": "npm --prefix qa/web-playwright run test:smoke",
+    "qa:playwright:negative": "npm --prefix qa/web-playwright run test:negative"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

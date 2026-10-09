@@ -1,0 +1,14 @@
+{
+  "success": true,
+  "data": {
+    "propertyId": "prop-marassi-01",
+    "unavailableRanges": [
+      {
+        "checkIn": "2026-10-15",
+        "checkOut": "2026-10-20"
+      }
+    ],
+    "minStay": 2,
+    "maxStay": 30
+  }
+}

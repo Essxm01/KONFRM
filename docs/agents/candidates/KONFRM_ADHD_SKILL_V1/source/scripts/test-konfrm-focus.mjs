@@ -46,6 +46,7 @@ try {
   assert.equal(validatePatternGrammar('  path/**').valid, false);
   assert.equal(validatePatternGrammar('/absolute/**').valid, false);
   assert.equal(validatePatternGrammar('path/../traversal/**').valid, false);
+  assert.equal(validatePatternGrammar('path\\backslash/**').valid, false);
   assert.equal(validatePatternGrammar('*.dart').valid, false);
   assert.equal(validatePatternGrammar('path/*/dir/**').valid, false);
   assert.equal(validatePatternGrammar('**').valid, false);
@@ -72,6 +73,13 @@ try {
     x.authorized_parallel_lanes[0].exclusive_writable_surfaces = ['/etc/passwd'];
     write('FOCUS_NOW.json', x);
   }, 'absolute path rejected');
+
+  // Negative: backslash pattern rejected
+  negative('backslash pattern rejected', () => {
+    let x = read('FOCUS_NOW.json');
+    x.authorized_parallel_lanes[0].exclusive_writable_surfaces = ['docs\\candidates/**'];
+    write('FOCUS_NOW.json', x);
+  }, 'backslashes rejected');
 
   // Negative: unsupported wildcard glob rejected
   negative('unsupported wildcard glob rejected', () => {
@@ -186,6 +194,19 @@ try {
     const oldNow = fs.readFileSync(file('FOCUS_NOW.json'), 'utf8');
     try {
       const initialRev = 3;
+
+      // Fail-closed check: non-integer / undefined expectedRevision fails closed
+      const resBad = appendDecisionEvent({
+        event_id: 'DEC-20261009-TEST-BAD',
+        date: '2026-10-09',
+        kind: 'TEST_INVALID_REV',
+        record_id: 'LANE-ADHD-HARDENING',
+        authority: 'Agent',
+        status: 'FAIL'
+      }, undefined, tmp);
+      assert.equal(resBad.success, false);
+      assert.ok(resBad.error.includes('INVALID_REVISION'));
+
       // Agent 1 appends with expectedRevision = 3 (succeeds)
       const res1 = appendDecisionEvent({
         event_id: 'DEC-20261009-TEST1',
@@ -209,7 +230,7 @@ try {
       }, initialRev, tmp);
       assert.equal(res2.success, false);
       assert.ok(res2.error.includes('CONCURRENCY_CONFLICT'));
-      console.log('PASS: real concurrency test (stale revision write aborted)');
+      console.log('PASS: sequential stale-revision test (stale expectedRevision rejected; simultaneous multi-process writers UNVERIFIED)');
       count++;
     } finally {
       fs.writeFileSync(file('DECISION_LEDGER.jsonl'), oldLedger);
@@ -327,6 +348,18 @@ try {
       write('FOCUS_NOW.json', oldNow);
     }
   }
+
+  // Negative: invalid preserved_previous_task status rejected
+  negative('invalid preserved_previous_task status rejected', () => {
+    let x = read('FOCUS_NOW.json');
+    x.preserved_previous_task = {
+      task_id: 'PREV_TASK',
+      status: 'INVALID_STATUS',
+      title: 'Previous task',
+      completion_gate: 'Gate'
+    };
+    write('FOCUS_NOW.json', x);
+  }, 'invalid preserved_previous_task status');
 
   // Confirm baseline state is completely restored
   assert.deepEqual(validateProject(tmp), []);

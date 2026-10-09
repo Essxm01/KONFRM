@@ -33,4 +33,4 @@ ADHD SKILL is a **cross-cutting process overlay**, NOT an eighth domain brain. D
 - `konfrm-design`: design system and presentation.
 
 ## Validation
-`node scripts/check-konfrm-focus.mjs` then `node scripts/test-konfrm-focus.mjs`.
+`node scripts/check-konfrm-focus.mjs`, `node scripts/test-konfrm-focus.mjs`, and `node scripts/pilot-konfrm-focus.mjs`.

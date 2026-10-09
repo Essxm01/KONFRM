@@ -42,12 +42,16 @@ export function validatePatternGrammar(pattern) {
   if (pattern !== pattern.trim()) {
     return { valid: false, error: `pattern has leading/trailing whitespace: "${pattern}"` };
   }
+  // Reject backslashes (all patterns must use forward slashes '/')
+  if (pattern.includes('\\')) {
+    return { valid: false, error: `backslashes rejected: repository patterns must use forward slashes (/): "${pattern}"` };
+  }
   // Reject absolute paths
-  if (pattern.startsWith('/') || pattern.startsWith('\\') || /^[a-zA-Z]:/.test(pattern)) {
+  if (pattern.startsWith('/') || /^[a-zA-Z]:/.test(pattern)) {
     return { valid: false, error: `absolute path rejected: "${pattern}"` };
   }
   // Reject path traversal
-  const norm = pattern.replace(/\\/g, '/');
+  const norm = pattern;
   const segments = norm.split('/');
   if (segments.some(s => s === '..' || s === '.')) {
     return { valid: false, error: `path traversal rejected: "${pattern}"` };
@@ -104,16 +108,24 @@ export function patternsOverlap(patA, patB) {
 
 /**
  * Append a decision event with explicit optimistic concurrency revision check.
+ * Fails closed if expectedRevision is missing, non-integer, or does not match current line count.
  */
 export function appendDecisionEvent(event, expectedRevision, root = defaultRoot) {
   const ledgerPath = path.join(root, 'docs/focus/DECISION_LEDGER.jsonl');
   const nowPath = path.join(root, 'docs/focus/FOCUS_NOW.json');
 
+  if (typeof expectedRevision !== 'number' || !Number.isInteger(expectedRevision) || expectedRevision < 0) {
+    return {
+      success: false,
+      error: `INVALID_REVISION: expectedRevision must be a non-negative integer (received ${expectedRevision})`
+    };
+  }
+
   const content = fs.existsSync(ledgerPath) ? fs.readFileSync(ledgerPath, 'utf8') : '';
   const lines = content.split(/\r?\n/).filter(Boolean);
   const currentRevision = lines.length;
 
-  if (typeof expectedRevision === 'number' && currentRevision !== expectedRevision) {
+  if (currentRevision !== expectedRevision) {
     return {
       success: false,
       error: `CONCURRENCY_CONFLICT: ledger revision mismatch (expected ${expectedRevision}, found ${currentRevision})`
@@ -140,7 +152,9 @@ export function appendDecisionEvent(event, expectedRevision, root = defaultRoot)
       const now = JSON.parse(fs.readFileSync(nowPath, 'utf8'));
       now.ledger_revision = newRevision;
       fs.writeFileSync(nowPath, JSON.stringify(now, null, 2) + '\n');
-    } catch {}
+    } catch (err) {
+      return { success: true, newRevision, warning: `ledger updated but FOCUS_NOW.json could not be written: ${err.message}` };
+    }
   }
 
   return { success: true, newRevision };
@@ -183,6 +197,21 @@ export function validateProject(root = defaultRoot) {
   }
   if (active?.pr && knownMergedPRBlacklist.has(Number(active.pr)) && active.status === 'ACTIVE') {
     errors.push(`finished PR treated as active work: PR #${active.pr}`);
+  }
+
+  // Validate preserved previous task if present (priority switch preservation gate)
+  if (now.preserved_previous_task !== undefined) {
+    const prev = now.preserved_previous_task;
+    if (!prev || typeof prev !== 'object' || Array.isArray(prev)) {
+      errors.push('preserved_previous_task must be an object');
+    } else {
+      if (prev.status !== 'PRESERVED_HANDOFF') {
+        errors.push(`invalid preserved_previous_task status: "${prev.status}" (must be PRESERVED_HANDOFF)`);
+      }
+      for (const k of ['task_id', 'title', 'completion_gate']) {
+        if (!txt(prev[k])) errors.push(`missing preserved_previous_task.${k}`);
+      }
+    }
   }
 
   // WIP Violation: Unauthorized task proliferation in additional_active_tasks

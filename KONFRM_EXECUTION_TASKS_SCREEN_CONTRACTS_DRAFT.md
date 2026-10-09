@@ -1,9 +1,9 @@
-# Customer Phase 5 — Screen Contracts Draft
+# Customer Phase 5 and Proposed Owner/Admin — Screen Contracts Draft
 
 **Status:** DRAFT / PROPOSED / NOT CANON  
 **Prepared:** 2026-10-10  
 **Parent:** [`KONFRM_EXECUTION_TASKS.md`](./KONFRM_EXECUTION_TASKS.md)  
-**Authority:** Screen identities and approved journey principles are drawn from `DESIGN_SYSTEM/EXPERIENCE/CUSTOMER_PHASE5_MASTER_UX.md`; this annex proposes implementation contracts and does not approve new product behavior.
+**Authority:** Customer screen identities and approved journey principles are drawn from `DESIGN_SYSTEM/EXPERIENCE/CUSTOMER_PHASE5_MASTER_UX.md`. Owner and Admin sections below are proposed planning inventories, not approved screen lists or product behavior.
 
 ## Contract rules
 
@@ -275,6 +275,60 @@
 - **Navigation / layout:** Link to canonical web policy where available, retain source and effective date.
 - **RTL / accessibility / privacy:** Accessible long-form text, semantic headings, tables/links; no sensitive diagnostics in analytics.
 - **Dependencies / acceptance:** Data inventory, deletion/retention decision, provider review and legal approval. Verify in-app and store disclosures match actual SDK/backend behavior.
+
+## Owner proposed screen families
+
+**Status for every family below: `PROPOSED / NEEDS FOUNDER UX APPROVAL`.** These are navigable family candidates to let the Founder and UX authority review completeness and priorities. The `O-Pxx` labels are temporary planning IDs, not official routes, screen numbers, or Canon. A family may become a screen, a group of screens, a contextual sheet, or remain out of scope after review. Current React surfaces are implementation observations only.
+
+Approved navigation direction is Owner-specific: action-first nested navigation, with **no Customer-style bottom navigation** (Mobile Design Foundation v1.7). The exact route tree and Home priorities remain gated. Do not invent a response SLA, payment rule, availability hold, payout timing, KYC completion status, notification promise, cancellation policy, or Admin decision outcome.
+
+| Proposed family | User intent / likely entry and exit (subject to UX approval) | Canonical facts and action boundary | Role-specific UX acceptance and gate |
+| --- | --- | --- | --- |
+| O-P01 Entry, session and onboarding | Establish or restore Owner access; enter the operational workspace or continue approved onboarding. | Server-issued identity/role; same human UUID may have optional Owner capability. Login alone must not create Owner capability. | Distinguish authenticated Customer from Owner onboarding required; preserve task context; show session/error/empty states honestly. Founder gate: exact first-run, registration and verification sequence. |
+| O-P02 Action-first Home | See what requires attention and navigate to the next valid Owner task. | Server-backed pending property/booking/action counts only; no fabricated zeros, balances or notification state. | Put actionable work before secondary analytics; each cue opens its authorized source; error is not empty. No KPI-card soup or customer-style tab bar. Founder/UX gate: priority, supported summaries and navigation hierarchy. |
+| O-P03 Property workspace | Find properties and understand each canonical lifecycle state; open permitted edit/review actions. | Property owner, publication/review status, completeness and rejection reason from API. | Preserve ownership; separate draft, submitted, approved, rejected and published facts; disable or explain unavailable action without local state invention. Gate: family consolidation and exact status copy. |
+| O-P04 Property create/edit | Create or correct a property draft and submit through the approved lifecycle. | Server validation and persisted property; current lifecycle; no publication bypass. | Show field-level errors, unsaved draft, retry and submission result distinctly; protect edits from stale overwrite. Gate: required fields and owner-facing submission language follow current contracts. |
+| O-P05 Property media and verification evidence | Manage public listing media or submit private identity evidence as separate data classes. | Public property media versus private Owner KYC evidence and ACLs. | Never mix KYC into public media; show upload/processing/failure truth; no claimed liveness/biometric validation. Gate: exact capture, retention, access and replacement rules. |
+| O-P06 Calendar and availability | Understand available/blocked dates and edit availability only where authorized. | Server property availability and canonical booking blocking statuses. `PENDING_OWNER_APPROVAL` does not block inventory; `APPROVED_PENDING_PAYMENT` and `CONFIRMED` do. | Distinguish existing bookings from Owner blocks; validate timezone/ranges; conflict and failure never appear as available. Gate: edit affordances, range semantics and schedule exceptions. |
+| O-P07 Booking requests and stay details | Review the same request, then approve/reject through authorized server actions; inspect active/past stay data. | Canonical booking ID, status, dates, guest summary and allowed action; Owner approval precedes deposit. | Make request versus approval versus payment unmistakable; show server result and recovery; no payment release or legal-reservation semantics invented. Gate: rejection reasons, deadlines and request contention where unresolved. |
+| O-P08 Booking-scoped conversation | Communicate about an authorized booking where chat is approved and enabled. | Authorized booking participants and server message/delivery state. | No generic user search; no delivery/read claim from local send alone; preserve booking context and data minimization. Gate: retention, attachments, unread semantics and Admin access. |
+| O-P09 Wallet and payout | Understand canonical Owner-visible financial entries and any eligible payout actions. | Server ledger/balance and current prototype rules; no client reconstruction from property price. | Reconcile displayed amounts with canonical records; separate pending/available/held/reserved; never show Customer commission internals. Gate: payout timing/eligibility/provider fees and all production changes need explicit revalidation. |
+| O-P10 Profile, verification status and support | Review Owner profile, verification state and approved support route. | Profile/KYC status and evidence access from authorized APIs. | Explain missing/rejected evidence only when server provides reason; never expose private evidence through public URL. Gate: editable fields, reupload path, retention, escalation and support hours. |
+| O-P11 Notifications and disputes (conditional families) | Act on a notification or participate in an eligible dispute only if the respective product capability is approved. | Real event recipient/read model; approved dispute status and evidence policy. | Existing modal/bell surfaces do not establish a notification product contract. Do not promise delivery or outcomes. Gate: notification event matrix and dispute policy before route/CTA is committed. |
+
+### Owner-specific UX acceptance outline
+
+- **Action hierarchy:** the first view exposes actionable work and canonical state; owner can identify what needs attention, why, and the next authorized action without scanning decorative metrics.
+- **Data truth and recovery:** counts/balances/statuses come from authorized API data; loading, true empty, partial, stale, failure, conflict and retry are distinguishable. A failed query never becomes zero or available inventory.
+- **Workflow integrity:** property and booking actions preserve server state and return a confirmed result; repeated taps/retries do not duplicate writes. No business outcome is inferred from client navigation.
+- **Financial comprehension:** show only Owner-appropriate canonical values and approved prototype rules. Explain amount basis without inventing release dates, fees, tax, refund or remaining-balance behavior.
+- **Private evidence:** KYC capture/view/download and transfer behavior respects private storage, authorization, minimization and retention. No biometric/liveness claim.
+- **Platform/accessibility:** Arabic-first Cairo layout and RTL, mixed-script isolation, responsive reflow, semantics, focus/keyboard, contrast, reduced motion, text scaling and screen-reader checks. Record simulated versus physical Android/iOS evidence.
+- **Approval gate:** Founder/UX approves family map, route hierarchy, Home priorities, labels and interaction behavior before implementation scope or any design decision is treated as Canon. Business-policy gates remain separately required.
+
+## Admin proposed screen families
+
+**Status for every family below: `PROPOSED / NEEDS FOUNDER UX APPROVAL`.** The `A-Pxx` labels are temporary planning IDs, not official routes, screen numbers, or Canon. Existing React queues/details are observed implementation evidence; they do not establish a complete target IA. Admin remains a desktop Web surface. A disabled notification bell is not a committed destination.
+
+| Proposed family | Operator intent / likely entry and exit (subject to UX approval) | Canonical facts and action boundary | Role-specific UX acceptance and gate |
+| --- | --- | --- | --- |
+| A-P01 Admin access and session | Sign in and reach only authorized operational areas; recover expired/denied sessions. | Server-verified Admin identity, role, session and permission. | Fail closed; no credential leakage or Customer/Owner session confusion; denial and expiry are explicit. Gate: exact role/permission matrix and recovery route. |
+| A-P02 Operational overview | See current workload and operational exceptions, then navigate to a real queue or source. | Server-backed counts and state with defined freshness; no fake zero or hardcoded success. | Every counter is traceable to records; partial/error/stale is visible; no action-less metric. Gate: approved metric definitions and destinations. |
+| A-P03 Owner verification queue and detail | Find an Owner review and inspect authorized private evidence/reasons. | Canonical Owner/KYC status, private documents, audit events and allowed decision. | Need-to-know access, safe previews, no public evidence URL, clear missing/unavailable versus empty, no liveness assertion. Gate: evidence visibility, retention, reviewer roles and reason taxonomy. |
+| A-P04 Property review queue and detail | Review property eligibility and record an authorized approval/rejection with reason. | Canonical property content/media, lifecycle status, server policy and audit history. | Decision preview names its target; state changes only after server confirmation; reason reaches the Owner where contract requires; failures do not appear approved. Gate: complete review policy/reason schema. |
+| A-P05 Payout operations queue and detail | Inspect canonical payout request/ledger state and perform only authorized operations. | Server ledger, request state, eligibility, provider result and audit record. | Reconcile amounts and status; distinguish requested/processing/paid/failed; no fabricated payout or invented accounting action. Gate: production payout and reconciliation rules/legal/provider decision. |
+| A-P06 Dispute operations queue and detail | Review an eligible case and evidence under an approved dispute process. | Authorized parties, case/evidence, deadlines, decisions and financial effects only when approved. | Protect evidence, expose complete decision context, record reason/audit and show no outcome before server confirmation. Gate: cancellation/refund/dispute policy and Admin authority. |
+| A-P07 Audit, search and operational filters | Locate authorized records and understand decision history. | Existing canonical IDs, event history and access rules; no new permission implied by search. | Search/filter terms and result scope are explicit; preserve authorization and avoid false absence from partial query; audit actions are attributable. Gate: allowed fields, retention and role visibility. |
+| A-P08 Notifications (not committed) | No target family is proposed until a real operator action, recipient/event model and destination are approved. | Existing bell/API surface alone is insufficient evidence. | Do not create a no-op panel or fictitious unread counts. Gate: business event, Admin audience, permission, delivery, read semantics and destination. |
+
+### Admin-specific UX acceptance outline
+
+- **Decision quality:** each review/operation presents the canonical record, evidence, policy context and permitted action together; consequential decisions state the target and require confirmation where approved.
+- **Audit and truth:** queue totals reconcile to returned records; stale/partial/error states are not success or zero; each persisted decision/reason and actor is visible through the approved audit contract.
+- **Least privilege:** Admin role permissions are explicit; KYC/private evidence is access-controlled; queue/search/detail do not bypass API ownership or authorization. Do not infer broader Admin access from a Web route.
+- **Operational clarity:** distinguish pending review from failed retrieval, payout request from payment completion, and dispute review from refund/cancellation outcome. No unapproved policy or financial operation appears as an available control.
+- **Desktop accessibility:** semantic headings/tables/forms, keyboard navigation and visible focus, non-color-only statuses, zoom/reflow where supported, readable dense data, accessible dialogs and errors; validate with target browsers and assistive technology.
+- **Approval gate:** Founder/Operations/UX approve family map, operator permissions, queue metrics, decision reasons, audit visibility and destinations before implementation. Dispute/payout actions additionally wait for their separate policy and finance gates.
 
 ## Cross-screen acceptance matrix
 

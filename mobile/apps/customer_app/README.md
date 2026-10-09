@@ -16,14 +16,14 @@
 - `lib/app/app.dart`: Application setup with primary locale `Locale('ar')`, RTL text direction, and `konfrmLightTheme()` consuming Cairo typography.
 - `lib/app/shell/customer_app_shell.dart`: Stateful root navigation host implementing the 4-root Customer destination model.
 - `lib/features/`: Feature modules adhering to clean role and domain boundaries:
-  - `discovery/`: Exploration hub and search affordance.
+  - `discovery/`: Public property search, allowlisted response model, request state controller, and non-interactive listing cards.
   - `favorites/`: Guest favorites with truthful session state.
   - `bookings/`: Customer bookings with truthful session state and recovery routing.
   - `account/`: Guest profile hub and settings overview.
 
 ---
 
-## 2. Governed Features Implemented (Phase 5 / Mission 01)
+## 2. Governed Features Implemented
 
 1. **4 Root Destinations:**
    - Index 0: `استكشف` (Explore)
@@ -37,8 +37,12 @@
    - Favorites and Bookings screens render `StateKind.unauthorized` when no authenticated session is loaded.
    - Never claims zero records or empty lists when an account has not been loaded.
    - Recovery actions on Favorites ("استكشف العقارات") and Bookings ("استكشف الآن") cleanly navigate to Explore.
-4. **Zero Dead Interactive Controls:**
-   - Deferred search and authentication features present truthful non-interactive affordances and alerts rather than enabled buttons wired to empty callbacks.
+4. **Public Property Discovery:**
+   - Explore calls `GET /api/v1/customer/properties/search` without authentication.
+   - Search supports destination, unit type, guest count, and maximum nightly price.
+   - The client only models the public property response allowlist and displays EGP nightly prices.
+   - Empty, loading, configuration, network, timeout, server, rejected-request, and malformed-response states remain distinct.
+   - No fallback listings, detail navigation, booking actions, or persisted favorites are introduced.
 5. **Zero Fabricated Data (Master Rules MR-09 & MR-14):**
    - No mock listings, fake prices, synthetic booking IDs, or fake user profiles.
 6. **Responsive Layout & Text Scaling:**
@@ -46,13 +50,19 @@
 
 ---
 
-## 3. Deliberately Deferred Features (Non-Goals for Mission 01)
+## 3. Deliberately Deferred Features (Non-Goals for Mission 02)
 
-- Public Property Search API integration (deferred to Mission 02).
+- Property detail route and booking journey.
 - Native Authentication (Supabase / Phone OTP login flows).
-- Booking creation and payment flows.
+- Booking creation, payment, and favorites persistence.
 - Offline persistence and local storage.
 - Production signing, store submission assets, and app icon finalization.
+
+Set the API origin explicitly when launching the app; there is no baked-in production or localhost fallback:
+
+```powershell
+flutter run --dart-define=KONFRM_API_BASE_URL=https://your-api-origin
+```
 
 ---
 
@@ -67,7 +77,7 @@ dart format --output=none --set-exit-if-changed .
 # Static code analysis
 flutter analyze
 
-# Widget test suite (14/14 tests)
+# Widget and public-search contract tests
 flutter test
 
 # Android Debug APK compilation

@@ -69,7 +69,9 @@ Every product statement, requirement, and domain interpretation must be explicit
 
 KONFRM is a three-role marketplace. Each role has fundamentally distinct psychology, operational priorities, and friction tolerances:
 
-### 1. Customer (Guest / Renter)
+> **Application Naming & Identity Boundaries:** Approved user-facing application display names are **KONFRM | GUEST**, **KONFRM | HOST**, and **Admin Dashboard**. Technical internal identifiers `customer`, `owner`, and `admin` remain unchanged across repository code, endpoints, database schemas, and directory structures.
+
+### 1. Customer (KONFRM | GUEST / Renter)
 - **Mental Model:** *"Can I trust this property, understand the true total cost, and book safely without unexpected surprises or high-pressure tactics?"*
 - **Core Values:** Transparent pricing (Total, Deposit, Remaining balance), property confidence, verified amenities, truthful progress.
 - **Key Invariants:**
@@ -77,17 +79,18 @@ KONFRM is a three-role marketplace. Each role has fundamentally distinct psychol
   - Owner review and approval strictly precedes deposit payment.
   - Never expose internal platform commission, Owner net earnings, or admin internals.
   - Zero fake scarcity (no fake counters, fake timers, or false urgency banners).
+  - Search & discovery truth: canonical public search parser (`backend/server/src/contracts/publicProperty.ts`) filters strictly by destination, unitType, guests, and maxPrice. Date-range and amenity search filtering are `OPEN_ASSUMPTION` / deferred backend capabilities; per-property availability is evaluated via `/api/v1/customer/properties/:id/availability`.
 
-### 2. Owner (Host / Property Operator)
+### 2. Owner (KONFRM | HOST / Property Operator)
 - **Mental Model:** *"What requests require my attention right now, and what is the exact operational and financial state of my properties?"*
 - **Core Values:** Operational control, request triage speed, calendar integrity, financial certainty.
 - **Key Invariants:**
   - High-utility operational instrument: zero decorative marketing fluff or hero photography.
-  - Action-First Hub: customer-style bottom navigation is strictly prohibited on Owner mobile.
+  - Action-First Hub: Mobile Owner experiences (**KONFRM | HOST**; internal technical identifier `owner`) currently employ an Action-First Operational Hub governed by Phase 4F Navigation Canon (`DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md`, ADR-006). This architecture is a governing UX/design decision rather than an immutable business or financial invariant. Design evolution belongs to `konfrm-design` and is subject to Design Court review and Founder-approved evolution.
   - Anti-card soup: related operational rows share a single structural container (presentation geometry and border-radius tokens governed by `konfrm-design`).
   - Financial certainty: distinct balance buckets (Available, Pending release clock, Held, Reserved) derived strictly from the server ledger; never reconstructed locally.
 
-### 3. Admin (Platform Reviewer & Operator)
+### 3. Admin (Admin Dashboard / Platform Reviewer)
 - **Mental Model:** *"Where is the objective evidence, what is the platform risk, and are authorization and marketplace integrity boundaries strictly preserved?"*
 - **Core Values:** Verifiable evidence, risk mitigation, auditability, safe operational interventions.
 - **Key Invariants:**

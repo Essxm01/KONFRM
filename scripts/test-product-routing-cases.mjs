@@ -65,6 +65,7 @@ const canonContext = {
   businessRulesContent,
   masterRulesContent,
   retrievalContent,
+  mentalModelsContent,
 };
 
 // 2. Parse Decision Matrix from SKILL_ROUTER.md
@@ -231,10 +232,25 @@ function deriveEpistemicClassification(tc, canon) {
     return 'UNCERTAIN_OPEN';
   }
 
+  if (tc.id === 'POS-6') {
+    // Governed by search capability reality: destination, unitType, guests, maxPrice only in backend parser;
+    // date/amenity filtering is OPEN_ASSUMPTION / deferred capability
+    const { mentalModelsContent: mm } = canon;
+    const hasSearchClarification = mm.includes('Confirmed Current Server Implementation') &&
+                                   mm.includes('backend/server/src/contracts/publicProperty.ts') &&
+                                   mm.includes('OPEN_ASSUMPTION');
+    const doesNotClaimDateFiltering = !mm.includes('filter dates/amenities ... without forced authentication walls') &&
+                                      !mm.includes('filter dates/amenities, and review house rules');
+    if (hasSearchClarification && doesNotClaimDateFiltering) {
+      return 'OPEN_ASSUMPTION';
+    }
+    return 'UNCERTAIN_OPEN';
+  }
+
   return 'UNKNOWN_EPISTEMIC';
 }
 
-// 4. Evaluation Cases (5 Positive, 4 Negative)
+// 4. Evaluation Cases (6 Positive, 4 Negative)
 const testCases = [
   {
     id: 'POS-1',
@@ -305,6 +321,21 @@ const testCases = [
       const hasOpenCancellation = retrievalContent.includes('Renter Cancellation & Refund Matrix') &&
                                   retrievalContent.includes('OPEN / UNRESOLVED');
       return hasOpenRemaining && hasOpenCancellation;
+    }
+  },
+  {
+    id: 'POS-6',
+    name: 'Clarify public property search filter capabilities and status',
+    prompt: 'Can a guest search for properties filtering by date range and specific amenities without logging in?',
+    taskClass: 'Role mental model definition / cross-role boundary',
+    expectedBrain: 'konfrm-product',
+    expectedEpistemic: 'OPEN_ASSUMPTION',
+    verification: () => {
+      const mentionsParser = mentalModelsContent.includes('backend/server/src/contracts/publicProperty.ts');
+      const mentionsDeferred = mentalModelsContent.includes('OPEN_ASSUMPTION') && mentalModelsContent.includes('deferred backend capability');
+      const separatesAvailability = mentalModelsContent.includes('/api/v1/customer/properties/:id/availability');
+      const noFalseClaims = !mentalModelsContent.includes('filter dates/amenities');
+      return mentionsParser && mentionsDeferred && separatesAvailability && noFalseClaims;
     }
   },
   {
@@ -814,6 +845,80 @@ if (!routerExcludesProductCanonFromBypass || !contextMapHasProductCanonTrigger) 
   fail('[REG-25] SKILL_ROUTER.md or CONTEXT_MAP.yaml does not exclude Product Canon from documentation bypass and route it to konfrm-product');
 } else {
   pass('[REG-25] Product Canon Routing: Business-rule documentation excluded from generic docs bypass and mapped to konfrm-product');
+}
+
+// REG-26: Public Property Search Capability Truth (Backend parser alignment & no false date/amenity claims)
+const publicPropertyPath = path.join(projectRoot, 'backend', 'server', 'src', 'contracts', 'publicProperty.ts');
+if (!fs.existsSync(publicPropertyPath)) {
+  fail('[REG-26] backend/server/src/contracts/publicProperty.ts does not exist');
+} else {
+  const publicPropertyCode = fs.readFileSync(publicPropertyPath, 'utf8');
+  // 1. Verify backend search parser strictly handles destination, unitType, guests, maxPrice only
+  const parserStart = publicPropertyCode.indexOf('export function parsePublicPropertySearchFilters');
+  const parserEnd = publicPropertyCode.indexOf('export interface PublicPropertyBaseRow');
+  const searchParserCode = parserStart !== -1 && parserEnd !== -1
+    ? publicPropertyCode.slice(parserStart, parserEnd)
+    : '';
+
+  const parsesDest = searchParserCode.includes('destination') && searchParserCode.includes('destinations');
+  const parsesUnitType = searchParserCode.includes('unitType') && searchParserCode.includes('unitTypes');
+  const parsesGuests = searchParserCode.includes('guests');
+  const parsesMaxPrice = searchParserCode.includes('maxPrice');
+  const parsesNoDatesInSearch = !searchParserCode.includes('checkIn') && !searchParserCode.includes('checkOut') && !searchParserCode.includes('date');
+  const parsesNoAmenitiesInSearch = !searchParserCode.includes('amenity') && !searchParserCode.includes('amenities');
+
+  const backendContractVerified = parsesDest && parsesUnitType && parsesGuests && parsesMaxPrice && parsesNoDatesInSearch && parsesNoAmenitiesInSearch;
+
+  // 2. Verify konfrm-product modules do not claim date/amenity search filtering is implemented
+  let noFalseClaimsInProduct = true;
+  for (const mod of allProductModules) {
+    if (mod.text.includes('filter dates/amenities') || mod.text.includes('filter by dates and amenities')) {
+      fail(`[REG-26] Prohibited false search capability claim in ${mod.name}: claims dates/amenities filtering`);
+      noFalseClaimsInProduct = false;
+    }
+  }
+
+  // 3. Verify role_mental_models.md documents backend parser reality and marks date/amenity as OPEN_ASSUMPTION / deferred
+  const mentalModelsHasReality = mentalModelsContent.includes('backend/server/src/contracts/publicProperty.ts') &&
+                                 mentalModelsContent.includes('OPEN_ASSUMPTION') &&
+                                 mentalModelsContent.includes('deferred backend capability') &&
+                                 mentalModelsContent.includes('/api/v1/customer/properties/:id/availability');
+
+  if (backendContractVerified && noFalseClaimsInProduct && mentalModelsHasReality) {
+    pass('[REG-26] Public Search Capability Truth: Product Brain accurately reflects backend parser reality (destination, unitType, guests, maxPrice) and marks date/amenity filtering as OPEN_ASSUMPTION / deferred');
+  } else {
+    fail('[REG-26] Public Search Capability Truth verification failed');
+  }
+}
+
+// REG-27: Action-First Hub Design Governance & Role Display Names
+const designNavigationPath = path.join(projectRoot, 'DESIGN_SYSTEM', 'EXPERIENCE', 'NAVIGATION.md');
+if (!fs.existsSync(designNavigationPath)) {
+  fail('[REG-27] DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md does not exist');
+} else {
+  // 1. Verify Action-First Hub is framed as governing Design decision, NOT immutable business invariant
+  const mentalModelsFramesDesign = mentalModelsContent.includes('Action-First Operational Hub (Current Governing Design Decision)') &&
+                                   mentalModelsContent.includes('DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md') &&
+                                   mentalModelsContent.includes('Design Court') &&
+                                   mentalModelsContent.includes('governing UX/design decision rather than an immutable business or financial invariant');
+  const skillFramesDesign = productSkillContent.includes('DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md') &&
+                            productSkillContent.includes('governing UX/design decision rather than an immutable business or financial invariant') &&
+                            productSkillContent.includes('Design Court');
+
+  // 2. Verify approved application display names are explicitly preserved
+  const hasGuestDisplayName = mentalModelsContent.includes('KONFRM | GUEST') && productSkillContent.includes('KONFRM | GUEST');
+  const hasHostDisplayName = mentalModelsContent.includes('KONFRM | HOST') && productSkillContent.includes('KONFRM | HOST');
+  const hasAdminDisplayName = mentalModelsContent.includes('Admin Dashboard') && productSkillContent.includes('Admin Dashboard');
+
+  // 3. Verify technical internal identifiers remain preserved
+  const preservesTechnicalIds = mentalModelsContent.includes('Technical internal identifiers `customer`, `owner`, and `admin` remain unchanged') &&
+                                productSkillContent.includes('Technical internal identifiers `customer`, `owner`, and `admin` remain unchanged');
+
+  if (mentalModelsFramesDesign && skillFramesDesign && hasGuestDisplayName && hasHostDisplayName && hasAdminDisplayName && preservesTechnicalIds) {
+    pass('[REG-27] Design Authority Framing: Action-First Hub framed as governing Design decision under Phase 4F Navigation Canon; display names and technical identifiers preserved');
+  } else {
+    fail('[REG-27] Design Authority Framing verification failed');
+  }
 }
 
 // 7. Negative Test Harness: Verify Evaluator Fails Closed on Corrupted Input

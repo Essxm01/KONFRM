@@ -16,7 +16,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
 ```text
 +---------------------+---------------------+---------------------+
 |      CUSTOMER       |        OWNER        |        ADMIN        |
-|  (Renter / Guest)   |  (Host / Operator)  | (Platform Reviewer) |
+|  (KONFRM | GUEST)   |   (KONFRM | HOST)   |  (Admin Dashboard)  |
 +---------------------+---------------------+---------------------+
 | Surface: Mobile-App | Surface: Mobile-App | Surface: Desktop-Web|
 | Driver: Trust & Calm| Driver: Ops Control | Driver: Risk & Audit|
@@ -24,9 +24,11 @@ KONFRM is a three-role platform. Designing or implementing features without unde
 +---------------------+---------------------+---------------------+
 ```
 
+> **Note on Naming:** Approved user-facing application display names are **KONFRM | GUEST**, **KONFRM | HOST**, and **Admin Dashboard**. Technical internal identifiers `customer`, `owner`, and `admin` remain unchanged across repository code, endpoints, database schemas, and directory structures.
+
 ---
 
-## 2. CUSTOMER MENTAL MODEL (RENTER / GUEST)
+## 2. CUSTOMER MENTAL MODEL (KONFRM | GUEST / RENTER)
 
 ### Psychological State & Core Job
 - **Psychological Profile:** Emotionally invested in a vacation or family trip, spending significant personal funds, often navigating an unfamiliar geographic area. Naturally anxious about property misrepresentation, hidden fees, cancelled trips, and security.
@@ -34,7 +36,16 @@ KONFRM is a three-role platform. Designing or implementing features without unde
 
 ### Behavioral Priorities & Friction Tolerances
 1. **Friction-Free Browsing Before Identity:**
-   - Customers must be able to explore all published properties, inspect high-resolution photos, filter dates/amenities, and review house rules without forced authentication walls.
+   - Customers must be able to explore all published properties, inspect high-resolution photos, and review house rules without forced authentication walls.
+   - **Search & Discovery Capabilities (Implemented vs Future vs Open):**
+     - **Confirmed Current Server Implementation:** The canonical public search parser (`backend/server/src/contracts/publicProperty.ts:30-151`, `/api/v1/customer/properties/search`) supports server-side filtering strictly by:
+       1. Destination (`destination` / `destinations`)
+       2. Unit type (`unitType` / `unitTypes`)
+       3. Guest count (`guests`)
+       4. Maximum price (`maxPrice`)
+       Per-property date availability is checked via a separate dedicated endpoint (`/api/v1/customer/properties/:id/availability`).
+     - **Approved Future Design Requirements:** Guest discovery product intent envisions frictionless date-range selection and amenity-based filtering before identity commitment.
+     - **Open / Deferred Backend Capabilities:** Server-side search filtering by date ranges (check-in/check-out) and specific amenities is **NOT** currently implemented in the public search parser (`OPEN_ASSUMPTION` / deferred backend capability). The Product Brain must never claim date or amenity search filtering is live or implemented server-side.
    - Auth is prompted only when taking a committed action (saving to favorites, submitting a booking request).
 2. **Absolute Pricing Clarity (The 3-Amount Truth):**
    - High tolerance for fair pricing; zero tolerance for hidden surprise fees.
@@ -54,7 +65,7 @@ KONFRM is a three-role platform. Designing or implementing features without unde
 
 ---
 
-## 3. OWNER MENTAL MODEL (HOST / PROPERTY OPERATOR)
+## 3. OWNER MENTAL MODEL (KONFRM | HOST / PROPERTY OPERATOR)
 
 ### Psychological State & Core Job
 - **Psychological Profile:** Protective of high-value physical real estate, juggling turnover logistics, focused on calendar occupancy and reliable cash flow. Has zero patience for consumer-marketing fluff or sluggish interfaces.
@@ -64,8 +75,9 @@ KONFRM is a three-role platform. Designing or implementing features without unde
 1. **High-Utility Operational Instrument:**
    - The Owner app is a working operational tool, not a lifestyle browsing feed.
    - Prohibit hero photography, marketing banners, and promotional carousels on the Owner home surface.
-2. **Action-First Operational Hub (Prohibition of Bottom Navigation):**
-   - **Canonical Architecture:** Mobile Owner experiences strictly prohibit consumer-style 4-tab bottom navigation (Master Rule MR-02, ADR-006, Phase 4F).
+2. **Action-First Operational Hub (Current Governing Design Decision):**
+   - **Governing Design Authority:** Mobile Owner experiences (branded as **KONFRM | HOST**; internal technical identifier `owner`) currently employ an Action-First Operational Hub rather than consumer-style bottom navigation, governed by Phase 4F Navigation Canon (`DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md`, ADR-006).
+   - **Design Evolution Authority:** This architecture is a governing UX/design decision rather than an immutable business or financial invariant. It remains subject to formal Design Court review and Founder-approved evolution (e.g. evaluating future Host navigation variants). Product Brain preserves this decision without freezing it into immutable business Canon or silently modifying the Design System.
    - High-frequency domains are surfaced via a high-contrast 3-column domain grid on Home:
      - **الطلبات (Requests Queue):** Direct drill-down into pending booking triage with badge counters.
      - **الوحدات (Properties / Units):** Direct drill-down into property states and listing inventory.

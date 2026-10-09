@@ -12,6 +12,9 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  flutter_riverpod: ^2.6.1
+  http: ^1.6.0
+  intl: ^0.20.3
   konfrm_design_system:
     path: ../../packages/konfrm_design_system
 

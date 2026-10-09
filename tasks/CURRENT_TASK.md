@@ -20,7 +20,7 @@ SCOPE: Phase 5 / Mission 01 — Native Customer Flutter Application foundation (
 ## Verification Summary
 - Flutter format: 0 changed (`dart format --output=none --set-exit-if-changed .` PASS)
 - Flutter analyze: No issues found! (`flutter analyze` PASS)
-- Widget test suite: 11/11 PASS (`test/customer_app_shell_test.dart` PASS across 100%, 150%, 200% text scale and 360dp, 390dp, 430dp viewports)
+- Widget test suite: 14/14 PASS (`test/customer_app_shell_test.dart` PASS across 100%, 150%, 200% text scale, 360dp, 390dp, 430dp viewports, and combined 360dp + 200% scaling)
 - Design system regression suite: 20/20 PASS (`mobile/packages/konfrm_design_system` PASS)
 - Android debug APK build: `build/app/outputs/flutter-apk/app-debug.apk` built successfully (152 MB).
 

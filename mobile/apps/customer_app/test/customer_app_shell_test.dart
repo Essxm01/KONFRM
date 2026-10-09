@@ -339,5 +339,58 @@ void main() {
         },
       );
     }
+
+    testWidgets(
+      'renders all 4 tabs on narrow 360dp logical viewport with 200% text scaling without overflow',
+      (WidgetTester tester) async {
+        const double width = 360.0;
+        const double height = 800.0;
+        tester.view.physicalSize = const Size(width * 2.0, height * 2.0);
+        tester.view.devicePixelRatio = 2.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(
+              size: Size(width, height),
+              textScaler: TextScaler.linear(2.0),
+            ),
+            child: const KonfrmCustomerApp(),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Explore
+        expect(tester.takeException(), isNull);
+        expect(find.text('كونفرم | استكشف'), findsOneWidget);
+
+        // Favorites
+        await tester.tap(find.byKey(const Key('customer-destination-1')));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        expect(
+          find.byKey(const Key('favorites-unauthorized-card')),
+          findsOneWidget,
+        );
+
+        // Bookings
+        await tester.tap(find.byKey(const Key('customer-destination-2')));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        expect(
+          find.byKey(const Key('bookings-unauthorized-card')),
+          findsOneWidget,
+        );
+
+        // Account
+        await tester.tap(find.byKey(const Key('customer-destination-3')));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        expect(find.text('جلسة زائر (غير مسجل)'), findsOneWidget);
+      },
+    );
   });
 }

@@ -67,7 +67,7 @@ dart format --output=none --set-exit-if-changed .
 # Static code analysis
 flutter analyze
 
-# Widget test suite (11/11 tests)
+# Widget test suite (14/14 tests)
 flutter test
 
 # Android Debug APK compilation

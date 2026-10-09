@@ -22,6 +22,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     locale: 'ar-EG',
     timezoneId: 'Africa/Cairo',
+    serviceWorkers: 'block',
   },
   projects: [
     {
@@ -59,7 +60,7 @@ export default defineConfig({
     command: 'npm run dev -- --port 5175',
     cwd: path.resolve(__dirname, '../../customer-app'),
     url: 'http://localhost:5175',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 60000,
   },
 });

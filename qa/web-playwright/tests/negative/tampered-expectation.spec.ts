@@ -15,7 +15,7 @@ test.describe('Negative Control — Controlled UI Assertion Proof', () => {
 
     if (mode === 'CORRUPTED') {
       // Deliberately assert a non-existent heading to prove the assertion fails and cannot pass vacuously
-      const badHeading = page.getByRole('heading', { name: 'عنوان غير موجود نهائياً في النظام' });
+      const badHeading = page.getByRole('heading', { name: 'DELIBERATE_CORRUPTED_HEADING_NONEXISTENT' });
       await expect(badHeading).toBeVisible({ timeout: 2000 });
     } else {
       // Cured expectation: asserts the true heading

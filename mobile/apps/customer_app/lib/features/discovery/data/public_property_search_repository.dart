@@ -14,6 +14,7 @@ enum PublicSearchFailureKind {
   unauthorized,
   requestRejected,
   invalidResponse,
+  invalidFilters,
 }
 
 class PublicSearchException implements Exception {
@@ -36,6 +37,12 @@ class PublicPropertySearchFilters {
   final double? maxPrice;
 
   Map<String, String> toQueryParameters() {
+    if (guests != null && guests! < 1) {
+      throw const PublicSearchException(PublicSearchFailureKind.invalidFilters);
+    }
+    if (maxPrice != null && (!maxPrice!.isFinite || maxPrice! <= 0)) {
+      throw const PublicSearchException(PublicSearchFailureKind.invalidFilters);
+    }
     final query = <String, String>{};
     final destinationValue = destination.trim();
     if (destinationValue.isNotEmpty) query['destination'] = destinationValue;
@@ -43,8 +50,8 @@ class PublicPropertySearchFilters {
     if (unitTypeValue.isNotEmpty && unitTypeValue != 'ALL') {
       query['unitType'] = unitTypeValue;
     }
-    if (guests != null && guests! > 0) query['guests'] = '${guests!}';
-    if (maxPrice != null && maxPrice!.isFinite && maxPrice! > 0) {
+    if (guests != null) query['guests'] = '${guests!}';
+    if (maxPrice != null) {
       query['maxPrice'] = maxPrice!.toString();
     }
     return query;
@@ -92,11 +99,10 @@ class PublicPropertySearchRepository {
       throw const PublicSearchException(PublicSearchFailureKind.configuration);
     }
 
+    final queryParameters = filters.toQueryParameters();
     final uri = origin.replace(
       path: '/api/v1/customer/properties/search',
-      queryParameters: filters.toQueryParameters().isEmpty
-          ? null
-          : filters.toQueryParameters(),
+      queryParameters: queryParameters.isEmpty ? null : queryParameters,
     );
 
     final request = http.Request('GET', uri)

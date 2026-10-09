@@ -112,6 +112,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
           DropdownButtonFormField<String>(
             key: const Key('discovery-unit-type'),
             initialValue: _unitType,
+            isExpanded: true,
             decoration: const InputDecoration(
               labelText: 'نوع الوحدة',
               border: OutlineInputBorder(),
@@ -241,6 +242,11 @@ class _DiscoveryResults extends StatelessWidget {
         StateKind.error,
         'تعذر تنفيذ البحث بهذه المعايير',
         'راجع القيم وأعد المحاولة.',
+      ),
+      PublicDiscoveryStatus.invalidFilters => (
+        StateKind.error,
+        'راجع معايير البحث',
+        'أدخل عدداً موجباً للضيوف وسعراً موجباً.',
       ),
       PublicDiscoveryStatus.configurationError => (
         StateKind.error,

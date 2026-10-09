@@ -14,6 +14,7 @@ enum PublicDiscoveryStatus {
   unauthorized,
   requestRejected,
   invalidResponse,
+  invalidFilters,
 }
 
 class PublicDiscoveryState {
@@ -99,5 +100,7 @@ class PublicDiscoveryController extends StateNotifier<PublicDiscoveryState> {
           PublicDiscoveryStatus.requestRejected,
         PublicSearchFailureKind.invalidResponse =>
           PublicDiscoveryStatus.invalidResponse,
+        PublicSearchFailureKind.invalidFilters =>
+          PublicDiscoveryStatus.invalidFilters,
       };
 }

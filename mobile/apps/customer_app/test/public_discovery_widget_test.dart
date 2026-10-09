@@ -60,7 +60,8 @@ void main() {
 
     expect(find.text('شاليه للاختبار'), findsOneWidget);
     expect(find.textContaining('2,800 ج.م / ليلة'), findsOneWidget);
-    expect(find.text('الساحل الشمالي، مطروح'), findsOneWidget);
+    expect(find.text('مطروح، الساحل الشمالي'), findsOneWidget);
+    expect(find.byIcon(Icons.image_outlined), findsOneWidget);
     expect(find.byType(OutlinedButton), findsNothing);
     expect(find.text('احجز'), findsNothing);
     expect(find.text('أضف للمفضلة'), findsNothing);
@@ -75,12 +76,12 @@ void main() {
       client: MockClient((_) async => _response([_property()])),
     );
     final semantics = tester.ensureSemantics();
-    addTearDown(semantics.dispose);
     await tester.pumpWidget(_app(repository));
     await tester.pumpAndSettle();
     expect(find.bySemanticsLabel('الوجهة أو اسم العقار'), findsOneWidget);
     expect(find.bySemanticsLabel('شاليه للاختبار'), findsOneWidget);
     expect(find.bySemanticsLabel('ابحث عن أماكن الإقامة'), findsOneWidget);
+    semantics.dispose();
   });
 
   testWidgets('keeps a successful empty result distinct from failure', (
@@ -94,6 +95,42 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('لا توجد نتائج حالياً'), findsOneWidget);
     expect(find.text('تعذر الاتصال'), findsNothing);
+  });
+
+  testWidgets('uses the placeholder after an HTTPS image fetch fails', (
+    tester,
+  ) async {
+    final repository = PublicPropertySearchRepository(
+      baseUrl: 'https://api.example.test',
+      client: MockClient(
+        (_) async => _response([
+          _property(images: ['https://images.example.test/unavailable.jpg']),
+        ]),
+      ),
+    );
+    await tester.pumpWidget(_app(repository));
+    await tester.pumpAndSettle();
+    expect(find.text('شاليه للاختبار'), findsOneWidget);
+    expect(find.byIcon(Icons.image_outlined), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('rejects an invalid image URL instead of rendering a card', (
+    tester,
+  ) async {
+    final repository = PublicPropertySearchRepository(
+      baseUrl: 'https://api.example.test',
+      client: MockClient(
+        (_) async => _response([
+          _property(images: ['http://images.example.test/not-allowed.jpg']),
+        ]),
+      ),
+    );
+    await tester.pumpWidget(_app(repository));
+    await tester.pumpAndSettle();
+    expect(find.text('تعذر قراءة نتائج البحث'), findsOneWidget);
+    expect(find.text('شاليه للاختبار'), findsNothing);
+    expect(find.byIcon(Icons.image_outlined), findsNothing);
   });
 
   testWidgets('announces initial loading while the public request is pending', (
@@ -205,7 +242,13 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        expect(tester.takeException(), isNull);
+        final layoutError = tester.takeException();
+        expect(layoutError, isNull, reason: '$layoutError');
+        await tester.drag(
+          find.byKey(const Key('explore-scroll-view')),
+          const Offset(0, -1200),
+        );
+        await tester.pumpAndSettle();
         expect(find.text('شاليه للاختبار'), findsOneWidget);
       });
     }

@@ -41,12 +41,14 @@
    - Explore calls `GET /api/v1/customer/properties/search` without authentication.
    - Search supports destination, unit type, guest count, and maximum nightly price.
    - The client only models the public property response allowlist and displays EGP nightly prices.
+   - Image URLs must be HTTPS; an invalid/non-HTTPS URL fails the response contract. An empty image list or a failed HTTPS image fetch uses the neutral placeholder.
    - Empty, loading, configuration, network, timeout, server, rejected-request, and malformed-response states remain distinct.
    - No fallback listings, detail navigation, booking actions, or persisted favorites are introduced.
 5. **Zero Fabricated Data (Master Rules MR-09 & MR-14):**
    - No mock listings, fake prices, synthetic booking IDs, or fake user profiles.
 6. **Responsive Layout & Text Scaling:**
-   - Reflow verified across 100%, 150%, and 200% text scaling and narrow viewports (360dp, 390dp, 430dp).
+   - Regression tests cover 100%, 150%, and 200% text scaling at 360dp, 390dp, and 430dp, including 360dp at 200%.
+   - PR #111 remediation verification: customer-app tests passed at the reviewed candidate tree, including the stated scaling and width combinations; this is automated Flutter test evidence, not native device validation.
 
 ---
 
@@ -93,5 +95,5 @@ flutter test
 ---
 
 ## 5. Platform Limitations
-- **Android Runtime:** Debug APK builds cleanly (`build/app/outputs/flutter-apk/app-debug.apk`). Physical Android validation depends on physical hardware connection.
+- **Android build:** Debug and release APK compilation passed for PR #111 as compile-only checks. The merged debug and release manifests both include `android.permission.INTERNET`. Physical Android runtime validation remains separate and depends on authorized hardware.
 - **iOS Reality Gate:** `IOS_REALITY_GATE_PENDING` preserved.

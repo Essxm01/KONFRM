@@ -70,6 +70,48 @@ void main() {
     );
   });
 
+  test('rejects invalid non-null filters before issuing a request', () async {
+    var requests = 0;
+    final repository = PublicPropertySearchRepository(
+      baseUrl: baseUrl,
+      client: MockClient((_) async {
+        requests++;
+        return response({'success': true, 'timestamp': 'now', 'data': []});
+      }),
+    );
+    const invalidFilters = [
+      PublicPropertySearchFilters(guests: 0),
+      PublicPropertySearchFilters(guests: -1),
+      PublicPropertySearchFilters(maxPrice: 0),
+      PublicPropertySearchFilters(maxPrice: -1),
+    ];
+    for (final filters in invalidFilters) {
+      await expectLater(
+        repository.search(filters),
+        throwsA(
+          isA<PublicSearchException>().having(
+            (error) => error.kind,
+            'kind',
+            PublicSearchFailureKind.invalidFilters,
+          ),
+        ),
+      );
+    }
+    for (final maxPrice in [double.nan, double.infinity]) {
+      await expectLater(
+        repository.search(PublicPropertySearchFilters(maxPrice: maxPrice)),
+        throwsA(
+          isA<PublicSearchException>().having(
+            (error) => error.kind,
+            'kind',
+            PublicSearchFailureKind.invalidFilters,
+          ),
+        ),
+      );
+    }
+    expect(requests, 0);
+  });
+
   test('parses public fields and discards unknown private fields', () async {
     final repository = PublicPropertySearchRepository(
       baseUrl: baseUrl,

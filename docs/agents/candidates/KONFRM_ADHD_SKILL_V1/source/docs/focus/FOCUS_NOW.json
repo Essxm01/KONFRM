@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0.0",
+  "snapshot_at": "2026-10-08",
+  "verification": "HISTORICAL_REMOTE_ONLY_RECHECK_REQUIRED",
+  "active": {
+    "task_id": "QUALITY_EVIDENCE_MESH_STAGE_B",
+    "title": "Recover and verify PR #105 Playwright remediation",
+    "status": "ACTIVE",
+    "surface": "qa/web-playwright",
+    "pr": 105,
+    "branch": "feat/quality-playwright-stage-b",
+    "last_known_remote_head": "1c3c54dc5b6e632e16df60a190b27b6777592bef",
+    "last_known_main_head": "c51101c3d1bd38174e35d5338ab161031a3623dc",
+    "unverified_local_state": true,
+    "completion_gate": "Bridge evidence review after safe Antigravity session/worktree recovery; no merge without Founder approval",
+    "next_action": "When laptop accessible, inspect Antigravity PR #105 session and unpushed files; send recovered report for review."
+  },
+  "wip_policy": "ONE_ACTIVE_IMPLEMENTATION_TASK",
+  "note": "This bootstrap snapshot may go stale. Always check GitHub/local before acting."
+}

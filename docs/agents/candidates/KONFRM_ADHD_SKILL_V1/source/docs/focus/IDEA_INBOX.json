@@ -1,0 +1,174 @@
+{
+  "schema_version": "1.0.0",
+  "entries": [
+    {
+      "id": "IDEA-20261008-001",
+      "captured_at": "2026-10-08",
+      "title": "Unified visible mobile naming",
+      "founder_intent": "Use KONFRM | HOST, KONFRM | GUEST and Admin Dashboard as user-facing product names.",
+      "status": "FOUNDER_APPROVED",
+      "approval": {
+        "scope": "naming_direction",
+        "source": "Founder explicit approval in project conversation 2026-10-08",
+        "codified_in_canon": false,
+        "queue_approved": false,
+        "execution_approved": false
+      },
+      "role_surface": [
+        "HOST",
+        "GUEST",
+        "ADMIN"
+      ],
+      "phase_slot": "FOUNDATION_GOVERNANCE",
+      "reason_for_later": "Documentation/brand incorporation after current PR task; internal API names unchanged.",
+      "sources": [
+        "Founder conversation 2026-10-08"
+      ],
+      "dependencies": [
+        "Current active PR reconciled",
+        "Brand display naming authority documented"
+      ],
+      "affected_surfaces": [
+        "design",
+        "documentation",
+        "mobile",
+        "admin"
+      ],
+      "duplicate_of": null,
+      "existing_pr": null,
+      "assessment": {
+        "product_value": "Shared brand identity",
+        "risk": "Brand label vs technical owner/customer vocabulary",
+        "effort": "Small scope initially",
+        "priority": "P2_NON_BLOCKING"
+      },
+      "next_review_gate": "Next authorized design/documentation PR"
+    },
+    {
+      "id": "IDEA-20261008-002",
+      "captured_at": "2026-10-08",
+      "title": "GUEST floating navigation evaluation",
+      "founder_intent": "Explore soft floating navigation consistent with approved KONFRM radii, without enforcing a capsule.",
+      "status": "ASSESSED",
+      "approval": {
+        "scope": "design_candidate_evaluation_only",
+        "source": "Founder discussion 2026-10-08",
+        "codified_in_canon": false,
+        "queue_approved": false,
+        "execution_approved": false
+      },
+      "role_surface": [
+        "GUEST"
+      ],
+      "phase_slot": "PHASE_5_GUEST_UX",
+      "reason_for_later": "Phase 4F root-nav and mutual-exclusive sticky CTA rules must be respected, design pilot before Canon.",
+      "sources": [
+        "DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md",
+        "Founder shared inspiration"
+      ],
+      "dependencies": [
+        "Controlled prototype",
+        "Founder visual approval",
+        "Design Court if material architecture change"
+      ],
+      "affected_surfaces": [
+        "design",
+        "flutter"
+      ],
+      "duplicate_of": null,
+      "existing_pr": null,
+      "assessment": {
+        "product_value": "Refined navigation aesthetic",
+        "risk": "Compact accessibility and UI-overlap",
+        "effort": "Prototyping and device testing",
+        "priority": "P3_EXPERIMENT"
+      },
+      "next_review_gate": "Phase 5 design option comparison"
+    },
+    {
+      "id": "IDEA-20261008-003",
+      "captured_at": "2026-10-08",
+      "title": "Reassess HOST contextual/floating navigation",
+      "founder_intent": "Use the first inspiration's design DNA for Host while respecting Action-First Hub, consider floating affordances only if stronger UX evidence.",
+      "status": "NEEDS_FOUNDER_DECISION",
+      "approval": {
+        "scope": "exploration_only",
+        "source": "Founder discussed visual reference, no override to Phase 4F",
+        "codified_in_canon": false,
+        "queue_approved": false,
+        "execution_approved": false
+      },
+      "role_surface": [
+        "HOST"
+      ],
+      "phase_slot": "PHASE_6_HOST_UX",
+      "reason_for_later": "Persistent bottom navigation conflicts with current approved HOST hub decision; require strong evidence and Design Court before any override.",
+      "sources": [
+        "DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md"
+      ],
+      "dependencies": [
+        "Read-only UX study",
+        "FULL_COURT if reopening architecture",
+        "Founder decision"
+      ],
+      "affected_surfaces": [
+        "design",
+        "flutter"
+      ],
+      "duplicate_of": null,
+      "existing_pr": null,
+      "assessment": {
+        "product_value": "Possible ergonomic affordance",
+        "risk": "Reintroduces five-tab distraction",
+        "effort": "Material design/UX research",
+        "priority": "P3_OPEN"
+      },
+      "next_review_gate": "Phase 6 Owner UX gate"
+    },
+    {
+      "id": "IDEA-20261008-004",
+      "captured_at": "2026-10-08",
+      "title": "Design renaissance: unified KONFRM family",
+      "founder_intent": "Refresh Host, Guest and Admin UI/UX from approved design system with one visual DNA, not literal web cloning or backend rewrite.",
+      "status": "FOUNDER_APPROVED",
+      "approval": {
+        "scope": "design_program_direction_only",
+        "source": "Founder explicit approval 2026-10-08",
+        "codified_in_canon": false,
+        "queue_approved": false,
+        "execution_approved": false
+      },
+      "role_surface": [
+        "HOST",
+        "GUEST",
+        "ADMIN"
+      ],
+      "phase_slot": "PHASE_5_GUEST_UX",
+      "reason_for_later": "Phase 5 Guest, 6 Host, 7 Admin controlled UX slices, following active PR and design authorities. No big-bang rewrite.",
+      "sources": [
+        "DESIGN_SYSTEM/GOVERNANCE.md",
+        "docs/architecture/KONFRM_MOBILE_ARCHITECTURE_FOUNDATION_V1.md"
+      ],
+      "dependencies": [
+        "Stage B recovery and approved priority",
+        "DF2 controlled pilot",
+        "Cross-role QA"
+      ],
+      "affected_surfaces": [
+        "design",
+        "flutter",
+        "web"
+      ],
+      "duplicate_of": null,
+      "existing_pr": null,
+      "assessment": {
+        "product_value": "Consistent, native-first quality",
+        "risk": "Uncontrolled rewrite and scope inflation",
+        "effort": "Multiple bounded design slices",
+        "priority": "P2_LONG_PROGRAM"
+      },
+      "next_review_gate": "Post-current-work design discovery authorization"
+    }
+  ],
+  "note": "Bootstrap ideas are sourced from explicit 2026-10-08 project conversation. Approved concept != approved execution."
+}

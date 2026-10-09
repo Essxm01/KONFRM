@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "queue": [],
+  "observed_followups": [
+    {
+      "ref": "PR-72",
+      "kind": "EXISTING_TECH_DEBT",
+      "status": "NOT_QUEUE_APPROVED",
+      "reason": "Auth V2 CI follow-up; must be inspected after NOW, not silently promoted"
+    },
+    {
+      "ref": "PR-102",
+      "kind": "EXISTING_ACTIVE_PR",
+      "status": "NOT_CURRENT",
+      "reason": "Product Brain security reconciliation; after NOW and relevant shared-CI dependency audit"
+    },
+    {
+      "ref": "PR-2",
+      "kind": "EXISTING_TECH_DEBT",
+      "status": "UNVERIFIED",
+      "reason": "Migration 024 parity/diff forensic audit, no blind merge"
+    }
+  ],
+  "note": "Queue intentionally empty: there is no explicit Founder-approved new execution sequence in the current message. Earlier priorities are advisory pending refreshed status."
+}

@@ -12,6 +12,7 @@
 - Server-owned facts include identity, ownership, property eligibility, availability, quote totals, booking status, deposit/remaining balance, payment result, refunds, payout and authorization. Client state may hold drafts and presentation state only.
 - Every data screen needs explicit initial/loading, success, empty, error, retry, stale-data, offline/slow-network, unauthorized, and session-expired treatment as applicable. Never turn an API error into empty/zero/success.
 - Accessibility baseline: semantic names/roles/states, logical focus order, keyboard operation where relevant, visible focus, text scaling and reflow, contrast, reduced motion, accessible error/status announcements, and VoiceOver/TalkBack checks. Distinguish simulated browser/profile checks from native platform evidence.
+- Responsive baseline for every screen: use available mobile width and safe areas, allow text/content growth, handle orientation/window-size changes without clipping or obscuring actions, and test narrow supported phone widths plus large text. Do not assume tablet, desktop, foldable or landscape behavior is approved; confirm supported targets from the mobile architecture and record the test profile.
 - Arabic is the primary direction. Isolate mixed Latin identifiers, emails, URLs, phone numbers and amounts; use locale-aware currency/date formatting only after approved locale and money-format contract is verified. Preserve semantic reading order when visual layout changes for RTL.
 - Acceptance below is a minimum proposal. It cannot close a phase without applicable tests, privacy/security review, regression and required live evidence.
 
@@ -274,6 +275,41 @@
 - **Navigation / layout:** Link to canonical web policy where available, retain source and effective date.
 - **RTL / accessibility / privacy:** Accessible long-form text, semantic headings, tables/links; no sensitive diagnostics in analytics.
 - **Dependencies / acceptance:** Data inventory, deletion/retention decision, provider review and legal approval. Verify in-app and store disclosures match actual SDK/backend behavior.
+
+## Cross-screen acceptance matrix
+
+### Per-screen component and responsive inventory
+
+This names the minimum component roles each screen contract must cover. Exact shared component names are implementation choices governed by the Design System; do not create one-off components where an approved shared primitive fits.
+
+| Screen | Minimum UI components to contract | Responsive acceptance |
+| --- | --- | --- |
+| 01 | Brand mark, startup progress/status, retry action when needed | Safe-area aligned; no fixed-height assumption; startup remains usable with large text. |
+| 02 | Welcome heading, guest browse action, auth action, concise benefit/limit copy | Primary actions stack/reflow on narrow width; no horizontal clipping at supported text scale. |
+| 03 | Search entry, category/curation section, property cards, bottom navigation | Cards adapt to available phone width; no hard-coded desktop grid in mobile app. |
+| 04 | Destination/date/guest/filter inputs, calendar/date picker, apply/reset actions | Controls reflow vertically; calendar labels remain readable in narrow width and large text. |
+| 05 | Results header/count, sort/filter controls, property cards, loading/empty/error views | Cards remain single-column on narrow phones unless approved otherwise; controls wrap without hiding results. |
+| 06 | Property gallery, identity/amenity sections, availability selector, guest control, quote summary, sticky action | Sticky area respects safe area and keyboard; content scrolls behind no overlay; gallery and summary reflow without fixed viewport height. |
+| 07 | Request summary, amount breakdown, policy/next-step copy, submit action, progress/error states | Amount labels wrap without separating values; submit remains reachable and is not obscured by system insets. |
+| 08 | Country code/phone field, validation message, submit action, progress/error state | Country code and number do not collide in RTL; field/action reflow at narrow width. |
+| 09 | OTP entry, resend/edit actions, expiry/status announcement, error state | Inputs remain operable with on-screen keyboard and large text; no clipped code cells. |
+| 10 | Profile fields, consent links if approved, save action, validation state | Fields stack; errors expand form height; save remains reachable when keyboard is open. |
+| 11 | Server-confirmed status panel, booking reference, next-step action, explore action | Long references and status text wrap; actions remain visible without implying payment. |
+| 12 | Booking status filters/groups, booking cards, refresh/empty/error states, bottom navigation | Status tabs scroll/reflow accessibly; cards fit narrow width and 200% text. |
+| 13 | Booking summary, status timeline, financial summary, status-eligible actions, support/chat links | Dense summaries become vertical; actions do not overflow; long property/booking IDs isolate and wrap. |
+| 14 | Approved payment amount, provider/prototype surface, progress/result/retry states | Provider surface fits available insets/keyboard; amounts and error copy reflow; no fixed modal clipping. |
+| 15 | Favorite property cards, remove/favorite controls, empty/error/loading views, bottom navigation | Cards and controls fit narrow phones; favorite action remains separately targetable. |
+| 16 | Notification list items, read/unread state, empty/error state, deep-link destination | Event copy wraps; read state not communicated by color alone; retained bottom navigation fits. |
+| 17 | Account identity summary, profile/settings/payment/support rows, sign-out action, bottom navigation | Account rows reflow with long Arabic labels and large text; no truncated essential action. |
+| 18 | Editable profile fields, validation, save/cancel, conflict/error feedback | Form height expands; keyboard, focus and save action remain manageable at large text. |
+| 19 | Settings rows, supported toggles, permission explanation, privacy/account actions | Labels wrap next to controls without overlap; toggles remain operable at large text. |
+| 20 | Payment event list, amount/status/reference rows, filters and empty/error states | Amount and reference rows reflow; no horizontally clipped transaction details. |
+| 21 | Help topic list/content, support form if approved, submit/error/acknowledgment state | Long-form copy and form fields reflow; external support actions remain reachable. |
+| 22 | Message list, composer, attachment control if approved, delivery/error state | Keyboard/composer/safe area interaction verified; long messages wrap without forcing horizontal scroll. |
+| 23 | Case status, evidence list/uploader if approved, progress/error state, submit action | Evidence metadata and upload controls reflow; progress/errors do not cover other actions. |
+| 24 | Eligibility/status explanation, rating control, comment field, submit state | Rating controls remain labeled and usable; comment field and errors grow vertically. |
+| 25 | Version/effective-date header, semantic legal headings/lists/links, consent action if approved | Long legal text scrolls and reflows; no fixed-height document pane or horizontal clipping. |
+| 26 | Version/effective-date header, semantic privacy sections/links, deletion/contact action if approved | Long privacy text reflows; action links remain distinguishable and reachable at large text. |
 
 ## Cross-screen acceptance matrix
 

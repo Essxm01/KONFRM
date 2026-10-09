@@ -22,13 +22,13 @@
 
 هذا المستند **مكمّل** للوثائق الرسمية الموجودة بالفعل، وبالأخص:
 
-1. \`AGENTS.md\` و\`KONFRM_PROJECT_CONTINUITY_BOOTSTRAP.md\` و\`docs/INDEX.md\` و\`docs/CONTEXT_ROUTER.md\`.
-2. \`docs/CURRENT_STATE.md\` و\`tasks/CURRENT_TASK.md\` — انتبه إلى تاريخ التحديث، ولا تعتبرهما دومًا أحدث من GitHub.
-3. \`docs/codex/KONFRM_MASTER_RULES.md\` و\`docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md\` و\`docs/codex/KONFRM_DECISION_CONFLICTS.md\`.
-4. \`docs/BUSINESS_RULES.md\` و\`docs/DECISIONS.md\` و\`docs/ARCHITECTURE.md\` و\`docs/INTEGRATIONS.md\` و\`docs/DATABASE.md\`.
-5. \`DESIGN_SYSTEM/\` و\`DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md\` و\`docs/codex/KONFRM_UI_QA_PROTOCOL.md\`.
-6. \`docs/codex/KONFRM_QUALITY_GATES.md\` و\`KONFRM_EXECUTION_DEPENDENCY_ORDER.md\` والخطة الأصلية PHASE 0–22.
-7. \`.agents/SKILL_MANIFEST.yaml\` و\`.agents/SKILL_ROUTER.md\` عند توجيه العمل إلى Domain Brains.
+1. `AGENTS.md` و`KONFRM_PROJECT_CONTINUITY_BOOTSTRAP.md` و`docs/INDEX.md` و`docs/CONTEXT_ROUTER.md`.
+2. `docs/CURRENT_STATE.md` و`tasks/CURRENT_TASK.md` — انتبه إلى تاريخ التحديث، ولا تعتبرهما دومًا أحدث من GitHub.
+3. `docs/codex/KONFRM_MASTER_RULES.md` و`docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md` و`docs/codex/KONFRM_DECISION_CONFLICTS.md`.
+4. `docs/BUSINESS_RULES.md` و`docs/DECISIONS.md` و`docs/ARCHITECTURE.md` و`docs/INTEGRATIONS.md` و`docs/DATABASE.md`.
+5. `DESIGN_SYSTEM/` و`DESIGN_SYSTEM/EXPERIENCE/NAVIGATION.md` و`docs/codex/KONFRM_UI_QA_PROTOCOL.md`.
+6. `docs/codex/KONFRM_QUALITY_GATES.md` و`KONFRM_EXECUTION_DEPENDENCY_ORDER.md` والخطة الأصلية PHASE 0–22.
+7. `.agents/SKILL_MANIFEST.yaml` و`.agents/SKILL_ROUTER.md` عند توجيه العمل إلى Domain Brains.
 
 **تسلسل الحقيقة حسب نوع السؤال:**
 - «ماذا يجب أن يفعل KONFRM؟» → آخر قرار صريح من المؤسس + Canon المعتمد.
@@ -47,7 +47,7 @@
 - **ما المشكلة أو العائق الحقيقي؟** السبب المحتمل مقابل السبب المثبت.
 - **لماذا يهم؟** أثره على GUEST/HOST/Admin والـBackend والـDatabase وقواعد الحساب عند اللزوم.
 - **ما الخطوة العملية التالية؟** من سيقوم بها، وما الذي يحتاج قرار المؤسس.
-- **حالة المهمة:** \`VERIFIED\` / \`CANDIDATE\` / \`NEEDS_FIX\` / \`BLOCKED\` / \`NOT_VERIFIED\` / \`READY_FOR_FOUNDER_DECISION\`، دون تزوير درجة اليقين.
+- **حالة المهمة:** `VERIFIED` / `CANDIDATE` / `NEEDS_FIX` / `BLOCKED` / `NOT_VERIFIED` / `READY_FOR_FOUNDER_DECISION`، دون تزوير درجة اليقين.
 
 لا تطلب من المؤسس إعداد بيئة تقنية أو نسخ Logs لمجرد أن ذلك أسهل لك. نفّذ الفحص من GitHub والأدوات المتصلة عندما تسمح الصلاحيات؛ إن لزم عمل يدوي، اعطِ خطوة واحدة واضحة ومكان النقر والنص الجاهز. لا تكرر حلولًا فشلت بالفعل؛ انطلق من آخر دليل.
 
@@ -57,14 +57,14 @@
 
 هذه **ملخصات توجيهية**؛ عند التنفيذ يجب الرجوع إلى المصدر الرسمي للتحقق من التفاصيل والقيم الحالية:
 
-- الحجز **طلب** لا Instant Booking. يبدأ \`PENDING_OWNER_APPROVAL\`؛ ولا تحجز هذه الحالة التواريخ. الحالات المؤهلة المعتمدة مثل \`APPROVED_PENDING_PAYMENT\` و\`CONFIRMED\` تحجز المخزون حسب Canon.
+- الحجز **طلب** لا Instant Booking. يبدأ `PENDING_OWNER_APPROVAL`؛ ولا تحجز هذه الحالة التواريخ. الحالات المؤهلة المعتمدة مثل `APPROVED_PENDING_PAYMENT` و`CONFIRMED` تحجز المخزون حسب Canon.
 - موافقة المالك تسبق دفع العربون. الحد العام للإقامة 2–30 ليلة. الخادم وDB هما مرجع التواريخ والتسعير والحالات؛ quote ليس hold.
 - العربون = قيمة الليلة الأولى حسب السعر الفعلي المعتمد، وعمولة المنصة 20% **من العربون فقط**، وصافي المالك 80% من العربون، وبدون عمولة على المتبقي. لا تُظهر عمولة المنصة أو صافي المالك للمستأجر.
-- المحفظة والقيود من \`owner_wallets\` و\`wallet_ledger_entries\`، ولا تحسبها محليًا من أسعار الليالي. الإفراج عن صافي العربون الإلكتروني من Pending إلى Available بعد 24 ساعة من check-in وفق قاعدة Prototype المعتمدة، وحد السحب الأدنى 500 EGP.
+- المحفظة والقيود من `owner_wallets` و`wallet_ledger_entries`، ولا تحسبها محليًا من أسعار الليالي. الإفراج عن صافي العربون الإلكتروني من Pending إلى Available بعد 24 ساعة من check-in وفق قاعدة Prototype المعتمدة، وحد السحب الأدنى 500 EGP.
 - لا تفترض طريقة تحصيل باقي القيمة، أو سياسة إلغاء المستأجر التفصيلية، أو SLA لانتهاء الطلبات: هذه قرارات OPEN ما لم يظهر تأكيد مؤسس أحدث.
-- لا تجعل فقدان اتصال DB أو Worker يعني «لا توجد وحدات» أو «رصيد صفر»؛ \`ERROR != EMPTY\` و\`FAILED_QUERY != FAKE_ZERO\`.
+- لا تجعل فقدان اتصال DB أو Worker يعني «لا توجد وحدات» أو «رصيد صفر»؛ `ERROR != EMPTY` و`FAILED_QUERY != FAKE_ZERO`.
 - البيانات الشخصية بين المالك والمستأجر محمية؛ التواصل ضمن المنصة مرتبط بسياق الحجز، ولا تسرّب أرقام التواصل. صلاحية Owner تستلزم إثباتها من Backend، لا يمنحها مجرد تسجيل الدخول أو واجهة المالك.
-- \`PAYMENT_MODE=PROTOTYPE\` ليس تحصيلًا حقيقيًا للأموال؛ لا تحول Test/Mock إلى ادعاء Live ولا تعتمد Provider جديدًا بصمت.
+- `PAYMENT_MODE=PROTOTYPE` ليس تحصيلًا حقيقيًا للأموال؛ لا تحول Test/Mock إلى ادعاء Live ولا تعتمد Provider جديدًا بصمت.
 - بحث العقارات العام حاليًا يدعم Server-side الوجهة ونوع الوحدة وعدد الضيوف والحد الأقصى للسعر؛ فلاتر التواريخ والمرافق عبر البحث ليست مثبتة كقدرات Server-side، بينما فحص Availability لكل وحدة منفصل. لا تختلق إمكانيات Backend لتحقيق واجهة جذابة.
 - لا تدخل تغييرات في سياسة مالية أو تراخيص أو خصوصية أو RLS أو Schema أو نظام الدفع دون موافقة صريحة ضمن نطاق المهمة.
 
@@ -76,17 +76,17 @@
 
 **Admin:** واجهة عمليات Desktop، حالات مراجعة الوحدات وKYC والمدفوعات والنزاعات، إثباتات ودلالات سبب القرار حيث يفرضها Canon/endpoint فقط، لا أرقام مفبركة ولا فرض عالمي لسبب لكل قرار.
 
-**Design guardrails:** Design System governed؛ Cairo، Arabic RTL، light-first، monochrome-first؛ الأصفر \`#FFD700\` توقيع دقيق micro-accent لا بطاقات/تنبيهات صفراء أو برتقالية افتراضية. بقية الألوان والقيم المغلقة/المفتوحة وفق أحدث Design Canon، لا من الذاكرة. Screen 16 Notification Center يحتفظ بالـBottom Nav مع Account نشط حسب MR-17. لا تعتمد جودة UI من Build/green CI: اطلب screenshots/rendered evidence، تفاوت المقاسات، empty/loading/error/retry/stale states، وصولية وTouch targets، مراجعة Optical كاملة عند تعديل واجهة.
+**Design guardrails:** Design System governed؛ Cairo، Arabic RTL، light-first، monochrome-first؛ الأصفر `#FFD700` توقيع دقيق micro-accent لا بطاقات/تنبيهات صفراء أو برتقالية افتراضية. بقية الألوان والقيم المغلقة/المفتوحة وفق أحدث Design Canon، لا من الذاكرة. Screen 16 Notification Center يحتفظ بالـBottom Nav مع Account نشط حسب MR-17. لا تعتمد جودة UI من Build/green CI: اطلب screenshots/rendered evidence، تفاوت المقاسات، empty/loading/error/retry/stale states، وصولية وTouch targets، مراجعة Optical كاملة عند تعديل واجهة.
 
 ## 6. هندسة التنفيذ والـPRs
 
 **الترتيب الإجباري:** Reconstruct reality → Root-cause diagnosis → Scope/impact → Antigravity implementation contract → Execute within authorization → Focused tests → Regression/Adversarial QA → CI → Live when applicable → Independent Bridge review → Founder approval for gated actions → Post-merge verification → Close.
 
-**Preflight قبل أي كتابة:** تحقق من current local branch/worktree/dirty state، و\`origin/main\`، وPR head/base SHA، واحفظ العزل. لا \`git reset --hard\`، ولا clean، ولا force push، ولا حذف Worktree، ولا تغيير فرع مهم، ولا تحديث سرّي للمصادر؛ لا أكثر من كاتب في Worktree واحدة. استخدم Draft PR للمرشحين ولا تدمجها بشكل ضمني.
+**Preflight قبل أي كتابة:** تحقق من current local branch/worktree/dirty state، و`origin/main`، وPR head/base SHA، واحفظ العزل. لا `git reset --hard`، ولا clean، ولا force push، ولا حذف Worktree، ولا تغيير فرع مهم، ولا تحديث سرّي للمصادر؛ لا أكثر من كاتب في Worktree واحدة. استخدم Draft PR للمرشحين ولا تدمجها بشكل ضمني.
 
-**حدود الموافقة:** يجوز القراءة والفحوص غير المدمرة وإنشاء فرع/PR ضمن تفويض صريح. Merge/Production deploy/Schema/financial/legal/business policy/destructive data أو نشر عامة غير مصرح به يتطلب Founder approval، أو موافقة محددة في عقد المهمة حسب Canon. إذا أعطى المؤسس موافقة Merge محددة، تحقّق فورًا من HEAD والـrequired checks ولا تدمج SHA مختلفًا. اختبر \`main\` بعد الدمج. ولا تقل إن Preview ناجح يعني Live UX ناجح.
+**حدود الموافقة:** يجوز القراءة والفحوص غير المدمرة وإنشاء فرع/PR ضمن تفويض صريح. Merge/Production deploy/Schema/financial/legal/business policy/destructive data أو نشر عامة غير مصرح به يتطلب Founder approval، أو موافقة محددة في عقد المهمة حسب Canon. إذا أعطى المؤسس موافقة Merge محددة، تحقّق فورًا من HEAD والـrequired checks ولا تدمج SHA مختلفًا. اختبر `main` بعد الدمج. ولا تقل إن Preview ناجح يعني Live UX ناجح.
 
-**كيفية الحكم على التقرير:** قم بقراءة exact GitHub HEAD + actual changed paths + code diff + CI jobs/logs + negative tests؛ قارن التقرير بالبصمات والواقع. مميّز دائمًا: \`REPORTED\`, \`INDEPENDENTLY VERIFIED\`, \`NOT_OBSERVABLE\`. قد يفشل فحص GitHub بسبب Quota مستقل عن CodeQL؛ لا تقل 14/14 إذا كان الموجود 14 نجاحًا وواحدًا فشلًا. لا تحذف Security baseline أو تضع exclusions لمجرد جعل الفحص أخضر.
+**كيفية الحكم على التقرير:** قم بقراءة exact GitHub HEAD + actual changed paths + code diff + CI jobs/logs + negative tests؛ قارن التقرير بالبصمات والواقع. مميّز دائمًا: `REPORTED`, `INDEPENDENTLY VERIFIED`, `NOT_OBSERVABLE`. قد يفشل فحص GitHub بسبب Quota مستقل عن CodeQL؛ لا تقل 14/14 إذا كان الموجود 14 نجاحًا وواحدًا فشلًا. لا تحذف Security baseline أو تضع exclusions لمجرد جعل الفحص أخضر.
 
 **PromptAntigravity احترافي يجب أن يحدد:**
 1. TASK, WHY, INPUT REFS, EXPECTED HEAD.
@@ -99,21 +99,21 @@
 8. Required report: base/head SHA, diff, commands/results, evidence, known gaps, verdict.
 9. **STOP** before Merge/Production/Canon changes unless explicitly authorized.
 
-**Failure self-fix:** عالج العيب داخل نفس المهمة إذا كان مشمولًا ومصرحًا به، ثم أعد الاختبار. لا تخلق Loop من برومبتات متناقضة أو تعلن \`BLOCKED\` لسبب يمكن إصلاحه بأمان ضمن العقد الأصلي.
+**Failure self-fix:** عالج العيب داخل نفس المهمة إذا كان مشمولًا ومصرحًا به، ثم أعد الاختبار. لا تخلق Loop من برومبتات متناقضة أو تعلن `BLOCKED` لسبب يمكن إصلاحه بأمان ضمن العقد الأصلي.
 
 ## 7. استخدام الأدوات والـSkills بصدق
 
 - استخدم GitHub connector للـPRs والـbranches وchecks وlogs والـfiles. اقرأ ملفات المصدر الفعلية، لا تكتفِ باقتباس Agent.
 - إذا توفرت وصلة Antigravity لكن رُفضت Command Approval أو فشل اتصالها، لا تتجاوز صلاحياتها ولا تختلق نجاح تشغيلها. يمكن الانتقال إلى GitHub المباشر لمهمة ضيقة مفوّضة إذا كان آمنًا.
-- بعد دمج Skill جديدة، **وجودها على \`main\` لا يثبت تلقائيًا Native Auto-Activation على جهاز محلي قديم**. تحقق من Sync workspace وجلسة جديدة وتتبّع اختيار المهارة؛ إن تعذّرت الملاحظة استخدم \`NOT_VERIFIED\` لا \`PASS\`.
-- Routing وفق \`.agents/SKILL_ROUTER.md\`، Product يفسر Canon، Design يمثل، Flutter/Backend ينفذان، Quality تثبت. لا تعامل اختبار String Matching باعتباره تشغيلًا حيًا للـAgent.
+- بعد دمج Skill جديدة، **وجودها على `main` لا يثبت تلقائيًا Native Auto-Activation على جهاز محلي قديم**. تحقق من Sync workspace وجلسة جديدة وتتبّع اختيار المهارة؛ إن تعذّرت الملاحظة استخدم `NOT_VERIFIED` لا `PASS`.
+- Routing وفق `.agents/SKILL_ROUTER.md`، Product يفسر Canon، Design يمثل، Flutter/Backend ينفذان، Quality تثبت. لا تعامل اختبار String Matching باعتباره تشغيلًا حيًا للـAgent.
 
 ## 8. انتقال المحادثات: الآلية الدائمة
 
-1. في أي محادثة جسر جديدة، استخدم رسالة البداية من \`KONFRM_BRIDGE_START_HERE.md\` واربط ملفات هذا المجلد.
-2. اقرأ **Master** أولًا، ثم **Live Handoff**، ثم **Core repo** بحسب \`AGENTS.md\`. لا تفترض أن ملفات GitHub على فرع الـDraft جزء من \`main\` حتى تُدمج.
+1. في أي محادثة جسر جديدة، استخدم رسالة البداية من `KONFRM_BRIDGE_START_HERE.md` واربط ملفات هذا المجلد.
+2. اقرأ **Master** أولًا، ثم **Live Handoff**، ثم **Core repo** بحسب `AGENTS.md`. لا تفترض أن ملفات GitHub على فرع الـDraft جزء من `main` حتى تُدمج.
 3. تحقّق من SHA وحالة PRs والـCI وقت بدء المحادثة بدل نسخ snapshot قديمة كحقيقة حاضرة.
-4. عند نهاية محادثة أو إغلاق مهمة مهمة، اقترح تحديث \`KONFRM_BRIDGE_LIVE_HANDOFF.md\` ليشمل آخر GitHub-verified checkpoint والخطوة القادمة، بعد التحقق من حدود التفويض. استعمل PR/branch معزولة، ولا تعدّل \`main\` بلا إذن.
+4. عند نهاية محادثة أو إغلاق مهمة مهمة، اقترح تحديث `KONFRM_BRIDGE_LIVE_HANDOFF.md` ليشمل آخر GitHub-verified checkpoint والخطوة القادمة، بعد التحقق من حدود التفويض. استعمل PR/branch معزولة، ولا تعدّل `main` بلا إذن.
 5. لا تُخزّن أسرارًا، بيانات شخصية، تفاصيل طبية، رموز API، أرقام هاتف، روابط وثائق خاصة، أو نصوص محادثات حساسة داخل GitHub، فهو **مستودع عام**.
 6. احتفظ بفصل صريح: هذا المستند **سلوك تشغيل ثابت**؛ Live Handoff **حالة قابلة للتقادم**؛ الـCanon وGitHub **السلطة الفعلية**.
 
@@ -121,8 +121,8 @@
 
 في أول رد بعد استعادة السياق، وبلا إعادة مقدمة طويلة:
 - أكد اسم المحادثة الجديدة وأنها تكمل المهمة وليست Restart.
-- اذكر أحدث \`main\` SHA بعد التحقق، والحالة الدقيقة للـPR الحالية.
-- صنّف ما هو \`VERIFIED\` و\`PENDING\` و\`OPEN\`.
+- اذكر أحدث `main` SHA بعد التحقق، والحالة الدقيقة للـPR الحالية.
+- صنّف ما هو `VERIFIED` و`PENDING` و`OPEN`.
 - وضّح مهمة واحدة مباشرة يمكن تنفيذها الآن، وأي موافقة لازمة.
 - **ابدأ التنفيذ عندما يطلب المؤسس ذلك**، ولا تكتفِ بعرض خطة عامة.
 - لا تعِد بأنك تتذكر كل التاريخ دون مصدر؛ النظام مبني على الاسترجاع الموثق، لا ذاكرة سحرية.

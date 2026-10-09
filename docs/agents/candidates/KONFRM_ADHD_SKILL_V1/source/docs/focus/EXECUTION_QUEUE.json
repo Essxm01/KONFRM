@@ -3,16 +3,34 @@
   "queue": [],
   "observed_followups": [
     {
-      "ref": "PR-72",
-      "kind": "EXISTING_TECH_DEBT",
-      "status": "NOT_QUEUE_APPROVED",
-      "reason": "Auth V2 CI follow-up; must be inspected after NOW, not silently promoted"
+      "ref": "PR-105",
+      "kind": "COMPLETED_PR",
+      "status": "VERIFIED_MERGED",
+      "reason": "Quality Evidence Mesh Stage B (Playwright Customer Web UI pilot) merged at 2026-10-08T04:18:53Z"
+    },
+    {
+      "ref": "PR-110",
+      "kind": "COMPLETED_PR",
+      "status": "VERIFIED_MERGED",
+      "reason": "Phase 5 Mission 01 Customer Flutter shell and 4-root navigation merged at 2026-10-09T13:22:58Z"
+    },
+    {
+      "ref": "PR-107",
+      "kind": "COMPLETED_PR",
+      "status": "VERIFIED_MERGED",
+      "reason": "Auth V2 CI canonical repo identity fix merged at 2026-10-09T01:40:38Z (superseded PR-72)"
     },
     {
       "ref": "PR-102",
-      "kind": "EXISTING_ACTIVE_PR",
-      "status": "NOT_CURRENT",
-      "reason": "Product Brain security reconciliation; after NOW and relevant shared-CI dependency audit"
+      "kind": "COMPLETED_PR",
+      "status": "VERIFIED_MERGED",
+      "reason": "Product Brain runtime and routing merged at 2026-10-07T22:13:36Z"
+    },
+    {
+      "ref": "PR-106",
+      "kind": "PARALLEL_LANE_PR",
+      "status": "DRAFT_HOLD",
+      "reason": "ADHD Skill candidate hardening and parallel execution compatibility; no live installation"
     },
     {
       "ref": "PR-2",
@@ -21,5 +39,5 @@
       "reason": "Migration 024 parity/diff forensic audit, no blind merge"
     }
   ],
-  "note": "Queue intentionally empty: there is no explicit Founder-approved new execution sequence in the current message. Earlier priorities are advisory pending refreshed status."
+  "note": "Queue intentionally empty: there is no unstarted execution sequence queued. Active delivery is Phase 5 Mission 02, alongside Founder-authorized parallel lanes."
 }

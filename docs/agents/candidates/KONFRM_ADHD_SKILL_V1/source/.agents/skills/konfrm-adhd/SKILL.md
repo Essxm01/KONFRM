@@ -1,47 +1,54 @@
 ---
 name: konfrm-adhd
-description: 'KONFRM ADHD SKILL: non-clinical focus guard. Keep ONE verifiable execution focus, capture and evaluate new ideas without derailment, register Founder decisions, deduplicate tasks, map dependencies to approved Phase 0-22 order, and resume interrupted sessions. Use whenever project priorities, new ideas, task switching, or execution handoffs occur. Never overrides Founder/Product/Quality authority.'
+description: 'KONFRM ADHD SKILL: non-clinical focus guardian. Protects ONE primary product delivery priority, manages Founder-authorized parallel execution lanes with disjoint surfaces, captures and evaluates new ideas without derailment, registers Founder decisions, deduplicates tasks, maps dependencies to approved Phase 0-22 order, and resumes interrupted sessions. Use whenever project priorities, new ideas, parallel lanes, task switching, or execution handoffs occur. Never overrides Founder/Product/Quality authority.'
 ---
 
 # ADHD SKILL — KONFRM Focus & Continuity Guardian
 
-`VERSION: 1.0.0-candidate` · `TYPE: CROSS_CUTTING_PROCESS_OVERLAY` · `STATUS: NOT_ACTIVE_UNTIL_INTEGRATED` · `NO NEW DOMAIN AUTHORITY`.
+`VERSION: 1.1.0-candidate` · `TYPE: CROSS_CUTTING_PROCESS_OVERLAY` · `STATUS: NOT_ACTIVE_UNTIL_INTEGRATED` · `NO NEW DOMAIN AUTHORITY`.
 
 ## 0. Immutable mission
 **Capture the idea. Protect the lane. Restore momentum.**
-Protect the agreed current delivery task while giving each valid new idea a durable evaluation and future home. Never suppress ideas; never confuse founder excitement with approval to replace NOW. This skill is not a medical intervention and does not assume or diagnose a health condition.
+Protect the agreed primary product delivery priority while managing Founder-authorized parallel execution lanes. Give each valid new idea a durable evaluation and future home. Never suppress ideas; never confuse founder excitement with approval to replace NOW. This skill is not a medical intervention and does not assume or diagnose a health condition.
 
 ## 1. Where it sits
-`Founder / Product Canon / Security / Approved decisions` > `AGENTS.md and project governance` > `domain routing and quality gates` > **this scheduling and continuity overlay** > unverified model preference. This overlay does not override root `AGENTS.md`, `.agents/SKILL_ROUTER.md`, `.agents/SKILL_MANIFEST.yaml`, Business Rules, R2→R5, phase authority, or explicit Founder instructions. A Founder request to change lanes requires transparent cost and safe handoff; do not stonewall.
+`Founder / Product Canon / Security / Approved decisions` > `AGENTS.md and project governance` > `domain routing and quality gates` > **this scheduling and continuity overlay** > unverified model preference.
+
+This overlay does not override root `AGENTS.md`, `.agents/SKILL_ROUTER.md`, `.agents/SKILL_MANIFEST.yaml`, Business Rules, R2→R5, phase authority, or explicit Founder instructions. Domain authorities are established:
+- `konfrm-product`: Authoritative product soul and Canon semantics (active in main per PR #102 & #109).
+- `konfrm-quality`: Authoritative verification, defect RCA, and evidence gates.
+- `konfrm-flutter`: Authoritative Flutter mobile implementation.
+- `konfrm-design`: Authoritative design presentation, RTL, and tokens.
+ADHD SKILL is a **cross-cutting process overlay**, NOT an eighth domain brain.
 
 ## 2. Load only what is necessary
-Start by reading `docs/focus/FOCUS_NOW.json` and `docs/focus/README.md`, then verify its `last_verified` against current GitHub/local evidence when the result matters. Read queue index only when prioritizing; read item detail only when evaluating it. Relevant Canon comes from `.agents/CONTEXT_MAP.yaml` and `AGENTS.md`; do not repeat Canon in this skill. Large history is lazy-loaded. If those files are not present, enter `MEMORY_UNAVAILABLE` and request a read-only status check; never invent continuity.
+Start by reading `docs/focus/FOCUS_NOW.json` and `docs/focus/README.md`, then verify `last_known_remote_head` against current GitHub/local evidence when the result matters. Read queue index only when prioritizing; read item detail only when evaluating it. Large history is lazy-loaded. Concurrent agents may read focus state in lock-free read-only mode. If files are missing, enter `MEMORY_UNAVAILABLE` and request a read-only status check; never invent continuity.
 
 ## 3. Everyday operating cycle
-1. **ANCHOR**: Identify exactly one `ACTIVE` task, what is confirmed done, real blockers, smallest next step. Never mark a task completed based on a verbal report alone.
+1. **ANCHOR**: Identify the ONE primary product delivery priority, any authorized parallel lanes, confirmed progress, real blockers, and smallest next steps.
 2. **DETECT**: New information: direct continuation, new idea, change request, safety incident, or genuinely blocking dependency.
 3. **CAPTURE**: For a new idea, record an ID, exact Founder wording/intent, date, provisional scope, provenance, and initial `CAPTURED` status; return a short capture acknowledgment, not a new workstream.
-4. **ASSESS**: De-duplicate against queue/issues/PRs; detect approved decisions and cross-app effects; explain benefit, cost, dependencies, risk, risk of not doing, phase fit, and reversibility. Mark `ASSESSED` with evidence, not `APPROVED`.
+4. **ASSESS**: De-duplicate against queue/issues/PRs; detect approved decisions and cross-app effects; explain benefit, cost, dependencies, risk, phase fit, and reversibility. Mark `ASSESSED` with evidence, not `APPROVED`.
 5. **ROUTE**: `REJECTED`, `DEFERRED`, `NEEDS_FOUNDER_DECISION`, or `FOUNDER_APPROVED` based on explicit dated confirmation. Approved items can enter execution queue without changing NOW.
-6. **PROTECT**: Hold the current lane. Only switch via guarded exception and state handoff. Never use novelty or urgency rhetoric as proof.
+6. **PROTECT**: Hold the primary lane. Parallel lanes require explicit Founder authorization, non-overlapping surfaces, and disjoint worktrees.
 7. **CLOSE LOOP**: At session end update handoff and queue, include Git status, what was truly verified, actual next action, and unpushed work warning. No silent merge or automation.
 
 ## 4. Hard gates
-- ONE active task; WIP limit 1 for active implementation. Research may occur in read-only mode without switching implementation.
-- `CAPTURED/ASSESSED/DEFERRED` idea must not mutate product code, Canon, or execution order.
-- `FOUNDER_APPROVED` does not mean `READY_TO_EXECUTE`; dependency gates and worktree/PR locks still apply.
-- A new idea may become urgent only with concrete evidence: security/data leakage, hard blocker, required deadline or Founder-approved reprioritization. Flag and propose; never execute dangerous fixes independently.
-- Before context switching: preserve uncommitted state, identify branch/worktree/PR, prove what is and isn't on GitHub; no reset/clean/force-push.
-- Phase map remains **Phase 0–22**, with approved dependency layer and R2→R5 after Phase 7/before Phase 8; never renumber phases or create a new governing roadmap.
-- No speculative completion. `BUILD_PASS != USER_FLOW_VERIFIED != LIVE_VERIFIED`.
-- Do not silently change financial/privacy/booking logic or Design Canon; refer to domain authority and Founder for approval.
-- For conflicts between dates/docs, record evidence + conflicting source; **current code is implementation evidence**, not authority to rewrite business intent.
-- No medical inference, user-behavior tracking, personal profiling, health/nudge/medication data or coercive lockout.
+- **ONE primary product delivery priority:** Single active product task at any given time.
+- **Founder-authorized parallel execution lanes:** Parallel lanes permitted ONLY with explicit Founder authorization (`authority`, `date`, `evidence`).
+- **One active task per agent & worktree:** No agent or worktree may hold multiple active assignments.
+- **Disjoint writable file ownership:** Each lane must declare `exclusive_writable_surfaces`. Overlapping writable surfaces fail validation.
+- **Canonical protection:** Parallel lanes are forbidden from modifying canonical shared state files (`tasks/CURRENT_TASK.md`, `AGENTS.md`, etc.).
+- **Finished PRs cannot be active:** Merged PRs cannot be tracked as active work.
+- **Lock-free read / serialized write:** Concurrent agents inspect focus state without locks; writes are strictly confined to assigned surfaces.
+- **Founder retains full authority:** Founder alone approves, pauses, or switches lanes. Switching primary priority requires documenting a preserved handoff.
+- **Phase order:** Phase map remains **Phase 0–22**, with R2→R5 after Phase 7/before Phase 8.
+- **No medical inference:** No health data, user tracking, profiling, or coercive lockouts.
 
 ## 5. Choose the protocol
 - New inspiration, new initiative -> `references/idea_intake.md`.
 - Ranking, dependencies, placement -> `references/priority_and_phases.md`.
-- Attempt to jump ahead -> `references/interruption_and_override.md`.
+- Attempt to jump ahead / lane switch -> `references/interruption_and_override.md`.
 - New chat, restart or lost laptop session -> `references/continuity_and_memory.md`.
 - Founder asks "where are we?" -> `references/founder_output.md`.
 - Cross-skill authority / delivery -> `references/integration_boundaries.md`.

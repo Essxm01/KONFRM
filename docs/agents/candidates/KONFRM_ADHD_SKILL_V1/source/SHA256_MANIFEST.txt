@@ -1,19 +1,45 @@
-e30600797ae3fc3c6bfa307d620dd60cfa26dea926af0871b29625440d8b4567  .agents/skills/konfrm-adhd/SKILL.md
+# KONFRM ADHD SKILL — SHA-256 Manifest
+# Status: Candidate v1.1 (Parallel Execution Compatibility & Post-PR #110 Remediation)
+# Original Brotli Archive SHA-256: 2c6f8289e238e525769aede04cffc1a4bec8cef7ac293e791788d105bd08e633 (payload.part01..04.txt, Byte-Identical)
+
+# --- REVISED CANDIDATE V1.1 FILE HASHES (CURRENT SOURCE) ---
+d5573bc4abb64666f4c35c213f42559f7f93ac55feea9c805b5624bafad1a839  .agents/skills/konfrm-adhd/SKILL.md
 17c3ee57b474941e6d363100e90b1e5ff4afbc8e040bfbad876b66890c4a946f  .agents/skills/konfrm-adhd/references/continuity_and_memory.md
 448e4e0f81cacf318c4471bd7ce4cc8ed852c401511e5ab287bf73dfda725b32  .agents/skills/konfrm-adhd/references/founder_output.md
 93789af65ad88484930c533f889675b37fea281869569bb758557b6a1b92499b  .agents/skills/konfrm-adhd/references/idea_intake.md
-b6b58c3d4708e418cf02f63dae9eee0ef56ff1eb1fe2946ece1fb2049a5ffeef  .agents/skills/konfrm-adhd/references/integration_boundaries.md
+0ccd4ba95a0620955dbc19c6d420b225c61b79a68572928cd38fd43e51702f12  .agents/skills/konfrm-adhd/references/integration_boundaries.md
 27b7f7ce7dd62853edf995246fe3af63488a74fe0f9660277980064f10a1301d  .agents/skills/konfrm-adhd/references/interruption_and_override.md
-bbcee2af8fde154a34c398710e050882089c73c41c6abe2b92bc517339005a78  .agents/skills/konfrm-adhd/references/priority_and_phases.md
-2fe11aa4c25ac5fed0820909ceeb6c848b2b1b8580719870329b6de3f790dffd  BEHAVIOR_ACCEPTANCE.md
-9d66c6a57b90dc68b8206d15c20a4126539bbfb23fadf4e5b5fa5a5dba0c7cac  INSTALLATION_PROTOCOL.md
-157ba8e05457e17799d65fc4e5b0ab2a1a94df5454dcf54d7f93ee2263352bfa  README.md
+f514dd74e0104377a7e6e6f6c40058c820effeafd7bf1542542c401a2736eb4f  .agents/skills/konfrm-adhd/references/priority_and_phases.md
+820e246c0b44087b7a15cc8aa90edf18602f87898d69053138c3f6f398a1d467  BEHAVIOR_ACCEPTANCE.md
+d2d7a1cf4997753a572744b10ea834ee332f8cddd5d8b25649a9a7a536c00a02  INSTALLATION_PROTOCOL.md
+8781ab1a9e4f6af6ce295eb81dd96cb77b9b8d5375e0b113b4ab1d010231cb5d  README.md
 f6ba0cc6a063060af5c7e1e900e53f45608931cd15b562a24572309d4ee28da4  SOURCE_RESEARCH.md
-4a0fee26f1adf225018db71d288dc07631001954dcc19df7d695335b7cd47b55  docs/focus/DECISION_LEDGER.jsonl
-9c8264182358a21381a1860386f241ec432a756ad4f46ca8fe4eff8a8f19c4c0  docs/focus/EXECUTION_QUEUE.json
-57d8aa139ce012f3786d487d242ff005e3d00c1093e5067fe19a304d554513dd  docs/focus/FOCUS_NOW.json
+45de0576e082e58c79a8071a1138e45b65ef2b222e6afdea748c505de10c17c8  docs/focus/DECISION_LEDGER.jsonl
+88d00d22a6efd229692edf1459c2453cafd4dc5c430c13278698abe0d39c8a21  docs/focus/EXECUTION_QUEUE.json
+92883b08ff853f9525f8bd70158c463be547897786f4beaba719fc94fba7a8bb  docs/focus/FOCUS_NOW.json
 6c53ad18cabc7f1e09b06c32a00dbaf1a4c66864a9bda231dac16cf7d499b17c  docs/focus/IDEA_INBOX.json
-c5be75bbd5d02fe366150e5111b7abc929eec88623833d8ae11cbe519ba579c9  docs/focus/README.md
-0d330f01a60234d7fbb683f1db572a207b0b8873493dc5ced2f2fe3d942e7fbf  docs/focus/SESSION_HANDOFF.md
-c792c9eff94c9e3059f3ae3252d2e556410b25e1d342ffa3ea2f1a4f104cc389  scripts/check-konfrm-focus.mjs
-fd4eb47d7e58a11517b1b0d6382131cda3cfced4592d8f7579beadca25c618cc  scripts/test-konfrm-focus.mjs
+6e7dfb19bb1282c3bcea1bce12de527381729afbc4df1a9661e6009dae17027b  docs/focus/README.md
+91f2ead707d522a7f3e093a5f6fcc3843b288b80e5eb3a7c4f5f92fc5f4f754e  docs/focus/SESSION_HANDOFF.md
+8053546909c253d0c69b686c87da281a472469008b578c33a687e8338f8f0dbd  scripts/check-konfrm-focus.mjs
+a0ce462817ccf24fb3b45ae03c9ecbcdfd42bba1cc8bc9b5bc75e5a9e96af355  scripts/test-konfrm-focus.mjs
+
+# --- HISTORICAL 2026-10-08 ARCHIVE SNAPSHOT (MATCHES payload.part01..04.txt) ---
+# e30600797ae3fc3c6bfa307d620dd60cfa26dea926af0871b29625440d8b4567  .agents/skills/konfrm-adhd/SKILL.md (remediated in v1.1)
+# 17c3ee57b474941e6d363100e90b1e5ff4afbc8e040bfbad876b66890c4a946f  .agents/skills/konfrm-adhd/references/continuity_and_memory.md (UNCHANGED)
+# 448e4e0f81cacf318c4471bd7ce4cc8ed852c401511e5ab287bf73dfda725b32  .agents/skills/konfrm-adhd/references/founder_output.md (UNCHANGED)
+# 93789af65ad88484930c533f889675b37fea281869569bb758557b6a1b92499b  .agents/skills/konfrm-adhd/references/idea_intake.md (UNCHANGED)
+# b6b58c3d4708e418cf02f63dae9eee0ef56ff1eb1fe2946ece1fb2049a5ffeef  .agents/skills/konfrm-adhd/references/integration_boundaries.md (remediated in v1.1)
+# 27b7f7ce7dd62853edf995246fe3af63488a74fe0f9660277980064f10a1301d  .agents/skills/konfrm-adhd/references/interruption_and_override.md (UNCHANGED)
+# bbcee2af8fde154a34c398710e050882089c73c41c6abe2b92bc517339005a78  .agents/skills/konfrm-adhd/references/priority_and_phases.md (remediated in v1.1)
+# 2fe11aa4c25ac5fed0820909ceeb6c848b2b1b8580719870329b6de3f790dffd  BEHAVIOR_ACCEPTANCE.md (remediated in v1.1)
+# 9d66c6a57b90dc68b8206d15c20a4126539bbfb23fadf4e5b5fa5a5dba0c7cac  INSTALLATION_PROTOCOL.md (remediated in v1.1)
+# 157ba8e05457e17799d65fc4e5b0ab2a1a94df5454dcf54d7f93ee2263352bfa  README.md (remediated in v1.1)
+# f6ba0cc6a063060af5c7e1e900e53f45608931cd15b562a24572309d4ee28da4  SOURCE_RESEARCH.md (UNCHANGED)
+# 4a0fee26f1adf225018db71d288dc07631001954dcc19df7d695335b7cd47b55  docs/focus/DECISION_LEDGER.jsonl (remediated in v1.1)
+# 9c8264182358a21381a1860386f241ec432a756ad4f46ca8fe4eff8a8f19c4c0  docs/focus/EXECUTION_QUEUE.json (remediated in v1.1)
+# 57d8aa139ce012f3786d487d242ff005e3d00c1093e5067fe19a304d554513dd  docs/focus/FOCUS_NOW.json (remediated in v1.1)
+# 6c53ad18cabc7f1e09b06c32a00dbaf1a4c66864a9bda231dac16cf7d499b17c  docs/focus/IDEA_INBOX.json (UNCHANGED)
+# c5be75bbd5d02fe366150e5111b7abc929eec88623833d8ae11cbe519ba579c9  docs/focus/README.md (remediated in v1.1)
+# 0d330f01a60234d7fbb683f1db572a207b0b8873493dc5ced2f2fe3d942e7fbf  docs/focus/SESSION_HANDOFF.md (remediated in v1.1)
+# c792c9eff94c9e3059f3ae3252d2e556410b25e1d342ffa3ea2f1a4f104cc389  scripts/check-konfrm-focus.mjs (remediated in v1.1)
+# fd4eb47d7e58a11517b1b0d6382131cda3cfced4592d8f7579beadca25c618cc  scripts/test-konfrm-focus.mjs (remediated in v1.1)

@@ -20,10 +20,10 @@ Use 0–5 with evidence for `impact`, `critical_path`, `risk_reduction`, `urgenc
 
 ## Phase slot references
 Use existing Phase 0–22 plan (`خطة عمل التطبيق.txt`, `KONFRM_EXECUTION_DEPENDENCY_ORDER.md`) rather than rewriting it.
-- `CURRENT_TASK`: continue only the verified existing current task.
-- `AFTER_PR_105`: after Stage B is safely reconciled, not a command to merge.
-- `FOUNDATION_GOVERNANCE`: security/skills/CI/documentation work with a bounded dependency.
-- `PHASE_5_GUEST_UX`: Customer/Guest experience, role-specific phase.
+- `CURRENT_TASK`: continue only the verified existing primary delivery task (Phase 5 / Mission 02 Customer Flutter discovery).
+- `AFTER_PR_105`: historical slot; Stage B (PR #105) is verified merged into main.
+- `FOUNDATION_GOVERNANCE`: security/skills/CI/governance work with bounded dependencies.
+- `PHASE_5_GUEST_UX`: Customer/Guest experience, active delivery phase.
 - `PHASE_6_HOST_UX`: Owner/Host experience.
 - `PHASE_7_ADMIN_UX`: Admin Dashboard experience.
 - `POST_PHASE_7_R2_R5`: approved deferred debts, ordered R2 then R3 then R4 then R5, required before Phase 8.

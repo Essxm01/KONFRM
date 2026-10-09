@@ -1,15 +1,26 @@
-# Focus handoff — 2026-10-08 bootstrap snapshot
+# Focus handoff — 2026-10-09 post-PR #110 reality snapshot
 
-**Reliability:** HISTORICAL_REMOTE_ONLY; RECHECK_REQUIRED. No access to Antigravity's laptop local worktree.
+**Reliability:** HISTORICAL_REMOTE_ONLY_RECHECK_REQUIRED. Verified main baseline at `5c97ab19ed6da3b1a6ecddf7dbf129c059c86811`.
 
-## ONE NOW
-PR #105 Stage B Playwright remediation. User may have sent repair prompt; laptop may have shut down partway through work. GitHub remote last observed at `1c3c54dc5b6e632e16df60a190b27b6777592bef`. **Do not repeat prompt until local session/worktree recovered.**
+## PRIMARY PRODUCT DELIVERY PRIORITY (NOW)
+- **Task:** Phase 5 / Mission 02 — Customer Flutter public discovery (Explore, search, filter, listing cards).
+- **Owner / Agent:** Codex (`customer-flutter-public-discovery` worktree, branch `feat/customer-flutter-public-discovery`).
+- **Remote status:** UNKNOWN (branch exists in local worktree; no remote PR or branch pushed to GitHub origin as of check).
+- **Next action:** Codex completes implementation, tests, and opens Draft PR for Bridge review.
 
-## NEXT
-At laptop: inspect Antigravity session, git worktrees/status and unpushed edits. Report completed/partial/not-started and send evidence to Bridge. No reset, force push, merge or new parallel task.
+## FOUNDER-AUTHORIZED PARALLEL EXECUTION LANES
+1. **LANE-ADHD-HARDENING:** Antigravity on PR #106 (`draft/adhd-skill-focus-guardian-v1`). Remediating candidate files under `docs/agents/candidates/KONFRM_ADHD_SKILL_V1/` for parallel execution compatibility and post-PR #110 reality. No live installation; PR kept in DRAFT.
+2. **LANE-BRIDGE-GOVERNANCE:** Bridge on PR #108 (`bridge-continuity-v1`). Cross-agent review, coordination, and merge governance.
 
-## NOT NOW
-PR #102 Product Brain security/CI sync; PR #72 Auth V2 workflow; PR #2 migration 024 parity. These are existing issues/PRs, not automatically scheduled new tasks. Phase 5–7 design revitalization, labels KONFRM | HOST/GUEST/Admin Dashboard, floating bar evaluation are captured in IDEA_INBOX.json and pending authorized scheduling/codification.
+## VERIFIED MERGED BASELINE
+- PR #102: Merged (`2026-10-07T22:13:36Z`) — Product Brain runtime and routing.
+- PR #104: Merged (`2026-10-08T02:00:09Z`) — Quality Evidence Mesh Stage A.
+- PR #105: Merged (`2026-10-08T04:18:53Z`) — Quality Evidence Mesh Stage B Playwright.
+- PR #107: Merged (`2026-10-09T01:40:38Z`) — Auth V2 CI canonical identity.
+- PR #109: Merged (`2026-10-09T12:06:39Z`) — Product Brain routing clarification.
+- PR #110: Merged (`2026-10-09T13:22:58Z`) — Customer Flutter App Shell and 4-root navigation.
 
-## CLARIFICATION
-This is not proof that fixes are complete. Product canon, branch protection and project phase order remain unchanged. No real backend/data inspected or modified during bundle creation.
+## NOT NOW / DEFERRED
+- Live installation of ADHD Skill (requires separate, isolated integration PR after Bridge review and explicit Founder approval).
+- PR #2 migration 024 parity audit (unverified debt).
+- Any modification of live `tasks/CURRENT_TASK.md`, live `.agents/`, or production backend/database.

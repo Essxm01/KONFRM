@@ -1,18 +1,27 @@
 # KONFRM Focus Ledger — scope and truth
 
-**CANDIDATE / NOT ACTIVE** until a reviewed integration PR is merged. No claim of durable memory until this ledger has been merged and wired to the skill.
+**CANDIDATE / NOT ACTIVE** until an independent review integration PR is merged. No claim of live authority until merged and wired.
 
-- `FOCUS_NOW.json` is an execution pointer; exactly 1 `ACTIVE` item; NOT a second `tasks/CURRENT_TASK.md` authority.
-- `IDEA_INBOX.json` contains every captured relevant idea with assessment state. Never equate capture and approval.
-- `EXECUTION_QUEUE.json` contains explicitly queue-approved future work with fixed dependency slots. No autostart.
-- `DECISION_LEDGER.jsonl` is append-only approvals/rejections with provenance; defer to canonical decision authority for material rules.
-- `SESSION_HANDOFF.md` is an operational note, not proof of GitHub/runtime state.
-- Each accepted idea has exactly one home, with references by ID in other files.
+## Structure
+- `FOCUS_NOW.json`: Execution pointer distinguishing **ONE PRIMARY PRODUCT DELIVERY PRIORITY** (`active`) from **FOUNDER-AUTHORIZED PARALLEL LANES** (`authorized_parallel_lanes`).
+- `IDEA_INBOX.json`: Every captured idea with assessment state. Capture != approval.
+- `EXECUTION_QUEUE.json`: Explicitly queue-approved future work with fixed dependency slots. No autostart.
+- `DECISION_LEDGER.jsonl`: Append-only approvals/authorizations with provenance; defer to canonical decision authority for material product rules.
+- `SESSION_HANDOFF.md`: Operational recovery snapshot, never proof of live GitHub state by itself.
 
-**One active implementation task.** Exception: read-only analysis that does not change another branch or distract from NOW. Collisions require pause and Founder approval.
+## Multi-Agent Parallel Execution Policy
+1. **One Primary Product Priority:** Single active product delivery focus (currently Phase 5 / Mission 02 Customer Flutter discovery).
+2. **Founder-Authorized Parallel Lanes:** Parallel work requires explicit Founder authorization (`authority`, `date`, `evidence`).
+3. **One Active Task Per Agent & Worktree:** No agent or worktree may hold multiple active tasks simultaneously.
+4. **Disjoint Writable Boundaries:** Every lane declares `exclusive_writable_surfaces`. Overlapping writable surfaces fail validation immediately.
+5. **Canonical Protection:** Parallel lanes may NEVER declare writable surfaces matching canonical shared root files (`tasks/CURRENT_TASK.md`, `AGENTS.md`, `docs/INDEX.md`, `docs/CURRENT_STATE.md`, `.agents/SKILL_ROUTER.md`, `.agents/SKILL_MANIFEST.yaml`, `KONFRM_EXECUTION_DEPENDENCY_ORDER.md`).
+6. **Concurrent Reads vs Writes:**
+   - **Read:** Lock-free, read-only inspection by any agent across worktrees.
+   - **Write:** Localized to declared lane surfaces. Ledger updates are append-only with unique event IDs.
+7. **Founder Authority & Lane Switching:** Founder retains sole authority to approve, pause, stop, or reprioritize work. Switching the primary priority requires documenting a preserved handoff so prior progress is never lost.
 
-**Verification:** `node scripts/check-konfrm-focus.mjs` then `node scripts/test-konfrm-focus.mjs`.
+## Validation
+`node scripts/check-konfrm-focus.mjs` then `node scripts/test-konfrm-focus.mjs`.
 
-**Security:** no credentials, health information, OTPs, live tenant/owner data, Figma access keys or raw private chat transcripts in this ledger.
-
-**Update order:** append decision/event with evidence -> update idea status -> if approved for queue update queue -> if founder approved execution transition update FOCUS_NOW after safe handoff. In case of partial write, flag mismatch; never silently proceed.
+## Security
+No credentials, health information, OTPs, live tenant/owner data, or private chat transcripts in this ledger.

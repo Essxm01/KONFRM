@@ -4,14 +4,17 @@
 
 ## Prerequisites
 - Verified `origin/main` baseline (post-PR #110 merge, SHA: `5c97ab19ed6da3b1a6ecddf7dbf129c059c86811`).
-- PR #106 remains strictly in DRAFT / HOLD during candidate hardening.
-- Primary product delivery priority (Phase 5 / Mission 02 Customer Flutter discovery) remains protected and unmodified.
+- PR #106 remains strictly in DRAFT / HOLD during candidate safety remediation.
+- Codex Phase 5 / Mission 02 Customer Flutter discovery (Draft PR #111) must complete Flutter test execution and Android build remediation before integration.
+- Primary product delivery priority remains protected and unmodified.
 
 ## Multi-Agent Parallel Execution Governance
 1. Any future integration must maintain **ONE PRIMARY PRODUCT DELIVERY PRIORITY** alongside **FOUNDER-AUTHORIZED PARALLEL LANES**.
-2. Writable surfaces must remain strictly disjoint: each lane declares `exclusive_writable_surfaces`.
-3. Parallel lanes are forbidden from modifying canonical shared root files (`tasks/CURRENT_TASK.md`, `AGENTS.md`, `docs/INDEX.md`, etc.).
-4. Focus state reads are lock-free across agents. Focus ledger writes are append-only with globally unique IDs.
+2. Writable surfaces must adhere to strict pattern grammar (exact files or directory subtrees ending in `/**`).
+3. Writable surfaces must remain strictly disjoint: each lane declares `exclusive_writable_surfaces`. Read-only lanes (Bridge) declare no writable surfaces.
+4. Parallel lanes and primary lanes are forbidden from claiming protected canonical shared root files (`tasks/CURRENT_TASK.md`, `AGENTS.md`, `docs/INDEX.md`, etc.), directly or through parent directories.
+5. Focus state reads are lock-free across agents. Focus ledger writes enforce single-writer optimistic revision preconditions (`ledger_revision`).
+6. Editable Founder authorization strings are operational audit records requiring independent evidence, not cryptographically authenticated tokens.
 
 ## Staged Integration Steps (Post-Candidate Approval)
 1. Following Bridge review and explicit Founder approval, create an isolated integration branch from verified `origin/main`.
@@ -23,5 +26,5 @@
    - `konfrm-quality`: verification and defect RCA.
    - `konfrm-flutter`: Flutter application client.
    - `konfrm-design`: design system and presentation.
-6. Verify against the 19 behavioral acceptance scenarios in `BEHAVIOR_ACCEPTANCE.md`.
+6. Verify against the 19 behavioral acceptance scenarios in `BEHAVIOR_ACCEPTANCE.md` (conduct live dialogue evaluation for PENDING_INTEGRATION_PILOT cases).
 7. Submit an isolated PR for Bridge review; merge requires explicit Founder decision.

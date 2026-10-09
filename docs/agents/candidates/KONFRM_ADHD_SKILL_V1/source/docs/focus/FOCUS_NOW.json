@@ -2,6 +2,7 @@
   "schema_version": "1.0.0",
   "snapshot_at": "2026-10-09",
   "verification": "HISTORICAL_REMOTE_ONLY_RECHECK_REQUIRED",
+  "ledger_revision": 3,
   "active": {
     "task_id": "PHASE_5_MISSION_02_CUSTOMER_FLUTTER_DISCOVERY",
     "title": "Phase 5 / Mission 02 — Customer Flutter public discovery (Explore, search, filter, listing cards)",
@@ -9,29 +10,30 @@
     "lane_role": "PRIMARY_PRODUCT_DELIVERY",
     "agent_role": "Codex",
     "worktree": "customer-flutter-public-discovery",
+    "pr": 111,
     "branch": "feat/customer-flutter-public-discovery",
-    "remote_status": "UNKNOWN_NO_REMOTE_BRANCH_PUSHED",
+    "remote_status": "DRAFT_PR_OPEN_PENDING_REMEDIATION",
     "surface": "mobile/apps/customer_app",
     "exclusive_writable_surfaces": [
       "mobile/apps/customer_app/**"
     ],
-    "last_known_remote_head": "5c97ab19ed6da3b1a6ecddf7dbf129c059c86811",
+    "last_known_remote_head": "b6eea52639e5cf816fb24bad942f970558529d9e",
     "last_known_main_head": "5c97ab19ed6da3b1a6ecddf7dbf129c059c86811",
     "unverified_local_state": true,
-    "completion_gate": "Customer Flutter public discovery runnable with offline mock data, Cairo RTL, clean analyze, passing widget tests, zero production regression",
-    "next_action": "Codex completes local implementation and tests, pushes branch, opens draft PR for Bridge review"
+    "completion_gate": "Real public API integration, valid DTOs, truthful user states, executed passing Flutter widget tests, and successful Android compilation (test fixtures must never be mistaken for production property data; PR #111 unmerged and pending remediation)",
+    "next_action": "Codex completes Flutter test execution and Android build remediation on PR #111 for Bridge review"
   },
   "authorized_parallel_lanes": [
     {
       "lane_id": "LANE-ADHD-HARDENING",
-      "title": "ADHD Skill Candidate Hardening & Parallel Execution Remediation",
+      "title": "ADHD Skill Candidate Safety Remediation & Protocol Hardening",
       "status": "ACTIVE",
       "lane_role": "PROCESS_TOOLING_HARDENING",
       "agent_role": "Antigravity",
       "worktree": "KONFRM-ADHD-REVIEW",
       "pr": 106,
       "branch": "draft/adhd-skill-focus-guardian-v1",
-      "surface": "docs/agents/candidates/KONFRM_ADHD_SKILL_V1",
+      "surface": "docs/agents/candidates/KONFRM_ADHD_SKILL_V1/**",
       "exclusive_writable_surfaces": [
         "docs/agents/candidates/KONFRM_ADHD_SKILL_V1/**"
       ],
@@ -40,25 +42,24 @@
         "date": "2026-10-09",
         "evidence": "BRIDGE-10-MULTI-AGENT-DIRECTIVE"
       },
-      "last_known_remote_head": "0afa02e7c9134be1af34ae68b45272d0a4c89f10",
+      "last_known_remote_head": "ba5b1d294d049af2a93fd26d10ddee5b17f9f4d9",
       "last_known_main_head": "5c97ab19ed6da3b1a6ecddf7dbf129c059c86811",
       "unverified_local_state": false,
-      "completion_gate": "Hardened candidate in PR #106 under docs/agents/candidates/, deterministic tests pass, PR kept in draft, no live installation",
-      "next_action": "Run tests, update manifest, commit and push candidate commit to PR #106, emit Bridge report"
+      "completion_gate": "Candidate source hardened under docs/agents/candidates/, deterministic tests pass, PR kept in draft, zero live activation",
+      "next_action": "Complete safety remediation, run test suite, update manifest, commit and push to PR #106"
     },
     {
       "lane_id": "LANE-BRIDGE-GOVERNANCE",
       "title": "Cross-agent review, coordination, and merge governance",
       "status": "ACTIVE",
-      "lane_role": "COORDINATION_AND_GOVERNANCE",
+      "lane_role": "READ_ONLY_COORDINATION_AND_GOVERNANCE",
+      "is_read_only": true,
       "agent_role": "Bridge",
       "worktree": "READ_ONLY_COORDINATION",
       "pr": 108,
       "branch": "bridge-continuity-v1",
-      "surface": "docs/bridge",
-      "exclusive_writable_surfaces": [
-        "docs/bridge/**"
-      ],
+      "surface": "READ_ONLY_COORDINATION",
+      "exclusive_writable_surfaces": [],
       "founder_authorization": {
         "authority": "Founder explicit authorization in Bridge 10 directive 2026-10-09",
         "date": "2026-10-09",
@@ -67,10 +68,10 @@
       "last_known_remote_head": "5c97ab19ed6da3b1a6ecddf7dbf129c059c86811",
       "last_known_main_head": "5c97ab19ed6da3b1a6ecddf7dbf129c059c86811",
       "unverified_local_state": false,
-      "completion_gate": "Independent review of PR #106, PR #110 baseline confirmation, Mission 02 alignment",
-      "next_action": "Review candidate hardening upon Antigravity completion"
+      "completion_gate": "Review PR #106 candidate updates and govern Phase 5 Mission 02 merge gates",
+      "next_action": "Perform independent review upon Antigravity completion"
     }
   ],
   "wip_policy": "ONE_PRIMARY_PRODUCT_DELIVERY_PRIORITY_WITH_FOUNDER_AUTHORIZED_PARALLEL_LANES",
-  "note": "Evidence-backed snapshot following PR #110 merge. Distinct primary product delivery priority from founder-authorized parallel lanes."
+  "note": "Evidence-backed snapshot following PR #111 Draft opening. PR #111 unmerged, tests and Android build pending."
 }

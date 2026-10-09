@@ -3,10 +3,16 @@
   "queue": [],
   "observed_followups": [
     {
-      "ref": "PR-105",
-      "kind": "COMPLETED_PR",
-      "status": "VERIFIED_MERGED",
-      "reason": "Quality Evidence Mesh Stage B (Playwright Customer Web UI pilot) merged at 2026-10-08T04:18:53Z"
+      "ref": "PR-111",
+      "kind": "ACTIVE_DRAFT_PR",
+      "status": "DRAFT_PENDING_REMEDIATION",
+      "reason": "Codex Phase 5 Mission 02 Customer Flutter public discovery; Flutter test execution and Android build pending remediation; head b6eea52639e5cf816fb24bad942f970558529d9e; not yet merged or accepted"
+    },
+    {
+      "ref": "PR-106",
+      "kind": "PARALLEL_LANE_PR",
+      "status": "DRAFT_HOLD",
+      "reason": "ADHD Skill candidate safety remediation and protocol hardening; no live installation; kept in Draft"
     },
     {
       "ref": "PR-110",
@@ -21,16 +27,16 @@
       "reason": "Auth V2 CI canonical repo identity fix merged at 2026-10-09T01:40:38Z (superseded PR-72)"
     },
     {
+      "ref": "PR-105",
+      "kind": "COMPLETED_PR",
+      "status": "VERIFIED_MERGED",
+      "reason": "Quality Evidence Mesh Stage B (Playwright Customer Web UI pilot) merged at 2026-10-08T04:18:53Z"
+    },
+    {
       "ref": "PR-102",
       "kind": "COMPLETED_PR",
       "status": "VERIFIED_MERGED",
       "reason": "Product Brain runtime and routing merged at 2026-10-07T22:13:36Z"
-    },
-    {
-      "ref": "PR-106",
-      "kind": "PARALLEL_LANE_PR",
-      "status": "DRAFT_HOLD",
-      "reason": "ADHD Skill candidate hardening and parallel execution compatibility; no live installation"
     },
     {
       "ref": "PR-2",
@@ -39,5 +45,5 @@
       "reason": "Migration 024 parity/diff forensic audit, no blind merge"
     }
   ],
-  "note": "Queue intentionally empty: there is no unstarted execution sequence queued. Active delivery is Phase 5 Mission 02, alongside Founder-authorized parallel lanes."
+  "note": "Queue intentionally empty: there is no unstarted execution sequence queued. Active delivery is PR #111 (Phase 5 Mission 02), alongside Founder-authorized parallel lanes."
 }

@@ -1,6 +1,6 @@
 ---
 name: konfrm-adhd
-description: 'KONFRM ADHD SKILL: non-clinical focus guardian. Protects ONE primary product delivery priority, manages Founder-authorized parallel execution lanes with disjoint surfaces, captures and evaluates new ideas without derailment, registers Founder decisions, deduplicates tasks, maps dependencies to approved Phase 0-22 order, and resumes interrupted sessions. Use whenever project priorities, new ideas, parallel lanes, task switching, or execution handoffs occur. Never overrides Founder/Product/Quality authority.'
+description: 'KONFRM ADHD SKILL: non-clinical focus guardian. Protects ONE primary product delivery priority, manages Founder-authorized parallel execution lanes with strict disjoint surfaces and ownership grammar, captures and evaluates new ideas without derailment, registers Founder decisions with optimistic revision checks, deduplicates tasks, maps dependencies to approved Phase 0-22 order, and resumes interrupted sessions. Use whenever project priorities, new ideas, parallel lanes, task switching, or execution handoffs occur. Never overrides Founder/Product/Quality authority.'
 ---
 
 # ADHD SKILL — KONFRM Focus & Continuity Guardian
@@ -30,17 +30,17 @@ Start by reading `docs/focus/FOCUS_NOW.json` and `docs/focus/README.md`, then ve
 3. **CAPTURE**: For a new idea, record an ID, exact Founder wording/intent, date, provisional scope, provenance, and initial `CAPTURED` status; return a short capture acknowledgment, not a new workstream.
 4. **ASSESS**: De-duplicate against queue/issues/PRs; detect approved decisions and cross-app effects; explain benefit, cost, dependencies, risk, phase fit, and reversibility. Mark `ASSESSED` with evidence, not `APPROVED`.
 5. **ROUTE**: `REJECTED`, `DEFERRED`, `NEEDS_FOUNDER_DECISION`, or `FOUNDER_APPROVED` based on explicit dated confirmation. Approved items can enter execution queue without changing NOW.
-6. **PROTECT**: Hold the primary lane. Parallel lanes require explicit Founder authorization, non-overlapping surfaces, and disjoint worktrees.
+6. **PROTECT**: Hold the primary lane. Parallel lanes require explicit Founder authorization, strict ownership grammar compliance, and disjoint worktrees.
 7. **CLOSE LOOP**: At session end update handoff and queue, include Git status, what was truly verified, actual next action, and unpushed work warning. No silent merge or automation.
 
 ## 4. Hard gates
 - **ONE primary product delivery priority:** Single active product task at any given time.
-- **Founder-authorized parallel execution lanes:** Parallel lanes permitted ONLY with explicit Founder authorization (`authority`, `date`, `evidence`).
+- **Founder-authorized parallel execution lanes:** Parallel lanes permitted ONLY with explicit Founder authorization (`authority`, `date`, `evidence`). Editable authorization strings are operational audit records requiring independent evidence, not cryptographically authenticated tokens.
 - **One active task per agent & worktree:** No agent or worktree may hold multiple active assignments.
-- **Disjoint writable file ownership:** Each lane must declare `exclusive_writable_surfaces`. Overlapping writable surfaces fail validation.
-- **Canonical protection:** Parallel lanes are forbidden from modifying canonical shared state files (`tasks/CURRENT_TASK.md`, `AGENTS.md`, etc.).
+- **Strict ownership pattern grammar:** Declared surfaces must be exact files or `/**` subtrees. Path traversal, unsupported wildcards, absolute paths, and broad claims (`**`) are rejected.
+- **Canonical protection:** No lane (primary or parallel) may claim protected canonical shared root files (`tasks/CURRENT_TASK.md`, `AGENTS.md`, etc.), directly or through parent directories.
 - **Finished PRs cannot be active:** Merged PRs cannot be tracked as active work.
-- **Lock-free read / serialized write:** Concurrent agents inspect focus state without locks; writes are strictly confined to assigned surfaces.
+- **Lock-free read / single-writer revision check:** Concurrent agents inspect focus state without locks; decision writes require verifying expected ledger revision to prevent silent overwriting.
 - **Founder retains full authority:** Founder alone approves, pauses, or switches lanes. Switching primary priority requires documenting a preserved handoff.
 - **Phase order:** Phase map remains **Phase 0–22**, with R2→R5 after Phase 7/before Phase 8.
 - **No medical inference:** No health data, user tracking, profiling, or coercive lockouts.

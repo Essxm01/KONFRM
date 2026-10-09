@@ -14,7 +14,7 @@ const slots = new Set([
   'PHASE_5_GUEST_UX', 'PHASE_6_HOST_UX', 'PHASE_7_ADMIN_UX',
   'POST_PHASE_7_R2_R5', 'PHASE_8_PLUS', 'UNPLACED'
 ]);
-const canonicalSharedPaths = [
+const canonicalProtectedPaths = [
   'tasks/CURRENT_TASK.md',
   'AGENTS.md',
   'docs/INDEX.md',
@@ -23,21 +23,127 @@ const canonicalSharedPaths = [
   '.agents/SKILL_MANIFEST.yaml',
   'KONFRM_EXECUTION_DEPENDENCY_ORDER.md'
 ];
-const finishedMergedPRs = new Set([105, 107, 109, 110]);
+
+// Offline blacklist of verified merged PRs to prevent reviving closed tasks
+const knownMergedPRBlacklist = new Set([102, 104, 105, 107, 109, 110]);
 
 const txt = x => typeof x === 'string' && !!x.trim();
 
-function normalizePattern(p) {
-  return String(p || '').replace(/\\/g, '/').replace(/^\/+/, '').replace(/\/+$/, '');
+/**
+ * Validates a single path ownership pattern according to strict grammar:
+ * - Exact repository-relative file (e.g. "path/to/file.ext") with no wildcards.
+ * - Directory subtree ending strictly in "/**" (e.g. "path/to/dir/**") with at least one directory component.
+ * Rejects unsupported wildcards, path traversal, absolute paths, empty strings, and broad claims.
+ */
+export function validatePatternGrammar(pattern) {
+  if (typeof pattern !== 'string' || !pattern.trim()) {
+    return { valid: false, error: 'empty or non-string pattern' };
+  }
+  if (pattern !== pattern.trim()) {
+    return { valid: false, error: `pattern has leading/trailing whitespace: "${pattern}"` };
+  }
+  // Reject absolute paths
+  if (pattern.startsWith('/') || pattern.startsWith('\\') || /^[a-zA-Z]:/.test(pattern)) {
+    return { valid: false, error: `absolute path rejected: "${pattern}"` };
+  }
+  // Reject path traversal
+  const norm = pattern.replace(/\\/g, '/');
+  const segments = norm.split('/');
+  if (segments.some(s => s === '..' || s === '.')) {
+    return { valid: false, error: `path traversal rejected: "${pattern}"` };
+  }
+  // Reject unsupported wildcard characters
+  if (/[?\[\]{}]/.test(pattern)) {
+    return { valid: false, error: `unsupported glob syntax in "${pattern}"` };
+  }
+  // Reject ambiguous broad claims
+  if (norm === '**' || norm === '*' || norm === '/**') {
+    return { valid: false, error: `ambiguous broad claim rejected: "${pattern}"` };
+  }
+  // Subtree pattern: must end strictly with "/**"
+  if (norm.endsWith('/**')) {
+    const base = norm.slice(0, -3);
+    if (!base || base === '*') {
+      return { valid: false, error: `ambiguous broad claim rejected: "${pattern}"` };
+    }
+    // No other '*' allowed in the base directory
+    if (base.includes('*')) {
+      return { valid: false, error: `unsupported wildcard before "/**" in "${pattern}"` };
+    }
+    return { valid: true, type: 'subtree', base, normalized: norm };
+  }
+  // Exact file pattern: cannot contain '*' anywhere
+  if (norm.includes('*')) {
+    return { valid: false, error: `unsupported glob pattern: "${pattern}" (only exact file or trailing "/**" allowed)` };
+  }
+  return { valid: true, type: 'exact', base: norm, normalized: norm };
 }
 
-function surfacesOverlap(patA, patB) {
-  const a = normalizePattern(patA).replace(/\/\*\*?$/, '');
-  const b = normalizePattern(patB).replace(/\/\*\*?$/, '');
-  if (!a || !b) return false;
-  if (a === b) return true;
-  if (a.startsWith(b + '/') || b.startsWith(a + '/')) return true;
+/**
+ * Checks if a pattern covers or overlaps with another pattern.
+ */
+export function patternsOverlap(patA, patB) {
+  const gA = validatePatternGrammar(patA);
+  const gB = validatePatternGrammar(patB);
+  if (!gA.valid || !gB.valid) return false;
+
+  if (gA.type === 'exact' && gB.type === 'exact') {
+    return gA.base === gB.base;
+  }
+  if (gA.type === 'subtree' && gB.type === 'exact') {
+    return gB.base === gA.base || gB.base.startsWith(gA.base + '/');
+  }
+  if (gA.type === 'exact' && gB.type === 'subtree') {
+    return gA.base === gB.base || gA.base.startsWith(gB.base + '/');
+  }
+  if (gA.type === 'subtree' && gB.type === 'subtree') {
+    return gA.base === gB.base || gA.base.startsWith(gB.base + '/') || gB.base.startsWith(gA.base + '/');
+  }
   return false;
+}
+
+/**
+ * Append a decision event with explicit optimistic concurrency revision check.
+ */
+export function appendDecisionEvent(event, expectedRevision, root = defaultRoot) {
+  const ledgerPath = path.join(root, 'docs/focus/DECISION_LEDGER.jsonl');
+  const nowPath = path.join(root, 'docs/focus/FOCUS_NOW.json');
+
+  const content = fs.existsSync(ledgerPath) ? fs.readFileSync(ledgerPath, 'utf8') : '';
+  const lines = content.split(/\r?\n/).filter(Boolean);
+  const currentRevision = lines.length;
+
+  if (typeof expectedRevision === 'number' && currentRevision !== expectedRevision) {
+    return {
+      success: false,
+      error: `CONCURRENCY_CONFLICT: ledger revision mismatch (expected ${expectedRevision}, found ${currentRevision})`
+    };
+  }
+
+  // Check duplicate event_id
+  for (const line of lines) {
+    try {
+      const e = JSON.parse(line);
+      if (e.event_id === event.event_id) {
+        return { success: false, error: `duplicate decision ID: ${event.event_id}` };
+      }
+    } catch {}
+  }
+
+  // Append new event
+  fs.appendFileSync(ledgerPath, JSON.stringify(event) + '\n');
+  const newRevision = currentRevision + 1;
+
+  // Update revision in FOCUS_NOW.json if present
+  if (fs.existsSync(nowPath)) {
+    try {
+      const now = JSON.parse(fs.readFileSync(nowPath, 'utf8'));
+      now.ledger_revision = newRevision;
+      fs.writeFileSync(nowPath, JSON.stringify(now, null, 2) + '\n');
+    } catch {}
+  }
+
+  return { success: true, newRevision };
 }
 
 export function validateProject(root = defaultRoot) {
@@ -75,7 +181,7 @@ export function validateProject(root = defaultRoot) {
   if (typeof active?.unverified_local_state !== 'boolean') {
     errors.push('local uncertainty flag required');
   }
-  if (active?.pr && finishedMergedPRs.has(Number(active.pr)) && active.status === 'ACTIVE') {
+  if (active?.pr && knownMergedPRBlacklist.has(Number(active.pr)) && active.status === 'ACTIVE') {
     errors.push(`finished PR treated as active work: PR #${active.pr}`);
   }
 
@@ -84,24 +190,43 @@ export function validateProject(root = defaultRoot) {
     errors.push('WIP violation: uncontrolled task proliferation in additional_active_tasks');
   }
 
-  // Parallel Lanes Validation
+  // Track agent assignments, worktrees, and declared writable surfaces
   const assignedAgents = new Map();
   const assignedWorktrees = new Map();
-  const allSurfaces = []; // { lane_id, surface }
+  const allSurfaces = []; // { lane_id, pattern }
 
+  // Validate primary lane writable surfaces
   if (active) {
-    const activeAgent = active.agent_role || 'DEFAULT_AGENT';
+    const activeAgent = active.agent_role || 'DEFAULT_PRIMARY_AGENT';
     assignedAgents.set(activeAgent, active.task_id);
-    const activeWorktree = active.worktree || 'DEFAULT_WORKTREE';
+    const activeWorktree = active.worktree || 'DEFAULT_PRIMARY_WORKTREE';
     assignedWorktrees.set(activeWorktree, active.task_id);
+
     const activeSurfaces = Array.isArray(active.exclusive_writable_surfaces)
       ? active.exclusive_writable_surfaces
       : (txt(active.surface) ? [active.surface] : []);
-    for (const s of activeSurfaces) {
-      allSurfaces.push({ lane_id: active.task_id, surface: s });
+
+    if (activeSurfaces.length === 0) {
+      errors.push(`active task ${active.task_id}: must declare at least one writable surface`);
+    }
+
+    for (const pat of activeSurfaces) {
+      const g = validatePatternGrammar(pat);
+      if (!g.valid) {
+        errors.push(`active task ${active.task_id}: invalid surface pattern "${pat}": ${g.error}`);
+        continue;
+      }
+      // Protected canonical shared files cannot be claimed by primary lane
+      for (const can of canonicalProtectedPaths) {
+        if (patternsOverlap(pat, can)) {
+          errors.push(`active task ${active.task_id}: unauthorized claim on protected canonical path: ${can} via pattern ${pat}`);
+        }
+      }
+      allSurfaces.push({ lane_id: active.task_id, pattern: pat });
     }
   }
 
+  // Parallel Lanes Validation
   if (now.authorized_parallel_lanes !== undefined) {
     if (!Array.isArray(now.authorized_parallel_lanes)) {
       errors.push('authorized_parallel_lanes must be an array');
@@ -125,7 +250,7 @@ export function validateProject(root = defaultRoot) {
         }
 
         // Check finished PR treated as active work
-        if (lane.pr && finishedMergedPRs.has(Number(lane.pr)) && lane.status === 'ACTIVE') {
+        if (lane.pr && knownMergedPRBlacklist.has(Number(lane.pr)) && lane.status === 'ACTIVE') {
           errors.push(`finished PR treated as active work: lane ${lid} references merged PR #${lane.pr}`);
         }
 
@@ -153,36 +278,39 @@ export function validateProject(root = defaultRoot) {
           }
         }
 
-        // Check exclusive writable surfaces
-        if (!Array.isArray(lane.exclusive_writable_surfaces) || lane.exclusive_writable_surfaces.length === 0) {
-          errors.push(`lane ${lid}: exclusive_writable_surfaces must be a non-empty array`);
+        // Validate writable surfaces for lane
+        const isReadOnly = lane.is_read_only === true || (typeof lane.lane_role === 'string' && lane.lane_role.includes('READ_ONLY'));
+        if (!Array.isArray(lane.exclusive_writable_surfaces)) {
+          errors.push(`lane ${lid}: exclusive_writable_surfaces must be an array`);
+        } else if (!isReadOnly && lane.exclusive_writable_surfaces.length === 0) {
+          errors.push(`lane ${lid}: non-read-only lane must declare at least one writable surface`);
         } else {
-          for (const s of lane.exclusive_writable_surfaces) {
-            if (!txt(s)) {
-              errors.push(`lane ${lid}: invalid empty surface`);
+          for (const pat of lane.exclusive_writable_surfaces) {
+            const g = validatePatternGrammar(pat);
+            if (!g.valid) {
+              errors.push(`lane ${lid}: invalid surface pattern "${pat}": ${g.error}`);
               continue;
             }
-            // Check canonical shared state files
-            const norm = normalizePattern(s);
-            for (const can of canonicalSharedPaths) {
-              if (norm === can || norm.startsWith(can) || surfacesOverlap(norm, can)) {
-                errors.push(`lane ${lid}: unauthorized canonical state modification (${can})`);
+            // Protected canonical shared files cannot be claimed by parallel lane
+            for (const can of canonicalProtectedPaths) {
+              if (patternsOverlap(pat, can)) {
+                errors.push(`lane ${lid}: unauthorized canonical state modification (${can}) via pattern ${pat}`);
               }
             }
             if (lane.status === 'ACTIVE') {
-              allSurfaces.push({ lane_id: lid, surface: s });
+              allSurfaces.push({ lane_id: lid, pattern: pat });
             }
           }
         }
       }
 
-      // Check disjoint writable surfaces (no overlapping file ownership)
+      // Check disjoint writable surfaces (no overlapping file ownership across any active lanes)
       for (let i = 0; i < allSurfaces.length; i++) {
         for (let j = i + 1; j < allSurfaces.length; j++) {
           const s1 = allSurfaces[i];
           const s2 = allSurfaces[j];
-          if (s1.lane_id !== s2.lane_id && surfacesOverlap(s1.surface, s2.surface)) {
-            errors.push(`conflicting file ownership: ${s1.lane_id} and ${s2.lane_id} overlap on ${s1.surface} / ${s2.surface}`);
+          if (s1.lane_id !== s2.lane_id && patternsOverlap(s1.pattern, s2.pattern)) {
+            errors.push(`conflicting file ownership: ${s1.lane_id} and ${s2.lane_id} overlap on ${s1.pattern} / ${s2.pattern}`);
           }
         }
       }
@@ -262,10 +390,16 @@ export function validateProject(root = defaultRoot) {
     }
   }
 
-  // Decision ledger validation
+  // Decision ledger validation & Revision check
   try {
     const lines = fs.readFileSync(path.join(root, 'docs/focus/DECISION_LEDGER.jsonl'), 'utf8').split(/\r?\n/).filter(Boolean);
     const eventIDs = new Set(), queuedEventIDs = new Set();
+
+    // Check revision synchronization if specified in FOCUS_NOW.json
+    if (now.ledger_revision !== undefined && now.ledger_revision !== lines.length) {
+      errors.push(`ledger revision mismatch: FOCUS_NOW specifies ${now.ledger_revision} but DECISION_LEDGER contains ${lines.length} events`);
+    }
+
     lines.forEach((line, n) => {
       try {
         const e = JSON.parse(line);

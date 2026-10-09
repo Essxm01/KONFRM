@@ -199,6 +199,25 @@ These package IDs are draft planning identifiers, not official task-router IDs. 
 | PKG-20 Controlled market launch and operations | Support, incident response, live monitoring, release cohort and rollback | PKG-15–19, legal/payment provider approvals, launch decision | Founder + Operations + Engineering | Production smoke with exact SHA, monitoring thresholds, support escalation simulation, rollback evidence | Controlled release only after explicit Founder authorization and all release gates. |
 | PKG-21 Final blueprint/handoff | Canonical architecture, status, remaining risk, operational ownership | Applicable prior phase gates and decisions | Founder + architecture owner | Evidence links, exact revisions, decisions, known gaps, runbooks | Handoff reflects observed system, not aspirational design. |
 
+Proposed repository areas below are starting boundaries, not a command to create every path. Confirm the actual task branch and architecture before implementation; paths marked “future” do not exist in the inspected main baseline.
+
+| Package | Likely repository area(s) to inspect / change when separately authorized |
+| --- | --- |
+| PKG-00 | `docs/`, `tasks/`, `.github/workflows/`, GitHub PR/deployment records; no authority-routing edits in this proposal. |
+| PKG-01 | `backend/server/src/` auth/session/routes/repositories, `backend/database/migrations/`, `mobile/apps/customer_app/`, `owner-app/`, `admin-app/`; verify exact module paths first. |
+| PKG-02 | `owner-app/`, `admin-app/`, `customer-app/`, `backend/server/src/`, `backend/database/migrations/`, Supabase Storage configuration/evidence. |
+| PKG-03 | `backend/server/src/`, `backend/database/migrations/`, `mobile/apps/customer_app/`, future `mobile/apps/owner_app/`, existing `owner-app/`. |
+| PKG-04 | Same-entity integration across `backend/server/src/`, DB migrations, `owner-app/`, `admin-app/`, `customer-app/`; future Flutter apps under `mobile/apps/`. |
+| PKG-05 | `DESIGN_SYSTEM/`, `mobile/packages/konfrm_design_system/`, Flutter app themes, `admin-app/src/`; keep app code consuming the system. |
+| PKG-06–10 | `mobile/apps/customer_app/`, `mobile/packages/konfrm_design_system/`, relevant `mobile/packages/` API/auth packages if present; backend contract in `backend/server/src/`. |
+| PKG-11 | Future `mobile/apps/owner_app/` plus shared `mobile/packages/`; current React evidence in `owner-app/`; do not create until inventory/task approved. |
+| PKG-12 | `admin-app/src/`, `backend/server/src/`, `backend/database/migrations/` only when a contract/migration is separately approved. |
+| PKG-13–16 | `backend/server/src/`, `backend/database/migrations/`, affected role apps; contracts/policies in authoritative Product docs, changed only by authority owner. |
+| PKG-17 | Affected `backend/`, `mobile/`, `owner-app/`, `admin-app/`, `.github/workflows/`, `docs/`; security scope follows finding and approved contract. |
+| PKG-18 | Test directories, isolated fixture tooling and test-only migrations/scripts where approved; never production dataset. |
+| PKG-19–20 | `mobile/apps/*/android/`, `mobile/apps/*/ios/`, store metadata/assets (repo location to be decided), `.github/workflows/`, runbooks/monitoring configuration. No release/deployment from this roadmap PR. |
+| PKG-21 | `docs/` and task-owned handoff artifacts after evidence closure; do not overwrite historical records. |
+
 ### 5.3 Parallel work and hard dependencies
 
 **Can proceed in parallel after baseline/context is established:** (a) Customer per-screen contract cleanup against approved IA; (b) Admin and Owner inventory discovery (clearly labeled observed/proposed); (c) store-account/identifier/privacy-policy inventory; (d) design token/accessibility audit; and (e) backend/API contract inventory. These are read-only planning and bounded evidence tasks; implementation still waits for each feature's prerequisites.

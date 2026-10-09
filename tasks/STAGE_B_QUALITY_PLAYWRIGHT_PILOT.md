@@ -6,8 +6,8 @@ STATUS: REMEDIATION_COMPLETE / READY_FOR_BRIDGE_REVIEW
 PR: #105 (Draft — DO NOT MERGE)
 BRANCH: feat/quality-playwright-stage-b
 BASE_MAIN_SHA: c51101c3d1bd38174e35d5338ab161031a3623dc
-HEAD_SHA: eed772b5f137e0b2b1c071e7540fa114ac52cf48
-GOVERNING_SPEC: docs/agents/KONFRM_QUALITY_EVIDENCE_MESH_PILOT.md (Stage B)
+HEAD_COMMIT_SEMANTICS: Dynamic branch HEAD (tracked via git rev-parse HEAD; recorded in PR description upon push to avoid recursive self-referential commit hashes)
+GOVERNING_SPEC: docs/agents/KONFRM_QUALITY_EVIDENCE_MESH_PILOT.md (Stage B pilot specification; proposed candidate specification from unmerged Draft PR #103, not merged into published main Canon)
 
 ## Mission
 Implement KONFRM's first deterministic, browser-based UI verification pilot using Playwright Test targeting the Customer Web application (`customer-app/`), under strict zero-trust security, privacy, and repository-isolation constraints.

@@ -119,4 +119,60 @@ test.describe('Negative Control — Network Isolation & Fail-Closed Route Securi
     expect(detailRes.body.data.title).toBe(detailFixture.title);
     expect(detailRes.body.data.currency).toBe('EGP');
   });
+
+  test('6. Unauthorized localhost port is rejected fail-closed and recorded in audit', async ({ page }) => {
+    const unapprovedPortBlocked = await page.evaluate(async () => {
+      try {
+        await fetch('http://localhost:4000/api/v1/customer/properties/search', {
+          mode: 'cors',
+        });
+        return { blocked: false };
+      } catch (err: any) {
+        return { blocked: true, message: err?.message || String(err) };
+      }
+    });
+
+    expect(unapprovedPortBlocked.blocked).toBe(true);
+
+    const audit = getNetworkAudit(page);
+    const hasBlockedPort = audit.blockedRequests.some((r) => r.includes('http://localhost:4000'));
+    expect(hasBlockedPort).toBe(true);
+  });
+
+  test('7. Context-wide route interception protects newly spawned pages against egress and serves authorized routes', async ({ page }) => {
+    const newPage = await page.context().newPage();
+    try {
+      // Navigate new page to authorized origin
+      await newPage.goto('/');
+      await expect(newPage.getByRole('heading', { name: 'هتصيف فين؟' })).toBeVisible({ timeout: 5000 });
+
+      // Authorized API request works on new page
+      const searchRes = await newPage.evaluate(async () => {
+        const res = await fetch('/api/v1/customer/properties/search');
+        return { status: res.status, body: await res.json() };
+      });
+      expect(searchRes.status).toBe(200);
+      expect(searchRes.body.success).toBe(true);
+
+      // Unauthorized egress is blocked fail-closed on new page
+      const egressBlocked = await newPage.evaluate(async () => {
+        try {
+          await fetch('https://sola-backend-api.essxm01.workers.dev/api/v1/customer/properties/search', {
+            mode: 'cors',
+          });
+          return { blocked: false };
+        } catch (err: any) {
+          return { blocked: true, message: err?.message || String(err) };
+        }
+      });
+      expect(egressBlocked.blocked).toBe(true);
+
+      const audit = getNetworkAudit(newPage);
+      const hasBlockedEgress = audit.blockedRequests.some((r) => r.includes('sola-backend-api.essxm01.workers.dev'));
+      expect(hasBlockedEgress).toBe(true);
+    } finally {
+      await newPage.close();
+    }
+  });
 });
+

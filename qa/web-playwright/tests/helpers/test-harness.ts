@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test';
+import type { Page, BrowserContext, Locator } from '@playwright/test';
 import { expect } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -34,10 +34,11 @@ export interface NetworkAudit {
   availabilityRequestCount: number;
 }
 
-const pageAudits = new WeakMap<Page, NetworkAudit>();
+const contextAudits = new WeakMap<BrowserContext, NetworkAudit>();
 
-export function getNetworkAudit(page: Page): NetworkAudit {
-  let audit = pageAudits.get(page);
+export function getNetworkAudit(target: Page | BrowserContext): NetworkAudit {
+  const context = 'context' in target ? target.context() : target;
+  let audit = contextAudits.get(context);
   if (!audit) {
     audit = {
       authorizedRequests: [],
@@ -47,12 +48,13 @@ export function getNetworkAudit(page: Page): NetworkAudit {
       detailRequestCount: 0,
       availabilityRequestCount: 0,
     };
-    pageAudits.set(page, audit);
+    contextAudits.set(context, audit);
   }
   return audit;
 }
 
 export interface SetupApiOptions {
+  authorizedOrigin?: string;
   searchResponse?: any;
   searchStatus?: number;
   detailResponse?: any;
@@ -64,17 +66,23 @@ export interface SetupApiOptions {
 }
 
 /**
- * Configure 100% deterministic offline fail-closed network routing.
- * - Allows ONLY explicitly authorized local Vite document/static development resources.
- * - Intercepts ALL /api requests before they can reach Vite's backend proxy.
- * - Rejects unknown API endpoints and unexpected HTTP methods.
+ * Configure 100% deterministic offline fail-closed network routing across the entire BrowserContext.
+ * - Enforces an explicit approved test-server origin (defaults to http://localhost:5175).
+ * - Context-wide interception: protects all current and newly spawned pages/popups in the context.
+ * - Rejects any unauthorized localhost port, unknown domain, external IP, or unexpected protocol fail-closed.
+ * - Intercepts ALL /api requests before they reach any live server or proxy.
  * - Mocks search, exact property detail, and property availability as distinct endpoints.
- * - Matches exact paths and expected property IDs, not catch-all responses.
- * - Blocks outbound production API, Supabase, Cloudflare Worker, and 3rd-party network requests.
- * - Tracks all network requests and flags unexpected egress.
+ * - Rejects unknown API paths (404), invalid HTTP methods (405), and mismatched property IDs (404).
+ * - Fulfills external static dependencies (Unsplash images and Google Fonts) with offline local stubs.
+ * - Records all authorized and blocked requests in a context-scoped NetworkAudit.
  */
-export async function setupDeterministicApi(page: Page, options: SetupApiOptions = {}): Promise<NetworkAudit> {
-  const audit = getNetworkAudit(page);
+export async function setupDeterministicApi(
+  target: Page | BrowserContext,
+  options: SetupApiOptions = {}
+): Promise<NetworkAudit> {
+  const context = 'context' in target ? target.context() : target;
+  const audit = getNetworkAudit(context);
+  const authorizedOrigin = (options.authorizedOrigin ?? 'http://localhost:5175').replace(/\/+$/, '');
   const expectedPropertyId = options.expectedPropertyId ?? 'prop-marassi-01';
 
   const defaultSearchPayload = options.searchResponse ?? loadSearchFixture();
@@ -86,8 +94,8 @@ export async function setupDeterministicApi(page: Page, options: SetupApiOptions
   const defaultAvailabilityPayload = options.availabilityResponse ?? loadAvailabilityFixture();
   const defaultAvailabilityStatus = options.availabilityStatus ?? 200;
 
-  // Single unified route handler at ** enforcing fail-closed network isolation
-  await page.route('**', async (route) => {
+  // Browser-context-wide route handler at ** enforcing origin-level fail-closed network isolation
+  await context.route('**', async (route) => {
     const request = route.request();
     const rawUrl = request.url();
     const method = request.method();
@@ -125,17 +133,16 @@ export async function setupDeterministicApi(page: Page, options: SetupApiOptions
       return;
     }
 
-    // 2. Strict Origin Boundary: Any non-localhost request that is not an authorized asset is BLOCKED
-    const isLocalhost = (url.hostname === 'localhost' || url.hostname === '127.0.0.1');
-
-    if (!isLocalhost) {
-      audit.blockedRequests.push(`BLOCKED_EXTERNAL_EGRESS: ${method} ${rawUrl}`);
-      audit.unexpectedRequests.push(`BLOCKED_EXTERNAL_EGRESS: ${method} ${rawUrl}`);
+    // 2. Strict Origin Boundary: Must match the explicit approved test-server origin
+    // Any other localhost port, unauthorized host, external domain or unexpected protocol is BLOCKED fail-closed.
+    if (url.origin !== authorizedOrigin) {
+      audit.blockedRequests.push(`BLOCKED_UNAUTHORIZED_ORIGIN: ${method} ${rawUrl}`);
+      audit.unexpectedRequests.push(`BLOCKED_UNAUTHORIZED_ORIGIN: ${method} ${rawUrl}`);
       await route.abort('blockedbyclient');
       return;
     }
 
-    // 3. Localhost Vite Static & Dev Resources (HTML, JS, CSS, fonts, SVG, client HMR)
+    // 3. Authorized Origin: Local Vite Static & Dev Resources (HTML, JS, CSS, fonts, SVG, client HMR)
     const isApiRequest = url.pathname.startsWith('/api/') || url.pathname.startsWith('/customer/properties');
 
     if (!isApiRequest) {
@@ -145,174 +152,166 @@ export async function setupDeterministicApi(page: Page, options: SetupApiOptions
       return;
     }
 
-    // 4. Localhost API Request Handling (Strict Mocking Dispatcher)
-    if (isApiRequest) {
-      let apiPath = url.pathname;
-      if (!apiPath.startsWith('/api/v1')) {
-        apiPath = `/api/v1${apiPath.startsWith('/') ? '' : '/'}${apiPath}`;
-      }
+    // 4. Authorized Origin: Localhost Mock API Dispatcher
+    let apiPath = url.pathname;
+    if (!apiPath.startsWith('/api/v1')) {
+      apiPath = `/api/v1${apiPath.startsWith('/') ? '' : '/'}${apiPath}`;
+    }
 
-      // A. Search Endpoint: GET /api/v1/customer/properties/search
-      if (apiPath === '/api/v1/customer/properties/search') {
-        if (method !== 'GET') {
-          audit.unexpectedRequests.push(`UNEXPECTED_METHOD: ${method} on ${apiPath}`);
-          await route.fulfill({
-            status: 405,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: false, error: { message: 'METHOD_NOT_ALLOWED' } }),
-          });
-          return;
-        }
-
-        audit.searchRequestCount++;
-        audit.authorizedRequests.push(`${method} ${apiPath} (count: ${audit.searchRequestCount})`);
-
-        const override = options.onRequest ? options.onRequest('search', audit.searchRequestCount) : undefined;
-        const status = override?.status ?? defaultSearchStatus;
-        const payload = override?.body ?? defaultSearchPayload;
-
-        if (status >= 400) {
-          await route.fulfill({
-            status,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              success: false,
-              error: { message: 'تعذر الاتصال بالخادم. يرجى المحاولة مرة أخرى.' },
-            }),
-          });
-        } else {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(payload),
-          });
-        }
+    // A. Search Endpoint: GET /api/v1/customer/properties/search
+    if (apiPath === '/api/v1/customer/properties/search') {
+      if (method !== 'GET') {
+        audit.unexpectedRequests.push(`UNEXPECTED_METHOD: ${method} on ${apiPath}`);
+        await route.fulfill({
+          status: 405,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: false, error: { message: 'METHOD_NOT_ALLOWED' } }),
+        });
         return;
       }
 
-      // B. Availability Endpoint: GET /api/v1/customer/properties/:id/availability
-      const availMatch = apiPath.match(/^\/api\/v1\/customer\/properties\/([^\/]+)\/availability$/);
-      if (availMatch) {
-        const requestedId = decodeURIComponent(availMatch[1]);
-        if (method !== 'GET') {
-          audit.unexpectedRequests.push(`UNEXPECTED_METHOD: ${method} on ${apiPath}`);
-          await route.fulfill({
-            status: 405,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: false, error: { message: 'METHOD_NOT_ALLOWED' } }),
-          });
-          return;
-        }
+      audit.searchRequestCount++;
+      audit.authorizedRequests.push(`${method} ${apiPath} (count: ${audit.searchRequestCount})`);
 
-        if (requestedId !== expectedPropertyId) {
-          audit.blockedRequests.push(`PROPERTY_ID_MISMATCH: ${requestedId} != ${expectedPropertyId}`);
-          await route.fulfill({
-            status: 404,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              success: false,
-              error: { message: 'الوحدة المطلوبة غير موجودة' },
-            }),
-          });
-          return;
-        }
+      const override = options.onRequest ? options.onRequest('search', audit.searchRequestCount) : undefined;
+      const status = override?.status ?? defaultSearchStatus;
+      const payload = override?.body ?? defaultSearchPayload;
 
-        audit.availabilityRequestCount++;
-        audit.authorizedRequests.push(`${method} ${apiPath} (count: ${audit.availabilityRequestCount})`);
-
-        const override = options.onRequest ? options.onRequest('availability', audit.availabilityRequestCount) : undefined;
-        const status = override?.status ?? defaultAvailabilityStatus;
-        const payload = override?.body ?? defaultAvailabilityPayload;
-
-        if (status >= 400) {
-          await route.fulfill({
-            status,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              success: false,
-              error: { message: 'تعذر تحميل بيانات الإتاحة' },
-            }),
-          });
-        } else {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(payload),
-          });
-        }
-        return;
+      if (status >= 400) {
+        await route.fulfill({
+          status,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: false,
+            error: { message: 'تعذر الاتصال بالخادم. يرجى المحاولة مرة أخرى.' },
+          }),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(payload),
+        });
       }
-
-      // C. Detail Endpoint: GET /api/v1/customer/properties/:id
-      const detailMatch = apiPath.match(/^\/api\/v1\/customer\/properties\/([^\/]+)$/);
-      if (detailMatch) {
-        const requestedId = decodeURIComponent(detailMatch[1]);
-        if (method !== 'GET') {
-          audit.unexpectedRequests.push(`UNEXPECTED_METHOD: ${method} on ${apiPath}`);
-          await route.fulfill({
-            status: 405,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: false, error: { message: 'METHOD_NOT_ALLOWED' } }),
-          });
-          return;
-        }
-
-        if (requestedId !== expectedPropertyId) {
-          audit.blockedRequests.push(`PROPERTY_ID_MISMATCH: ${requestedId} != ${expectedPropertyId}`);
-          await route.fulfill({
-            status: 404,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              success: false,
-              error: { message: 'الوحدة المطلوبة غير موجودة' },
-            }),
-          });
-          return;
-        }
-
-        audit.detailRequestCount++;
-        audit.authorizedRequests.push(`${method} ${apiPath} (count: ${audit.detailRequestCount})`);
-
-        const override = options.onRequest ? options.onRequest('detail', audit.detailRequestCount) : undefined;
-        const status = override?.status ?? defaultDetailStatus;
-        const payload = override?.body ?? defaultDetailPayload;
-
-        if (status >= 400) {
-          await route.fulfill({
-            status,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              success: false,
-              error: { message: 'تعذر تحميل بيانات الإقامة المطلوبة' },
-            }),
-          });
-        } else {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(payload),
-          });
-        }
-        return;
-      }
-
-      // D. Unknown API Endpoint: Fail-Closed 404
-      audit.unexpectedRequests.push(`UNKNOWN_API_ENDPOINT: ${method} ${apiPath}`);
-      await route.fulfill({
-        status: 404,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          success: false,
-          error: { message: `UNKNOWN_API_ENDPOINT: ${apiPath}` },
-        }),
-      });
       return;
     }
 
-    // 4. Outbound External Requests (Supabase, Cloudflare Worker, 3rd party APIs, etc.): Blocked!
-    audit.blockedRequests.push(`BLOCKED_EXTERNAL_EGRESS: ${method} ${rawUrl}`);
-    audit.unexpectedRequests.push(`BLOCKED_EXTERNAL_EGRESS: ${method} ${rawUrl}`);
-    await route.abort('blockedbyclient');
+    // B. Availability Endpoint: GET /api/v1/customer/properties/:id/availability
+    const availMatch = apiPath.match(/^\/api\/v1\/customer\/properties\/([^\/]+)\/availability$/);
+    if (availMatch) {
+      const requestedId = decodeURIComponent(availMatch[1]);
+      if (method !== 'GET') {
+        audit.unexpectedRequests.push(`UNEXPECTED_METHOD: ${method} on ${apiPath}`);
+        await route.fulfill({
+          status: 405,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: false, error: { message: 'METHOD_NOT_ALLOWED' } }),
+        });
+        return;
+      }
+
+      if (requestedId !== expectedPropertyId) {
+        audit.blockedRequests.push(`PROPERTY_ID_MISMATCH: ${requestedId} != ${expectedPropertyId}`);
+        await route.fulfill({
+          status: 404,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: false,
+            error: { message: 'الوحدة المطلوبة غير موجودة' },
+          }),
+        });
+        return;
+      }
+
+      audit.availabilityRequestCount++;
+      audit.authorizedRequests.push(`${method} ${apiPath} (count: ${audit.availabilityRequestCount})`);
+
+      const override = options.onRequest ? options.onRequest('availability', audit.availabilityRequestCount) : undefined;
+      const status = override?.status ?? defaultAvailabilityStatus;
+      const payload = override?.body ?? defaultAvailabilityPayload;
+
+      if (status >= 400) {
+        await route.fulfill({
+          status,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: false,
+            error: { message: 'تعذر تحميل بيانات الإتاحة' },
+          }),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(payload),
+        });
+      }
+      return;
+    }
+
+    // C. Detail Endpoint: GET /api/v1/customer/properties/:id
+    const detailMatch = apiPath.match(/^\/api\/v1\/customer\/properties\/([^\/]+)$/);
+    if (detailMatch) {
+      const requestedId = decodeURIComponent(detailMatch[1]);
+      if (method !== 'GET') {
+        audit.unexpectedRequests.push(`UNEXPECTED_METHOD: ${method} on ${apiPath}`);
+        await route.fulfill({
+          status: 405,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: false, error: { message: 'METHOD_NOT_ALLOWED' } }),
+        });
+        return;
+      }
+
+      if (requestedId !== expectedPropertyId) {
+        audit.blockedRequests.push(`PROPERTY_ID_MISMATCH: ${requestedId} != ${expectedPropertyId}`);
+        await route.fulfill({
+          status: 404,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: false,
+            error: { message: 'الوحدة المطلوبة غير موجودة' },
+          }),
+        });
+        return;
+      }
+
+      audit.detailRequestCount++;
+      audit.authorizedRequests.push(`${method} ${apiPath} (count: ${audit.detailRequestCount})`);
+
+      const override = options.onRequest ? options.onRequest('detail', audit.detailRequestCount) : undefined;
+      const status = override?.status ?? defaultDetailStatus;
+      const payload = override?.body ?? defaultDetailPayload;
+
+      if (status >= 400) {
+        await route.fulfill({
+          status,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: false,
+            error: { message: 'تعذر تحميل بيانات الإقامة المطلوبة' },
+          }),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(payload),
+        });
+      }
+      return;
+    }
+
+    // D. Unknown API Endpoint: Fail Closed 404
+    audit.unexpectedRequests.push(`UNKNOWN_API_ENDPOINT: ${method} ${apiPath}`);
+    await route.fulfill({
+      status: 404,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: false,
+        error: { message: `UNKNOWN_API_ENDPOINT: ${apiPath}` },
+      }),
+    });
   });
 
   return audit;
@@ -386,9 +385,9 @@ export async function assertMinimumTouchTarget(
 }
 
 /**
- * Assert zero unexpected network requests occurred during test execution.
+ * Assert zero unexpected network requests occurred during test execution across the context.
  */
-export function assertZeroUnexpectedRequests(page: Page): void {
-  const audit = getNetworkAudit(page);
+export function assertZeroUnexpectedRequests(target: Page | BrowserContext): void {
+  const audit = getNetworkAudit(target);
   expect(audit.unexpectedRequests).toEqual([]);
 }

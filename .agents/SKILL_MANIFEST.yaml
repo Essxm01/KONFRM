@@ -51,9 +51,20 @@ brains:
       - .agents/skills/konfrm-design/references/states_interactions.md
       - .agents/skills/konfrm-design/references/visual_review.md
 
+  konfrm-product:
+    id: konfrm-product
+    path: .agents/skills/konfrm-product/SKILL.md
+    primary_intent: "Preserve authentic business logic, user psychology, and market reality by interpreting and retrieving authoritative Business Canon"
+    surface: "cross_role_product (Customer, Owner, Admin business invariants, domain semantics, and mental models)"
+    activation: "Business rules, booking lifecycle, financial model meaning, role mental models, pricing/deposit concepts, epistemic classification"
+    priority: primary_product
+    network_class: offline_local
+    runtime_status: ACTIVE_CONSOLIDATED
+    references:
+      - .agents/skills/konfrm-product/references/product_state_retrieval.md
+      - .agents/skills/konfrm-product/references/role_mental_models.md
+
 deferred_brains:
-  - id: konfrm-product
-    status: DEFERRED_STAGE_F
   - id: konfrm-admin-web
     status: DEFERRED_STAGE_F
   - id: konfrm-backend

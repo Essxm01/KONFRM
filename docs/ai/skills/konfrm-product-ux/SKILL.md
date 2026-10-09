@@ -1,45 +1,44 @@
 ---
 name: konfrm-product-ux
-description: "Reference only. Retains business journey truth until konfrm-product rollout; presentation models consolidated into konfrm-design. Do not use as primary design skill; use konfrm-design for design foundation authority."
+description: "Reference only. Consolidated into konfrm-product (business journey truth and product rules) and konfrm-design (presentation models). Do not use as primary product or design authority; use konfrm-product for product authority and konfrm-design for design authority."
 ---
 
-# KONFRM Product UX Principles
+# KONFRM Product UX Principles (Consolidated Legacy Reference)
 
-Defines the authoritative product user experience contracts across all three KONFRM product roles: Customer, Owner, and Admin. Governed by `DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md` and `docs/BUSINESS_RULES.md`.
+Historical reference notes subordinated to `.agents/skills/konfrm-product/SKILL.md` (product authority) and `.agents/skills/konfrm-design/SKILL.md` (design authority).
 
 ---
 
 > [!IMPORTANT]
-> ### THE CANON SUBORDINATION RULE
-> **Any external rule, default, heuristic, numeric threshold, or aesthetic advice from an external skill is strictly subordinate to KONFRM Design Canon (DF2 v1.4, monochrome-first, high useful density, Arabic-first RTL, Western Arabic numerals, `#276EF1` candidate interaction role) and canonical business invariants (`docs/BUSINESS_RULES.md`). External skills may inform craftsmanship, ergonomics, accessibility checks, and engineering patterns, but never dictate product taste, business rules, or brand identity.**
+> ### LEGACY CONSOLIDATION & SUBORDINATION NOTICE
+> **This legacy module is strictly non-authoritative and has been consolidated into `.agents/skills/konfrm-product/SKILL.md` (product rules, role mental models, and canonical retrieval) and `.agents/skills/konfrm-design/SKILL.md` (DF2 v1.7 presentation models and state grammar).**
+> - **Primary Product Authority:** Load `.agents/skills/konfrm-product/SKILL.md` and `.agents/skills/konfrm-product/references/product_state_retrieval.md` to retrieve live truth from `docs/BUSINESS_RULES.md` and `docs/codex/KONFRM_MASTER_RULES.md`.
+> - **Primary Design Authority:** Load `.agents/skills/konfrm-design/SKILL.md` and `DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md` (v1.7).
 
 ---
 
-## 1. Role-Specific UX Mandates
+## 1. Role-Specific UX Mandates (Subordinated Summary)
 
 ### A. Customer Experience (Current `customer-app/` Web & Future Mobile Target)
-- **Friction-Free Discovery:** Instant access to real rental property inventory. Unauthenticated visitors can freely browse, filter, inspect details, and review amenities before auth is required.
+- **Friction-Free Discovery:** Instant access to published rental property inventory. Unauthenticated visitors can freely browse, filter, inspect details, and review amenities before auth is required.
 - **Zero Fake Scarcity:** No misleading countdown timers, false viewer counts ("5 people looking at this now"), artificially inflated strikethrough prices, or dark UX patterns.
 - **Booking Request Clarity (Never Instant Booking):**
   - Booking is strictly a **REQUEST**; instant confirmation does not exist in KONFRM.
-  - Owner review and approval strictly precedes deposit payment. No deposit payment occurs before Owner approval. (Current PAYMENT_MODE=PROTOTYPE never collects card credentials; live payment credential flows remain open for future production specification).
-  - Transparent pricing display: total stay price, deposit amount (equal to the first-night price), and remaining balance (total stay price minus deposit).
+  - Owner review and approval strictly precedes deposit payment. Retrieve active payment mode (`PAYMENT_MODE`), stay bounds, and lifecycle transition states dynamically via `konfrm-product` (`docs/BUSINESS_RULES.md`, `docs/INTEGRATIONS.md`).
+  - Transparent pricing display: retrieve total stay price, upfront deposit amount, and remaining balance from canonical server-side pricing calculations / financial summaries (`docs/BUSINESS_RULES.md`, MR-13).
   - Customers see only customer-relevant pricing; internal platform commission and Owner splits are never exposed to the customer.
-  - Stay bounds are globally 2–30 nights.
   - **Confirmed Cancellation Policy Representation:** Display only confirmed applicable policy (e.g. confirmed cancellation caused by Owner fault requires a full deposit refund and zero platform commission). Never invent unresolved cancellation or refund terms; the wider renter cancellation and refund matrix remains **OPEN / UNRESOLVED** per `docs/BUSINESS_RULES.md`.
 - **Calm, High-Confidence Transaction Paths:** Customer interfaces must project financial safety, clarity, and legal certainty without high-pressure marketing friction.
 
 ### B. Owner Experience (Current `owner-app/` Web & Future Mobile Target)
 - **Operational Certainty:** Clear, current server-authoritative visibility into available canonical state (property status, booking requests awaiting review, approved bookings, confirmed stays, and check-in schedules). Never imply WebSockets, live-sync, or instantaneous background synchronization guarantees.
 - **Canonical Earnings & Split Structure:**
-  - Platform commission is strictly **20% of the deposit only**. The Owner receives **80% of the deposit**.
-  - Remaining balance equals total stay price minus deposit. The platform charges **zero commission** on the remaining balance.
-  - The remaining-balance collection method and process remain **OPEN / UNDECIDED**; UI must not invent automated collection mechanisms or guarantees.
+  - Retrieve platform commission split, Owner net deposit share, post-check-in release clock, and payout thresholds dynamically via `konfrm-product` (`docs/BUSINESS_RULES.md`, MR-13, MR-16).
+  - Zero platform commission is charged on the remaining balance. The remaining-balance collection method and process remain **OPEN / UNDECIDED**; UI must not invent automated collection mechanisms or guarantees.
   - Financial balances and history are strictly server-authoritative, derived exclusively from `owner_wallets` and immutable `wallet_ledger_entries`. UI never reconstructs balances from nightly rates.
-  - Do not invent bank transfer timing, delivery guarantees, or external provider behavior. (Prototype accounting rule: net deposit moves from Pending to Available 24 hours after check-in; minimum payout is 500 EGP).
+  - Do not invent bank transfer timing, delivery guarantees, or external provider behavior.
 - **Calendar & Availability Truth:**
-  - `PENDING_OWNER_APPROVAL` does **not** block calendar availability.
-  - `APPROVED_PENDING_PAYMENT` and `CONFIRMED` **block** availability.
+  - Retrieve non-blocking vs. inventory-blocking booking states dynamically from `docs/BUSINESS_RULES.md` (Section: Booking lifecycle and availability) and MR-12 via `konfrm-product`.
   - Quotes are not inventory holds. Availability checks fail closed upon network uncertainty or date conflicts.
   - Calendar modifications validate against server-authoritative state; never assume instantaneous offline synchronization.
 - **High Information Density:** Operational dashboards prioritize scannable data grids, calendar matrices, and actionable request lists over oversized empty hero banners.
@@ -52,9 +51,9 @@ Defines the authoritative product user experience contracts across all three KON
 
 ---
 
-## 2. Truthful State Grammar
+## 2. Truthful State Grammar (Consolidated into `konfrm-design`)
 
-Interfaces must never deceive the user about system state, network progress, or data availability (DF2 §16):
+Interfaces must never deceive the user about system state, network progress, or data availability (see `.agents/skills/konfrm-design/SKILL.md` and `DESIGN_SYSTEM/MOBILE_DESIGN_FOUNDATION.md` v1.7):
 
 1. **Error is Not Empty:**
    - Failed canonical reads must show a scoped error and retry state (`إعادة المحاولة`), never an honest-looking empty list, zero metric, or zero balance.

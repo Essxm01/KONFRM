@@ -102,8 +102,8 @@ if (!curedOutput.includes('1 passed')) {
 
 console.log('✓ [PASS] Cured expectation passed cleanly (exit code: 0, 1 passed)');
 
-// 3. Run Network Isolation Negative Proofs (7 Scenarios)
-console.log('\n[3/3] Running network isolation negative verification suite (7 negative proofs)...');
+// 3. Run Network Isolation Negative Proofs (8 Scenarios)
+console.log('\n[3/3] Running network isolation negative verification suite (8 negative proofs)...');
 const netRun = spawnSync(
   'npx',
   ['playwright', 'test', 'tests/negative/network-isolation.spec.ts', '--project=Mobile-390x844-Default'],
@@ -122,13 +122,13 @@ if (netRun.status !== 0) {
 }
 
 const netOutput = (netRun.stdout || '') + (netRun.stderr || '');
-if (!netOutput.includes('7 passed')) {
-  console.error('❌ [FATAL] Network isolation suite did not report 7 passed:');
+if (!netOutput.includes('8 passed')) {
+  console.error('❌ [FATAL] Network isolation suite did not report 8 passed:');
   console.error(netOutput);
   process.exit(1);
 }
 
-console.log('✓ [PASS] Network isolation suite passed cleanly (7/7 negative proofs passed)');
+console.log('✓ [PASS] Network isolation suite passed cleanly (8/8 negative proofs passed)');
 
 console.log('\n====================================================');
 console.log('NEGATIVE CONTROL VERIFICATION: ALL PROOFS PASSED.');

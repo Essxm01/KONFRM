@@ -143,7 +143,9 @@ export async function setupDeterministicApi(
     }
 
     // 3. Authorized Origin: Local Vite Static & Dev Resources (HTML, JS, CSS, fonts, SVG, client HMR)
-    const isApiRequest = url.pathname.startsWith('/api/') || url.pathname.startsWith('/customer/properties');
+    // Strictly aligned with Vite's proxy prefix '/api': any path beginning with '/api' (or '/customer/properties')
+    // is treated as an API request and handled fail-closed. No request matching Vite's proxy prefix may reach route.continue().
+    const isApiRequest = url.pathname.startsWith('/api') || url.pathname.startsWith('/customer/properties');
 
     if (!isApiRequest) {
       // Allowed local Vite static development resource
@@ -154,8 +156,8 @@ export async function setupDeterministicApi(
 
     // 4. Authorized Origin: Localhost Mock API Dispatcher
     let apiPath = url.pathname;
-    if (!apiPath.startsWith('/api/v1')) {
-      apiPath = `/api/v1${apiPath.startsWith('/') ? '' : '/'}${apiPath}`;
+    if (apiPath.startsWith('/customer/')) {
+      apiPath = `/api/v1${apiPath}`;
     }
 
     // A. Search Endpoint: GET /api/v1/customer/properties/search

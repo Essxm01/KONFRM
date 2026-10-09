@@ -174,5 +174,55 @@ test.describe('Negative Control — Network Isolation & Fail-Closed Route Securi
       await newPage.close();
     }
   });
+
+  test('8. Vite /api proxy prefix boundary intercepts /api, query probes, and unslashed prefixes fail-closed', async ({ page }) => {
+    // A. Exact `/api` path without trailing slash
+    const exactApiRes = await page.evaluate(async () => {
+      const res = await fetch('/api');
+      return {
+        status: res.status,
+        contentType: res.headers.get('content-type'),
+        body: await res.json(),
+      };
+    });
+    expect(exactApiRes.status).toBe(404);
+    expect(exactApiRes.contentType).toContain('application/json');
+    expect(exactApiRes.body.success).toBe(false);
+    expect(exactApiRes.body.error.message).toBe('UNKNOWN_API_ENDPOINT: /api');
+
+    // B. `/api` with query parameters (`/api?probe=1`)
+    const probeApiRes = await page.evaluate(async () => {
+      const res = await fetch('/api?probe=1');
+      return {
+        status: res.status,
+        contentType: res.headers.get('content-type'),
+        body: await res.json(),
+      };
+    });
+    expect(probeApiRes.status).toBe(404);
+    expect(probeApiRes.contentType).toContain('application/json');
+    expect(probeApiRes.body.success).toBe(false);
+    expect(probeApiRes.body.error.message).toBe('UNKNOWN_API_ENDPOINT: /api');
+
+    // C. Unexpected path beginning with `/api` lacking slash separator (e.g. `/api-unslashed-probe`)
+    const unslashedApiRes = await page.evaluate(async () => {
+      const res = await fetch('/api-unslashed-probe');
+      return {
+        status: res.status,
+        contentType: res.headers.get('content-type'),
+        body: await res.json(),
+      };
+    });
+    expect(unslashedApiRes.status).toBe(404);
+    expect(unslashedApiRes.contentType).toContain('application/json');
+    expect(unslashedApiRes.body.success).toBe(false);
+    expect(unslashedApiRes.body.error.message).toBe('UNKNOWN_API_ENDPOINT: /api-unslashed-probe');
+
+    // D. Assert all requests were intercepted by the Playwright mock dispatcher rather than leaking to Vite proxy
+    const audit = getNetworkAudit(page);
+    expect(audit.unexpectedRequests).toContain('UNKNOWN_API_ENDPOINT: GET /api');
+    expect(audit.unexpectedRequests).toContain('UNKNOWN_API_ENDPOINT: GET /api-unslashed-probe');
+  });
 });
+
 

@@ -23,7 +23,10 @@ void main() {
           find.text('ابحث عن بيوت العطلات والشاليهات الموثقة'),
           findsOneWidget,
         );
-        expect(find.byKey(const Key('explore-search-field')), findsOneWidget);
+        expect(
+          find.byKey(const Key('explore-search-affordance')),
+          findsOneWidget,
+        );
         expect(find.byKey(const Key('explore-status-card')), findsOneWidget);
 
         // Verify CustomerBottomNavigation has 4 destinations
@@ -52,20 +55,27 @@ void main() {
       // Tap Tab 1: Favorites
       await tester.tap(find.byKey(const Key('customer-destination-1')));
       await tester.pumpAndSettle();
-      expect(find.text('قائمتك المفضلة فارغة'), findsOneWidget);
-      expect(find.byKey(const Key('favorites-empty-card')), findsOneWidget);
+      expect(
+        find.byKey(const Key('favorites-unauthorized-card')),
+        findsOneWidget,
+      );
 
       // Tap Tab 2: Bookings
       await tester.tap(find.byKey(const Key('customer-destination-2')));
       await tester.pumpAndSettle();
-      expect(find.text('لا توجد حجوزات نشطة'), findsOneWidget);
-      expect(find.byKey(const Key('bookings-empty-card')), findsOneWidget);
+      expect(
+        find.byKey(const Key('bookings-unauthorized-card')),
+        findsOneWidget,
+      );
 
       // Tap Tab 3: Account
       await tester.tap(find.byKey(const Key('customer-destination-3')));
       await tester.pumpAndSettle();
       expect(find.text('جلسة زائر (غير مسجل)'), findsOneWidget);
-      expect(find.byKey(const Key('account-login-button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('account-auth-deferred-alert')),
+        findsOneWidget,
+      );
 
       // Tap Tab 0: Explore again
       await tester.tap(find.byKey(const Key('customer-destination-0')));
@@ -82,7 +92,10 @@ void main() {
         // Navigate to Tab 1 (Favorites)
         await tester.tap(find.byKey(const Key('customer-destination-1')));
         await tester.pumpAndSettle();
-        expect(find.text('قائمتك المفضلة فارغة'), findsOneWidget);
+        expect(
+          find.byKey(const Key('favorites-unauthorized-card')),
+          findsOneWidget,
+        );
 
         // Trigger Android system back
         final bool handledFromTab1 = await tester.binding.handlePopRoute();
@@ -95,7 +108,10 @@ void main() {
         // Navigate to Tab 2 (Bookings)
         await tester.tap(find.byKey(const Key('customer-destination-2')));
         await tester.pumpAndSettle();
-        expect(find.text('لا توجد حجوزات نشطة'), findsOneWidget);
+        expect(
+          find.byKey(const Key('bookings-unauthorized-card')),
+          findsOneWidget,
+        );
 
         // Trigger Android system back
         final bool handledFromTab2 = await tester.binding.handlePopRoute();
@@ -126,54 +142,119 @@ void main() {
     );
 
     testWidgets(
-      'Bookings empty state recovery action switches to Explore tab',
+      'UNAUTHORIZED != EMPTY: Guest Favorites and Bookings show unauthorized state and never claim zero records',
       (WidgetTester tester) async {
         await tester.pumpWidget(const KonfrmCustomerApp());
         await tester.pumpAndSettle();
 
-        // Go to Bookings
+        // 1. Check Favorites Tab
+        await tester.tap(find.byKey(const Key('customer-destination-1')));
+        await tester.pumpAndSettle();
+
+        // Negative check: Must NOT claim list is empty when unauthenticated
+        expect(find.text('قائمتك المفضلة فارغة'), findsNothing);
+        expect(find.text('المفضلة فارغة'), findsNothing);
+
+        // Positive check: Must clearly state authentication is required
+        expect(find.text('تسجيل الدخول مطلوب'), findsOneWidget);
+        expect(
+          find.textContaining('يتطلب حفظ العقارات المفضلة'),
+          findsOneWidget,
+        );
+
+        // 2. Check Bookings Tab
         await tester.tap(find.byKey(const Key('customer-destination-2')));
         await tester.pumpAndSettle();
-        expect(find.text('لا توجد حجوزات نشطة'), findsOneWidget);
+
+        // Negative check: Must NOT claim zero records when no account is loaded
+        expect(find.text('لا توجد حجوزات نشطة'), findsNothing);
+        expect(find.text('لا توجد حجوزات بعد'), findsNothing);
+        expect(find.text('CONF-'), findsNothing);
+        expect(find.text('BK-'), findsNothing);
+
+        // Positive check: Must clearly state authentication is required
+        expect(find.text('تسجيل الدخول مطلوب'), findsOneWidget);
+        expect(
+          find.textContaining('يتطلب استعراض الحجوزات السابقة'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'Functional recovery: Favorites and Bookings recovery buttons navigate to Explore',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(const KonfrmCustomerApp());
+        await tester.pumpAndSettle();
+
+        // Test Favorites recovery -> Explore
+        await tester.tap(find.byKey(const Key('customer-destination-1')));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const Key('favorites-unauthorized-card')),
+          findsOneWidget,
+        );
+
+        // Tap recovery button "استكشف العقارات"
+        await tester.tap(find.text('استكشف العقارات'));
+        await tester.pumpAndSettle();
+        expect(find.text('كونفرم | استكشف'), findsOneWidget);
+
+        // Test Bookings recovery -> Explore
+        await tester.tap(find.byKey(const Key('customer-destination-2')));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const Key('bookings-unauthorized-card')),
+          findsOneWidget,
+        );
 
         // Tap recovery button "استكشف الآن"
         await tester.tap(find.text('استكشف الآن'));
         await tester.pumpAndSettle();
-
-        // Should now be on Explore tab
         expect(find.text('كونفرم | استكشف'), findsOneWidget);
       },
     );
 
-    testWidgets('unauthenticated guest session honesty across all views', (
+    testWidgets('Zero dead controls: No enabled actions without behavior', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(const KonfrmCustomerApp());
       await tester.pumpAndSettle();
 
-      // Zero fabricated property cards on Explore
-      expect(find.text('SAR'), findsNothing);
-      expect(find.text('ر.س'), findsNothing);
+      // 1. Explore Tab: No dead recovery button or fake search submit
+      expect(find.text('تحديث النتائج'), findsNothing);
+      expect(find.byType(TextField), findsNothing);
 
-      // Switch to Favorites
-      await tester.tap(find.byKey(const Key('customer-destination-1')));
-      await tester.pumpAndSettle();
-      // Zero mock favorites
-      expect(find.text('قائمتك المفضلة فارغة'), findsOneWidget);
-
-      // Switch to Bookings
-      await tester.tap(find.byKey(const Key('customer-destination-2')));
-      await tester.pumpAndSettle();
-      // Zero mock bookings or fake confirmation codes
-      expect(find.text('لا توجد حجوزات نشطة'), findsOneWidget);
-      expect(find.text('CONF-'), findsNothing);
-
-      // Switch to Account
+      // 2. Account Tab: No dead login button
       await tester.tap(find.byKey(const Key('customer-destination-3')));
       await tester.pumpAndSettle();
-      // Truthful guest persona
-      expect(find.text('جلسة زائر (غير مسجل)'), findsOneWidget);
-      expect(find.text('تسجيل الدخول / إنشاء حساب'), findsOneWidget);
+      expect(find.text('تسجيل الدخول / إنشاء حساب'), findsNothing);
+      expect(find.byType(PrimaryButton), findsNothing);
+      expect(
+        find.byKey(const Key('account-auth-deferred-alert')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('Zero fabricated customer, booking or financial data', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(const KonfrmCustomerApp());
+      await tester.pumpAndSettle();
+
+      // Zero fake prices or currency tokens
+      expect(find.text('SAR'), findsNothing);
+      expect(find.text('ر.س'), findsNothing);
+      expect(find.text('\$'), findsNothing);
+
+      // Zero fake IDs across all tabs
+      for (int i = 0; i < 4; i++) {
+        await tester.tap(find.byKey(Key('customer-destination-$i')));
+        await tester.pumpAndSettle();
+        expect(find.text('CONF-'), findsNothing);
+        expect(find.text('BK-'), findsNothing);
+        expect(find.text('USR-'), findsNothing);
+      }
     });
 
     for (final textScale in [1.0, 1.5, 2.0]) {
@@ -198,20 +279,60 @@ void main() {
           );
           await tester.pumpAndSettle();
 
-          // Check Explore
+          // Explore
           expect(tester.takeException(), isNull);
 
-          // Check Favorites
+          // Favorites
           await tester.tap(find.byKey(const Key('customer-destination-1')));
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull);
 
-          // Check Bookings
+          // Bookings
           await tester.tap(find.byKey(const Key('customer-destination-2')));
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull);
 
-          // Check Account
+          // Account
+          await tester.tap(find.byKey(const Key('customer-destination-3')));
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+
+    for (final width in [360.0, 390.0, 430.0]) {
+      testWidgets(
+        'renders all 4 tabs on narrow logical viewport width ${width}dp without overflow',
+        (WidgetTester tester) async {
+          tester.view.physicalSize = Size(width * 2.0, 800 * 2.0);
+          tester.view.devicePixelRatio = 2.0;
+          addTearDown(() {
+            tester.view.resetPhysicalSize();
+            tester.view.resetDevicePixelRatio();
+          });
+
+          await tester.pumpWidget(
+            MediaQuery(
+              data: MediaQueryData(size: Size(width, 800)),
+              child: const KonfrmCustomerApp(),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          // Explore
+          expect(tester.takeException(), isNull);
+
+          // Favorites
+          await tester.tap(find.byKey(const Key('customer-destination-1')));
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull);
+
+          // Bookings
+          await tester.tap(find.byKey(const Key('customer-destination-2')));
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull);
+
+          // Account
           await tester.tap(find.byKey(const Key('customer-destination-3')));
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull);

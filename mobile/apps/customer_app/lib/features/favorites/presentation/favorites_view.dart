@@ -3,11 +3,15 @@ import 'package:konfrm_design_system/konfrm_design_system.dart';
 
 /// Truthful favorites tab for KONFRM | GUEST.
 ///
-/// Under unauthenticated guest mode, favorites are not stored locally with
-/// fake entries. In accordance with KONFRM Master Rules, this view presents
-/// a truthful empty state and an authentication call-to-action for cross-device sync.
+/// In accordance with KONFRM Master Rules, UNAUTHORIZED != EMPTY.
+/// An unauthenticated guest does not possess a loaded account; therefore,
+/// this screen truthfully presents an unauthorized session state explaining
+/// that authentication is required for personal favorites.
+/// The recovery affordance is wired directly to the Explore tab.
 class FavoritesView extends StatelessWidget {
-  const FavoritesView({super.key});
+  const FavoritesView({super.key, this.onExplore});
+
+  final VoidCallback? onExplore;
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +29,13 @@ class FavoritesView extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           StructuralContainer(
-            key: const Key('favorites-empty-card'),
+            key: const Key('favorites-unauthorized-card'),
             child: StateView(
-              kind: StateKind.empty,
-              heading: 'قائمتك المفضلة فارغة',
-              explanation: 'احفظ العقارات التي تنال إعجابك أثناء التصفح للرجوع إليها ومتابعة الأسعار وتوفر التواريخ.',
+              kind: StateKind.unauthorized,
+              heading: 'تسجيل الدخول مطلوب',
+              explanation: 'يتطلب حفظ العقارات المفضلة واستعراضها تسجيل الدخول إلى حسابك. يمكنك استكشاف أماكن الإقامة المتاحة كزائر.',
               recoveryLabel: 'استكشف العقارات',
-              onRecovery: () {},
+              onRecovery: onExplore,
             ),
           ),
         ],

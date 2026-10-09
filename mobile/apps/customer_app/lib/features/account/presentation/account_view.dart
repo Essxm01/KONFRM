@@ -3,9 +3,10 @@ import 'package:konfrm_design_system/konfrm_design_system.dart';
 
 /// Truthful account tab for KONFRM | GUEST.
 ///
-/// Reflects an unauthenticated guest session honestly. Does not render
-/// fake authenticated personas, mock loyalty balances, or fabricated
-/// identity documents.
+/// Reflects an unauthenticated guest session honestly. In accordance with
+/// KONFRM Master Rules, no dead buttons or mock login handlers are rendered;
+/// authentication and profile management are explicitly deferred to the
+/// dedicated authentication mission.
 class AccountView extends StatelessWidget {
   const AccountView({super.key});
 
@@ -44,7 +45,7 @@ class AccountView extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'استكشف العقارات والأسعار بحرية',
+                            'استكشف العقارات والأسعار بحرية دون تسجيل',
                             style: KonfrmTypography.supporting,
                           ),
                         ],
@@ -53,10 +54,9 @@ class AccountView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                PrimaryButton(
-                  key: const Key('account-login-button'),
-                  label: 'تسجيل الدخول / إنشاء حساب',
-                  onPressed: () {},
+                const SectionAlert(
+                  key: Key('account-auth-deferred-alert'),
+                  message: 'تسجيل الدخول وإدارة الملف الشخصي قيد التجهيز في مرحلة التوثيق القادمة.',
                 ),
               ],
             ),
@@ -66,7 +66,7 @@ class AccountView extends StatelessWidget {
             key: const Key('account-settings-card'),
             child: Column(
               children: [
-                _SettingsRow(
+                const _SettingsRow(
                   icon: Icons.language,
                   title: 'اللغة',
                   trailing: 'العربية (افتراضي)',
@@ -76,7 +76,7 @@ class AccountView extends StatelessWidget {
                   thickness: 1,
                   color: Color(0xFFE5E7EB),
                 ),
-                _SettingsRow(
+                const _SettingsRow(
                   icon: Icons.help_outline,
                   title: 'المساعدة والدعم',
                   trailing: 'مركز المساعدة',
@@ -86,7 +86,7 @@ class AccountView extends StatelessWidget {
                   thickness: 1,
                   color: Color(0xFFE5E7EB),
                 ),
-                _SettingsRow(
+                const _SettingsRow(
                   icon: Icons.info_outline,
                   title: 'عن المنصة',
                   trailing: 'KONFRM v0.1.0',

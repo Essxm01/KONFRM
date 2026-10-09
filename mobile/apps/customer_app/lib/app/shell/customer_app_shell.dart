@@ -53,7 +53,7 @@ class _CustomerAppShellState extends State<CustomerAppShell> {
             index: _selectedIndex,
             children: [
               const ExploreView(),
-              const FavoritesView(),
+              FavoritesView(onExplore: () => _onSelectTab(0)),
               BookingsView(onExplore: () => _onSelectTab(0)),
               const AccountView(),
             ],

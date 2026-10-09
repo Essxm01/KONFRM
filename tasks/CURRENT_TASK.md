@@ -2,23 +2,410 @@
 
 TASK_ID: PHASE_5_MISSION_01_CUSTOMER_FLUTTER_APP_SHELL
 TASK_CLASS: NATIVE_CUSTOMER_APPLICATION_FOUNDATION
-STATUS: CANDIDATE_IMPLEMENTED / VERIFIED / DRAFT_PR_PENDING
-PR: DRAFT (feat/customer-flutter-app-shell)
+STATUS: CANDIDATE_REMEDIATED / PR_110_DRAFT
+PR: #110 (DRAFT)
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: cfc7576c73f7d9d00a3e21296a251cda1b8d13b4
 BRANCH: feat/customer-flutter-app-shell
-SCOPE: Phase 5 / Mission 01 — Native Customer Flutter Application foundation (`mobile/apps/customer_app`). Implements runnable Flutter entry point, Arabic-first RTL, Cairo typography via `konfrmLightTheme()`, reuse of `mobile/packages/konfrm_design_system`, 4-root Customer navigation (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`), Android Back handling (`PopScope` returns to tab 0 before exit), SafeArea, responsive text scaling, and unauthenticated guest baseline with truthful empty states.
+SCOPE: Phase 5 / Mission 01 — Native Customer Flutter Application foundation (`mobile/apps/customer_app`). Implements runnable Flutter entry point, Arabic-first RTL, Cairo typography via `konfrmLightTheme()`, reuse of `mobile/packages/konfrm_design_system`, 4-root Customer navigation (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`), Android Back handling (`PopScope` returns to tab 0 before exit), SafeArea, responsive text scaling, and unauthenticated guest baseline with truthful unauthorized/guest states.
 
 ## Boundaries & Invariants
 - Strictly READ-ONLY regarding backend business logic, database migrations, Cloudflare Workers, and production web applications (`customer-app/`, `owner-app/`, `admin-app/`).
 - Zero fabricated properties, mock listings, fake booking records, fake confirmation codes, or fake authentication credentials.
 - Reuses `mobile/packages/konfrm_design_system` without component duplication or out-of-band token changes.
-- Unauthenticated guest session honesty: unauthenticated state clearly stated across Favorites, Bookings, and Account.
+- Unauthenticated guest session honesty: unauthenticated state clearly stated (`UNAUTHORIZED != EMPTY`) across Favorites, Bookings, and Account.
+- Zero dead actionable controls: no enabled buttons, search submissions, or recovery actions that silently do nothing.
 - Cross-platform limitation: Android debug APK build verified; physical Android runtime gate reported honestly.
 
 ## Verification Summary
 - Flutter format: 0 changed (`dart format --output=none --set-exit-if-changed .` PASS)
 - Flutter analyze: No issues found! (`flutter analyze` PASS)
-- Widget test suite: 8/8 PASS (`test/customer_app_shell_test.dart` PASS across 100%, 150%, 200% text scale)
+- Widget test suite: 11/11 PASS (`test/customer_app_shell_test.dart` PASS across 100%, 150%, 200% text scale and 360dp, 390dp, 430dp viewports)
 - Design system regression suite: 20/20 PASS (`mobile/packages/konfrm_design_system` PASS)
 - Android debug APK build: `build/app/outputs/flutter-apk/app-debug.apk` built successfully (152 MB).
+
+---
+
+## Historical Task — PHASE_4I_NATIVE_VALIDATION_PUBLICATION (SUPERSEDED / MERGED)
+
+TASK_ID: PHASE_4I_NATIVE_VALIDATION_PUBLICATION
+TASK_CLASS: NATIVE_DESIGN_SYSTEM_INTEGRATION_CLOSURE
+STATUS: HISTORICAL / SUPERSEDED / MERGED (PR #100 MERGED INTO MAIN)
+PR: #100 (MERGED)
+EXECUTION_STARTED: YES
+BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
+BASE_MISSION_A_SHA: 9f24b2bea5130faeaa05e39b204ef4c8abc7b464
+BASE_MISSION_B_SHA: 82f98db300a15a9cf790dc8834e85c07670f38d4
+FINAL_RUNTIME_VALIDATED_SOURCE_HEAD: 0576f06a8f7675ea558efd0188b8bf8bae2c1026
+BRANCH: phase4i/android-runtime-validation
+SCOPE: Phase 4I Native Flutter Foundation integration closure and publication preparation — reconciling documentation state after Bridge acceptance of Mission A bootstrap, Mission B shared primitives/scenarios, Mission C physical Android runtime validation, PR #100 P2 remediations, and final-tree physical Android targeted revalidation (`NATIVE_ACCEPTED_ON_ANDROID`) on Samsung Galaxy A56 5G (Android 16 / API 36) at source revision `0576f06a8f7675ea558efd0188b8bf8bae2c1026`. Note: PR #100 has since merged into main.
+
+## Boundaries
+- Does NOT build Customer or Owner production Flutter applications.
+- Does NOT start Phase 5 or Phase 6 implementation.
+- Does NOT modify production applications (`customer-app/`, `owner-app/`, `admin-app/`).
+- Does NOT modify backend business logic, database schema, Supabase, Cloudflare, API contracts, or token JSON.
+- Preserves cross-platform limitation: `IOS_REALITY_GATE_PENDING` (Android validation is `NATIVE_ACCEPTED_ON_ANDROID` only; not final cross-platform Canon, iOS accepted, or universal native acceptance).
+- Preserves overlay limitation: BottomSheet/Dialog runtime scenarios were `NOT_REPRESENTED_IN_MISSION_B_VALIDATION_SUBSET` (governed Phase 4F contracts remain valid; exact native overlay realization remains pending future product/runtime implementation).
+- Preserves all open values as `OPEN` (Exact Blue, Exact Neutrals, Semantic Colors, Shadows, Scrim, Toast Duration, Secondary Button Radius, Native Field Height, Native Focus, Sheet Detents, Motion Curves); validation references are not promoted to Canon.
+- Preserves upstream closed decisions: Cairo Profile B typography (4B), Stable Black `#000000` + 6px Primary Button (4C), Outline-Led + 8px Field radius + Restrained Interaction Accent (4D), Role-Aware Hybrid Structural System + 12px Structural Container radius + 16px Page Insets + 4/8/12/16/24/32 spacing scale (4E), Role-Aware Contextual Navigation & Overlays + 16px Sheet Radius + 12px Dialog Radius + DF2 v1.5 + CHANGELOG 2.1.10 (4F), Role-Aware Layered State System + Four-Layer State Delivery + Canonical Domain Status Mappings + DF2 v1.6 + CHANGELOG 2.1.11 (4G), Component Contract Catalog + DF2 v1.7 + CHANGELOG 2.1.12 (4H).
+
+## Closure Gates — Phase 4I Publication & Integration
+
+### Completed Gates
+- [x] Mission A bootstrap accepted (`9f24b2bea5130faeaa05e39b204ef4c8abc7b464`).
+- [x] Mission B implementation accepted (`f933900` / `82f98db300a15a9cf790dc8834e85c07670f38d4`).
+- [x] Mission B package/app verification accepted.
+- [x] Mission C physical Android runtime accepted on Samsung Galaxy A56 5G (`SM_A566B`), Android 16 / API 36 (`NATIVE_ACCEPTED_ON_ANDROID` at historical checkpoint `e3fa755cd5f2636c4e10ac55d6651ed58ccc3932`).
+- [x] Android screenshots/runtime evidence accepted for typography, RTL/Bidi, inputs/keyboard, state system, Owner grouping, Customer navigation, Sticky Action, Android Back, and safe areas.
+- [x] Historical Mission C package test suite `18/18 PASS`.
+- [x] StickyAction / PrimaryButton full-height runtime defect (`DEFECT-01`) `CLOSED` (`Center(heightFactor: 1, ...)`).
+- [x] PrimaryButton accessibility-label duplication `CLOSED` (`excludeSemantics: true` with outer semantic `onTap`).
+- [x] PR #100 opened to `main` (`ab669c7fee8b3f76d885f42134be57d281ae3d84`).
+- [x] PR #100 initial 5-finding P2 review remediation verified and committed (`f063807af9be68bb5b0f670ca53b58294d1c8c9e`): SearchField keyboard submission, CustomerBottomNavigation Bookings calendar icon, StateView live-region distinctions, SecondaryButton semantics boundary, and `mobile/README.md`.
+- [x] PR #100 SectionAlert P2 review remediation verified and committed (`97e09d80c6ccfb2c6dc863990042fe900319ac8e`): informational and error live announcements (`liveRegion: true`) with test matcher correction.
+- [x] PR #100 SearchField decorative-icon P2 review remediation verified, committed (`0576f06a8f7675ea558efd0188b8bf8bae2c1026`), and targeted physically revalidated on Samsung Galaxy A56 5G (`SM-A566B`, Android 16 / API 36): decorative icon excluded from semantics, test matcher updated with `hasSelectedState: true`, no standalone `بحث` node, clear action `مسح البحث` functional.
+- [x] Final package test suite `20/20 PASS` (`flutter test` in `mobile/packages/konfrm_design_system`) and package analyze `No issues found!`.
+- [x] Validation app test suite `6/6 PASS` (`flutter test` in `mobile/apps/design_system_validation`) and app analyze `No issues found!`.
+- [x] P1 final-tree physical Android targeted revalidation on Samsung Galaxy A56 5G (`SM-A566B`, Android 16 / API 36) `CLOSED`:
+  - `PHYSICAL_ANDROID_INTERACTION = PASS` (SearchField text clear demonstrated; Back and Close ordinary buttons demonstrated clickable and activated).
+  - `FLUTTER_SELECTED_STATE_SEMANTICS = PASS` (verified by explicit test assertions: ordinary `IconActionButton` and `SearchField` clear controls omit `hasSelectedState` capability entirely; toggle selection capability present only on explicit toggles).
+  - `TALKBACK_SPOKEN_OUTPUT = NOT_DIRECTLY_VERIFIED` (explicit Founder-approved adjustment: manual auditory confirmation not performed; broader accessibility testing preserved as ongoing product-quality requirement).
+- [x] SectionAlert informational runtime scenario limitation recorded (`INFORMATIONAL_SECTIONALERT_RUNTIME_SCENARIO = NOT_REPRESENTED / TEST_BACKED`).
+- [x] PR #100 merged into main.
+- [x] Cross-platform gate preserved: `IOS_REALITY_GATE_PENDING`
+
+## Historical Roadmap Action
+- **HISTORICAL_ACTION:** `PHASE_4I_FINAL_PR_REVIEW_AND_MERGE_GOVERNANCE`
+  - **STATUS:** `MERGED`
+  - **CROSS_PLATFORM_LIMITATION:** `IOS_REALITY_GATE_PENDING`
+
+## Historical Task — PHASE_4I_MISSION_C_ANDROID_RUNTIME_INTEGRATION (Mission C — HISTORICAL / COMPLETED)
+
+TASK_ID: PHASE_4I_MISSION_C_ANDROID_RUNTIME_INTEGRATION
+TASK_CLASS: NATIVE_ANDROID_RUNTIME_VALIDATION
+STATUS: HISTORICAL / COMPLETED (BRIDGE_ACCEPTED)
+BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
+BASE_MISSION_B_SHA: 82f98db300a15a9cf790dc8834e85c07670f38d4
+MISSION_C_COMMIT_SHA: e3fa755cd5f2636c4e10ac55d6651ed58ccc3932
+BRANCH: phase4i/android-runtime-validation
+SCOPE: Physical Android device runtime validation (Samsung Galaxy A56 5G, Android 16 / API 36), visual/accessibility verification across 100%/125%/150%/200% text scaling, and bounded PrimaryButton layout/semantics hardening.
+
+---
+
+## Historical Task — PHASE_4I_MISSION_B_PRIMITIVES_AND_SCENARIOS (Mission B — HISTORICAL / COMPLETED)
+
+TASK_ID: PHASE_4I_MISSION_B_PRIMITIVES_AND_SCENARIOS
+TASK_CLASS: NATIVE_DESIGN_SYSTEM_IMPLEMENTATION
+STATUS: HISTORICAL / COMPLETED (BRIDGE_ACCEPTED at 82f98db300a15a9cf790dc8834e85c07670f38d4)
+PR: NONE (MERGED INTO MISSION C VALIDATION LINEAGE)
+EXECUTION_STARTED: YES
+BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
+BASE_MISSION_A_SHA: 9f24b2bea5130faeaa05e39b204ef4c8abc7b464
+MISSION_B_IMPLEMENTATION_COMMIT: f933900
+MISSION_B_ACCEPTED_COMMIT: 82f98db300a15a9cf790dc8834e85c07670f38d4
+BRANCH: phase4i/mobile-primitives-and-scenarios
+SCOPE: Phase 4I Mission B — governed shared Flutter typography/primitives, accessibility/RTL semantics, representative validation scenarios and tests, and bounded Mission A/B documentation reconciliation.
+
+## Historical Boundaries — Mission B
+- Does not implement Customer/Owner production apps or routing.
+- Does not modify Admin, backend, database, Supabase, Cloudflare, API contracts, business/finance/auth/booking/payment logic, token JSON, or Phase 5/6 implementation.
+- Open values stay validation-reference-only and are not promoted to Canon.
+
+## Historical Closure Gates — Mission B (`HISTORICAL / COMPLETED`)
+- [x] Required package/app pub get, analyze, tests, formatting, Android APK build, repository design/governance checks, and diff check pass.
+- [x] Package owns the single Cairo font source and validation app consumes it by package font semantics.
+- [x] Flutter primitives, semantics, RTL/bidi, scaling tests, and catalog scenarios match Phase 4H contracts.
+- [x] Production/backend/database/API/token JSON/Phase 5/6 forbidden paths remain untouched.
+- [x] Mission B implementation `f933900` and closure `82f98db300a15a9cf790dc8834e85c07670f38d4` committed and Bridge-accepted on `phase4i/mobile-primitives-and-scenarios`.
+
+---
+
+## Historical Task — PHASE_4I_NATIVE_BOOTSTRAP_BASELINE (Mission A — HISTORICAL / COMPLETED)
+
+TASK_ID: PHASE_4I_NATIVE_BOOTSTRAP_BASELINE
+TASK_CLASS: NATIVE_MOBILE_INTEGRATION_BASELINE
+STATUS: HISTORICAL / COMPLETED (MISSION_A_BASELINE_CREATED at 9f24b2bea5130faeaa05e39b204ef4c8abc7b464)
+PR: NONE (MISSION_A_BASELINE)
+EXECUTION_STARTED: YES
+BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
+BRANCH: phase4i/native-bootstrap-baseline
+SCOPE: Minimum Flutter repository boundary, validation harness, package skeleton, Android toolchain check, and stable Codex interface contract.
+
+## Historical Closure Gates — Mission A (`HISTORICAL / COMPLETED`)
+- [x] Canonical starting base independently verified (`9c908d2756fba0d421e67959ecfbc13d0ca35f9b`).
+- [x] Minimum `mobile/` boundary created (`mobile/packages/konfrm_design_system`, `mobile/apps/design_system_validation`).
+- [x] Validation app created with Arabic RTL shell (`design_system_validation`).
+- [x] `konfrm_design_system` package created with clean entrypoint.
+- [x] Customer production Flutter app has NOT been created.
+- [x] Owner production Flutter app has NOT been created.
+- [x] Codex ownership paths and interface documented (`mobile/README.md`).
+- [x] Approved Cairo font asset wired from repository source (`assets/fonts/`).
+- [x] Dependencies resolve (`flutter pub get` on package and app).
+- [x] Formatting clean (`dart format`).
+- [x] Static analysis clean (`flutter analyze` on package and app: zero issues).
+- [x] Legitimate tests pass (`flutter test` on package and app: 100% pass).
+- [x] Android debug build succeeds (`flutter build apk --debug`).
+- [x] Current State reflects merged Phase 4H and started Phase 4I.
+- [x] Immutable baseline commit SHA produced: `9f24b2bea5130faeaa05e39b204ef4c8abc7b464`.
+- [ ] A clean working-tree state at baseline creation is not attested by this Mission B checkout; pre-existing untracked workspace files remain excluded from Mission B.
+
+---
+
+## Closed Upstream Dependency — Phase 4H Component Contract & Reference Catalog
+- **PHASE_4H_STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#98`
+- **MERGE_COMMIT:** `9c908d2756fba0d421e67959ecfbc13d0ca35f9b`
+- **Component Contracts:** 24 component families reconciled; shared authority formalized in `DESIGN_SYSTEM/COMPONENTS/`.
+- **Reference Catalog:** Arabic RTL reference catalog published at `DESIGN_SYSTEM/PILOTS/component-contract-catalog-01/index.html`.
+- **DF2:** `v1.7`
+- **CHANGELOG:** `2.1.12`
+
+## Closed Upstream Dependency — Phase 4G Content & State Presentation
+- **PHASE_4G_STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#97`
+- **MERGE_COMMIT:** `bb4534fc9edbb3b44ab6431c259f115220e7fbf9`
+- **Architecture Model:** `ROLE_AWARE_LAYERED_STATE_SYSTEM` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **State Delivery:** `FOUR_LAYER` (Identify: StatusBadge; Explain: InlineText; Recover/Block: SectionAlert/ScreenState; Transient Confirm: Toast).
+- **Core Invariants:** `ERROR != EMPTY`, `FAILED_QUERY != FAKE_ZERO`, `NORMAL_PENDING != WARNING`, `STALE != CURRENT`, `CONFLICT != SILENT_SUBMISSION`, `CRITICAL_FAILURE != TOAST_ONLY`.
+- **Domain Status Mappings:** Property lifecycle, Property verification, Booking lifecycle, Payment transactions, Wallet balance buckets, Payout requests, Owner KYC Identity (`owners.verification_status`), Owner verification documents (`owner_verification_documents.status`).
+- **DF2:** `v1.6`
+- **CHANGELOG:** `2.1.11`
+
+## Closed Upstream Dependency — Phase 4F Navigation & Overlay System
+- **PHASE_4F_STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#96`
+- **MERGE_COMMIT:** `2385cd13a078aedc1f40769af5b394eed1210c00`
+- **Architecture Model:** `ROLE_AWARE_CONTEXTUAL` (Customer 4-tab roots + Screen 16 Account-shell exception; Owner action-first nested with no bottom nav).
+- **Bottom Sheet Top Radius:** `16px` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **Dialog Surface Radius:** `12px` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **DF2:** `v1.5`
+- **CHANGELOG:** `2.1.10`
+
+## Closed Upstream Dependency — Phase 4E Structural System
+- **PHASE_4E_STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#95`
+- **MERGE_COMMIT:** `ff4ac0b4322b8a7c50273dd7a459a93dcf090551`
+- **Structural Model:** `ROLE_AWARE_HYBRID` (Customer open editorial default; Owner operational grouping default).
+- **Mobile Structural Container Radius:** `12px` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **Mobile Page Horizontal Insets:** `16px` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **Relational Spacing Scale:** `4 / 8 / 12 / 16 / 24 / 32 px` (`SYSTEM-EVALUATED PROVISIONAL`).
+- **Surface Elevation:** Flat default; elevation reserved for overlays.
+
+## Closed Upstream Dependency — Design Court v1 (Governance Infrastructure)
+- **STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#93`
+- **MERGE_COMMIT:** `674194e675731985b347d241d046f6acc48cf785`
+- **Infrastructure:** `konfrm-design-court` is available as cross-cutting governance infrastructure (14 governed design skills, 8 internal).
+
+## Closed Upstream Dependency — Phase 4D Form & Selection Primitives
+- **PHASE_4D_STATUS:** `CLOSED / MERGED / PUBLISHED`
+- **PR:** `#92`
+- **MERGE_COMMIT:** `0134f60984d5d52f3442ef49763bf6c75a564214`
+- **Field Strategy:** `OUTLINE_LED` (white surface, thin outline, explicit top label).
+- **Mobile Field Radius:** `8px` (`FOUNDER-SELECTED SYSTEM-EVALUATED PROVISIONAL`).
+
+## Closed Upstream Dependency — Phase 4C Action System
+- **PHASE_4C_STATUS:** `CLOSED / MERGED`
+- **PR:** `#90`
+- **MERGE_COMMIT:** `95e3789ae824cdc6ca0a6608f1752f3137ac5ac5`
+- **Action Strategy:** `CONTEXTUAL_HIERARCHY_HYBRID`.
+- **Primary Button Radius:** `6px` (`PRIMARY_ONLY`).
+- **Primary Color:** Stable Black `#000000`.
+
+## Historical Roadmap Transitions (`HISTORICAL / COMPLETED` — Superseded)
+- **PHASE_4I_NATIVE_FLUTTER_FOUNDATION (Mission A & Mission B):** `HISTORICAL / COMPLETED` (`9f24b2bea5130faeaa05e39b204ef4c8abc7b464` -> `82f98db300a15a9cf790dc8834e85c07670f38d4`)
+- **PHASE_4I_MISSION_C_ANDROID_RUNTIME_INTEGRATION (Mission C):** `HISTORICAL / COMPLETED` (`e3fa755cd5f2636c4e10ac55d6651ed58ccc3932`)
+
+---
+
+# Historical Reference (Preserved)
+
+## Completed Phase 4C Checkpoint
+- TASK_ID: PHASE_4C_ACTION_SYSTEM
+- MERGED_PR: #90
+- MERGE_COMMIT_SHA: 95e3789ae824cdc6ca0a6608f1752f3137ac5ac5
+- STATUS: CLOSED / MERGED
+
+## Completed Phase 4B Checkpoint
+- TASK_ID: PHASE_4B_TYPOGRAPHY_FOUNDATION_CHECKPOINT
+- MERGED_PR: #88
+- MERGE_COMMIT_SHA: 4cad3a4b0f9901e5315c35e6712e3e4a35f4cba5
+- STATUS: CLOSED / MERGED
+
+# Phase 5 — Customer App Roadmap Tracking
+
+TASK_ID: CUSTOMER_SCREENS_13_14_STAY_HUB_AND_DEPOSIT_PAYMENT
+ROADMAP_PHASE: PHASE_5_CUSTOMER_EXPERIENCE
+SEARCH_INTENT_RESET: DEFERRED / UNCHANGED
+STAGE: LIVE_VERIFIED_COMPLETE
+EXECUTOR: Founder + Bridge + UI/UX Design Lab
+MERGED_SHA: 0d3a7f3b875e0e97c09cb6451d7c91af49340d6f
+PR: #61
+
+## Customer Screens Status Summary
+- **Screens 08–10 (Customer Auth V2)**: MERGED & LIVE CLOSED (PR #50, PR #55, PR #56)
+  - Screen 08 (Phone/Email Entry): Live verified with OTP challenge orchestration.
+  - Screen 09 (OTP Verification & Timer): Live verified with cooldown & resend guarantees.
+  - Screen 10 (Account Creation): Live verified with single-use continuation token.
+- **Screen 11 (Booking Request Sent)**: MERGED & LIVE CLOSED (PR #57)
+  - Dedicated full-screen confirmation surface with truthful post-submission lifecycle.
+- **Screen 12 (My Bookings / حجوزاتي)**: MERGED & LIVE CLOSED (PR #58 + session-privacy closure)
+  - Dedicated `BOOKINGS_TAB` Auth V2 origin with safe guest/expired flows.
+  - Fail-closed private state on 401/403: clears `customerBookings`, `activeBooking`, `bookingDetailId`, `recentBookingSubmission`, and attention dot.
+  - Real canonical bookings & complete status matrix without `مرفوض` on guest cancellation.
+  - Accessible 44×44px refresh button & Screen 13 `booking.id` routing.
+- **Screens 13 & 14 (Stay Hub & Deposit Payment)**: MERGED & LIVE CLOSED (PR #61)
+  - Screen 13: dedicated full-screen stay hub with canonical booking data, lifecycle-aware presentation, property recognition, stay dates, guest count, state-aware financial summary, payment CTA when canonically eligible, hidden Bottom Navigation, no forbidden Owner direct-contact or cancellation CTAs, and no internal finance leakage.
+  - Screen 14: production-grade deposit-payment entry with `متابعة إلى الدفع`, fail-closed provider-unavailable handling, resilient poll and expiry handling, zero prototype/demo/test wording, and `PROTECTED_PAYMENT` auth recovery.
+- **Screen 15 (Favorites / المفضلة)**: MERGED & LIVE CLOSED (PR #64)
+  - Dedicated Favorites surface with canonical server reads and mutations, explicit loading/empty/error/session states, protected same-property Auth resume, race-safe delete/undo behavior, responsive production verification, and no fabricated property or Favorite data.
+- **Next Customer Design Target**:
+  - Screen 16 — Notification Center — NOT STARTED
+
+## Phase 5 / C4 (Screen 07) Closure Summary
+- PR #35 merged into main at `2d27553569c7962e62080d7ab471d16ef1c9e435`.
+- Screen 07 Booking Request Review and Safety Contract fully verified:
+  - Truthful booking request lifecycle (طلب الحجز يُرسل إلى المالك → المالك يراجع الطلب → إذا وافق، يصبح دفع العربون هو الخطوة التالية → بعد نجاح دفع العربون يصبح الحجز مؤكدًا). No Owner-response SLA or duration is approved or stated.
+  - Exact financial breakdown from calculation engine with zero client recalculation.
+  - Fail-closed quote revalidation and price mismatch handling.
+  - Zero payment collection / zero premature booking creation.
+  - Founder physical preview passed on Samsung Galaxy A56.
+  - All CI and production verification passed.
+
+## Customer Screen 12 Live Verification Summary
+- **Dedicated Auth V2 Origin (`BOOKINGS_TAB`)**:
+  - Guest taps "حجوزاتي" -> Screen 12 renders clean Guest state with heading `سجّل الدخول لعرض حجوزاتك`.
+  - Tapping "تسجيل الدخول" opens Auth V2 with origin `BOOKINGS_TAB` and intent `LOGIN`.
+  - Cancelling Auth V2 returns directly to Screen 12 on tab "حجوزاتي" in Guest state.
+- **Session Expired State**:
+  - HTTP 401 on `/api/v1/customer/bookings` safely triggers `CustomerBookingsUnauthorizedError`.
+  - Renders high-contrast amber session expired card: `انتهت جلسة تسجيل الدخول` with CTA `تسجيل الدخول مجددًا`.
+  - Fails closed: clears all private bookings, active booking, detail modal ID, and recent submission banner.
+- **True Empty State**:
+  - Authenticated customer with 0 bookings renders `لا توجد حجوزات بعد` with subtext and CTA `استكشف الإقامات`.
+  - Tapping `استكشف الإقامات` switches active tab to `استكشف`.
+- **Real Canonical Bookings & Status Matrix**:
+  - Live customer `+201049892908` loaded canonical bookings `BK-183223` and `BK-908747`.
+  - Bookings rendered under section `السابقة` with badge `ملغي من جانبك` and icon `CircleSlash2`.
+  - Absolute status truth: strictly prohibits `مرفوض` or `لم يوافق المالك` for cancellations.
+  - Section `يحتاج إجراء منك` conditionally omitted when no `APPROVED_PENDING_PAYMENT` bookings exist.
+- **Bottom Navigation Attention Dot**:
+  - KONFRM Blue `#0059FF` dot (no green, no pulse) only active when `APPROVED_PENDING_PAYMENT` is present.
+  - Correctly evaluated to `false` during live verification.
+- **Single Clickable Card Surface & Screen 13 Integration**:
+  - 44×44px accessible refresh button (`aria-label="تحديث الحجوزات"`).
+  - Clicking card routes to Screen 13 `BookingDetailModal` by `booking.id`.
+  - Closing Screen 13 cleanly restores Screen 12 without reload.
+- **Responsive Visual Integrity**:
+  - Multi-viewport screenshots saved and visually inspected:
+    - `screen12_live_360x800.png` (Compact Android)
+    - `screen12_live_390x844.png` (iPhone 14/15 standard)
+    - `screen12_live_430x932.png` (iPhone Pro Max)
+    - `screen12_live_guest.png` (Guest state)
+    - `screen12_live_session_expired.png` (Session expired state)
+    - `screen12_live_empty_state.png` (True empty state)
+
+
+## Phase 3 closure verdict
+
+`PHASE_3_LIVE_CLOSED`
+
+The approved Phase 3 same-entity property vertical slice is complete and live-verified.
+
+Live trace property:
+`9927b705-7b9d-4f4c-a7cf-903c4a330ae2`
+
+Verified flow:
+
+1. Owner created the disposable QA property.
+2. Owner uploaded real media through the standard property media flow.
+3. Owner submitted the property for review.
+4. Admin queue showed the same property ID.
+5. Admin Detail loaded the same canonical property and media.
+6. Admin approved it.
+7. Canonical persisted state became `PUBLISHED + VERIFIED`.
+8. The existing Owner session revalidated the same property without browser reload or re-authentication and showed the published state.
+9. Customer Explore returned the same property.
+10. Customer Detail fetched the same property ID and rendered canonical description, amenities, images, price, capacity, location, type, and applicable house rules without fabricated fallbacks.
+
+The disposable QA property was archived afterwards through the standard Owner API.
+
+## Phase 3 implementation outcomes
+
+### Task 3.9 — Owner external-state revalidation
+
+Closed.
+
+- Property-scoped revalidation only.
+- No broad multi-domain refresh requirement.
+- Focus / visibility revalidation supported.
+- Revalidation failure remains visible and retryable.
+- Out-of-order response protection prevents an older request from overwriting newer canonical state.
+
+### Task 3.11 — Customer canonical Property Detail
+
+Closed.
+
+- `GET /api/v1/customer/properties/:id` is the canonical detail source.
+- Required canonical detail payload is validated fail-closed.
+- Canonical empty images remain authoritative.
+- Location does not fall back to stale Explore data after detail success.
+- Canonical capacity drives guest limits.
+- Canonical unit/property type, description, amenities, images, and persisted house-rule content are rendered truthfully.
+- Loading/error/retry states remain explicit.
+
+## Phase 3 publication evidence
+
+- PR #19 merged into `main`.
+- Phase 3 main SHA: `9ef59f64008db16df0386ac92c5d64bfc8c73b58`.
+- Main CI run `34007323794`: `completed / success`.
+- Owner, Customer, Admin, and Backend validation jobs succeeded.
+- Cloudflare Worker deployment step succeeded.
+- Live vertical slice result: `PHASE_3_LIVE_PASS`.
+
+## Boundaries preserved
+
+- No database schema change.
+- No migration or RPC change.
+- No booking, availability, or finance business-rule change.
+- No architecture change.
+- No broad Phase 4–7 UI redesign was introduced into Phase 3.
+
+---
+
+# Founder Phase 4 Entry Decision — 2026-09-06
+
+The previous next gate was:
+
+`STOP_BEFORE_PHASE_4`
+
+That stop was intentionally waiting for explicit Founder continuation and UI/UX Design Lab / LAP entry.
+
+The Founder has now explicitly resumed the program and authorized Phase 4 entry.
+
+Current gate:
+
+`PHASE_4_ENTRY_AUTHORIZED`
+
+Meaning:
+
+- Phase 4 may begin.
+- LAP formally joins the Phase 4–7 design program.
+- Bridge remains responsible for protecting architecture/business/finance rules and translating approved design into safe implementation packages.
+- R2–R5 from the Pre-Phase-4 remediation plan are **deferred, not closed**.
+- Their mandatory return point is after Phase 7 and before Phase 8.
+- The canonical deferred closure contract is `tasks/POST_PHASE_7_DEFERRED_CLOSURE.md`.
+
+Do not re-block Phase 4 merely because older remediation text required R5 before Phase 4; the Founder explicitly changed the execution timing while preserving the deferred obligations.
+
+## Immediate next work
+
+1. **Phase 4 UX Test Lane (`PHASE_4_UX_TEST_LANE`):** `LIVE_PROVISIONED_READY`.
+   - Complete isolated test lane provisioned for `P4_UX_CUSTOMER`, `P4_UX_OWNER`, and `P4_UX_ADMIN`.
+   - Real-behavior fixtures: Property A (Published), Property B (Pending Review in Admin Queue), Availability Block, and Booking Request.
+   - Credentials secured locally in Windows Credential Manager (`KONFRM/UXTL/P4/*`); zero secrets in git.
+   - Specification and tooling guide: [`tasks/PHASE_4_UX_TEST_LANE.md`](./PHASE_4_UX_TEST_LANE.md).
+2. Begin the Phase 4 Unified Design System / UI/UX Design Lab × Bridge kickoff under the approved design operating contract using the active UX Test Lane for auditing and evaluation.
+
+Do not automatically implement new functional/business capabilities discovered by design. Record them as dependencies/deferred opportunities unless the Founder explicitly pulls them forward.

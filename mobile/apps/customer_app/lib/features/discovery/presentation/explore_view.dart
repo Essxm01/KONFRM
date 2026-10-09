@@ -3,9 +3,9 @@ import 'package:konfrm_design_system/konfrm_design_system.dart';
 
 /// Truthful discovery tab for KONFRM | GUEST.
 ///
-/// Provides the public exploration header, search input field, and truthful
-/// ready-for-integration status. Fabricated listings, mock prices, and fake
-/// properties are strictly prohibited by KONFRM Master Rules.
+/// In accordance with KONFRM Master Rules, no mock listings or fake property
+/// data are fabricated. Public search and property browsing are deliberately
+/// deferred to the search integration slice. No dead interactive controls are exposed.
 class ExploreView extends StatelessWidget {
   const ExploreView({super.key});
 
@@ -24,26 +24,35 @@ class ExploreView extends StatelessWidget {
             style: KonfrmTypography.body,
           ),
           const SizedBox(height: 20),
-          SearchField(
-            key: const Key('explore-search-field'),
-            label: 'وجهتك القادمة',
-            placeholder: 'ابحث بالمدينة، الحي، أو اسم العقار...',
-            onSubmitted: (value) {},
+          // Truthful noninteractive search affordance — deferred to API integration
+          StructuralContainer(
+            key: const Key('explore-search-affordance'),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            child: Row(
+              children: [
+                const Icon(Icons.search, color: Color(0xFF6B7280), size: 22),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'البحث بالمدينة أو اسم العقار (يتوفر مع ربط الخدمة)',
+                    style: KonfrmTypography.supporting,
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           const SectionAlert(
             key: Key('explore-readiness-alert'),
             message: 'محرك البحث واستعراض العقارات قيد التجهيز للربط مع واجهة البيانات المعتمدة في المرحلة القادمة.',
           ),
           const SizedBox(height: 20),
-          StructuralContainer(
-            key: const Key('explore-status-card'),
+          const StructuralContainer(
+            key: Key('explore-status-card'),
             child: StateView(
               kind: StateKind.empty,
               heading: 'استكشاف أماكن الإقامة',
-              explanation: 'لا توجد عقارات محملة حالياً. سيتم عرض القوائم الموثقة عند ربط واجهة البحث العام.',
-              recoveryLabel: 'تحديث النتائج',
-              onRecovery: () {},
+              explanation: 'لا توجد عقارات محملة حالياً. سيتم عرض القوائم الموثقة عند ربط واجهة البحث العام في المرحلة القادمة.',
             ),
           ),
         ],

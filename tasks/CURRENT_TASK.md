@@ -1,16 +1,44 @@
-# Active Task — PHASE_4I_NATIVE_VALIDATION_PUBLICATION
+# Active Task — PHASE_5_MISSION_01_CUSTOMER_FLUTTER_APP_SHELL
+
+TASK_ID: PHASE_5_MISSION_01_CUSTOMER_FLUTTER_APP_SHELL
+TASK_CLASS: NATIVE_CUSTOMER_APPLICATION_FOUNDATION
+STATUS: CANDIDATE_REMEDIATED / PR_110_DRAFT
+PR: #110 (DRAFT)
+EXECUTION_STARTED: YES
+BASE_MAIN_SHA: cfc7576c73f7d9d00a3e21296a251cda1b8d13b4
+BRANCH: feat/customer-flutter-app-shell
+SCOPE: Phase 5 / Mission 01 — Native Customer Flutter Application foundation (`mobile/apps/customer_app`). Implements runnable Flutter entry point, Arabic-first RTL, Cairo typography via `konfrmLightTheme()`, reuse of `mobile/packages/konfrm_design_system`, 4-root Customer navigation (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`), Android Back handling (`PopScope` returns to tab 0 before exit), SafeArea, responsive text scaling, and unauthenticated guest baseline with truthful unauthorized/guest states.
+
+## Boundaries & Invariants
+- Strictly READ-ONLY regarding backend business logic, database migrations, Cloudflare Workers, and production web applications (`customer-app/`, `owner-app/`, `admin-app/`).
+- Zero fabricated properties, mock listings, fake booking records, fake confirmation codes, or fake authentication credentials.
+- Reuses `mobile/packages/konfrm_design_system` without component duplication or out-of-band token changes.
+- Unauthenticated guest session honesty: unauthenticated state clearly stated (`UNAUTHORIZED != EMPTY`) across Favorites, Bookings, and Account.
+- Zero dead actionable controls: no enabled buttons, search submissions, or recovery actions that silently do nothing.
+- Cross-platform limitation: Android debug APK build verified; physical Android runtime gate reported honestly.
+
+## Verification Summary
+- Flutter format: 0 changed (`dart format --output=none --set-exit-if-changed .` PASS)
+- Flutter analyze: No issues found! (`flutter analyze` PASS)
+- Widget test suite: 14/14 PASS (`test/customer_app_shell_test.dart` PASS across 100%, 150%, 200% text scale, 360dp, 390dp, 430dp viewports, and combined 360dp + 200% scaling)
+- Design system regression suite: 20/20 PASS (`mobile/packages/konfrm_design_system` PASS)
+- Android debug APK build: `build/app/outputs/flutter-apk/app-debug.apk` built successfully (152 MB).
+
+---
+
+## Historical Task — PHASE_4I_NATIVE_VALIDATION_PUBLICATION (SUPERSEDED / MERGED)
 
 TASK_ID: PHASE_4I_NATIVE_VALIDATION_PUBLICATION
 TASK_CLASS: NATIVE_DESIGN_SYSTEM_INTEGRATION_CLOSURE
-STATUS: ANDROID_FINAL_TREE_REVALIDATED / PR_100_OPEN / READY_FOR_FINAL_REVIEW
-PR: #100 (OPEN)
+STATUS: HISTORICAL / SUPERSEDED / MERGED (PR #100 MERGED INTO MAIN)
+PR: #100 (MERGED)
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: 9c908d2756fba0d421e67959ecfbc13d0ca35f9b
 BASE_MISSION_A_SHA: 9f24b2bea5130faeaa05e39b204ef4c8abc7b464
 BASE_MISSION_B_SHA: 82f98db300a15a9cf790dc8834e85c07670f38d4
 FINAL_RUNTIME_VALIDATED_SOURCE_HEAD: 0576f06a8f7675ea558efd0188b8bf8bae2c1026
 BRANCH: phase4i/android-runtime-validation
-SCOPE: Phase 4I Native Flutter Foundation integration closure and publication preparation — reconciling documentation state after Bridge acceptance of Mission A bootstrap, Mission B shared primitives/scenarios, Mission C physical Android runtime validation, PR #100 P2 remediations, and final-tree physical Android targeted revalidation (`NATIVE_ACCEPTED_ON_ANDROID`) on Samsung Galaxy A56 5G (Android 16 / API 36) at source revision `0576f06a8f7675ea558efd0188b8bf8bae2c1026`. Note: subsequent commit is documentation-only reconciliation.
+SCOPE: Phase 4I Native Flutter Foundation integration closure and publication preparation — reconciling documentation state after Bridge acceptance of Mission A bootstrap, Mission B shared primitives/scenarios, Mission C physical Android runtime validation, PR #100 P2 remediations, and final-tree physical Android targeted revalidation (`NATIVE_ACCEPTED_ON_ANDROID`) on Samsung Galaxy A56 5G (Android 16 / API 36) at source revision `0576f06a8f7675ea558efd0188b8bf8bae2c1026`. Note: PR #100 has since merged into main.
 
 ## Boundaries
 - Does NOT build Customer or Owner production Flutter applications.
@@ -44,23 +72,13 @@ SCOPE: Phase 4I Native Flutter Foundation integration closure and publication pr
   - `FLUTTER_SELECTED_STATE_SEMANTICS = PASS` (verified by explicit test assertions: ordinary `IconActionButton` and `SearchField` clear controls omit `hasSelectedState` capability entirely; toggle selection capability present only on explicit toggles).
   - `TALKBACK_SPOKEN_OUTPUT = NOT_DIRECTLY_VERIFIED` (explicit Founder-approved adjustment: manual auditory confirmation not performed; broader accessibility testing preserved as ongoing product-quality requirement).
 - [x] SectionAlert informational runtime scenario limitation recorded (`INFORMATIONAL_SECTIONALERT_RUNTIME_SCENARIO = NOT_REPRESENTED / TEST_BACKED`).
-- [x] PR #100 remains OPEN and mergeable.
+- [x] PR #100 merged into main.
+- [x] Cross-platform gate preserved: `IOS_REALITY_GATE_PENDING`
 
-### Pending Gates (`PHASE_4I_FINAL_PR_REVIEW_AND_MERGE_GOVERNANCE`)
-- [ ] Final PR review on post-documentation head
-- [ ] Required PR checks
-- [ ] Merge governance
-- [ ] Post-merge verification
-- [ ] Final publication checkpoint
-- [ ] Cross-platform gate preserved: `IOS_REALITY_GATE_PENDING`
-
-## Immediate Next Roadmap Action
-- **NEXT_ACTION:** `PHASE_4I_FINAL_PR_REVIEW_AND_MERGE_GOVERNANCE`
-  - **STATUS:** `READY_FOR_FINAL_REVIEW`
+## Historical Roadmap Action
+- **HISTORICAL_ACTION:** `PHASE_4I_FINAL_PR_REVIEW_AND_MERGE_GOVERNANCE`
+  - **STATUS:** `MERGED`
   - **CROSS_PLATFORM_LIMITATION:** `IOS_REALITY_GATE_PENDING`
-  - **PHASE_5_6_FLUTTER_IMPLEMENTATION:** `NOT_STARTED`
-
----
 
 ## Historical Task — PHASE_4I_MISSION_C_ANDROID_RUNTIME_INTEGRATION (Mission C — HISTORICAL / COMPLETED)
 

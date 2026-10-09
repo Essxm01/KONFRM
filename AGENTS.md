@@ -26,9 +26,12 @@ Before implementing any approved task, read the mandatory core sequence in exact
 
 Load this Mandatory Universal Core once at the beginning of a NEW TASK, NEW SESSION, or CONTEXT RESET. Refresh it if a relevant dynamic authority materially changes, and re-verify required closure authorities before final closure. Do NOT reload the entire core on every tool call or step inside an uninterrupted task.
 
-Then use `docs/CONTEXT_ROUTER.md` to load only the selective domain authorities matching the task. Do not load all documentation files at once; preserve token quotas for execution and verification.
+Before task-specific Layer 2 documentation retrieval, classify the task and select the primary domain skill per `.agents/SKILL_ROUTER.md`:
+- For primary Product interpretation tasks — booking lifecycle semantics, business invariants, deposit or commission meaning, cancellation policy, or role-level business decisions — load `.agents/skills/konfrm-product/SKILL.md` before selective Product Canon retrieval. Once loaded, retrieve current governing Canon through existing documentation routes.
+- For pure Flutter implementation, design presentation, quality verification, or unrelated administrative documentation, preserve their respective skill or bypass routing per `.agents/SKILL_ROUTER.md`. Do not activate `konfrm-product` for technical implementation or every routine file read.
+- Load only the selected brain and required companion references; preserve lazy loading and token efficiency.
 
-When selecting project skills, consult `.agents/SKILL_ROUTER.md`. Load only the selected brain and required companion references.
+Then use `docs/CONTEXT_ROUTER.md` to load only the selective domain authorities matching the task. Do not load all documentation files at once; preserve token quotas for execution and verification.
 
 For substantial or cross-system work, also review `docs/codex/KONFRM_FOUNDER_OPERATING_CONTEXT.md` and the applicable current-reality, conflict, completion-matrix, rescue-backlog, and quality-gate documents named by the index.
 

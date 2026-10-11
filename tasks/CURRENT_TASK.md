@@ -1,21 +1,29 @@
-# Active Task — BRAND_IDENTITY_GEOMETRIC_SYMBOL_INTEGRATION
+# Active Task — DEFECT_BRAND_A56_01_ADAPTIVE_ICON_REMEDIATION
 
-TASK_ID: BRAND_IDENTITY_GEOMETRIC_SYMBOL_INTEGRATION
-TASK_CLASS: BRAND_IDENTITY_ARCHITECTURE
+TASK_ID: DEFECT_BRAND_A56_01_ADAPTIVE_ICON_REMEDIATION
+TASK_CLASS: DEFECT_REMEDIATION
 STATUS: IMPLEMENTED / STOP_FOR_BRIDGE_REVIEW
-PR: #113 (DRAFT / UNMERGED)
+PR: PENDING (DRAFT)
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: 9b3da0ab180d16cdbccfa7053c22df42834e5bc1
-BRANCH: feat/brand-identity-new-geometric-symbol
-SCOPE: Implement the Founder-approved brand identity update across canonical Design System assets (`DESIGN_SYSTEM/ASSETS/brand/`), web public distributions (`customer-app/public/`, `owner-app/public/`, `admin-app/public/`), native Android genuine adaptive launcher icons (`mipmap-anydpi-v26/ic_launcher.xml`, `drawable/ic_launcher_background.xml`, `drawable/ic_launcher_foreground.xml`), iOS launcher icons, and Flutter native Explore header branding. Decouple `konfrm-wordmark` into pure vector path-based assets with zero external font dependencies.
+BASE_MAIN_SHA: 6a08f064b9288b17bdb12667e6385a72d58de76e
+BRANCH: fix/defect-brand-a56-01-adaptive-icon-remediation
+DEVICE: Samsung Galaxy A56 5G / SM-A566B / Android 16 (API 36) / One UI / ar-EG
+SCOPE: Remediate DEFECT-BRAND-A56-01: calibrate Android Adaptive Icon safe-zone margin (viewport 6320x6320, 108dp canvas) inside Samsung One UI circular mask (72dp radius, 20.5% breathing room) and configure Light-first splash surface with explicit v31 styles and white window background. Zero geometry modification to Founder's geometric symbol. Zero backend/database/API changes.
 
 ## Boundaries & Invariants
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
 - Zero business, booking, availability, pricing, commission, or financial rule changes.
-- Exact vector geometry and aspect ratio of `konfrm-new-symbol.svg` preserved with stroke-width 151.55 round join.
-- Dual wordmark strategy: Option A (typographic lockup) for wide identity surfaces, Option B (symbol-only) for compact surfaces. Option C rejected.
-- Android adaptive icon uses genuine XML foreground/background vector configuration natively.
-- Full regression verification across Flutter analyze, Flutter tests, and web checks.
+- Exact Founder SVG vector path data and stroke-width 151.55 round joins strictly preserved in `ic_launcher_foreground.xml`.
+- Light-first splash surface enforced in both standard and Night mode (Master Rule MR-05).
+- Non-destructive physical device installation only (`adb install -r`).
+- Open ONE Draft PR only; STOP FOR BRIDGE REVIEW.
+
+---
+
+## Historical Task — BRAND_IDENTITY_GEOMETRIC_SYMBOL_INTEGRATION (MERGED)
+- PR: #113 (MERGED INTO MAIN)
+- MERGE_COMMIT: 6a08f064b9288b17bdb12667e6385a72d58de76e
+- SCOPE: Brand identity update across canonical Design System assets, web distributions, and native Flutter.
 
 ---
 

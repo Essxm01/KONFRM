@@ -1,5 +1,18 @@
 # KONFRM Design System Changelog
 
+## 2.1.13 — 2026-10-11
+
+### Founder-approved geometric brand symbol integration & dual wordmark architecture
+
+- Replaced canonical brand symbol (`konfrm-symbol-black.svg`, `konfrm-symbol-white.svg`) with the Founder-supplied architectural geometric symbol (`viewBox="0 0 2577 2236"`).
+- Resolved wordmark dependency conflict by decoupling `konfrm-wordmark-black.svg` and `konfrm-wordmark-white.svg` from the legacy ribbon K glyph into pure vector path-based assets (`<path>`) generated from Cairo, eliminating all external font dependencies.
+- Approved dual wordmark system: Option A (typographic lockup) for wide identity surfaces, Option B (symbol-only) for compact surfaces. Option C rejected.
+- Created canonical lockup assets `konfrm-lockup-black.svg` and `konfrm-lockup-white.svg`.
+- Implemented native Flutter `KonfrmBrandSymbol` widget (`CustomPainter`-based) and integrated into Customer Explore header without breaking testing contracts.
+- Configured genuine Android adaptive icon XML (`mipmap-anydpi-v26/ic_launcher.xml`, `ic_launcher_round.xml`, `drawable/ic_launcher_background.xml`, `drawable/ic_launcher_foreground.xml`) with the symbol centered inside the 72dp safe zone.
+- Synchronized runtime assets across `customer-app/public/`, `owner-app/public/`, and `admin-app/public/` (including `favicon.svg`).
+- Verified builds and regression suites across Flutter tests (41/41 PASS), package tests (20/20 PASS), analyze (0 issues), and web suites (45/45 and 28/28 PASS).
+
 ## 2.1.12 — 2026-10-05
 
 ### Phase 4H Component Contract & Reference Catalog governance synchronization

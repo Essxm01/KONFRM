@@ -1,6 +1,6 @@
 # Design-system routing
 
-The authoritative visual and product-experience system is [`../DESIGN_SYSTEM/`](../DESIGN_SYSTEM/), currently KONFRM Design System v2.1.6. Do not duplicate token tables or component contracts here.
+The authoritative visual and product-experience system is [`../DESIGN_SYSTEM/`](../DESIGN_SYSTEM/), currently KONFRM Design System v2.1.13. Do not duplicate token tables or component contracts here.
 
 Read the following before UI work:
 

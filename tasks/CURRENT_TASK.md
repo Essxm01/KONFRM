@@ -1,28 +1,27 @@
-# Active Task — PHASE_5_MISSION_01_CUSTOMER_FLUTTER_APP_SHELL
+# Active Task — BRAND_IDENTITY_GEOMETRIC_SYMBOL_INTEGRATION
 
-TASK_ID: PHASE_5_MISSION_01_CUSTOMER_FLUTTER_APP_SHELL
-TASK_CLASS: NATIVE_CUSTOMER_APPLICATION_FOUNDATION
-STATUS: CANDIDATE_REMEDIATED / PR_110_DRAFT
-PR: #110 (DRAFT)
+TASK_ID: BRAND_IDENTITY_GEOMETRIC_SYMBOL_INTEGRATION
+TASK_CLASS: BRAND_IDENTITY_ARCHITECTURE
+STATUS: IMPLEMENTED / STOP_FOR_BRIDGE_REVIEW
+PR: #113 (DRAFT / UNMERGED)
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: cfc7576c73f7d9d00a3e21296a251cda1b8d13b4
-BRANCH: feat/customer-flutter-app-shell
-SCOPE: Phase 5 / Mission 01 — Native Customer Flutter Application foundation (`mobile/apps/customer_app`). Implements runnable Flutter entry point, Arabic-first RTL, Cairo typography via `konfrmLightTheme()`, reuse of `mobile/packages/konfrm_design_system`, 4-root Customer navigation (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`), Android Back handling (`PopScope` returns to tab 0 before exit), SafeArea, responsive text scaling, and unauthenticated guest baseline with truthful unauthorized/guest states.
+BASE_MAIN_SHA: 9b3da0ab180d16cdbccfa7053c22df42834e5bc1
+BRANCH: feat/brand-identity-new-geometric-symbol
+SCOPE: Implement the Founder-approved brand identity update across canonical Design System assets (`DESIGN_SYSTEM/ASSETS/brand/`), web public distributions (`customer-app/public/`, `owner-app/public/`, `admin-app/public/`), native Android genuine adaptive launcher icons (`mipmap-anydpi-v26/ic_launcher.xml`, `drawable/ic_launcher_background.xml`, `drawable/ic_launcher_foreground.xml`), iOS launcher icons, and Flutter native Explore header branding. Decouple `konfrm-wordmark` into pure vector path-based assets with zero external font dependencies.
 
 ## Boundaries & Invariants
-- Strictly READ-ONLY regarding backend business logic, database migrations, Cloudflare Workers, and production web applications (`customer-app/`, `owner-app/`, `admin-app/`).
-- Zero fabricated properties, mock listings, fake booking records, fake confirmation codes, or fake authentication credentials.
-- Reuses `mobile/packages/konfrm_design_system` without component duplication or out-of-band token changes.
-- Unauthenticated guest session honesty: unauthenticated state clearly stated (`UNAUTHORIZED != EMPTY`) across Favorites, Bookings, and Account.
-- Zero dead actionable controls: no enabled buttons, search submissions, or recovery actions that silently do nothing.
-- Cross-platform limitation: Android debug APK build verified; physical Android runtime gate reported honestly.
+- Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
+- Zero business, booking, availability, pricing, commission, or financial rule changes.
+- Exact vector geometry and aspect ratio of `konfrm-new-symbol.svg` preserved with stroke-width 151.55 round join.
+- Dual wordmark strategy: Option A (typographic lockup) for wide identity surfaces, Option B (symbol-only) for compact surfaces. Option C rejected.
+- Android adaptive icon uses genuine XML foreground/background vector configuration natively.
+- Full regression verification across Flutter analyze, Flutter tests, and web checks.
 
-## Verification Summary
-- Flutter format: 0 changed (`dart format --output=none --set-exit-if-changed .` PASS)
-- Flutter analyze: No issues found! (`flutter analyze` PASS)
-- Widget test suite: 14/14 PASS (`test/customer_app_shell_test.dart` PASS across 100%, 150%, 200% text scale, 360dp, 390dp, 430dp viewports, and combined 360dp + 200% scaling)
-- Design system regression suite: 20/20 PASS (`mobile/packages/konfrm_design_system` PASS)
-- Android debug APK build: `build/app/outputs/flutter-apk/app-debug.apk` built successfully (152 MB).
+---
+
+## Historical Task — PHASE_5_MISSION_01_CUSTOMER_FLUTTER_APP_SHELL (MERGED)
+- PR: #110 (MERGED INTO MAIN)
+- MERGE_COMMIT: 5c97ab19ed6da3b1a6ecddf7dbf129c059c86811
 
 ---
 

@@ -92,11 +92,25 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
         key: const Key('explore-scroll-view'),
         padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 24),
         children: [
-          Text('كونفرم | استكشف', style: KonfrmTypography.display),
-          const SizedBox(height: 6),
-          Text(
-            'ابحث عن بيوت العطلات والشاليهات الموثقة',
-            style: KonfrmTypography.body,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const KonfrmBrandSymbol(size: 32),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('كونفرم | استكشف', style: KonfrmTypography.display),
+                    const SizedBox(height: 4),
+                    Text(
+                      'ابحث عن بيوت العطلات والشاليهات الموثقة',
+                      style: KonfrmTypography.body,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 18),
           SearchField(

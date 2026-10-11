@@ -27,3 +27,4 @@ export 'src/components/feedback/section_alert.dart';
 export 'src/components/structure/structural_container.dart';
 export 'src/components/navigation/customer_bottom_navigation.dart';
 export 'src/components/navigation/sticky_action_surface.dart';
+export 'src/components/brand/brand_symbol.dart';

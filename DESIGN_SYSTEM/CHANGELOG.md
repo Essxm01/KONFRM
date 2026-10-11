@@ -1,5 +1,15 @@
 # KONFRM Design System Changelog
 
+## 2.1.13 — 2026-10-11
+
+### Founder-approved geometric brand symbol integration & wordmark decoupling
+
+- Replaced canonical brand symbol (`konfrm-symbol-black.svg`, `konfrm-symbol-white.svg`) with the Founder-supplied architectural geometric symbol (`viewBox="0 0 2577 2236"`).
+- Resolved wordmark dependency conflict by decoupling `konfrm-wordmark-black.svg` and `konfrm-wordmark-white.svg` from the legacy ribbon K glyph into clean Cairo typographic SVG lockups.
+- Synchronized runtime assets across `customer-app/public/`, `owner-app/public/`, and `admin-app/public/` (including `favicon.svg`).
+- Exported and integrated crisp Android adaptive icons (`mipmap-*/ic_launcher.png`) and iOS app icons (`Assets.xcassets/AppIcon.appiconset`) centered safely within the platform masks.
+- Preserved strict zero-drift boundaries across backend, database, booking logic, and financial rules.
+
 ## 2.1.12 — 2026-10-05
 
 ### Phase 4H Component Contract & Reference Catalog governance synchronization

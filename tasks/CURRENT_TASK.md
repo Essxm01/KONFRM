@@ -1,28 +1,26 @@
-# Active Task — PHASE_5_MISSION_01_CUSTOMER_FLUTTER_APP_SHELL
+# Active Task — BRAND_IDENTITY_GEOMETRIC_SYMBOL_INTEGRATION
 
-TASK_ID: PHASE_5_MISSION_01_CUSTOMER_FLUTTER_APP_SHELL
-TASK_CLASS: NATIVE_CUSTOMER_APPLICATION_FOUNDATION
-STATUS: CANDIDATE_REMEDIATED / PR_110_DRAFT
-PR: #110 (DRAFT)
+TASK_ID: BRAND_IDENTITY_GEOMETRIC_SYMBOL_INTEGRATION
+TASK_CLASS: BRAND_IDENTITY_ARCHITECTURE
+STATUS: IN_EXECUTION / VALIDATING
+PR: PENDING
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: cfc7576c73f7d9d00a3e21296a251cda1b8d13b4
-BRANCH: feat/customer-flutter-app-shell
-SCOPE: Phase 5 / Mission 01 — Native Customer Flutter Application foundation (`mobile/apps/customer_app`). Implements runnable Flutter entry point, Arabic-first RTL, Cairo typography via `konfrmLightTheme()`, reuse of `mobile/packages/konfrm_design_system`, 4-root Customer navigation (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`), Android Back handling (`PopScope` returns to tab 0 before exit), SafeArea, responsive text scaling, and unauthenticated guest baseline with truthful unauthorized/guest states.
+BASE_MAIN_SHA: 9b3da0a08e1ec27b165b45283f3bf782c50587d6
+BRANCH: feat/brand-identity-new-geometric-symbol
+SCOPE: Integrate the Founder-approved geometric brand symbol across canonical Design System assets (`DESIGN_SYSTEM/ASSETS/brand/`), web public distributions (`customer-app/public/`, `owner-app/public/`, `admin-app/public/`), and native Flutter adaptive launcher icons (`mobile/apps/customer_app/android/app/src/main/res/mipmap-*/` and `ios/Runner/Assets.xcassets/AppIcon.appiconset`). Decouple `konfrm-wordmark-black.svg` and `konfrm-wordmark-white.svg` from the legacy ribbon K glyph into clean Cairo typographic lockups to eliminate visual stutter.
 
 ## Boundaries & Invariants
-- Strictly READ-ONLY regarding backend business logic, database migrations, Cloudflare Workers, and production web applications (`customer-app/`, `owner-app/`, `admin-app/`).
-- Zero fabricated properties, mock listings, fake booking records, fake confirmation codes, or fake authentication credentials.
-- Reuses `mobile/packages/konfrm_design_system` without component duplication or out-of-band token changes.
-- Unauthenticated guest session honesty: unauthenticated state clearly stated (`UNAUTHORIZED != EMPTY`) across Favorites, Bookings, and Account.
-- Zero dead actionable controls: no enabled buttons, search submissions, or recovery actions that silently do nothing.
-- Cross-platform limitation: Android debug APK build verified; physical Android runtime gate reported honestly.
+- Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
+- Zero business, booking, availability, pricing, commission, or financial rule changes.
+- Exact vector geometry and aspect ratio of `konfrm-new-symbol.svg` preserved with stroke-width 151.55 round join.
+- Monochrome-first Black/White identity preserved; approved white-on-black inverse for dark contexts.
+- Full regression verification across Flutter analyze, Flutter tests, and web checks.
 
-## Verification Summary
-- Flutter format: 0 changed (`dart format --output=none --set-exit-if-changed .` PASS)
-- Flutter analyze: No issues found! (`flutter analyze` PASS)
-- Widget test suite: 14/14 PASS (`test/customer_app_shell_test.dart` PASS across 100%, 150%, 200% text scale, 360dp, 390dp, 430dp viewports, and combined 360dp + 200% scaling)
-- Design system regression suite: 20/20 PASS (`mobile/packages/konfrm_design_system` PASS)
-- Android debug APK build: `build/app/outputs/flutter-apk/app-debug.apk` built successfully (152 MB).
+---
+
+## Historical Task — PHASE_5_MISSION_01_CUSTOMER_FLUTTER_APP_SHELL (MERGED)
+- PR: #110 (MERGED INTO MAIN)
+- MERGE_COMMIT: 5c97ab19ed6da3b1a6ecddf7dbf129c059c86811
 
 ---
 

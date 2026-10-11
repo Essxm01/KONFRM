@@ -14,6 +14,16 @@ class KonfrmBrandSymbol extends StatelessWidget {
     this.semanticLabel = 'شعار كونفرم',
   });
 
+  /// Canonical geometry constants matching the Founder-supplied source SVG.
+  static const double nativeWidth = 2577.0;
+  static const double nativeHeight = 2236.0;
+  static const double nativeStrokeWidth = 151.55;
+  static double get nativeAspectRatio => nativeWidth / nativeHeight;
+
+  /// Exposes the vector paths for regression verification against canonical SVG geometry.
+  static Path get path1 => _KonfrmSymbolPainter.path1;
+  static Path get path2 => _KonfrmSymbolPainter.path2;
+
   /// The target width or height (the symbol preserves its ~1.15 aspect ratio).
   final double size;
 
@@ -28,12 +38,8 @@ class KonfrmBrandSymbol extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double nativeWidth = 2577.0;
-    const double nativeHeight = 2236.0;
-    const double aspectRatio = nativeWidth / nativeHeight;
-
     final double width = size;
-    final double height = size / aspectRatio;
+    final double height = size / nativeAspectRatio;
 
     Widget symbol = SizedBox(
       width: width,
@@ -60,15 +66,16 @@ class _KonfrmSymbolPainter extends CustomPainter {
 
   final Color color;
 
-  static final Path _path1 = Path()
+  static final Path path1 = Path()
     ..moveTo(75.7754, 75.7754)
     ..lineTo(947.188, 75.7754)
     ..lineTo(947.188, 1098.74)
     ..lineTo(151.55, 2140.64)
+    ..lineTo(75.7754, 2140.64)
     ..lineTo(75.7754, 75.7754)
     ..close();
 
-  static final Path _path2 = Path()
+  static final Path path2 = Path()
     ..moveTo(1723.88, 75.7754)
     ..lineTo(2500.58, 75.7754)
     ..lineTo(2064.87, 1098.74)
@@ -80,15 +87,12 @@ class _KonfrmSymbolPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const double nativeWidth = 2577.0;
-    const double nativeHeight = 2236.0;
-
-    final double scaleX = size.width / nativeWidth;
-    final double scaleY = size.height / nativeHeight;
+    final double scaleX = size.width / KonfrmBrandSymbol.nativeWidth;
+    final double scaleY = size.height / KonfrmBrandSymbol.nativeHeight;
     final double scale = math.min(scaleX, scaleY);
 
-    final double offsetX = (size.width - nativeWidth * scale) / 2;
-    final double offsetY = (size.height - nativeHeight * scale) / 2;
+    final double offsetX = (size.width - KonfrmBrandSymbol.nativeWidth * scale) / 2;
+    final double offsetY = (size.height - KonfrmBrandSymbol.nativeHeight * scale) / 2;
 
     canvas.save();
     canvas.translate(offsetX, offsetY);
@@ -101,16 +105,16 @@ class _KonfrmSymbolPainter extends CustomPainter {
     final Paint strokePaint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 151.55
+      ..strokeWidth = KonfrmBrandSymbol.nativeStrokeWidth
       ..strokeJoin = StrokeJoin.round;
 
     // Draw left glyph
-    canvas.drawPath(_path1, fillPaint);
-    canvas.drawPath(_path1, strokePaint);
+    canvas.drawPath(path1, fillPaint);
+    canvas.drawPath(path1, strokePaint);
 
     // Draw right glyph
-    canvas.drawPath(_path2, fillPaint);
-    canvas.drawPath(_path2, strokePaint);
+    canvas.drawPath(path2, fillPaint);
+    canvas.drawPath(path2, strokePaint);
 
     canvas.restore();
   }

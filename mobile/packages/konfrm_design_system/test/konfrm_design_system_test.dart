@@ -1110,6 +1110,55 @@ void main() {
     tester.view.resetPhysicalSize();
     tester.view.resetDevicePixelRatio();
   });
+
+  testWidgets(
+    'KonfrmBrandSymbol preserves exact Founder SVG geometry and regression invariants',
+    (tester) async {
+      // 1. Invariant dimensions and aspect ratio
+      expect(KonfrmBrandSymbol.nativeWidth, 2577.0);
+      expect(KonfrmBrandSymbol.nativeHeight, 2236.0);
+      expect(KonfrmBrandSymbol.nativeStrokeWidth, 151.55);
+      expect(
+        KonfrmBrandSymbol.nativeAspectRatio,
+        closeTo(2577.0 / 2236.0, 0.0001),
+      );
+
+      // 2. Exact Path 1 geometry bounds (left glyph)
+      // d="M75.7754 75.7754H947.188V1098.74L151.55 2140.64H75.7754V75.7754Z"
+      final bounds1 = KonfrmBrandSymbol.path1.getBounds();
+      expect(bounds1.left, closeTo(75.7754, 0.001));
+      expect(bounds1.top, closeTo(75.7754, 0.001));
+      expect(bounds1.right, closeTo(947.188, 0.001));
+      expect(bounds1.bottom, closeTo(2140.64, 0.001));
+
+      // 3. Exact Path 2 geometry bounds (right glyph)
+      // d="M1723.88 75.7754H2500.58L2064.87 1098.74L2500.58 2159.59H1723.88L1174.51 1117.68L1723.88 75.7754Z"
+      final bounds2 = KonfrmBrandSymbol.path2.getBounds();
+      expect(bounds2.left, closeTo(1174.51, 0.001));
+      expect(bounds2.top, closeTo(75.7754, 0.001));
+      expect(bounds2.right, closeTo(2500.58, 0.001));
+      expect(bounds2.bottom, closeTo(2159.59, 0.001));
+
+      // 4. Verify widget renders with decorative ExcludeSemantics and custom semantics
+      await tester.pumpWidget(
+        host(
+          const Column(
+            children: [
+              KonfrmBrandSymbol(size: 48),
+              KonfrmBrandSymbol(
+                size: 32,
+                isDecorative: false,
+                semanticLabel: 'شعار كونفرم الرسمي',
+              ),
+            ],
+          ),
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.byType(KonfrmBrandSymbol), findsNWidgets(2));
+      expect(find.bySemanticsLabel('شعار كونفرم الرسمي'), findsOneWidget);
+    },
+  );
 }
 
 void _noop() {}

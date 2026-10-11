@@ -23,11 +23,8 @@ void main() {
           find.text('ابحث عن بيوت العطلات والشاليهات الموثقة'),
           findsOneWidget,
         );
-        expect(
-          find.byKey(const Key('explore-search-affordance')),
-          findsOneWidget,
-        );
-        expect(find.byKey(const Key('explore-status-card')), findsOneWidget);
+        expect(find.byKey(const Key('discovery-destination')), findsOneWidget);
+        expect(find.byKey(const Key('discovery-submit')), findsOneWidget);
 
         // Verify CustomerBottomNavigation has 4 destinations
         expect(find.byKey(const Key('customer-destination-0')), findsOneWidget);
@@ -221,9 +218,10 @@ void main() {
       await tester.pumpWidget(const KonfrmCustomerApp());
       await tester.pumpAndSettle();
 
-      // 1. Explore Tab: No dead recovery button or fake search submit
+      // 1. Explore Tab: search is connected to the configured public endpoint.
       expect(find.text('تحديث النتائج'), findsNothing);
-      expect(find.byType(TextField), findsNothing);
+      expect(find.byKey(const Key('discovery-submit')), findsOneWidget);
+      expect(find.byType(TextField), findsNWidgets(3));
 
       // 2. Account Tab: No dead login button
       await tester.tap(find.byKey(const Key('customer-destination-3')));

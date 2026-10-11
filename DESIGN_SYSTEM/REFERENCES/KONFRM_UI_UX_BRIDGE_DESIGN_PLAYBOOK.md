@@ -73,4 +73,53 @@ The Bridge combines Product/UX strategy, interaction design, visual direction, i
 1. **Reconstruct truth:** exact Founder task, role, current approved decisions, API/DTO reality, existing screenshots, viewport and canonical design tokens.
 2. **State screen purpose:** primary user question and action, first-fold objective, success/failure/recovery.
 3. **Extract visual reference DNA:** photo crop, density, content hierarchy, rhythm, interaction affordances, light/dark and material logic. Do not copy layouts/assets wholesale.
-4. **Define a design intent in one sentence:** what will become easi
+4. **Define a design intent in one sentence:** what will become easier, clearer, or more trustworthy for this role.
+5. **Present genuine visual evidence first:** at native dimensions; use a prototype, design artifact or exported screenshots. No pseudo-screen passed as real. Tag illustrative prices/locations/photo inventory outside the consumer UI.
+6. **Critique before founder review:** hierarchy, affordances, density, copy, typography, colors, responsiveness, accessibility, trust and states.
+7. **Use constraints, not arbitrary variation:** preserve selected Concept A; refine only the authorized component; remove elements with no informational or interaction job.
+8. **Founder visual approval:** distinguish selection of a direction from final screen acceptance. No runtime implementation until specifically authorized.
+9. **Engineering contract:** Antigravity receives precise file-level scope, canonical product rules, acceptance criteria and explicit forbidden changes; split Backend region contract from Flutter UI work if necessary.
+10. **Verification:** Flutter analyze/tests; manual Android A56 real device; screenshots at 360×800, 390×844, 430×932; screen readers/text scale/states; no fake fallback; verify same build/commit and live flow where appropriate.
+11. **Independent review:** PR diff and code checks, runtime evidence, root cause/fix/retest of actual defect. CI green is not visual proof. No merge/deploy without Founder approval.
+12. **Keep/reject register:** record Founder-approved decisions and rationale in canonical project docs only with permission; temporary playbook is advisory.
+
+## 6. Native-specific acceptance gates
+
+### Layout, copy, accessibility
+
+- Use actual Cairo typography in Flutter and inspect RTL mixed numbers/currency/date formatting.
+- Verify 360/390/430 mobile viewports and 200% scale where reasonable. Check non-clipped buttons, tappable controls, long bilingual property titles, absent village names, failed images, price precision, and very large guest counts.
+- Touch targets, focus order and spoken semantic names for search control, checkbox, favorite and close actions.
+- Bottom Sheet: drag / system back / explicit Cancel must preserve the confirmed state; Apply must be enabled for empty selection under the approved zero-region rule.
+- User feedback: distinguish loading, offline, failed request, no eligible regions, zero matching stays, previously selected now-ineligible region and retry. Do not disguise error as empty.
+
+### Motion quality
+
+- Ask first whether motion helps orientation/feedback. Short, interruptible transitions for Bottom Sheet/pressed state; no theatrical animation for frequent actions.
+- Avoid motion causing shifted content while user reads; honor reduced-motion settings and maintain static state cues.
+- Adapt design intent to Flutter's own animation/gesture semantics instead of copying CSS code or Expo-specific libraries.
+
+### Runtime truth
+
+- Build API-connected QA APK using approved, existing `KONFRM_API_BASE_URL` configuration, not hardcoded fictitious public data or exposed secrets.
+- Preview/demo images are NOT proof of live inventory; validate photo loading against actual published public property data.
+- Test empty region list vs empty active filter vs no matches; these represent **three different states**.
+- Confirm state changes and prices with real backend response. Never treat an unverified API response as business-rule authority.
+
+## 7. PR #114 — separate Android brand fix (historical QA snapshot; merged 2026-10-12)
+
+- [PR #114](https://github.com/Essxm01/KONFRM/pull/114) candidate HEAD: `dd9f3fb2fd5690aefae689b96a8641bc090202fb`.
+- At pre-merge inspection: OPEN / DRAFT, base main `6a08f064b9288b17bdb12667e6385a72d58de76e`, mergeable CLEAN, 10 successful checks and 4 scope-based skips, no failed/pending checks. **Subsequent independent GitHub verification:** PR #114 MERGED; merge commit and new main `05270c5fb3fa4970d0e2f7ca6e4b99444f405096`.
+- Founder-provided Samsung A56 screenshots show corrected launcher and white splash icon without clipping. Antigravity separately reports Dark Mode cold-start transition PASS and no code changes. Frame numbering in Antigravity's text table has an internal typo/ordering anomaly (`106–089`), so don't claim Bridge independently reproduced frame-by-frame video validation.
+- Known separate runtime dependency: `DISCOVERY_RUNTIME_QA = BLOCKED_BY_CONFIGURATION` on test APK built without required `--dart-define`. Not a reason to change Android icon scope.
+- Founder authorized ordinary merge; Bridge performed and independently verified merge commit `05270c5fb3fa4970d0e2f7ca6e4b99444f405096`. No manual production deployment was authorized or performed under this playbook.
+
+## 8. Open work queue — protect sequence
+
+1. PR #114 is merged and verified; keep Android brand correction closed. Separately resolve the configured Customer Flutter QA API endpoint before claiming live property discovery works.
+2. Bridge now owns Design Lab responsibilities: assess and finalize existing Screen 03 Search Bar / Region Selector; no more external Design Lab handoff by default.
+3. Design Screen 06 Property Details within chosen Concept A, create high-fidelity native-dimension visual artifacts before coding.
+4. Separately analyze a canonical Region-only backend contract (IDs, eligible options, OR union, caching/ineligibility, backward compatibility) before Flutter implementation.
+5. Keep product, design, tests, mobile realities, and PR review as separate signoff gates.
+
+**This document is a working knowledge artifact, not a replacement for product canon or evidence of installation/execution of the GitHub skills.**

@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 /// The official KONFRM architectural geometric brand symbol.
@@ -20,9 +21,15 @@ class KonfrmBrandSymbol extends StatelessWidget {
   static const double nativeStrokeWidth = 151.55;
   static double get nativeAspectRatio => nativeWidth / nativeHeight;
 
-  /// Exposes the vector paths for regression verification against canonical SVG geometry.
-  static Path get path1 => _KonfrmSymbolPainter.path1;
-  static Path get path2 => _KonfrmSymbolPainter.path2;
+  /// Factory methods for generating vector paths matching canonical SVG geometry.
+  ///
+  /// Narrowly scoped with [@visibleForTesting] to prevent exposing shared mutable
+  /// painter Path objects.
+  @visibleForTesting
+  static Path createLeftGlyphPath() => _createLeftGlyphPath();
+
+  @visibleForTesting
+  static Path createRightGlyphPath() => _createRightGlyphPath();
 
   /// The target width or height (the symbol preserves its ~1.15 aspect ratio).
   final double size;
@@ -44,29 +51,19 @@ class KonfrmBrandSymbol extends StatelessWidget {
     Widget symbol = SizedBox(
       width: width,
       height: height,
-      child: CustomPaint(
-        painter: _KonfrmSymbolPainter(color: color),
-      ),
+      child: CustomPaint(painter: _KonfrmSymbolPainter(color: color)),
     );
 
     if (isDecorative) {
       return ExcludeSemantics(child: symbol);
     }
 
-    return Semantics(
-      label: semanticLabel,
-      image: true,
-      child: symbol,
-    );
+    return Semantics(label: semanticLabel, image: true, child: symbol);
   }
 }
 
-class _KonfrmSymbolPainter extends CustomPainter {
-  const _KonfrmSymbolPainter({required this.color});
-
-  final Color color;
-
-  static final Path path1 = Path()
+Path _createLeftGlyphPath() {
+  return Path()
     ..moveTo(75.7754, 75.7754)
     ..lineTo(947.188, 75.7754)
     ..lineTo(947.188, 1098.74)
@@ -74,8 +71,10 @@ class _KonfrmSymbolPainter extends CustomPainter {
     ..lineTo(75.7754, 2140.64)
     ..lineTo(75.7754, 75.7754)
     ..close();
+}
 
-  static final Path path2 = Path()
+Path _createRightGlyphPath() {
+  return Path()
     ..moveTo(1723.88, 75.7754)
     ..lineTo(2500.58, 75.7754)
     ..lineTo(2064.87, 1098.74)
@@ -84,6 +83,15 @@ class _KonfrmSymbolPainter extends CustomPainter {
     ..lineTo(1174.51, 1117.68)
     ..lineTo(1723.88, 75.7754)
     ..close();
+}
+
+class _KonfrmSymbolPainter extends CustomPainter {
+  const _KonfrmSymbolPainter({required this.color});
+
+  final Color color;
+
+  static final Path _leftPath = _createLeftGlyphPath();
+  static final Path _rightPath = _createRightGlyphPath();
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -91,8 +99,10 @@ class _KonfrmSymbolPainter extends CustomPainter {
     final double scaleY = size.height / KonfrmBrandSymbol.nativeHeight;
     final double scale = math.min(scaleX, scaleY);
 
-    final double offsetX = (size.width - KonfrmBrandSymbol.nativeWidth * scale) / 2;
-    final double offsetY = (size.height - KonfrmBrandSymbol.nativeHeight * scale) / 2;
+    final double offsetX =
+        (size.width - KonfrmBrandSymbol.nativeWidth * scale) / 2;
+    final double offsetY =
+        (size.height - KonfrmBrandSymbol.nativeHeight * scale) / 2;
 
     canvas.save();
     canvas.translate(offsetX, offsetY);
@@ -109,12 +119,12 @@ class _KonfrmSymbolPainter extends CustomPainter {
       ..strokeJoin = StrokeJoin.round;
 
     // Draw left glyph
-    canvas.drawPath(path1, fillPaint);
-    canvas.drawPath(path1, strokePaint);
+    canvas.drawPath(_leftPath, fillPaint);
+    canvas.drawPath(_leftPath, strokePaint);
 
     // Draw right glyph
-    canvas.drawPath(path2, fillPaint);
-    canvas.drawPath(path2, strokePaint);
+    canvas.drawPath(_rightPath, fillPaint);
+    canvas.drawPath(_rightPath, strokePaint);
 
     canvas.restore();
   }

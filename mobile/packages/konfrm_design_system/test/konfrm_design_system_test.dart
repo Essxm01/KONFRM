@@ -211,9 +211,8 @@ void main() {
             ),
             home: Builder(
               builder: (context) => MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  textScaler: TextScaler.linear(scale),
-                ),
+                data: MediaQuery.of(context)
+                    .copyWith(textScaler: TextScaler.linear(scale)),
                 child: Directionality(
                   textDirection: TextDirection.rtl,
                   child: Scaffold(
@@ -1123,23 +1122,62 @@ void main() {
         closeTo(2577.0 / 2236.0, 0.0001),
       );
 
-      // 2. Exact Path 1 geometry bounds (left glyph)
-      // d="M75.7754 75.7754H947.188V1098.74L151.55 2140.64H75.7754V75.7754Z"
-      final bounds1 = KonfrmBrandSymbol.path1.getBounds();
+      // 2. Unshared path instances (no leaking mutable static paths)
+      final leftPath1 = KonfrmBrandSymbol.createLeftGlyphPath();
+      final leftPath2 = KonfrmBrandSymbol.createLeftGlyphPath();
+      expect(identical(leftPath1, leftPath2), isFalse);
+
+      final rightPath1 = KonfrmBrandSymbol.createRightGlyphPath();
+      final rightPath2 = KonfrmBrandSymbol.createRightGlyphPath();
+      expect(identical(rightPath1, rightPath2), isFalse);
+
+      // 3. Exact Path 1 geometry bounds (left glyph)
+      // Canonical SVG: d="M75.7754 75.7754H947.188V1098.74L151.55 2140.64H75.7754V75.7754Z"
+      final bounds1 = leftPath1.getBounds();
       expect(bounds1.left, closeTo(75.7754, 0.001));
       expect(bounds1.top, closeTo(75.7754, 0.001));
       expect(bounds1.right, closeTo(947.188, 0.001));
       expect(bounds1.bottom, closeTo(2140.64, 0.001));
 
-      // 3. Exact Path 2 geometry bounds (right glyph)
-      // d="M1723.88 75.7754H2500.58L2064.87 1098.74L2500.58 2159.59H1723.88L1174.51 1117.68L1723.88 75.7754Z"
-      final bounds2 = KonfrmBrandSymbol.path2.getBounds();
+      // 4. Exact Path 1 perimeter metric and segment protection (specifically guarding H75.7754)
+      final leftMetric = leftPath1.computeMetrics().first;
+      // Perimeter with H75.7754: 5345.97. Without H75.7754 (omitted segment): 5271.58 (delta: 74.39)
+      expect(leftMetric.length, closeTo(5345.97, 0.05));
+
+      // 5. Exact Point containment protecting (75.7754, 2140.64) corner
+      // Point (80.0, 2130.0) is inside the bottom-left stem when H75.7754 is present; outside if omitted.
+      expect(leftPath1.contains(const Offset(80.0, 2130.0)), isTrue);
+      expect(leftPath1.contains(const Offset(100.0, 2100.0)), isTrue);
+      expect(leftPath1.contains(const Offset(500.0, 500.0)), isTrue);
+      expect(
+        leftPath1.contains(const Offset(75.0, 2130.0)),
+        isFalse,
+      ); // Left of x=75.7754
+      expect(
+        leftPath1.contains(const Offset(80.0, 2145.0)),
+        isFalse,
+      ); // Below y=2140.64
+      expect(
+        leftPath1.contains(const Offset(800.0, 1500.0)),
+        isFalse,
+      ); // Outside diagonal cut
+
+      // 6. Exact Path 2 geometry bounds (right glyph)
+      // Canonical SVG: d="M1723.88 75.7754H2500.58L2064.87 1098.74L2500.58 2159.59H1723.88L1174.51 1117.68L1723.88 75.7754Z"
+      final bounds2 = rightPath1.getBounds();
       expect(bounds2.left, closeTo(1174.51, 0.001));
       expect(bounds2.top, closeTo(75.7754, 0.001));
       expect(bounds2.right, closeTo(2500.58, 0.001));
       expect(bounds2.bottom, closeTo(2159.59, 0.001));
 
-      // 4. Verify widget renders with decorative ExcludeSemantics and custom semantics
+      // 7. Exact Path 2 perimeter metric and containment
+      final rightMetric = rightPath1.computeMetrics().first;
+      expect(rightMetric.length, closeTo(6167.87, 0.05));
+      expect(rightPath1.contains(const Offset(1800.0, 1100.0)), isTrue);
+      expect(rightPath1.contains(const Offset(2400.0, 100.0)), isTrue);
+      expect(rightPath1.contains(const Offset(1200.0, 100.0)), isFalse);
+
+      // 8. Verify widget renders with decorative ExcludeSemantics and custom semantics
       await tester.pumpWidget(
         host(
           const Column(

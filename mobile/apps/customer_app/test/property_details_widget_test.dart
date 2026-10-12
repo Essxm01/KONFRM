@@ -608,6 +608,100 @@ void main() {
       expect(counterOffset.dx, lessThan(100.0));
       expect(counterOffset.dy, greaterThan(250.0));
     });
+
+    testWidgets('availability response identity mismatch fails closed', (tester) async {
+      final mismatchClient = MockClient((request) async {
+        if (request.url.path.contains('/availability')) {
+          final badAvail = _availabilityJson()..['propertyId'] = 'WRONG-PROPERTY-ID';
+          return http.Response(
+            jsonEncode({'success': true, 'data': badAvail}),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return http.Response(
+          jsonEncode({'success': true, 'data': _propertyJson()}),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+
+      final mismatchRepo = PropertyDetailsRepository(
+        baseUrl: 'https://api.example.test',
+        client: mismatchClient,
+      );
+
+      await tester.pumpWidget(_testApp(propertyId: 'prop-test-1', repository: mismatchRepo));
+      await tester.pumpAndSettle();
+
+      final element = tester.element(find.byType(PropertyDetailsView));
+      final container = ProviderScope.containerOf(element);
+      final state = container.read(propertyDetailsControllerProvider('prop-test-1'));
+      expect(state.availabilityError, 'تعذر التحقق من هوية العقار في استجابة التوفر.');
+      expect(state.availability, isNull);
+      expect(find.text('تعذر التحقق من هوية العقار في استجابة التوفر.', skipOffstage: false), findsOneWidget);
+    });
+
+    test('quote state transitions: in-flight quote reset on new date selection and reload', () async {
+      Completer<BookingQuote>? quoteCompleter;
+      final quoteRepo = _ControllableQuoteRepo(
+        onQuote: (inDate, outDate, guests) {
+          quoteCompleter = Completer<BookingQuote>();
+          return quoteCompleter!.future;
+        },
+      );
+
+      final container = ProviderContainer(
+        overrides: [
+          propertyDetailsRepositoryProvider.overrideWithValue(quoteRepo),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final controller = container.read(propertyDetailsControllerProvider('prop-test-1').notifier);
+      final initialProp = PublicPropertyDetail.fromJson(_propertyJson());
+      await controller.load(initialProperty: initialProp);
+
+      // Select date 1:
+      controller.selectDate(DateTime.utc(2026, 10, 14));
+      // Select date 2 (triggers quote):
+      controller.selectDate(DateTime.utc(2026, 10, 17));
+      expect(container.read(propertyDetailsControllerProvider('prop-test-1')).isCalculatingQuote, isTrue);
+
+      // Now pick a new start date while quote is in flight:
+      controller.selectDate(DateTime.utc(2026, 10, 20));
+      final stateAfterRestart = container.read(propertyDetailsControllerProvider('prop-test-1'));
+      // In-flight calculation must be cleared:
+      expect(stateAfterRestart.isCalculatingQuote, isFalse);
+      expect(stateAfterRestart.selectedCheckIn, DateTime.utc(2026, 10, 20));
+      expect(stateAfterRestart.selectedCheckOut, isNull);
+      expect(stateAfterRestart.quote, isNull);
+
+      // Now reload:
+      await controller.load(initialProperty: initialProp);
+      final stateAfterReload = container.read(propertyDetailsControllerProvider('prop-test-1'));
+      expect(stateAfterReload.selectedCheckIn, isNull);
+      expect(stateAfterReload.selectedCheckOut, isNull);
+      expect(stateAfterReload.quote, isNull);
+      expect(stateAfterReload.isCalculatingQuote, isFalse);
+    });
+
+    testWidgets('sticky CTA requires valid quote when both dates selected; does not allow review without quote', (tester) async {
+      await tester.pumpWidget(_testApp(propertyId: 'prop-test-1', repository: repository));
+      await tester.pumpAndSettle();
+
+      // Initially no dates:
+      expect(find.text('اختيار التواريخ'), findsOneWidget);
+
+      // Select checkIn only:
+      final element = tester.element(find.byType(PropertyDetailsView));
+      final container = ProviderScope.containerOf(element);
+      final controller = container.read(propertyDetailsControllerProvider('prop-test-1').notifier);
+
+      controller.selectDate(DateTime.utc(2026, 10, 14));
+      await tester.pump();
+      expect(find.text('اختيار تاريخ المغادرة'), findsOneWidget);
+    });
   });
 
   group('Screen 06 Property Details View — Multi-Viewport Layout Integrity', () {

@@ -130,6 +130,9 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
       clearProperty: initialProperty == null,
       isLoadingProperty: true,
       isLoadingAvailability: true,
+      isCalculatingQuote: false,
+      clearCheckIn: true,
+      clearCheckOut: true,
       clearPropertyError: true,
       clearAvailabilityError: true,
       clearQuote: true,
@@ -163,17 +166,26 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
 
     try {
       final avail = await availabilityFuture;
-      state = state.copyWith(
-        availability: avail,
-        isLoadingAvailability: false,
-        clearAvailabilityError: true,
-      );
+      if (avail.propertyId != state.propertyId) {
+        state = state.copyWith(
+          isLoadingAvailability: false,
+          clearAvailability: true,
+          availabilityError: 'تعذر التحقق من هوية العقار في استجابة التوفر.',
+        );
+      } else {
+        state = state.copyWith(
+          availability: avail,
+          isLoadingAvailability: false,
+          clearAvailabilityError: true,
+        );
+      }
     } catch (e) {
       final message = e is PropertyDetailsException
           ? e.message ?? _mapError(e.kind)
           : 'تعذر جلب بيانات التوفر';
       state = state.copyWith(
         isLoadingAvailability: false,
+        clearAvailability: true,
         availabilityError: message,
       );
     }
@@ -188,6 +200,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
       state = state.copyWith(
         selectedCheckIn: cleanDate,
         clearCheckOut: true,
+        isCalculatingQuote: false,
         clearQuote: true,
         clearQuoteError: true,
         clearCalendarError: true,
@@ -206,6 +219,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
       state = state.copyWith(
         selectedCheckIn: cleanDate,
         clearCheckOut: true,
+        isCalculatingQuote: false,
         clearQuote: true,
         clearQuoteError: true,
         clearCalendarError: true,
@@ -220,6 +234,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
       state = state.copyWith(
         calendarError: 'مدة الإقامة المعتمدة من ${state.minStay} ليلتين إلى ${state.maxStay} ليلة.',
         clearCheckOut: true,
+        isCalculatingQuote: false,
         clearQuote: true,
         clearQuoteError: true,
       );
@@ -230,6 +245,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
       state = state.copyWith(
         calendarError: 'الحد الأقصى للإقامة ${state.maxStay} ليلة.',
         clearCheckOut: true,
+        isCalculatingQuote: false,
         clearQuote: true,
         clearQuoteError: true,
       );
@@ -240,6 +256,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
       state = state.copyWith(
         calendarError: 'الفترة تشمل يومًا غير متاح في هذا المثال. اختار فترة أخرى.',
         clearCheckOut: true,
+        isCalculatingQuote: false,
         clearQuote: true,
         clearQuoteError: true,
       );
@@ -343,7 +360,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
       if (generation != _quoteGeneration || !mounted) return;
       final message = e is PropertyDetailsException
           ? e.message ?? _mapError(e.kind)
-          : 'تعذّر حساب السعر';
+          : 'تعذر احتساب السعر حالياً. يرجى إعادة المحاولة.';
       state = state.copyWith(
         isCalculatingQuote: false,
         quoteError: message,
@@ -374,7 +391,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
 
   static String _mapError(PropertyDetailsFailureKind kind) => switch (kind) {
         PropertyDetailsFailureKind.configuration => 'خدمة الأسعار غير مهيأة',
-        PropertyDetailsFailureKind.network => 'تعذر الاتصال بالخادم. تحقق من الشبكة.',
+        PropertyDetailsFailureKind.network => 'تعذر الاتصال بالشبكة. تحقق من اتصالك.',
         PropertyDetailsFailureKind.timeout => 'انتهت مهلة الطلب. أعد المحاولة.',
         PropertyDetailsFailureKind.notFound => 'الوحدة غير موجودة',
         PropertyDetailsFailureKind.unpublished => 'هذه الوحدة غير معروضة للنشر حالياً',
@@ -382,7 +399,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
         PropertyDetailsFailureKind.minStayNotMet => 'الحد الأدنى للإقامة ليلتان',
         PropertyDetailsFailureKind.maxStayExceeded => 'الحد الأقصى للإقامة 30 ليلة',
         PropertyDetailsFailureKind.maxGuestsExceeded => 'عدد الضيوف يتجاوز السعة المحددة',
-        PropertyDetailsFailureKind.server => 'خطأ في معالجة الطلب بالخادم',
-        PropertyDetailsFailureKind.invalidResponse => 'تعذر قراءة بيانات السعر',
+        PropertyDetailsFailureKind.server => 'تعذر احتساب السعر حالياً. يرجى إعادة المحاولة.',
+        PropertyDetailsFailureKind.invalidResponse => 'تعذر قراءة تفاصيل السعر. يرجى إعادة المحاولة.',
       };
 }

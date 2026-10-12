@@ -1,4 +1,5 @@
 import 'package:customer_app/features/property_details/data/property_details_models.dart';
+import 'package:customer_app/features/property_details/presentation/widgets/amenities_bottom_sheet.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -371,24 +372,70 @@ void main() {
       expect(parseCivilDate('2026-08-10'), DateTime.utc(2026, 8, 10));
     });
 
-    test('PropertyAvailability rejects incoherent minStay and maxStay bounds', () {
+    test('PropertyAvailability strictly enforces 2-30 nights bounds and rejects out-of-contract values', () {
+      // 1-night minStay is rejected:
       expect(
         () => PropertyAvailability.fromJson({
           'propertyId': 'prop-101',
-          'minStay': 0,
+          'unavailableRanges': <dynamic>[],
+          'minStay': 1,
           'maxStay': 10,
         }),
         throwsFormatException,
       );
 
+      // 0-night minStay is rejected:
       expect(
         () => PropertyAvailability.fromJson({
           'propertyId': 'prop-101',
-          'minStay': 5,
-          'maxStay': 3,
+          'unavailableRanges': <dynamic>[],
+          'minStay': 0,
         }),
         throwsFormatException,
       );
+
+      // 31-night maxStay is rejected:
+      expect(
+        () => PropertyAvailability.fromJson({
+          'propertyId': 'prop-101',
+          'unavailableRanges': <dynamic>[],
+          'minStay': 2,
+          'maxStay': 31,
+        }),
+        throwsFormatException,
+      );
+
+      // 365-night maxStay is rejected:
+      expect(
+        () => PropertyAvailability.fromJson({
+          'propertyId': 'prop-101',
+          'unavailableRanges': <dynamic>[],
+          'minStay': 2,
+          'maxStay': 365,
+        }),
+        throwsFormatException,
+      );
+
+      // Inconsistent bounds (minStay > maxStay) rejected:
+      expect(
+        () => PropertyAvailability.fromJson({
+          'propertyId': 'prop-101',
+          'unavailableRanges': <dynamic>[],
+          'minStay': 10,
+          'maxStay': 5,
+        }),
+        throwsFormatException,
+      );
+
+      // Exact valid boundaries: 2 and 30 nights are accepted:
+      final boundaryAvail = PropertyAvailability.fromJson({
+        'propertyId': 'prop-101',
+        'unavailableRanges': <dynamic>[],
+        'minStay': 2,
+        'maxStay': 30,
+      });
+      expect(boundaryAvail.minStay, 2);
+      expect(boundaryAvail.maxStay, 30);
     });
 
     test('hasConflict correctly handles half-open intervals [checkIn, checkOut)', () {
@@ -419,6 +466,58 @@ void main() {
         availability.hasConflict(DateTime.utc(2026, 8, 9), DateTime.utc(2026, 8, 11)),
         isTrue,
       );
+    });
+  });
+
+  group('Amenities Normalization & Deduplication Tests', () {
+    test('deduplicates equivalent aliases for presentation while preserving distinct facts', () {
+      final raw = [
+        'AIR_CONDITIONING',
+        'AC',
+        'تكييف',
+        'PARKING',
+        'موقف سيارات',
+        'POOL',
+        'PRIVATE_POOL',
+        'CENTRAL_AC',
+        'GARAGE',
+      ];
+
+      final items = AmenitiesBottomSheet.normalizeAndDeduplicate(raw);
+      final labels = items.map((i) => i.label).toList();
+
+      // Only one 'تكييف'
+      expect(labels.where((l) => l == 'تكييف').length, 1);
+
+      // Only one 'موقف سيارات'
+      expect(labels.where((l) => l == 'موقف سيارات').length, 1);
+
+      // Distinct facts preserved:
+      expect(labels, contains('تكييف مركزي'));
+      expect(labels, contains('كراج مغطى'));
+      expect(labels, contains('مسبح'));
+      expect(labels, contains('مسبح خاص'));
+    });
+
+    test('handles long lists and whitespace cleanly', () {
+      final longList = [
+        '  WIFI  ',
+        'wifi',
+        'واي فاي',
+        '  ',
+        'SEA_VIEW',
+        'إطلالة بحرية',
+        'KITCHEN',
+        'مطبخ مجهز',
+      ];
+
+      final items = AmenitiesBottomSheet.normalizeAndDeduplicate(longList);
+      final labels = items.map((i) => i.label).toList();
+
+      expect(labels.where((l) => l == 'واي فاي').length, 1);
+      expect(labels.where((l) => l == 'إطلالة بحرية').length, 1);
+      expect(labels.where((l) => l == 'مطبخ مجهز').length, 1);
+      expect(labels.any((l) => l.trim().isEmpty), isFalse);
     });
   });
 }

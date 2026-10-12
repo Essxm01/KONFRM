@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:konfrm_design_system/konfrm_design_system.dart';
@@ -98,7 +99,9 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
   }
 
   void _onReviewBooking() {
-    // Truthful customer-facing notification: booking submission will be available upon completion of review stage
+    // REVERSIBLE DEVELOPMENT / PRE-SCREEN-07 GATING:
+    // Screen 07 (Booking Request Review) is pending downstream implementation (SCREEN07_HANDOFF_BLOCKED).
+    // In this build, a truthful customer message is displayed; production navigation will route to Screen 07 once implemented.
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
@@ -171,14 +174,34 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
 
     final displayLocation = location.isNotEmpty ? location : prop.address;
 
+    final topPadding = MediaQuery.paddingOf(context).top;
+
     return PopScope(
       canPop: true,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: ListView(
-          controller: _scrollController,
-          padding: EdgeInsets.zero,
-          children: [
+      child: AnimatedBuilder(
+        animation: _scrollController,
+        builder: (context, _) {
+          final scrollOffset =
+              _scrollController.hasClients ? _scrollController.offset : 0.0;
+          final progress = ((scrollOffset - 60) / 100).clamp(0.0, 1.0);
+          final isScrolled = progress >= 0.7;
+
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness:
+                  isScrolled ? Brightness.dark : Brightness.light,
+              statusBarBrightness:
+                  isScrolled ? Brightness.light : Brightness.dark,
+            ),
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              body: Stack(
+                children: [
+                  ListView(
+                    controller: _scrollController,
+                    padding: EdgeInsets.zero,
+                    children: [
             // 1. Hero Gallery
             PropertyGallery(
               images: prop.images,
@@ -488,27 +511,46 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
           ],
         ),
 
-        // Pinned Sticky Decision Bar
-        bottomNavigationBar: PropertyStickyBar(
-          basePricePerNight: prop.basePricePerNight,
-          hasCheckIn: state.selectedCheckIn != null,
-          hasCheckOut: state.selectedCheckOut != null,
-          isCalculating: state.isCalculatingQuote,
-          hasQuoteError: state.quoteError != null,
-          quote: state.quote,
-          onTapCta: () {
-            if (state.selectedCheckIn == null || state.selectedCheckOut == null) {
-              _scrollToCalendar();
-            } else if (state.quoteError != null) {
-              controller.calculateQuote();
-            } else if (state.quote != null) {
-              _onReviewBooking();
-            }
-          },
-        ),
-      ),
-    );
-  }
+        // Unobtrusive Top Status-Bar Scrim when body scrolls beneath status bar
+        if (topPadding > 0)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: topPadding,
+            child: IgnorePointer(
+              child: Container(
+                color: Colors.white.withValues(alpha: progress),
+              ),
+            ),
+          ),
+      ],
+    ),
+
+    // Pinned Sticky Decision Bar
+    bottomNavigationBar: PropertyStickyBar(
+      basePricePerNight: prop.basePricePerNight,
+      hasCheckIn: state.selectedCheckIn != null,
+      hasCheckOut: state.selectedCheckOut != null,
+      isCalculating: state.isCalculatingQuote,
+      hasQuoteError: state.quoteError != null,
+      quote: state.quote,
+      onTapCta: () {
+        if (state.selectedCheckIn == null || state.selectedCheckOut == null) {
+          _scrollToCalendar();
+        } else if (state.quoteError != null || state.quote == null) {
+          controller.calculateQuote();
+        } else if (state.quote != null) {
+          _onReviewBooking();
+        }
+      },
+    ),
+  ),
+);
+},
+),
+);
+}
 }
 
 class _AmenitiesGrid extends StatelessWidget {
@@ -518,26 +560,27 @@ class _AmenitiesGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = AmenitiesBottomSheet.normalizeAndDeduplicate(amenities);
     return LayoutBuilder(
       builder: (context, constraints) {
         final itemWidth = (constraints.maxWidth - 18) / 2;
         return Wrap(
           spacing: 18,
           runSpacing: 14,
-          children: amenities.map((a) {
+          children: items.map((item) {
             return SizedBox(
               width: itemWidth,
               child: Row(
                 children: [
                   Icon(
-                    AmenitiesBottomSheet.amenityIcon(a),
+                    item.icon,
                     size: 17,
                     color: const Color(0xFF64768B),
                   ),
                   const SizedBox(width: 9),
                   Expanded(
                     child: Text(
-                      AmenitiesBottomSheet.amenityLabel(a),
+                      item.label,
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFF37455A),

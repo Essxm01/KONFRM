@@ -58,8 +58,12 @@ class PropertyStickyBar extends StatelessWidget {
     } else if (hasQuoteError) {
       ctaText = 'إعادة حساب السعر';
       isEnabled = true;
-    } else {
+    } else if (quote != null) {
       ctaText = 'مراجعة طلب الحجز';
+      isEnabled = true;
+    } else {
+      // Both dates selected, but quote not yet calculated: require quote before review
+      ctaText = 'حساب السعر';
       isEnabled = true;
     }
 
@@ -80,45 +84,42 @@ class PropertyStickyBar extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Container(
-          height: 76,
+          constraints: const BoxConstraints(minHeight: 76),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           child: Row(
             children: [
               // Price Copy
               Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF7F8A9A),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(
+                        value,
+                        textDirection: TextDirection.rtl,
                         style: const TextStyle(
-                          fontSize: 10,
-                          color: Color(0xFF7F8A9A),
-                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF101723),
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: AlignmentDirectional.centerStart,
-                        child: Text(
-                          value,
-                          textDirection: TextDirection.rtl,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: Color(0xFF101721),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -128,7 +129,8 @@ class PropertyStickyBar extends StatelessWidget {
               ConstrainedBox(
                 constraints: const BoxConstraints(
                   minHeight: 48,
-                  maxWidth: 160,
+                  minWidth: 135,
+                  maxWidth: 185,
                 ),
                 child: ElevatedButton(
                   onPressed: isEnabled ? onTapCta : null,
@@ -138,19 +140,19 @@ class PropertyStickyBar extends StatelessWidget {
                     disabledBackgroundColor: const Color(0xFF101721).withValues(alpha: 0.6),
                     disabledForegroundColor: Colors.white70,
                     elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      ctaText,
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w800,
-                      ),
+                  child: Text(
+                    ctaText,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),

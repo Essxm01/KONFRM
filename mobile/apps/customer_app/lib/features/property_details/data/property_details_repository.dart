@@ -219,7 +219,7 @@ class PropertyDetailsRepository {
       if (availability.propertyId != cleanId) {
         throw const PropertyDetailsException(
           PropertyDetailsFailureKind.invalidResponse,
-          'Mismatched propertyId in availability response',
+          'تعذر التحقق من هوية العقار في استجابة التوفر.',
         );
       }
       return availability;
@@ -360,7 +360,7 @@ class PropertyDetailsRepository {
       if (quote.propertyId != cleanId) {
         throw const PropertyDetailsException(
           PropertyDetailsFailureKind.invalidResponse,
-          'Mismatched propertyId in quote response',
+          'تعذر التحقق من هوية العقار في استجابة السعر.',
         );
       }
       return quote;

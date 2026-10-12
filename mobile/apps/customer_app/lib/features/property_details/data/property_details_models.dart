@@ -224,7 +224,7 @@ class PropertyAvailability {
     required this.unavailableRanges,
     this.minStay = 2,
     this.maxStay = 30,
-  });
+  }) : assert(minStay >= 2 && minStay <= maxStay && maxStay <= 30, 'Stay bounds must be between 2 and 30 nights');
 
   final String propertyId;
   final List<UnavailableDateRange> unavailableRanges;
@@ -250,19 +250,23 @@ class PropertyAvailability {
     }
 
     final rawMin = json['minStay'];
-    if (rawMin != null && (rawMin is! int || rawMin < 1)) {
-      throw const FormatException('Invalid PropertyAvailability minStay (must be >= 1)');
+    if (rawMin != null && (rawMin is! int || rawMin < 2 || rawMin > 30)) {
+      throw const FormatException('Invalid PropertyAvailability minStay (must be between 2 and 30 nights)');
     }
     final minStay = rawMin is int ? rawMin : 2;
 
     final rawMax = json['maxStay'];
-    if (rawMax != null && (rawMax is! int || rawMax < minStay || rawMax > 365)) {
-      throw const FormatException('Invalid PropertyAvailability maxStay (must be >= minStay)');
+    if (rawMax != null && (rawMax is! int || rawMax < minStay || rawMax > 30)) {
+      throw const FormatException('Invalid PropertyAvailability maxStay (must be between minStay and 30 nights)');
     }
     final maxStay = rawMax is int ? rawMax : 30;
 
+    if (minStay > maxStay) {
+      throw const FormatException('PropertyAvailability minStay cannot exceed maxStay');
+    }
+
     return PropertyAvailability(
-      propertyId: propertyId,
+      propertyId: propertyId.trim(),
       unavailableRanges: List.unmodifiable(ranges),
       minStay: minStay,
       maxStay: maxStay,

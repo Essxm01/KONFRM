@@ -1,6 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:konfrm_design_system/konfrm_design_system.dart';
 
+/// Normalized presentation item for an amenity.
+class AmenityItem {
+  const AmenityItem({
+    required this.label,
+    required this.icon,
+  });
+
+  final String label;
+  final IconData icon;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AmenityItem && runtimeType == other.runtimeType && label == other.label;
+
+  @override
+  int get hashCode => label.hashCode;
+}
+
 class AmenitiesBottomSheet extends StatelessWidget {
   const AmenitiesBottomSheet({
     super.key,
@@ -21,8 +40,27 @@ class AmenitiesBottomSheet extends StatelessWidget {
     );
   }
 
+  /// Normalizes and deduplicates amenity aliases for presentation while preserving distinct facts.
+  static List<AmenityItem> normalizeAndDeduplicate(List<String> rawAmenities) {
+    final result = <AmenityItem>[];
+    final seen = <String>{};
+    for (final raw in rawAmenities) {
+      final label = amenityLabel(raw);
+      if (label.trim().isEmpty) continue;
+      if (seen.add(label.trim())) {
+        result.add(AmenityItem(
+          label: label.trim(),
+          icon: amenityIcon(raw),
+        ));
+      }
+    }
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final items = normalizeAndDeduplicate(amenities);
+
     return SafeArea(
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -59,7 +97,7 @@ class AmenitiesBottomSheet extends StatelessWidget {
                   child: Wrap(
                     spacing: 12,
                     runSpacing: 12,
-                    children: amenities.map((amenity) {
+                    children: items.map((item) {
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                         decoration: BoxDecoration(
@@ -71,13 +109,13 @@ class AmenitiesBottomSheet extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              amenityIcon(amenity),
+                              item.icon,
                               size: 18,
                               color: const Color(0xFF64768B),
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              amenityLabel(amenity),
+                              item.label,
                               style: const TextStyle(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w600,
@@ -123,8 +161,10 @@ class AmenitiesBottomSheet extends StatelessWidget {
         'POOL' || 'مسبح' || 'حمام سباحة' => Icons.pool,
         'PRIVATE_POOL' || 'مسبح خاص' || 'حمام سباحة خاص مغطى' => Icons.pool,
         'WIFI' || 'واي فاي' || 'إنترنت واي فاي سريعة' => Icons.wifi,
-        'AIR_CONDITIONING' || 'CENTRAL_AC' || 'AC' || 'تكييف' || 'تكييف مركزي بالكامل' => Icons.ac_unit,
-        'PARKING' || 'GARAGE' || 'موقف سيارات' || 'جراج مغطى للسيارات' => Icons.local_parking,
+        'CENTRAL_AC' || 'تكييف مركزي' || 'تكييف مركزي بالكامل' => Icons.ac_unit,
+        'AIR_CONDITIONING' || 'AC' || 'تكييف' => Icons.ac_unit,
+        'GARAGE' || 'جراج مغطى للسيارات' || 'كراج مغطى' => Icons.garage,
+        'PARKING' || 'موقف سيارات' => Icons.local_parking,
         'KITCHEN' || 'مطبخ' || 'مطبخ مجهز' || 'مطبخ مجهز بالكامل' => Icons.kitchen,
         'GARDEN' || 'حديقة' || 'حديقة خاصة' || 'حديقة خاصة وتراس' => Icons.yard,
         'SECURITY' || 'حراسة' || 'أمن وحراسة' || 'أمن وحراسة 24/7' => Icons.security,
@@ -143,28 +183,29 @@ class AmenitiesBottomSheet extends StatelessWidget {
       };
 
   static String amenityLabel(String key) => switch (key.toUpperCase().trim()) {
-        'SEA_VIEW' => 'إطلالة بحرية',
-        'BEACH_FRONT' || 'BEACH_ACCESS' => 'مباشر على الشاطئ',
-        'POOL' => 'مسبح',
-        'PRIVATE_POOL' => 'مسبح خاص',
-        'WIFI' => 'واي فاي',
-        'AIR_CONDITIONING' || 'CENTRAL_AC' || 'AC' => 'تكييف',
-        'PARKING' || 'GARAGE' => 'موقف سيارات',
-        'KITCHEN' => 'مطبخ مجهز',
-        'GARDEN' => 'حديقة خاصة',
-        'SECURITY' => 'حراسة وأمن',
-        'BALCONY' => 'شرفة',
-        'TERRACE' => 'تراس',
-        'SMART_TV' || 'TV' => 'شاشة ذكية',
-        'BBQ' => 'منطقة شواء',
-        'ELEVATOR' => 'مصعد',
-        'GYM' => 'نادي صحي',
-        'HOT_TUB' || 'JACUZZI' => 'جاكوزي',
-        'WASHER' || 'WASHING_MACHINE' => 'غسالة ملابس',
-        'DISHWASHER' => 'غسالة أطباق',
-        'IRON' => 'مكواة',
-        'HEATING' => 'تدفئة',
+        'SEA_VIEW' || 'إطلالة بحرية' || 'إطلالة مباشرة على البحر' => 'إطلالة بحرية',
+        'BEACH_FRONT' || 'BEACH_ACCESS' || 'شاطئ خاص' || 'مباشر على الشاطئ' => 'مباشر على الشاطئ',
+        'POOL' || 'مسبح' || 'حمام سباحة' => 'مسبح',
+        'PRIVATE_POOL' || 'مسبح خاص' || 'حمام سباحة خاص مغطى' => 'مسبح خاص',
+        'WIFI' || 'واي فاي' || 'إنترنت واي فاي سريعة' => 'واي فاي',
+        'CENTRAL_AC' || 'تكييف مركزي' || 'تكييف مركزي بالكامل' => 'تكييف مركزي',
+        'AIR_CONDITIONING' || 'AC' || 'تكييف' => 'تكييف',
+        'GARAGE' || 'جراج مغطى للسيارات' || 'كراج مغطى' => 'كراج مغطى',
+        'PARKING' || 'موقف سيارات' => 'موقف سيارات',
+        'KITCHEN' || 'مطبخ' || 'مطبخ مجهز' || 'مطبخ مجهز بالكامل' => 'مطبخ مجهز',
+        'GARDEN' || 'حديقة' || 'حديقة خاصة' || 'حديقة خاصة وتراس' => 'حديقة خاصة',
+        'SECURITY' || 'حراسة' || 'أمن وحراسة' || 'أمن وحراسة 24/7' => 'حراسة وأمن',
+        'BALCONY' || 'شرفة' || 'بلكونة' => 'شرفة',
+        'TERRACE' || 'تراس' => 'تراس',
+        'SMART_TV' || 'TV' || 'شاشة ذكية' || 'شاشة سمارت وساتلايت' => 'شاشة ذكية',
+        'BBQ' || 'منطقة شواء' || 'منطقة شواء وتجهيزات BBQ' => 'منطقة شواء',
+        'ELEVATOR' || 'مصعد' => 'مصعد',
+        'GYM' || 'جيم' || 'نادي صحي' => 'نادي صحي',
+        'HOT_TUB' || 'JACUZZI' || 'جاكوزي' => 'جاكوزي',
+        'WASHER' || 'WASHING_MACHINE' || 'غسالة ملابس' => 'غسالة ملابس',
+        'DISHWASHER' || 'غسالة أطباق' => 'غسالة أطباق',
+        'IRON' || 'مكواة' => 'مكواة',
+        'HEATING' || 'تدفئة' => 'تدفئة',
         _ => key,
       };
 }
-

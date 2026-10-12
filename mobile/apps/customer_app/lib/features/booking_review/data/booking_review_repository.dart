@@ -264,7 +264,7 @@ class BookingReviewRepository {
     } on SocketException catch (e) {
       throw BookingReviewException(
         BookingReviewFailureKind.network,
-        'تفاصيل طلبك ما زالت محفوظة. تحقق من الاتصال وحاول مرة أخرى.',
+        'تفاصيل طلبك ما زالت معروضة في هذه الشاشة. تحقق من الاتصال وحاول مرة أخرى.',
         e.toString(),
       );
     } on TimeoutException catch (e) {
@@ -276,7 +276,7 @@ class BookingReviewRepository {
     } catch (e) {
       throw BookingReviewException(
         BookingReviewFailureKind.network,
-        'تفاصيل طلبك ما زالت محفوظة. تحقق من الاتصال وحاول مرة أخرى.',
+        'تفاصيل طلبك ما زالت معروضة في هذه الشاشة. تحقق من الاتصال وحاول مرة أخرى.',
         e.toString(),
       );
     }

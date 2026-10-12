@@ -784,7 +784,7 @@ class _NetworkErrorBanner extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            message ?? 'تفاصيل طلبك ما زالت محفوظة. تحقق من الاتصال وحاول مرة أخرى.',
+            message ?? 'تفاصيل طلبك ما زالت معروضة في هذه الشاشة. تحقق من الاتصال وحاول مرة أخرى.',
             style: KonfrmTypography.body.copyWith(
               fontSize: 12.5,
               color: const Color(0xFF9F1239),

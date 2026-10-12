@@ -194,7 +194,7 @@ class BookingReviewController extends StateNotifier<BookingReviewState> {
       if (epoch != _revalidationEpoch || !mounted) return;
       state = state.copyWith(
         uiState: BookingReviewUiState.networkError,
-        errorMessage: 'تفاصيل طلبك ما زالت محفوظة. تحقق من الاتصال وحاول مرة أخرى.',
+        errorMessage: 'تفاصيل طلبك ما زالت معروضة في هذه الشاشة. تحقق من الاتصال وحاول مرة أخرى.',
         lastFailedOperation: BookingReviewOperation.quoteRevalidation,
       );
     }
@@ -321,14 +321,14 @@ class BookingReviewController extends StateNotifier<BookingReviewState> {
         // Network / Timeout / Server failure: preserve requestId and fingerprint for idempotent retry
         state = state.copyWith(
           uiState: BookingReviewUiState.networkError,
-          errorMessage: e.userMessage ?? 'تفاصيل طلبك ما زالت محفوظة. تحقق من الاتصال وحاول مرة أخرى.',
+          errorMessage: e.userMessage ?? 'تفاصيل طلبك ما زالت معروضة في هذه الشاشة. تحقق من الاتصال وحاول مرة أخرى.',
           lastFailedOperation: BookingReviewOperation.bookingSubmission,
         );
       }
     } catch (_) {
       state = state.copyWith(
         uiState: BookingReviewUiState.networkError,
-        errorMessage: 'تفاصيل طلبك ما زالت محفوظة. تحقق من الاتصال وحاول مرة أخرى.',
+        errorMessage: 'تفاصيل طلبك ما زالت معروضة في هذه الشاشة. تحقق من الاتصال وحاول مرة أخرى.',
         lastFailedOperation: BookingReviewOperation.bookingSubmission,
       );
     }

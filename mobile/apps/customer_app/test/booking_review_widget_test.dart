@@ -859,6 +859,105 @@ void main() {
         );
       }
     });
+
+    testWidgets('price-changed screen scrolls fully and sticky CTA never obscures financial rows across text scales', (tester) async {
+      final reviewContext = _createTestContext();
+      final initialQuote = reviewContext.initialQuote;
+      final higherQuote = BookingQuote(
+        propertyId: 'prop-1',
+        checkIn: DateTime(2026, 10, 15),
+        checkOut: DateTime(2026, 10, 18),
+        nights: 3,
+        guests: 1,
+        pricePerNight: 2500.0,
+        totalStay: 7500.0,
+        depositAmount: 2500.0,
+        remainingAmount: 5000.0,
+        currency: 'EGP',
+        quoteFingerprint: 'fp-higher',
+      );
+
+      for (final scale in [1.0, 1.3, 1.5, 2.0]) {
+        await tester.pumpWidget(_buildTestBookingReviewApp(
+          context: reviewContext,
+          onEditDetails: () {},
+          textScale: scale,
+          startRevalidating: false,
+        ));
+        await tester.pumpAndSettle();
+
+        final element = tester.element(find.byType(BookingRequestReviewView));
+        final container = ProviderScope.containerOf(element);
+        final controller = container.read(bookingReviewControllerProvider(reviewContext).notifier);
+
+        controller.state = controller.state.copyWith(
+          uiState: BookingReviewUiState.priceChanged,
+          previousQuote: initialQuote,
+          currentQuote: higherQuote,
+        );
+        await tester.pumpAndSettle();
+
+        // Scroll to the very bottom
+        final scrollableFinder = find.byType(Scrollable).first;
+        await tester.fling(scrollableFinder, const Offset(0, -3000), 1000);
+        await tester.pumpAndSettle();
+
+        // Find the remaining amount text and the sticky bar
+        final remainingFinder = find.text('المبلغ المتبقي:');
+        expect(remainingFinder, findsOneWidget);
+
+        final stickyBarFinder = find.text('قبول السعر الجديد ومتابعة المراجعة');
+        expect(stickyBarFinder, findsOneWidget);
+
+        final remainingRect = tester.getRect(remainingFinder);
+        final stickyBarRect = tester.getRect(stickyBarFinder);
+
+        // Prove that the remaining amount is strictly ABOVE the sticky bar top
+        expect(
+          remainingRect.bottom,
+          lessThanOrEqualTo(stickyBarRect.top),
+          reason: 'At scale $scale, remaining row bottom (${remainingRect.bottom}) must not exceed sticky CTA top (${stickyBarRect.top})',
+        );
+
+        // Also check disclosure text
+        final disclosureFinder = find.text('لا يتم الدفع عند إرسال الطلب؛ العربون بعد موافقة المالك.');
+        expect(disclosureFinder, findsOneWidget);
+        final disclosureRect = tester.getRect(disclosureFinder);
+        expect(
+          disclosureRect.bottom,
+          lessThanOrEqualTo(stickyBarRect.top),
+          reason: 'At scale $scale, disclosure bottom (${disclosureRect.bottom}) must not exceed sticky CTA top (${stickyBarRect.top})',
+        );
+      }
+    });
+
+    testWidgets('network error copy uses truthful in-screen wording without false persistence claims', (tester) async {
+      final reviewContext = _createTestContext();
+      await tester.pumpWidget(_buildTestBookingReviewApp(
+        context: reviewContext,
+        onEditDetails: () {},
+      ));
+      await tester.pumpAndSettle();
+
+      final element = tester.element(find.byType(BookingRequestReviewView));
+      final container = ProviderScope.containerOf(element);
+      final controller = container.read(bookingReviewControllerProvider(reviewContext).notifier);
+
+      controller.state = controller.state.copyWith(
+        uiState: BookingReviewUiState.networkError,
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('تفاصيل طلبك ما زالت معروضة في هذه الشاشة. تحقق من الاتصال وحاول مرة أخرى.'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('محفوظة'),
+        findsNothing,
+      );
+    });
   });
 }
+
 

@@ -150,3 +150,95 @@
 
 ---
 
+# 7 — نقطة التوقف الدقيقة جدًا: Screen 07 Booking Request Review (أهم جزء في handoff)
+
+**الآن — 12 October 2026:**
+المؤسس قال نصًا: **«أعتمد الاتجاه البصري المبدئي لـScreen 07 V1. أكمل مراجعة وصقل تفاصيل التصميم وحالات التفاعل دون البدء بتنفيذ Flutter.»**
+
+بناءً على ذلك بدأ الجسر 10 تصميم **Screen 07 — Concept A V2** وأكمله كمعاينات وتجربة تفاعلية Design-Only. **لم يحصل V2 بعد على اعتماد بصري نهائي من المؤسس في السياق المتاح.** طلب المؤسس الآن نقل المحادثة إلى Bridge 11 بسبب بلوغ حد رسائل المحادثة، قبل تقديم نتيجة V2 كاملة له.
+
+**إذن سلطة V2:** DESIGN CANDIDATE READY FOR FOUNDER REVIEW؛ ليست FOUNDER_APPROVED FINAL وليست FLUTTER_IMPLEMENTATION_AUTHORIZED.
+
+**الملفات الجاهزة في المحادثة السابقة (قد لا تظهر تلقائيًا في المحادثة الجديدة؛ اطلب ZIP إن تعذر فتحها):**
+- KONFRM_SCREEN07_CONCEPT_A_V2_DESIGN_REVIEW.zip — حزمة تشمل كل المعاينات والملاحظات.
+- KONFRM_Screen07_ConceptA_V2_Interactive.html — Prototype تفاعلي Design-Only.
+- KONFRM_Screen07_V2_Review_Board.png — لوحة الأربع حالات الأساسية.
+- KONFRM_Screen07_V2_Design_Review_Notes.md — تفسير القرار/مصفوفة التفاعل.
+- KONFRM_Screen07_V2_Default_390x844.png
+- KONFRM_Screen07_V2_PriceChanged_390x844.png
+- KONFRM_Screen07_V2_DateConflict_390x844.png
+- KONFRM_Screen07_V2_AuthGate_390x844.png
+- KONFRM_Screen07_V2_NetworkError_390x844.png
+- KONFRM_Screen07_V2_Revalidating_390x844.png
+- KONFRM_Screen07_V2_Submitting_390x844.png
+- KONFRM_Screen07_V2_Sent_390x844.png
+- KONFRM_Screen07_V2_Responsive_360x800.png، 390x844.png، 430x932.png.
+- V1 الأصلي: KONFRM_SCREEN07_CONCEPT_A_V1_DESIGN_PREVIEW.zip، تصميم V1 للاتجاه المختار، ليس لإعادة عرضه كخيار جديد.
+
+**V2 Design Contract الحالي:**
+1. شاشة Full-screen مراجعة واحدة بـApp Bar عنوان **«مراجعة طلب الحجز»** وزر رجوع صحيح RTL؛ بدون Bottom Root Tabs، بدون Intro مكرر أو Marketing، وبدون إعادة عرض Gallery كبيرة مثل Screen06.
+2. بطاقة عقار مضغوطة: صورة thumbnail بجودة جيدة، اسم العقار، القرية/المنطقة من بياناته العامة الفعلية، لا حقائق وهمية.
+3. **تفاصيل الإقامة** في مساحة واحدة واضحة: تاريخ الوصول والمغادرة، الليالي والضيوف، زر «تعديل» يرجع Screen06 ليغيّر الاختيار ويجري Requote بعد العودة.
+4. **تفاصيل السعر:** إجمالي الإقامة هو المبلغ الأبرز، بعده «العربون بعد موافقة المالك» و«المبلغ المتبقي» من استجابة Quote الصالحة فقط. لا حساب Flutter محلي ولا Owner commission.
+5. Microcopy مالي واحد: **«لا يتم الدفع عند إرسال الطلب؛ العربون بعد موافقة المالك.»**. في الزر السفلي **«إرسال طلب الحجز للمالك»** وبيان صغير **«إرسال الطلب لا يعني تأكيد الحجز»**. لا يوجد «كيف يتم الحجز» كقسم خطوات.
+6. **Price Changed:** إذا أعاد Backend سعرًا جديدًا عند إعادة التحقق، أعرض مقارنة القديم بالجديد وقبولًا صريحًا منفصلًا **«أوافق على السعر الجديد»**. الإرسال محظور حتى الموافقة؛ هذا تصميم مطلوب مطابق للحقيقة، لكن تفاصيل عقد reacceptance تحتاج تحقق هندسي لاحق.
+7. **Date Conflict:** «التواريخ لم تعد متاحة»، زر «تعديل التواريخ» يرجع إلى Screen06؛ لا تقدم quote قديمًا على أنه حالي.
+8. **Network / Quote Error:** حافظ على اختيار المستخدم واعرض «تعذر التأكد من التفاصيل» مع Retry واضح. لا إرسال عندما التحقق غير مكتمل.
+9. **Auth Gate:** يسمح بمشاهدة Review كضيف، ولا يطلب تسجيل الدخول إلا عند الضغط على الإرسال المحمي؛ Sheet موجز يقول إن الاختيارات ستُحفظ وإن العودة ستعيد التحقق. العودة من تسجيل الدخول لا تُرسِل الطلب تلقائيًا.
+10. **Auth Return / Revalidation:** CTA disabled أثناء التحقق. لو تغيّر السعر تُطلب الموافقة الجديدة، ولو التواريخ متعارضة يعود لتعديلها.
+11. **Submitting:** loading وCTA معطلة مع نفس requestId للـidempotency؛ لا طلب مكرر، لا دفع الآن.
+12. **Sent / Post-Submit:** «تم إرسال طلبك للمالك» فقط بعد POST حقيقي ناجح، initial status = PENDING_OWNER_APPROVAL. لا تظهر «تم تأكيد حجزك»، ولا «ادفع»؛ هذه حالة Conceptual استباقية لشاشة ما بعد الإرسال وليست تصريحًا بتنفيذ Screen11.
+
+**حالات V2 المصممة:** Default, PriceChanged, DateConflict, NetworkError, AuthGate, Revalidating, Submitting, Sent، مع responsive samples. وُثّق Smoke Testing في Chromium ومقاسات 360/390/430 بلا تمرير أفقي ملحوظ في ما تم اختباره. **لا تعتبر ذلك Native Flutter / Live Backend QA، ولا تخلط preview data مع بيانات منشورة.**
+
+**القواعد التقنية القائمة التي روجعت في الجسر 10:** Backend لديه public POST /api/v1/customer/bookings/calculate يرد Quote+quoteFingerprint، وprotected POST /api/v1/customer/bookings يطلب propertyId,checkIn,checkOut,guests,reviewedQuoteFingerprint,requestId. يعيد التحقق من الهوية والنشر والتواريخ والتسعير ويدعم أبعاد idempotency وأخطاء من نوع QUOTE_CHANGED وDATE_OVERLAP وIDEMPOTENCY_CONFLICT وفق العقد الفعلي. React Customer القديم فيه BookingRequestReviewScreen وBookingReviewSheet وBookingRequestSentScreen كنماذج سلوك قائمة، لا كسلطة بصرية لتغيير Flutter. تأكد من code source قبل كتابة التنفيذ.
+
+**مهم جدًا — فجوات تنفيذ لم تؤذن بعد:**
+- Flutter native Screen07 لم تُبنَ عند نقطة التوقف؛ Screen06 مدمجة لكن CTA مراجعة طلب الحجز في النسخة التجريبية لا يفتح رحلة Native حقيقية.
+- Native Auth V2 continuation واسترجاع السياق بعد login/session expiry/401/interrupted app لم يثبت اكتماله.
+- يجب حل إرسال الطلب مع idempotent requestId وQuote fingerprint وrevalidation، دون تكرار إرسال.
+- الربط الحقيقي على Samsung بقاعدة بيانات/Backend عبر KONFRM_API_BASE_URL ما زال **DISCOVERY_RUNTIME_QA = BLOCKED_BY_CONFIGURATION** تاريخيًا. Agent Mock screenshot ليس Live Quote.
+- طريقة تحصيل المتبقي ومواعيد انتهاء الطلب وسياسات إلغاء المستأجر الكاملة تحتاج قرارات واضحة؛ لا تخترعها.
+- نجاح تصميم V2 لا يبيح تنفيذ Flutter، Backend/DB أو Deploy؛ اطلب **اعتماد V2 النهائي** أولًا ثم **إذن تنفيذ** مستقل.
+
+# 8 — ما الذي يجب أن تفعله Bridge 11 فور استلام هذه الوثيقة؟
+
+**الإجراء الأول (بدون برومبت Antigravity):**
+1. قل للمؤسس باختصار إن سياق العمل انتقل، وأن **Screen 07 V2 جاهزة للعرض البصري ولم تُعتمد بعد**.
+2. اعرض روابط ملفات V2 المتاحة إن أمكن (ولا تختلق Sandbox path في الجلسة الجديدة). لو الحزمة ليست مرئية في المحادثة الجديدة، اطلب منه رفع KONFRM_SCREEN07_CONCEPT_A_V2_DESIGN_REVIEW.zip من المحادثة السابقة؛ لا تدّع أنك رأيت صور V2 إن لم تصل إليك.
+3. اعرض المعاينة العادية (Default) ومعاينة السعر المتغير وحالة التسجيل/تعارض التواريخ، ثم قدّم **نقدًا بصريًا حقيقيًا**: بروز total/deposit، حجم العقار، كثافة المعلومات، CTA، Microcopy، مناطق النقر، Safe Areas، RTL، states، الملاءمة لـCairo. لا تطلب «موافق؟» قبل إعطاء تقييمك المهني وبيان نقاط القوة/النقص.
+4. اطلب قرار المؤسس عن V2 (اعتماد، تحسين محدود، إعادة نظر في جزء محدد). لا تفتح Concept A/B من جديد، ولا تحوّل الشاشة لدليل «كيف يتم الحجز».
+5. **STOP — NO IMPLEMENTATION** قبل اعتماد V2 النهائي، ثم لو حصل الإذن الفني صغ خطة تنفيذ Antigravity منفصلة مع Gate لجاهزية Auth/Server/Idempotency/Screen06-to-07/07-to-success وسلامة العقود.
+6. PR #115 Playbook ما زال Draft تاريخيًا؛ لاحقًا يمكن سؤال المؤسس عن دمجه عندما يكون ذا صلة، لكن لا تعطّل مراجعة Screen07 أو تدمجه تلقائيًا. ملف Bridge 11 الحالي نفسه يُحفظ عبر فرع توثيقي منفصل وPR Draft ولا يعني أنه في main.
+
+**المخرَج الأول المطلوب منك، بمجرد استلام البرومبت:** تقييم مهني موجز أين توقفنا، تأكيد آخر merge/main عند التحقق، ثم **عرض V2 والتوجه إلى اعتمادها البصري**؛ لا تكتب prompt تنفيذ أو تبدأ Flutter من تلقاء نفسك.
+
+# 9 — بروتوكول الحكم على أي تنفيذ قادم
+
+**لكل مشكلة**: Understand Reality → Trace Authority → Inspect Source → Isolate Root Cause → Define Narrow Fix → Authorize Antigravity → Test → Real Render → Independent Review → Gate Decision → Founder Approval for Merge/Deploy.
+
+**اختبارات الجودة الملزمة بحسب النطاق:**
+- Functional: Auth & ownership, data contracts, API errors, stale responses, timeout, retry, idempotency, quote fingerprint, persistence, protected routes, security boundaries.
+- Product & Design: User role, hierarchy, readability, first fold, image/data truth, dates/Arabic RTL, font Cairo, accessibility/200%, touch target, disabled/loading/empty/conflict/error, sticky CTA, status bar/safe area, meaningful microcopy.
+- Adversarial: stale price, duplicate request, concurrent booking, revoked owner/listing eligibility, expired session, price changed after auth, network drop during POST, app restart, mismatched response context, private data leakage.
+- Real proof: Actual Flutter tests/analyze + screenshots 360/390/430 + physical Samsung A56 + live configured API when safely available. CI green alone is not a pass.
+- **Visual reviewer owns taste and user trust**؛ ليس مطلوبًا فقط إصلاح overflow بل بناء واجهة تناسب العمل الحقيقي.
+
+**عند مراجعة تقرير Antigravity:** ابدأ بتحديد HEAD الصحيح. تأكد من changed files وشروط branch/main وCI. اقرأ الكود المختلف وراجع test quality، ثم راجع الـPNG الأصلية لا أسماءها فقط. إذا المشكلة لم تُثبت بعد، قل Not Verified. إذا السبب معروف اطلب تعديلًا محددًا لا هجومًا شاملًا على المجلدات. لا تضخم فحص P2 صغير إلى دوامة أسابيع إذا لا يمنع جودة المرحلة.
+
+# 10 — الإعداد المعرفي والذاكرة الصادقة
+
+- لا تخاطب المؤسس كما لو أنه بدأ مشروعًا جديدًا. احترم قراراته المتراكمة ولا تسأله مرارًا عن رؤية التطبيق وطريقة عمله.
+- أحدث قرار صريح من المؤسس يتغلب على تفسيرنا القديم له. الرسومات والـMock تُقدَّم كـDEMO خارج واجهة المستخدم، ويُمنع اختلاق أعداد مناطق أو بيانات منشورة أو سعر حقيقي.
+- عندما يوجد تناقض بين الوثائق والمستودع لا تستبدل Canon بصمت. سجّل الواقع الحالي والمصدر والتاريخ، واسأل عن قرار إن كان يخص Business Rule.
+- حافظ على ملف playbook، واحتفظ بهذا الـhandoff كوثيقة انتقال؛ بعد الدخول للجسر 11 لا تجعلها الحقيقة الوحيدة؛ راجع repository state باستمرار.
+- تاريخ الوثائق مهم: docs/CURRENT_STATE.md رُصد آخر تحديث له 2026-10-06، وtasks/CURRENT_TASK.md ظل يتحدث عن PR #116 كـDraft بعد أن دُمج في 2026-10-12. هذا **Stale Repo Documentation** وليس سببًا لإنكار دمج PR #116 الذي أثبته GitHub. أبلغ المؤسس بالتفاوت إذا أصبح ذا أثر تنفيذي؛ لا تغير الملفات عشوائيًا.
+- التزم بالتمييز بين DESIGN-ONLY، IMPLEMENTATION AUTHORIZED، DRAFT PR، MERGED، LIVE CONFIGURED AND VERIFIED. لا تخلط بينها في أي تقرير.
+
+# 11 — تعليماتك النهائية كجسر 11
+
+اعتبر نفسك المساعد الرئيسي الذي يربط الفكرة بالتصميم وبالحقيقة التقنية؛ **التحسن عن الجسر 10** يجب أن يكون في دقة حفظ القرارات، تقليل التكرار، جودة النقد البصري، وضوح عقود التنفيذ، رفض الإنجاز الشكلي، وقدرتك على إثبات كل ادعاء أو الاعتراف بحدوده.
+
+**لا تكتب جوابًا عامًا من نوع «تمام جاهز».** استلم المحادثة بالفعل. موضوعنا المفتوح هو **Screen 07 V2 — Founder Visual Review Pending**. اجعل أول رد لك متسقًا مع هذه اللحظة التاريخية، واستعد لاستلام الحزمة البصرية إن كانت غير متاحة.
+
+**END — BRIDGE 11 OPERATING TRANSFER | DESIGN-ONLY CONTINUATION — 2026-10-12**

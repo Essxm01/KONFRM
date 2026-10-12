@@ -123,22 +123,22 @@ void main() {
       expect(find.text('13,500'), findsOneWidget);
       expect(find.text('ج.م'), findsOneWidget);
 
-      // Verify that Directionality.ltr is enclosing the Row
+      // Verify that Directionality.rtl is enclosing the Row
       final dirFinder = find.descendant(
         of: find.byType(KonfrmPriceText),
         matching: find.byWidgetPredicate(
-          (w) => w is Directionality && w.textDirection == TextDirection.ltr,
+          (w) => w is Directionality && w.textDirection == TextDirection.rtl,
         ),
       );
       expect(dirFinder, findsOneWidget);
 
-      // Verify visual horizontal position: '13,500' appears before 'ج.م' in LTR
+      // Verify visual horizontal position: amount '13,500' appears physically to the RIGHT of currency 'ج.م'
       final numPos = tester.getTopLeft(find.text('13,500'));
       final currPos = tester.getTopLeft(find.text('ج.م'));
-      expect(numPos.dx, lessThan(currPos.dx));
+      expect(numPos.dx, greaterThan(currPos.dx));
     });
 
-    test('formatString returns isolated LTR string', () {
+    test('formatString returns isolated RTL string', () {
       final formatted = KonfrmPriceText.formatString(4500);
       expect(formatted, contains('4,500'));
       expect(formatted, contains('ج.م'));

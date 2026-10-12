@@ -28,10 +28,11 @@ class KonfrmPriceText extends StatelessWidget {
 
   static final _numberFormat = NumberFormat('#,##0.##', 'en');
 
-  /// Formats an amount into an isolated LTR string: `13,500 ج.م`
+  /// Formats an amount into an isolated RTL string: `13,500 ج.م`
+  /// with numeric amount on the RIGHT and currency on the LEFT.
   static String formatString(num amount, {String currency = 'ج.م'}) {
     final formatted = _numberFormat.format(amount);
-    return '\u2066$formatted\u00A0$currency\u2069';
+    return '\u2067\u2066$formatted\u2069\u00A0$currency\u2069';
   }
 
   @override
@@ -45,20 +46,24 @@ class KonfrmPriceText extends StatelessWidget {
     );
 
     return Directionality(
-      textDirection: TextDirection.ltr,
+      textDirection: TextDirection.rtl,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
+          // Amount placed on the RIGHT (start of RTL row) with isolated LTR numeric digits
           Text(
             formatted,
             style: effectiveAmountStyle,
+            textDirection: TextDirection.ltr,
           ),
           SizedBox(width: spacing),
+          // Currency symbol placed to the LEFT of the number
           Text(
             currency,
             style: effectiveCurrencyStyle,
+            textDirection: TextDirection.rtl,
           ),
         ],
       ),

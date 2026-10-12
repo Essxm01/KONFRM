@@ -153,6 +153,23 @@ class PublicPropertyDetail {
   }
 }
 
+/// Utility for strictly validating and parsing YYYY-MM-DD civil dates.
+DateTime parseCivilDate(String str) {
+  final datePattern = RegExp(r'^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$');
+  if (!datePattern.hasMatch(str)) {
+    throw FormatException('Invalid date format: $str (expected YYYY-MM-DD)');
+  }
+  final parts = str.split('-').map(int.parse).toList();
+  final year = parts[0];
+  final month = parts[1];
+  final day = parts[2];
+  final date = DateTime.utc(year, month, day);
+  if (date.year != year || date.month != month || date.day != day) {
+    throw FormatException('Impossible calendar date: $str');
+  }
+  return date;
+}
+
 /// Represents an unavailable date range from the server.
 class UnavailableDateRange {
   const UnavailableDateRange({
@@ -169,14 +186,14 @@ class UnavailableDateRange {
     if (rawIn is! String || rawOut is! String) {
       throw const FormatException('UnavailableDateRange requires checkIn and checkOut strings');
     }
-    final inDate = DateTime.tryParse(rawIn);
-    final outDate = DateTime.tryParse(rawOut);
-    if (inDate == null || outDate == null || outDate.isBefore(inDate)) {
-      throw const FormatException('Invalid UnavailableDateRange date format or range');
+    final inDate = parseCivilDate(rawIn);
+    final outDate = parseCivilDate(rawOut);
+    if (!outDate.isAfter(inDate)) {
+      throw const FormatException('Invalid UnavailableDateRange: checkOut must be strictly after checkIn');
     }
     return UnavailableDateRange(
-      checkIn: DateTime.utc(inDate.year, inDate.month, inDate.day),
-      checkOut: DateTime.utc(outDate.year, outDate.month, outDate.day),
+      checkIn: inDate,
+      checkOut: outDate,
     );
   }
 
@@ -232,8 +249,17 @@ class PropertyAvailability {
       }
     }
 
-    final minStay = json['minStay'] is int ? json['minStay'] as int : 2;
-    final maxStay = json['maxStay'] is int ? json['maxStay'] as int : 30;
+    final rawMin = json['minStay'];
+    if (rawMin != null && (rawMin is! int || rawMin < 1)) {
+      throw const FormatException('Invalid PropertyAvailability minStay (must be >= 1)');
+    }
+    final minStay = rawMin is int ? rawMin : 2;
+
+    final rawMax = json['maxStay'];
+    if (rawMax != null && (rawMax is! int || rawMax < minStay || rawMax > 365)) {
+      throw const FormatException('Invalid PropertyAvailability maxStay (must be >= minStay)');
+    }
+    final maxStay = rawMax is int ? rawMax : 30;
 
     return PropertyAvailability(
       propertyId: propertyId,
@@ -303,13 +329,8 @@ class BookingQuote {
     if (rawIn is! String || rawOut is! String) {
       throw const FormatException('BookingQuote requires checkIn and checkOut strings');
     }
-    final inDate = DateTime.tryParse(rawIn);
-    final outDate = DateTime.tryParse(rawOut);
-    if (inDate == null || outDate == null) {
-      throw const FormatException('Invalid BookingQuote date format');
-    }
-    final inCivil = DateTime.utc(inDate.year, inDate.month, inDate.day);
-    final outCivil = DateTime.utc(outDate.year, outDate.month, outDate.day);
+    final inCivil = parseCivilDate(rawIn);
+    final outCivil = parseCivilDate(rawOut);
     if (!outCivil.isAfter(inCivil)) {
       throw const FormatException('BookingQuote checkOut must be strictly after checkIn');
     }
@@ -346,6 +367,10 @@ class BookingQuote {
     final remainingAmount = json['remainingAmount'];
     if (remainingAmount is! num || !remainingAmount.isFinite || remainingAmount < 0) {
       throw const FormatException('Invalid BookingQuote remainingAmount');
+    }
+
+    if ((depositAmount + remainingAmount - totalStay).abs() > 0.01) {
+      throw const FormatException('BookingQuote totalStay must equal depositAmount + remainingAmount');
     }
 
     final currency = json['currency'];

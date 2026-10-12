@@ -321,12 +321,17 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
       // Latest-request-wins protection: discard if superseded
       if (generation != _quoteGeneration || !mounted) return;
 
-      // Identity protection: discard if quote does not match active selection
+      // Identity protection: reject if quote does not match active selection
       if (quote.propertyId != state.propertyId ||
           quote.guests != state.selectedGuests ||
           !state.hasValidDates ||
           quote.checkIn != DateTime.utc(state.selectedCheckIn!.year, state.selectedCheckIn!.month, state.selectedCheckIn!.day) ||
           quote.checkOut != DateTime.utc(state.selectedCheckOut!.year, state.selectedCheckOut!.month, state.selectedCheckOut!.day)) {
+        state = state.copyWith(
+          isCalculatingQuote: false,
+          clearQuote: true,
+          quoteError: 'استجابة السعر غير مطابقة للطلب الحالي. يرجى إعادة المحاولة.',
+        );
         return;
       }
 

@@ -357,6 +357,68 @@ void main() {
 
       final zeroDeposit = validQuoteJson()..['depositAmount'] = 0;
       expect(() => BookingQuote.fromJson(zeroDeposit), throwsFormatException);
+
+      final badSum = validQuoteJson()..['totalStay'] = 20000.0; // 3000 deposit + 12000 remainder != 20000
+      expect(() => BookingQuote.fromJson(badSum), throwsFormatException);
+    });
+
+    test('parseCivilDate rejects impossible dates and malformed strings', () {
+      expect(() => parseCivilDate('2026-02-31'), throwsFormatException);
+      expect(() => parseCivilDate('2026-04-31'), throwsFormatException);
+      expect(() => parseCivilDate('2026-13-01'), throwsFormatException);
+      expect(() => parseCivilDate('invalid-date'), throwsFormatException);
+      expect(() => parseCivilDate('2026/08/10'), throwsFormatException);
+      expect(parseCivilDate('2026-08-10'), DateTime.utc(2026, 8, 10));
+    });
+
+    test('PropertyAvailability rejects incoherent minStay and maxStay bounds', () {
+      expect(
+        () => PropertyAvailability.fromJson({
+          'propertyId': 'prop-101',
+          'minStay': 0,
+          'maxStay': 10,
+        }),
+        throwsFormatException,
+      );
+
+      expect(
+        () => PropertyAvailability.fromJson({
+          'propertyId': 'prop-101',
+          'minStay': 5,
+          'maxStay': 3,
+        }),
+        throwsFormatException,
+      );
+    });
+
+    test('hasConflict correctly handles half-open intervals [checkIn, checkOut)', () {
+      final availability = PropertyAvailability(
+        propertyId: 'prop-101',
+        unavailableRanges: [
+          UnavailableDateRange(
+            checkIn: DateTime.utc(2026, 8, 10),
+            checkOut: DateTime.utc(2026, 8, 15),
+          ),
+        ],
+      );
+
+      // A stay checking out on the arrival day of a booking is allowed:
+      expect(
+        availability.hasConflict(DateTime.utc(2026, 8, 7), DateTime.utc(2026, 8, 10)),
+        isFalse,
+      );
+
+      // A stay checking in on the departure day of a booking is allowed:
+      expect(
+        availability.hasConflict(DateTime.utc(2026, 8, 15), DateTime.utc(2026, 8, 18)),
+        isFalse,
+      );
+
+      // Overlapping any night is blocked:
+      expect(
+        availability.hasConflict(DateTime.utc(2026, 8, 9), DateTime.utc(2026, 8, 11)),
+        isTrue,
+      );
     });
   });
 }

@@ -220,14 +220,14 @@ void main() {
       await tester.pumpAndSettle();
 
       // Initial counter pill
-      expect(find.text('1 / 3 صور'), findsOneWidget);
+      expect(find.text('1 من 3'), findsOneWidget);
 
       // Next page in gallery
       final pageView = tester.widget<PageView>(find.byType(PageView));
       pageView.controller!.jumpToPage(1);
       await tester.pumpAndSettle();
 
-      expect(find.text('2 / 3 صور'), findsOneWidget);
+      expect(find.text('2 من 3'), findsOneWidget);
     });
 
     testWidgets('amenities preview displays items and opens bottom sheet', (tester) async {
@@ -462,7 +462,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Truthful disclosure toast
-      expect(find.text('تسجيل الدخول مطلوب لحفظ العقار في المفضلة.'), findsOneWidget);
+      expect(find.text('يرجى تسجيل الدخول لحفظ هذا العقار في قائمتك المفضلة.'), findsOneWidget);
 
       // Stays unselected (not faking a saved state)
       expect(find.byIcon(Icons.favorite_border), findsOneWidget);
@@ -538,6 +538,75 @@ void main() {
       // Controller state MUST retain Quote B, never regressing to stale Quote A!
       expect(controller.state.quote!.nights, 5);
       expect(controller.state.quote!.totalStay, 15000.0);
+    });
+
+    test('controller rejects quote with mismatched parameters, clears loading and sets recoverable error', () async {
+      final mismatchedRepo = _ControllableQuoteRepo(
+        onQuote: (inDate, outDate, guests) async {
+          // Returns a quote with different dates
+          return BookingQuote.fromJson(_quoteJson(
+            propertyId: 'prop-mismatch-test',
+            checkIn: '2026-11-25', // Mismatched date
+            checkOut: '2026-11-30',
+            nights: 5,
+            guests: 1,
+            totalStay: 15000.0,
+            depositAmount: 3000.0,
+            remainingAmount: 12000.0,
+          ));
+        },
+      );
+
+      final controller = PropertyDetailsController(
+        propertyId: 'prop-mismatch-test',
+        repository: mismatchedRepo,
+      );
+
+      controller.selectDate(DateTime.utc(2026, 11, 20));
+      controller.selectDate(DateTime.utc(2026, 11, 24));
+      expect(controller.state.isCalculatingQuote, isTrue);
+
+      await Future<void>.delayed(Duration.zero);
+
+      // Must NOT be stuck loading
+      expect(controller.state.isCalculatingQuote, isFalse);
+      // Quote must be cleared
+      expect(controller.state.quote, isNull);
+      // Recoverable error message must be surfaced
+      expect(controller.state.quoteError, isNotNull);
+      expect(controller.state.quoteError, contains('استجابة السعر غير مطابقة للطلب الحالي'));
+    });
+
+    testWidgets('gallery actions positioned at top with correct RTL alignment and lower-left counter', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_testApp(propertyId: 'prop-test-1', repository: repository));
+      await tester.pumpAndSettle();
+
+      final backButton = find.bySemanticsLabel('الرجوع إلى الاستكشاف');
+      final favoriteButton = find.bySemanticsLabel('إضافة إلى المفضلة');
+      final counter = find.text('1 من 3');
+
+      expect(backButton, findsOneWidget);
+      expect(favoriteButton, findsOneWidget);
+      expect(counter, findsOneWidget);
+
+      final backOffset = tester.getTopRight(backButton);
+      final favOffset = tester.getTopLeft(favoriteButton);
+      final counterOffset = tester.getBottomLeft(counter);
+
+      // Both buttons must be near the top edge on the same horizontal line:
+      expect(backOffset.dy, lessThan(80.0));
+      expect(favOffset.dy, lessThan(80.0));
+      expect((backOffset.dy - favOffset.dy).abs(), lessThan(5.0));
+
+      // In RTL: Back button is at top-right (dx > 300), Favorite button is at top-left (dx < 60)
+      expect(backOffset.dx, greaterThan(300.0));
+      expect(favOffset.dx, lessThan(60.0));
+
+      // Counter is anchored at lower-left:
+      expect(counterOffset.dx, lessThan(100.0));
+      expect(counterOffset.dy, greaterThan(250.0));
     });
   });
 

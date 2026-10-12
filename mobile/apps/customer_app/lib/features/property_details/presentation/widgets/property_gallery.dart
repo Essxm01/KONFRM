@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class PropertyGallery extends StatefulWidget {
   const PropertyGallery({
@@ -103,36 +104,42 @@ class _PropertyGalleryState extends State<PropertyGallery> {
           ),
 
           // 3. Top Action Buttons (Back & Favorite)
-          SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Back Button (RTL-aware arrow)
-                  _CircleActionButton(
-                    icon: Icons.arrow_forward,
-                    label: 'الرجوع إلى الاستكشاف',
-                    onPressed: widget.onBack,
-                  ),
-                  // Favorite Button
-                  _CircleActionButton(
-                    icon: widget.isFavorite ? Icons.favorite : Icons.favorite_border,
-                    iconColor: widget.isFavorite ? const Color(0xFFE34154) : const Color(0xFF111723),
-                    label: widget.isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة',
-                    onPressed: widget.onToggleFavorite,
-                  ),
-                ],
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Back Button: In RTL, first child in Row is at START (TOP RIGHT)
+                    // Icons.arrow_back in RTL automatically points RIGHT (hierarchical return)
+                    _CircleActionButton(
+                      icon: Icons.arrow_back,
+                      label: 'الرجوع إلى الاستكشاف',
+                      onPressed: widget.onBack,
+                    ),
+                    // Favorite Button: In RTL, second child in Row is at END (TOP LEFT)
+                    _CircleActionButton(
+                      icon: widget.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      iconColor: widget.isFavorite ? const Color(0xFFE34154) : const Color(0xFF111723),
+                      label: widget.isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة',
+                      onPressed: widget.onToggleFavorite,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
 
-          // 4. Photo Count Pill (Bottom Left/Leading)
+          // 4. Photo Count Pill (Approved Lower-Left Corner)
           if (imageCount > 0)
-            PositionedDirectional(
+            Positioned(
               bottom: 16,
-              start: 16,
+              left: 16,
               child: GestureDetector(
                 onTap: () => _openFullScreenGallery(context),
                 child: Container(
@@ -142,7 +149,7 @@ class _PropertyGalleryState extends State<PropertyGallery> {
                     borderRadius: BorderRadius.circular(99),
                   ),
                   child: Text(
-                    '${_currentPage + 1} / $imageCount صور',
+                    '${_currentPage + 1} من $imageCount',
                     textDirection: TextDirection.rtl,
                     style: const TextStyle(
                       color: Colors.white,
@@ -249,33 +256,42 @@ class _FullScreenGalleryDialogState extends State<_FullScreenGalleryDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF070B12),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white, size: 26),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                  Text(
-                    '${_currentIndex + 1} / ${widget.images.length}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor: Color(0xFF070B12),
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+      child: Scaffold(
+        backgroundColor: const Color(0xFF070B12),
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Top Bar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white, size: 26),
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
-                  ),
-                  const SizedBox(width: 48), // Balance close button
-                ],
+                    Text(
+                      '${_currentIndex + 1} من ${widget.images.length}',
+                      textDirection: TextDirection.rtl,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 48), // Balance close button
+                  ],
+                ),
               ),
-            ),
 
             // Main Image View
             Expanded(
@@ -349,6 +365,8 @@ class _FullScreenGalleryDialogState extends State<_FullScreenGalleryDialog> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }
+}
+

@@ -329,7 +329,14 @@ class InlineAvailabilityCalendar extends StatelessWidget {
               }
 
               final cellDate = DateTime(year, month, dayNumber);
-              final isBlocked = availability?.isDateBlocked(cellDate) ?? false;
+              final bool isBlocked;
+              if (selectedCheckIn != null && selectedCheckOut == null && cellDate.isAfter(selectedCheckIn!)) {
+                // Picking departure: blocked only if stay overlaps an occupied night
+                isBlocked = availability?.hasConflict(selectedCheckIn!, cellDate) ?? false;
+              } else {
+                // Picking arrival (or restarting): blocked if in past or inside an occupied night
+                isBlocked = availability?.isDateBlocked(cellDate) ?? false;
+              }
 
               final isStart = selectedCheckIn != null &&
                   _isSameDay(selectedCheckIn!, cellDate);

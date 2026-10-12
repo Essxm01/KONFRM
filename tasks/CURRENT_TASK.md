@@ -10,28 +10,33 @@ BRANCH: feat/customer-screen06-property-details-v3
 SCOPE: Implement the Founder-approved Screen 06 Property Details Concept A V3 in native Customer Flutter. Single scrollable page, photo gallery with swipe, canonical facts, description and amenities, always-inline single-month calendar respecting availability, guest stepper, server-authoritative quote, sticky decision bar. Founder explicit override: REMOVE 'كيف يتم الحجز' explainer, keep only 'لا يتم الدفع عند إرسال الطلب؛ العربون بعد موافقة المالك.'. Four root tabs preserved, bottom nav hidden on Screen 06.
 
 ## Verification & Evidence
-- Unit & Widget Tests: 78/78 Customer App tests PASS (including 20/20 model tests, 15/15 widget & multi-viewport tests across 360dp, 390dp, 430dp, and 200% text scale).
+- Unit & Widget Tests: 83/83 Customer App tests PASS (including 23/23 model tests, 17/17 widget & multi-viewport tests across 360dp, 390dp, 430dp, and 200% text scale).
 - Static Analysis: 0 issues in `customer_app`, 0 issues in `konfrm_design_system`.
 - Shared Design System: 21/21 tests PASS.
 - Android Debug APK Build: PASS (`build\app\outputs\flutter-apk\app-debug.apk`).
-- Bridge Review `5488228808` Remediation Verified:
-  - P0-1: Latest-request-wins quote generation counter (`_quoteGeneration`) and response parameter identity check implemented; out-of-order race regression test PASS.
-  - P0-2: Test fixtures aligned with canonical deposit formula (deposit = 1st night price, remainder = total - deposit); multi-night 2, 3, 5-night tests PASS.
-  - P0-3: Public property detail authority fail-closed behavior enforced; initialProperty preview with GET error displays blocking StateView and blocks booking flow.
-  - P1-4: Explicit error clearing flags added to `PropertyDetailsState.copyWith`; retry recovery test PASS.
-  - P1-5: Guest favorite integrity secured; tapping heart displays truthful sign-in SnackBar without faking a saved state.
-  - P1-6: Civil UTC dates normalized across calendar, models, and stay calculation; 2-30 nights strictly validated in `BookingQuote.fromJson`.
-  - P1-7: Physical QA clarification noted (device screenshots reflect mock runner due to `DISCOVERY_RUNTIME_QA = BLOCKED_BY_CONFIGURATION`).
-  - P1-8: Screen 07 dependency handoff preserved honestly.
+- Bridge Review `5488651838` Unified Remediation Verified:
+  - P0-1 Gallery Actions: Back button positioned at top-right (pointing right in RTL), Favorite at top-left, image counter at lower-left (`1 من 3`).
+  - P0-2 Inline Calendar Safe Area: Viewport-aware scroll offset with 16dp status-bar clearance below Android system status bar (`اختار إقامتك` completely unclipped).
+  - P0-3 Availability Boundaries: Half-open interval `[checkIn, checkOut)` semantics honored; checkout on arrival day of subsequent booking allowed.
+  - P0-4 Quote Integrity & Error Recovery: Mismatched quote response clears `isCalculatingQuote`, clears quote, and surfaces recoverable error with retry button.
+  - P1-5 Financial Authority: Canonical deposit rule enforced (deposit = 1st night price: 13,500 total, 4,500 deposit, 9,000 remainder).
+  - P1-6 Date Contracts: Strict `parseCivilDate` rejects impossible dates (e.g. Feb 31); validates `minStay`/`maxStay` and deposit formula integrity.
+  - P1-7 Fullscreen Gallery Polish: Bright light status bar icons and dark navigation bar during fullscreen photo viewing; restores system appearance on exit.
+  - P1-8 Property Header Hierarchy: Responsive LayoutBuilder cleanly formats long Arabic title on its own line, with location and nightly price below it without overflow at 200% text scale.
+  - P1-9 Amenities Presentation: Public amenity mapping into Arabic (`شرفة`, `تراس`, `مباشر على الشاطئ`, `مسبح خاص`, etc.) with scrollable modal bottom sheet.
+  - P1-10 Truthful CTA & Favorite UX: Consumer-facing copy without developer jargon (`خدمة إرسال طلبات الحجز غير متاحة حالياً في هذه النسخة التجريبية.`) and truthful unauthenticated favorite prompt.
 - Separate Configuration Gate: `DISCOVERY_RUNTIME_QA = BLOCKED_BY_CONFIGURATION` (preserved).
 - Physical Device QA Evidence on Samsung Galaxy A56 5G (SM-A566B, Android 16 / One UI):
-  - `01_screen06_top_facts_amenities.png`: Hero gallery, 48px circle action buttons, blur counter pill, facts bar, description clamp, key amenities preview, sticky bar.
-  - `02_screen06_calendar_stepper_unselected.png`: Always-inline single-month calendar, unavailable dates disabled/grayed out, guest stepper, initial unselected state.
-  - `03_screen06_selected_dates_quote_breakdown.png`: 3-night selection (13-16 Oct) with server-authoritative canonical quote breakdown: 13,500 total, 4,500 deposit (strictly 1st night), 9,000 remainder. Explicit notice: 'لا يتم الدفع عند إرسال الطلب؛ العربون بعد موافقة المالك.'.
-  - `04_screen06_truthful_screen07_handoff.png`: Tapping 'طلب الحجز' triggers truthful SnackBar: 'شاشة طلب الحجز (Screen 07) قيد التطوير وفق معايير كونفرم.'.
-  - `05_screen06_amenities_bottom_sheet.png`: Modal bottom sheet displaying all amenities grouped with icons.
-  - `06_screen06_fullscreen_gallery_viewer.png`: Full-screen photo gallery viewer with pinch-to-zoom and thumbnail strip.
-  - `07_screen06_truthful_favorite_snackbar.png`: Tapping favorite heart button triggers truthful SnackBar: 'تسجيل الدخول مطلوب لحفظ العقار في المفضلة.' and heart remains unselected outline.
+  - `01_screen06_top_gallery_actions.png`: Hero gallery with corrected top-positioned action buttons (Back at top-right pointing right, Favorite at top-left), lower-left photo counter pill `1 من 3`.
+  - `02_screen06_long_title_layout.png`: Long property title layout with calm editorial hierarchy, location, and nightly price.
+  - `03_screen06_calendar_autoscroll.png`: Inline calendar scrolled into view, heading `اختار إقامتك` completely clear below Android status bar.
+  - `04_screen06_valid_date_range.png`: 3-night selection (13-16 Oct) on calendar with start, range, and end highlights, guest stepper.
+  - `05_screen06_canonical_quote_breakdown.png`: Canonical server-authoritative quote breakdown (Total: 13,500 EGP, Deposit: 4,500 EGP = strictly 1st night, Remaining: 9,000 EGP) with explicit payment disclosure.
+  - `06_screen06_fullscreen_gallery.png`: Fullscreen gallery viewer with bright/light system UI status bar icons on dark surface, thumbnails filmstrip, `1 من 3` counter, close button.
+  - `07_screen06_amenities_sheet.png`: Amenities bottom sheet with drag handle, properly translated Arabic labels (`شرفة`, `تراس`, `مباشر على الشاطئ`, `مسبح خاص`, `تكييف`, etc.) with semantic icons.
+  - `08_screen06_favorite_toast.png`: Guest favorite behavior with truthful SnackBar `يرجى تسجيل الدخول لحفظ هذا العقار في قائمتك المفضلة.` leaving heart icon unselected.
+  - `09_screen06_quote_error_retry.png`: Quote calculation error state with `تعذّر حساب السعر`, `إعادة المحاولة` button, and sticky bar showing `إعادة حساب السعر`.
+  - `10_screen06_truthful_handoff_snackbar.png`: Truthful consumer handoff notification `خدمة إرسال طلبات الحجز غير متاحة حالياً في هذه النسخة التجريبية.` without any developer jargon.
 
 ## Boundaries & Invariants
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.

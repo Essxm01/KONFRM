@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:konfrm_design_system/konfrm_design_system.dart';
@@ -74,22 +75,34 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
   }
 
   void _scrollToCalendar() {
-    final context = _calendarKey.currentContext;
-    if (context != null) {
-      Scrollable.ensureVisible(
-        context,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
+    final targetContext = _calendarKey.currentContext;
+    if (targetContext != null && _scrollController.hasClients) {
+      final box = targetContext.findRenderObject() as RenderBox?;
+      if (box != null) {
+        final position = _scrollController.position;
+        final viewport = RenderAbstractViewport.of(box);
+        final reveal = viewport.getOffsetToReveal(box, 0.0);
+        final topInset = MediaQuery.paddingOf(context).top + 16.0;
+        final targetOffset = (reveal.offset - topInset).clamp(
+          position.minScrollExtent,
+          position.maxScrollExtent,
+        );
+        _scrollController.animateTo(
+          targetOffset,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+        return;
+      }
     }
   }
 
   void _onReviewBooking() {
-    // Screen 07 is a downstream dependency not yet implemented in native Flutter.
+    // Truthful customer-facing notification: booking submission will be available upon completion of review stage
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
-          'مراجعة طلب الحجز (الشاشة 07) قيد الاعتماد والمتابعة كحزمة مستقلة.',
+          'خدمة إرسال طلبات الحجز غير متاحة حالياً في هذه النسخة التجريبية.',
           textDirection: TextDirection.rtl,
         ),
         duration: Duration(seconds: 3),
@@ -110,7 +123,7 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
           backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_forward, color: Color(0xFF101723)),
+            icon: const Icon(Icons.arrow_back, color: Color(0xFF101723)),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
@@ -128,7 +141,7 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
           backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_forward, color: Color(0xFF101723)),
+            icon: const Icon(Icons.arrow_back, color: Color(0xFF101723)),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
@@ -174,7 +187,7 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text(
-                      'تسجيل الدخول مطلوب لحفظ العقار في المفضلة.',
+                      'يرجى تسجيل الدخول لحفظ هذا العقار في قائمتك المفضلة.',
                       textDirection: TextDirection.rtl,
                     ),
                     duration: Duration(seconds: 3),
@@ -190,77 +203,144 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Title & Price Row
-                  Row(
+                  // Title & Subtitle/Price Section (Calm editorial hierarchy)
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              prop.title,
-                              style: KonfrmTypography.pageTitle.copyWith(
-                                fontSize: 21,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(0xFF101723),
-                                height: 1.48,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
+                      Text(
+                        prop.title,
+                        style: KonfrmTypography.pageTitle.copyWith(
+                          fontSize: 21,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF101723),
+                          height: 1.48,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isNarrow = constraints.maxWidth < 280 ||
+                              MediaQuery.textScalerOf(context).scale(1) > 1.3;
+                          if (isNarrow) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(
-                                  Icons.location_on_outlined,
-                                  size: 15,
-                                  color: Color(0xFF69788D),
-                                ),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    displayLocation,
-                                    style: KonfrmTypography.supporting.copyWith(
-                                      color: const Color(0xFF69788D),
-                                      fontSize: 12,
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.location_on_outlined,
+                                      size: 15,
+                                      color: Color(0xFF69788D),
                                     ),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: Text(
+                                        displayLocation,
+                                        style: KonfrmTypography.supporting.copyWith(
+                                          color: const Color(0xFF69788D),
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                                    textBaseline: TextBaseline.alphabetic,
+                                    children: [
+                                      Text(
+                                        '${_currencyFormat.format(prop.basePricePerNight)} ج.م',
+                                        textDirection: TextDirection.rtl,
+                                        style: KonfrmTypography.sectionTitle.copyWith(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w900,
+                                          color: const Color(0xFF101723),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'لليلة',
+                                        style: KonfrmTypography.supporting.copyWith(
+                                          color: const Color(0xFF718095),
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 130),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                            );
+                          }
+
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                '${_currencyFormat.format(prop.basePricePerNight)} ج.م',
-                                textDirection: TextDirection.rtl,
-                                style: KonfrmTypography.sectionTitle.copyWith(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                  color: const Color(0xFF101723),
+                              // Location
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.location_on_outlined,
+                                      size: 15,
+                                      color: Color(0xFF69788D),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: Text(
+                                        displayLocation,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: KonfrmTypography.supporting.copyWith(
+                                          color: const Color(0xFF69788D),
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Text(
-                                'لليلة',
-                                style: KonfrmTypography.supporting.copyWith(
-                                  color: const Color(0xFF718095),
-                                  fontSize: 11,
+                              const SizedBox(width: 12),
+                              // Nightly Base Price
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                                  textBaseline: TextBaseline.alphabetic,
+                                  children: [
+                                    Text(
+                                      '${_currencyFormat.format(prop.basePricePerNight)} ج.م',
+                                      textDirection: TextDirection.rtl,
+                                      style: KonfrmTypography.sectionTitle.copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w900,
+                                        color: const Color(0xFF101723),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'لليلة',
+                                      style: KonfrmTypography.supporting.copyWith(
+                                        color: const Color(0xFF718095),
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ],
                   ),
+
 
                   // Facts Bar
                   PropertyFactsBar(

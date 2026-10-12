@@ -93,3 +93,60 @@
 
 ---
 
+# 5 — سجل التقدم التاريخي المُتحقق منه (لا تعِد فتحه بلا سبب)
+
+**Brand & Android visual QA:**
+- الهوية الجديدة: رمز KONFRM الهندسي الأسود المؤلف من قطعتين، بتناسب ومسارات SVG أساسية؛ المؤسس اختار المعالجة النهائية، Wide lockup + icon-only للقيود المساحية. لا تغير هندسة الشعار أو تختار بدائل سابقة.
+- PR #113 مُدمج؛ merge commit: 6a08f064b9288b17bdb12667e6385a72d58de76e. Flutter symbol في Explore والـAndroid icon أول نسخة.
+- على **Samsung Galaxy A56 5G** Android 16 / One UI ظهرت مشكلة قص Adaptive Launcher/Splash. أُصلحت في PR #114، مراجعة فعلية على الجهاز، ثم دُمجت في main عند 05270c5fb3fa4970d0e2f7ca6e4b99444f405096. Dark Mode cold-start transition استُعرض وأفاد Antigravity أنه PASS، دون تعديل إضافي. لا تعتبر فحوص الشاشة الكاملة Live API مثبتة بهذا.
+- القاعدة UI: لا تكفّي CI الخضراء ولا حسابات safe zone الهندسية؛ انظر لنتيجة الشاشة على Android الفعلي.
+
+**Screen 03 — Explore / Discovery:**
+- المؤسس رفض الواجهات العقارية التقليدية والتكدس الطويل لحقول البحث، ورفض Concept B؛ اختار **CONCEPT A — PREMIUM EDITORIAL DISCOVERY** بوصفه الاتجاه البصري الرسمي.
+- صورة إقامة كبيرة وراقية مبكرة في أول 390×844، بطاقة بسيطة ذات معلومات قرار عالية الفائدة: عنوان الوحدة، القرية/المنتجع + المنطقة، السعر **الأساسي لليلة**، السعة، غرف النوم والحمامات، الصورة والحفظ. لا تقييمات مختلقة ولا «موثّق» أو «خصم» بلا بيانات.
+- Header: **رمز KONFRM الهندسي الصغير فقط**، بدون Wordmark كبير، Hero تسويقي، Greeting، أو تكرار أزرار المفضلة/الحساب الموجودة في Bottom Nav.
+- الشريط المعتمد اتجاهًا: Search Bar تقليدي راقٍ واحد بنص **«اختار المنطقة»**، غير قابل للكتابة؛ الضغط يفتح Bottom Sheet متعددة المناطق بأسماء وCheckboxes فقط، بدون صور مناطق أو اختيار قرى أو تصنيفات نوع الوحدة.
+- مصدر المناطق: مناطق لها **>=1 وحدة عامة PUBLISHED + VERIFIED ومؤهلة**؛ التواريخ المطلوبة لا تحذف المنطقة من خيارات الوجهات العامة. Multi-region = OR / union بدون تكرار.
+- المؤسس قرر صراحةً **عدم اختيار أي منطقة = عرض كل الإقامات المؤهلة**؛ إزالة فلتر المناطق تعود إلى كل الإقامات. فرّق بين الاختيار المؤقت في الـSheet والاختيار المؤكد؛ Cancel/Close يلغيان المؤقت.
+- عرض منطقة واحدة = اسمها، منطقتين = الاسمان عند الاتساع، 3+ = ملخص مختصر؛ لا Chips تملأ الشريط، لا حذف صامت باختصار X مبهم. مناطق لم تعد مؤهلة يجب أن تظهر بحالة Recovery صادقة.
+- **الفجوات التقنية التي لم نعتمد تنفيذها في هذه المرحلة:** Backend `destinations` الحالي يطابق أجزاء من title/address/region/resortName وليس exact canonical region; Flutter Explore بحث Destination واحد نصي؛ لا تُثبت canonical region IDs أو Public Region Options API. لا تحلها بـclient fake filtering ولا static coastal regions. تحتاج عقدًا هندسيًا مستقلًا وموافقة عند البدء.
+- Concept A Refined + Search Bar 6 boards حقيقية عُرضت، لكن لا تساوِ الموافقة على اتجاه Search Bar بإتمام تنفيذ native؛ آخر Flutter Explore الفعلي قبل Screen 06 ما زال يعرض فورم قديمًا وخطأ API config. انظر إلى الواقع عند الحاجة.
+- Customer root tabs الأربع بلا زيادة: **استكشف، المفضلة، حجوزاتي، الحساب**.
+
+**Screen 06 — Property Details V3:**
+- المؤسس رأى V1 ثم V2 ثم V3، ووافق صراحةً على **V3** وعلى تنفيذها Flutter.
+- قرار لا رجعة فيه إلا بموافقة جديدة: **حذف قسم «كيف يتم الحجز» كاملًا**؛ UX الاحترافية تعلّم من خلال التفاعل ومعلومات القرار، لا دليل خطوات في الواجهة. أبقِ الإفصاح القصير اللازم فقط: **«لا يتم الدفع عند إرسال الطلب؛ العربون بعد موافقة المالك.»**
+- Native Flutter Screen 06: شاشة واحدة قابلة للتمرير؛ Gallery swipe/fullscreen؛ Back أعلى يمين RTL وسهم يمين؛ Favorite أعلى يسار ومُعطل بصدق عند غياب Auth؛ Gallery counter أسفل يسار؛ تفاصيل عامة فقط؛ الصورة الرئيسية مناسبة للإقامة؛ Facts + الوصف + المرافق الحقيقية مع إظهار الكل؛ تقويم شهر واحد Inline وليس مودال؛ ضيوف؛ Server Quote + Sticky CTA مطابق للحالة.
+- مرّت PR #116 بمراجعات Bridge متعددة وآثار Android حقيقية من Samsung A56. تم إصلاح قص أزرار المعرض، اتجاه الرجوع، Bidi counter، SafeArea scroll/status-bar scrim، الصور التجريبية غير المناسبة، عيوب التواريخ نصف المفتوحة، استجابات quote المتأخرة وبيانات العقار غير الموثوقة، حالات error/retry، تعريب المرافق وإزالة alias duplicates، منع favorite المزيف، تعقيم أخطاء HTTP/JSON/SQL، وحالات 2–30 nights.
+- آخر Candidate الموافق عليه في PR #116: 7107fcffeae22f4e05bfc4a7ed82c8ae175e18da، اختبارات Flutter **93/93 وفق تقرير Antigravity المحلي**، Design System **21/21 وفق التقرير**، فحوص GitHub عند الرأس **10 SUCCESS + 4 SKIPPED**. Bridge راجع Source والشاشات الأصلية على A56، لكنه لم يُعِد تشغيل Flutter محليًا.
+- PR #116 دُمج بموافقة المؤسس عبر دمج عادي، وتحقّق GitHub أن main/merge commit أصبح **3fef468b5dcb2fc08da2ef8ab12bd51707c8b806**. رابط: https://github.com/Essxm01/KONFRM/pull/116
+- **تم الاعتماد والدمج كمرحلة Screen 06، لا كإطلاق رحلة الحجز كاملة. لا تُرجع الـPR إلى Draft أو تعيد فتحه وهميًا.** لا يوجد Deploy إنتاجي أجراه الجسر عند الدمج.
+- مواضع كود Screen 06 داخل mobile/apps/customer_app/lib/features/property_details/ (data, application, presentation, widgets)؛ ابحث عن الملف الفعلي عند أي مهمة لا تخمن محتواه.
+- ملاحظة مستقلة: Screen 06 أظهر عند الضغط على CTA مراجعة الحجز إشعارًا تجريبيًا لأن Screen 07 غير موجودة Native. هذا placeholder صادق كحزمة منفصلة وليس تدفق حجز مكتمل.
+
+**PR #115 — Unified Playbook:**
+- مسار الملف: DESIGN_SYSTEM/REFERENCES/KONFRM_UI_UX_BRIDGE_DESIGN_PLAYBOOK.md على فرع docs/ui-ux-bridge-design-playbook-20261012.
+- الحالة المتحققة عند هذه الوثيقة: **Draft / Open / Unmerged**، HEAD = 1c7c32b4dbe1125e1dda15048f9d3fd1a052e52a. لا تستبدل الملف أو تدمجه من تلقاء نفسك؛ هو مرجع مستقر محفوظ على GitHub، وليس دليلًا أنه أصبح في main.
+- برومبت انتقال Bridge 11 الحالي وثيقة **مستقلة عن Playbook**، للحفاظ على وضوح المسؤوليات.
+
+# 6 — فلسفة التصميم المقفلة، وليس مجرد Palette
+
+المرجع المعتمد: **Concept A / Premium Hospitality Editorial**, عربـي RTL، **Cairo**، monochrome-first، أبيض ومساحات تنفس محسوبة، أسود للأفعال الأساسية المناسبة، أزرق تفاعل محدود (مرجع مرشح #276EF1 يخضع للتوكن الرسمي الأحدث). الرقي يأتي من صور الوحدة، عرض السعر والموقع والحقائق والتسلسل الواضح، لا من gradients/glass/cards ثقيلة/أيقونات مزخرفة.
+
+- Uber Base يساعد في هيكلة المكونات والثبات والتناسق، وليس نقل هوية Uber أو نسخ Figma دون إذن.
+- Airbnb / Vrbo / Booking / Holidu لتعلّم استكشاف الإقامة والقرار والحالات، لا لنسخ التصاميم.
+- **السبعة Design Skills Sources** كمراجع منهجية (جرى استخراج أجزاء محددة منها في Playbook، لا تدّع قراءتها بالكامل):
+  1. https://github.com/emilkowalski/skills — تفاصيل التفاعل/الموشن/كسر الواجهات.
+  2. https://github.com/ConardLi/garden-skills — التصميم المبني على المشروع ونقد الـRender.
+  3. https://github.com/elayadesign/ai-design-skills — توضيح الوظيفة والإجراء، لا Hero تسويقي في Explore.
+  4. https://github.com/MengTo/Skills — Design-First ورفض Generic AI Slop.
+  5. https://github.com/jakubkrehel/skills — نقد التسلسل والوضوح وAccessibility.
+  6. https://github.com/codeswithroh/tastemaker — استخلاص روح المرجع بدون اختراع هوية جديدة.
+  7. https://github.com/Owl-Listener/designer-skills — Search UX، Visual Hierarchy، كثافة المعلومات.
+- لا تثبت موافقة تصميم عالية الجودة دون **صورة/نموذج حقيقي High-Fidelity**. إذا المستخدم طلب صورًا ثابتة استخدم الوسيلة المناسبة؛ ولو طلب تفاعلًا صالحًا للنقر أنشئ prototype فعليًا، لا صورة توهمه بأنه قابل للتجربة.
+- المصمم هنا لا يختار بديلًا على المؤسس؛ يقدّم توصية مدعومة ويسأل عن القرار عند الحاجة.
+- الحالات مهمة بصريًا ووظيفيًا: Default, Loading, Empty, Error, Retry, Disabled, Stale, Long Arabic, Auth Gate, Date Conflict, Quote Changed, Submit Pending, Success. كل حالة تمثل معنى تجاريًا حقيقيًا.
+- التحقق على 360×800 و390×844 و430×932، خط 200%، RTL mixed numerals/prices، Samsung A56 عند تنفيذ Native. فحص overflow وflutter analyze لا يكفي دون تمارين التفاعل.
+
+---
+

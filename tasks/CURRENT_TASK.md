@@ -10,10 +10,21 @@ BRANCH: feat/customer-screen06-property-details-v3
 SCOPE: Implement the Founder-approved Screen 06 Property Details Concept A V3 in native Customer Flutter. Single scrollable page, photo gallery with swipe, canonical facts, description and amenities, always-inline single-month calendar respecting availability, guest stepper, server-authoritative quote, sticky decision bar. Founder explicit override: REMOVE 'كيف يتم الحجز' explainer, keep only 'لا يتم الدفع عند إرسال الطلب؛ العربون بعد موافقة المالك.'. Four root tabs preserved, bottom nav hidden on Screen 06.
 
 ## Verification & Evidence
-- Unit & Widget Tests: 88/88 Customer App tests PASS (including 28/28 model tests, 19/19 widget tests, multi-viewport layout tests across 360dp, 390dp, 430dp, and 200% text scale).
+- Unit & Widget Tests: 93/93 Customer App tests PASS (including 28/28 model tests, 24/24 widget tests, multi-viewport layout tests across 360dp, 390dp, 430dp, and 200% text scale, and 5 dedicated error sanitization & technical diagnostics tests).
 - Static Analysis: 0 issues in `customer_app`, 0 issues in `konfrm_design_system`.
 - Shared Design System: 21/21 tests PASS.
 - Android Debug APK Build: PASS (`build\app\outputs\flutter-apk\app-debug.apk`).
+- Bridge Review `5489977466` Focused Error-Sanitization Gate Resolved:
+  - Sanitized customer-facing error presentation paths across `PropertyDetailsRepository` and `PropertyDetailsController`.
+  - Prevented raw `FormatException`, raw HTTP status codes/text, and arbitrary untrusted backend error strings (SQL constraints, PGRST syntax, internal worker timeouts) from leaking into customer UI.
+  - Truthful distinctions preserved in concise, meaningful Arabic across all failure categories (unavailable property, date overlap, min/max stay, max guests, malformed responses, network/timeout/server errors).
+  - Isolated technical diagnostics safely into `PropertyDetailsException.technicalDetails` for internal monitoring and debugging without customer exposure.
+  - Added 5 focused tests in `test/property_details_widget_test.dart`:
+    1. Malformed property details response: corrupt JSON & FormatException cleanly sanitized to concise Arabic, retryable.
+    2. Malformed availability response: invalid structure & dates sanitized to concise Arabic, retryable.
+    3. Unexpected HTTP status (502, 429): raw HTTP status text sanitized to customer-friendly Arabic; technical details preserved in `technicalDetails`.
+    4. Arbitrary technical backend error text (400, 409): raw SQL constraint violation and PGRST syntax messages sanitized to approved Arabic while isolating technical diagnostics internally.
+    5. Customer-friendly quote error and retry: cleanly displays sanitized Arabic copy without developer jargon and recovers on retry success.
 - Bridge Review `5489402454` Remediation Verified:
   - TASK 1 Canonical Stay Contract: 2–30 nights strictly enforced in `PropertyAvailability.fromJson` with boundary assertions and 5 boundary tests (min=1, 0, max=31, 365, inconsistent bounds, min=2/max=30 boundary).
   - TASK 2 Availability Response Identity: `avail.propertyId == state.propertyId` validated in controller and repository; fails closed with clean Arabic error (`تعذر التحقق من هوية العقار في استجابة التوفر.`) and clears availability state.

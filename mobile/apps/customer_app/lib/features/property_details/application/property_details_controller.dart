@@ -155,9 +155,14 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
             : (state.selectedGuests < 1 ? 1 : state.selectedGuests),
       );
     } catch (e) {
-      final message = e is PropertyDetailsException
-          ? e.message ?? _mapError(e.kind)
-          : 'تعذر تحميل بيانات الإقامة';
+      final String message;
+      if (e is PropertyDetailsException) {
+        message = _isCustomerSafeArabic(e.userMessage)
+            ? e.userMessage!
+            : _mapPropertyError(e.kind);
+      } else {
+        message = 'تعذر تحميل بيانات الإقامة';
+      }
       state = state.copyWith(
         isLoadingProperty: false,
         propertyError: message,
@@ -180,9 +185,14 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
         );
       }
     } catch (e) {
-      final message = e is PropertyDetailsException
-          ? e.message ?? _mapError(e.kind)
-          : 'تعذر جلب بيانات التوفر';
+      final String message;
+      if (e is PropertyDetailsException) {
+        message = _isCustomerSafeArabic(e.userMessage)
+            ? e.userMessage!
+            : _mapAvailabilityError(e.kind);
+      } else {
+        message = 'تعذر جلب بيانات التوفر';
+      }
       state = state.copyWith(
         isLoadingAvailability: false,
         clearAvailability: true,
@@ -358,9 +368,14 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
       );
     } catch (e) {
       if (generation != _quoteGeneration || !mounted) return;
-      final message = e is PropertyDetailsException
-          ? e.message ?? _mapError(e.kind)
-          : 'تعذر احتساب السعر حالياً. يرجى إعادة المحاولة.';
+      final String message;
+      if (e is PropertyDetailsException) {
+        message = _isCustomerSafeArabic(e.userMessage)
+            ? e.userMessage!
+            : _mapQuoteError(e.kind);
+      } else {
+        message = 'تعذر احتساب السعر حالياً. يرجى إعادة المحاولة.';
+      }
       state = state.copyWith(
         isCalculatingQuote: false,
         quoteError: message,
@@ -389,12 +404,57 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
     // Guest favorites are unauthenticated; state remains false.
   }
 
-  static String _mapError(PropertyDetailsFailureKind kind) => switch (kind) {
+  static bool _isCustomerSafeArabic(String? text) {
+    if (text == null || text.trim().isEmpty) return false;
+    final trimmed = text.trim();
+    // Reject any technical keywords or tokens:
+    if (trimmed.contains('FormatException') ||
+        trimmed.contains('Exception') ||
+        trimmed.contains('Error') ||
+        trimmed.contains('error') ||
+        trimmed.startsWith('HTTP') ||
+        trimmed.contains('http:') ||
+        trimmed.contains('https:') ||
+        trimmed.contains('status code') ||
+        trimmed.contains('JSON') ||
+        trimmed.contains('json') ||
+        trimmed.contains('null') ||
+        trimmed.contains('{') ||
+        trimmed.contains('}')) {
+      return false;
+    }
+    // Must contain Arabic characters
+    return RegExp(r'[\u0600-\u06FF]').hasMatch(trimmed);
+  }
+
+  static String _mapPropertyError(PropertyDetailsFailureKind kind) => switch (kind) {
+        PropertyDetailsFailureKind.configuration => 'خدمة تفاصيل الإقامة غير متاحة حالياً.',
+        PropertyDetailsFailureKind.network => 'تعذر الاتصال بالشبكة. تحقق من اتصالك.',
+        PropertyDetailsFailureKind.timeout => 'انتهت مهلة الطلب. يرجى إعادة المحاولة.',
+        PropertyDetailsFailureKind.notFound => 'الوحدة غير موجودة',
+        PropertyDetailsFailureKind.unpublished => 'هذه الوحدة غير معروضة للنشر حالياً',
+        PropertyDetailsFailureKind.server => 'تعذر تحميل بيانات الإقامة حالياً. يرجى إعادة المحاولة.',
+        PropertyDetailsFailureKind.invalidResponse => 'تعذر قراءة بيانات الإقامة.',
+        _ => 'تعذر تحميل بيانات الإقامة',
+      };
+
+  static String _mapAvailabilityError(PropertyDetailsFailureKind kind) => switch (kind) {
+        PropertyDetailsFailureKind.configuration => 'خدمة التوفر غير متاحة حالياً.',
+        PropertyDetailsFailureKind.network => 'تعذر الاتصال بالشبكة. تحقق من اتصالك.',
+        PropertyDetailsFailureKind.timeout => 'انتهت مهلة الطلب. يرجى إعادة المحاولة.',
+        PropertyDetailsFailureKind.notFound => 'الوحدة غير موجودة',
+        PropertyDetailsFailureKind.unpublished => 'هذه الوحدة غير معروضة للنشر حالياً',
+        PropertyDetailsFailureKind.server => 'تعذر جلب بيانات التوفر حالياً. يرجى إعادة المحاولة.',
+        PropertyDetailsFailureKind.invalidResponse => 'تعذر قراءة بيانات التوفر.',
+        _ => 'تعذر جلب بيانات التوفر',
+      };
+
+  static String _mapQuoteError(PropertyDetailsFailureKind kind) => switch (kind) {
         PropertyDetailsFailureKind.configuration => 'خدمة الأسعار غير مهيأة',
         PropertyDetailsFailureKind.network => 'تعذر الاتصال بالشبكة. تحقق من اتصالك.',
         PropertyDetailsFailureKind.timeout => 'انتهت مهلة الطلب. أعد المحاولة.',
         PropertyDetailsFailureKind.notFound => 'الوحدة غير موجودة',
-        PropertyDetailsFailureKind.unpublished => 'هذه الوحدة غير معروضة للنشر حالياً',
+        PropertyDetailsFailureKind.unpublished => 'لا يمكن حساب سعر لوحدة غير منشورة',
         PropertyDetailsFailureKind.dateOverlap => 'التواريخ المطلوبة محجوزة مسبقاً',
         PropertyDetailsFailureKind.minStayNotMet => 'الحد الأدنى للإقامة ليلتان',
         PropertyDetailsFailureKind.maxStayExceeded => 'الحد الأقصى للإقامة 30 ليلة',

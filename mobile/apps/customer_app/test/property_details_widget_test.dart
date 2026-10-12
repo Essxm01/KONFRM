@@ -748,6 +748,325 @@ void main() {
       expect(find.text('شاليه مطل على البحر'), findsOneWidget);
     });
   });
+
+  group('Screen 06 Property Details View — Error Sanitization & Technical Diagnostics Mesh', () {
+    testWidgets('malformed property details response: FormatException and bad JSON sanitized to concise Arabic', (tester) async {
+      final malformedClient = MockClient((request) async {
+        return http.Response('{corrupt-json-payload', 200, headers: {'content-type': 'application/json'});
+      });
+
+      final malformedRepo = PropertyDetailsRepository(
+        baseUrl: 'https://api.example.test',
+        client: malformedClient,
+      );
+
+      await tester.pumpWidget(_testApp(propertyId: 'prop-malformed', repository: malformedRepo));
+      await tester.pumpAndSettle();
+
+      final element = tester.element(find.byType(PropertyDetailsView));
+      final container = ProviderScope.containerOf(element);
+      final state = container.read(propertyDetailsControllerProvider('prop-malformed'));
+
+      // 1. Must never leak FormatException or corrupt tokens into propertyError
+      expect(state.propertyError, isNotNull);
+      expect(state.propertyError, 'تعذر قراءة بيانات الإقامة.');
+      expect(state.propertyError!.contains('FormatException'), isFalse);
+      expect(state.propertyError!.contains('corrupt'), isFalse);
+
+      // 2. UI renders honest StateView with sanitized Arabic explanation and retry affordance
+      expect(find.text('تعذر تحميل بيانات الإقامة'), findsOneWidget);
+      expect(find.text('تعذر قراءة بيانات الإقامة.'), findsOneWidget);
+      expect(find.text('إعادة المحاولة'), findsOneWidget);
+    });
+
+    testWidgets('malformed availability response: parsing and date errors sanitized to concise Arabic', (tester) async {
+      final malformedAvailClient = MockClient((request) async {
+        if (request.url.path.contains('/availability')) {
+          // Corrupted date format
+          return http.Response(
+            jsonEncode({
+              'success': true,
+              'data': {
+                'propertyId': 'prop-test-1',
+                'unavailableRanges': [
+                  {'checkIn': 'not-a-valid-date', 'checkOut': '2026-10-15'}
+                ],
+                'minStay': 2,
+                'maxStay': 30,
+              },
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return http.Response(
+          jsonEncode({'success': true, 'data': _propertyJson()}),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+
+      final malformedAvailRepo = PropertyDetailsRepository(
+        baseUrl: 'https://api.example.test',
+        client: malformedAvailClient,
+      );
+
+      await tester.pumpWidget(_testApp(propertyId: 'prop-test-1', repository: malformedAvailRepo));
+      await tester.pumpAndSettle();
+
+      final element = tester.element(find.byType(PropertyDetailsView));
+      final container = ProviderScope.containerOf(element);
+      final state = container.read(propertyDetailsControllerProvider('prop-test-1'));
+
+      // 1. Availability error is sanitized to concise Arabic
+      expect(state.availabilityError, isNotNull);
+      expect(state.availabilityError, 'تعذر قراءة بيانات التوفر.');
+      expect(state.availabilityError!.contains('FormatException'), isFalse);
+      expect(state.availabilityError!.contains('not-a-valid-date'), isFalse);
+
+      // 2. Calendar card displays sanitized Arabic error and retry button
+      expect(find.text('تعذر قراءة بيانات التوفر.', skipOffstage: false), findsOneWidget);
+      expect(find.text('إعادة تحميل التوفر', skipOffstage: false), findsOneWidget);
+    });
+
+    testWidgets('unexpected HTTP status (502, 429) sanitized to customer-friendly Arabic; technical details preserved', (tester) async {
+      final unexpectedClient = MockClient((request) async {
+        if (request.url.path.contains('/properties/prop-502')) {
+          return http.Response('502 Bad Gateway from Cloudflare Proxy', 502, headers: {'content-type': 'text/plain'});
+        }
+        return http.Response('404 Not Found', 404);
+      });
+
+      final unexpectedRepo = PropertyDetailsRepository(
+        baseUrl: 'https://api.example.test',
+        client: unexpectedClient,
+      );
+
+      await tester.pumpWidget(_testApp(propertyId: 'prop-502', repository: unexpectedRepo));
+      await tester.pumpAndSettle();
+
+      final element = tester.element(find.byType(PropertyDetailsView));
+      final container = ProviderScope.containerOf(element);
+      final state = container.read(propertyDetailsControllerProvider('prop-502'));
+
+      // 1. Customer-facing error must NEVER contain raw HTTP status or proxy strings
+      expect(state.propertyError, isNotNull);
+      expect(state.propertyError, 'تعذر تحميل بيانات الإقامة حالياً. يرجى إعادة المحاولة.');
+      expect(state.propertyError!.contains('502'), isFalse);
+      expect(state.propertyError!.contains('Bad Gateway'), isFalse);
+      expect(state.propertyError!.contains('Cloudflare'), isFalse);
+
+      // 2. Repository level directly verifies technicalDetails preservation
+      expect(
+        () => unexpectedRepo.getPropertyDetails('prop-502'),
+        throwsA(isA<PropertyDetailsException>().having(
+          (e) => e.technicalDetails,
+          'technicalDetails',
+          contains('HTTP 502'),
+        )),
+      );
+    });
+
+    test('arbitrary technical backend error text (400, 409) sanitized while preserving technicalDetails internally', () async {
+      final backendClient = MockClient((request) async {
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        if (body['guests'] == 99) {
+          return http.Response(
+            jsonEncode({
+              'success': false,
+              'error': {
+                'code': 'MAX_GUESTS_EXCEEDED',
+                'message': 'PGRST_ERR_CAPACITY: requested 99 guests exceeds property unit maximum constraint 6',
+              },
+            }),
+            400,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        if (body['checkIn'] == '2026-10-14') {
+          return http.Response(
+            jsonEncode({
+              'success': false,
+              'error': {
+                'code': 'CONFLICT',
+                'message': 'SQL constraint violation: booking range overlap on postgres exclusion table idx_booking_dates',
+              },
+            }),
+            409,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return http.Response(
+          jsonEncode({
+            'success': false,
+            'error': {
+              'code': 'UNKNOWN_SQL_SYNTAX',
+              'message': 'Syntax error at token SELECT * FROM public.bookings WHERE id = NULL',
+            },
+          }),
+          400,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+
+      final repo = PropertyDetailsRepository(
+        baseUrl: 'https://api.example.test',
+        client: backendClient,
+      );
+
+      final controller = PropertyDetailsController(
+        propertyId: 'prop-test-1',
+        repository: repo,
+      );
+
+      // 1. Test 409 Conflict with arbitrary SQL message
+      controller.state = controller.state.copyWith(
+        selectedCheckIn: DateTime.utc(2026, 10, 14),
+        selectedCheckOut: DateTime.utc(2026, 10, 17),
+        selectedGuests: 2,
+      );
+      await controller.calculateQuote();
+
+      expect(controller.state.quoteError, isNotNull);
+      expect(controller.state.quoteError, 'التواريخ المطلوبة محجوزة مسبقاً');
+      expect(controller.state.quoteError!.contains('SQL'), isFalse);
+      expect(controller.state.quoteError!.contains('postgres'), isFalse);
+      expect(controller.state.quoteError!.contains('constraint'), isFalse);
+
+      // 2. Test 400 with MAX_GUESTS_EXCEEDED and arbitrary capacity message
+      controller.state = controller.state.copyWith(
+        selectedCheckIn: DateTime.utc(2026, 10, 20),
+        selectedCheckOut: DateTime.utc(2026, 10, 24),
+        selectedGuests: 99,
+      );
+      await controller.calculateQuote();
+
+      expect(controller.state.quoteError, isNotNull);
+      expect(controller.state.quoteError, 'عدد الضيوف يتجاوز السعة المحددة');
+      expect(controller.state.quoteError!.contains('PGRST'), isFalse);
+      expect(controller.state.quoteError!.contains('constraint'), isFalse);
+
+      // 3. Test 400 with UNKNOWN_SQL_SYNTAX
+      controller.state = controller.state.copyWith(
+        selectedCheckIn: DateTime.utc(2026, 10, 20),
+        selectedCheckOut: DateTime.utc(2026, 10, 24),
+        selectedGuests: 2,
+      );
+      await controller.calculateQuote();
+
+      expect(controller.state.quoteError, isNotNull);
+      expect(controller.state.quoteError, 'بيانات الحجز غير صالحة');
+      expect(controller.state.quoteError!.contains('SELECT'), isFalse);
+      expect(controller.state.quoteError!.contains('Syntax'), isFalse);
+
+      // 4. Verify repository preserves technical diagnostics internally
+      try {
+        await repo.calculateQuote(
+          propertyId: 'prop-test-1',
+          checkIn: '2026-10-14',
+          checkOut: '2026-10-17',
+          guests: 2,
+        );
+        fail('Should throw');
+      } on PropertyDetailsException catch (e) {
+        expect(e.kind, PropertyDetailsFailureKind.dateOverlap);
+        expect(e.userMessage, 'التواريخ المطلوبة محجوزة مسبقاً');
+        expect(e.technicalDetails, contains('SQL constraint violation'));
+      }
+    });
+
+    testWidgets('customer-friendly quote error and retry recovers cleanly on success', (tester) async {
+      tester.view.physicalSize = const Size(800 * 3.0, 2400 * 3.0);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      var quoteAttempt = 0;
+      final retryQuoteClient = MockClient((request) async {
+        if (request.url.path.contains('/availability')) {
+          return http.Response(
+            jsonEncode({'success': true, 'data': _availabilityJson()}),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        if (request.url.path.contains('/bookings/calculate')) {
+          quoteAttempt++;
+          if (quoteAttempt == 1) {
+            return http.Response(
+              jsonEncode({
+                'success': false,
+                'error': {'message': 'Temporary internal quote calculation worker timeout'},
+              }),
+              500,
+              headers: {'content-type': 'application/json'},
+            );
+          }
+          return http.Response(
+            jsonEncode({
+              'success': true,
+              'data': _quoteJson(
+                propertyId: 'prop-test-1',
+                checkIn: '2026-10-14',
+                checkOut: '2026-10-17',
+                nights: 3,
+                guests: 1,
+                totalStay: 9000.0,
+                depositAmount: 3000.0,
+                remainingAmount: 6000.0,
+              ),
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return http.Response(
+          jsonEncode({'success': true, 'data': _propertyJson()}),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+
+      final retryRepo = PropertyDetailsRepository(
+        baseUrl: 'https://api.example.test',
+        client: retryQuoteClient,
+      );
+
+      await tester.pumpWidget(_testApp(propertyId: 'prop-test-1', repository: retryRepo));
+      await tester.pumpAndSettle();
+
+      final element = tester.element(find.byType(PropertyDetailsView));
+      final container = ProviderScope.containerOf(element);
+      final controller = container.read(propertyDetailsControllerProvider('prop-test-1').notifier);
+
+      // Select dates: Oct 14 to Oct 17 (3 nights)
+      controller.selectDate(DateTime.utc(2026, 10, 14));
+      controller.selectDate(DateTime.utc(2026, 10, 17));
+      await tester.pumpAndSettle();
+
+      // Attempt 1 fails: sanitized error shown, no internal worker timeout message
+      expect(find.text('تعذّر حساب السعر', skipOffstage: false), findsOneWidget);
+      expect(find.text('تعذر احتساب السعر حالياً. يرجى إعادة المحاولة.', skipOffstage: false), findsOneWidget);
+      expect(find.text('Temporary internal quote calculation worker timeout'), findsNothing);
+
+      // Find retry affordance in quote card and trigger retry
+      final retryButton = find.text('إعادة المحاولة', skipOffstage: false);
+      expect(retryButton, findsOneWidget);
+      await tester.ensureVisible(retryButton);
+      await tester.pumpAndSettle();
+      await tester.tap(retryButton);
+      await tester.pumpAndSettle();
+
+      // Attempt 2 succeeds: quote rendered cleanly, error cleared
+      final stateAfterRetry = container.read(propertyDetailsControllerProvider('prop-test-1'));
+      expect(stateAfterRetry.quoteError, isNull);
+      expect(stateAfterRetry.quote, isNotNull);
+      expect(stateAfterRetry.quote!.totalStay, 9000.0);
+      expect(find.text('إجمالي الإقامة (3 ليالٍ)', skipOffstage: false), findsOneWidget);
+    });
+  });
 }
 
 class _ControllableQuoteRepo extends PropertyDetailsRepository {

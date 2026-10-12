@@ -23,13 +23,28 @@ enum PropertyDetailsFailureKind {
 }
 
 class PropertyDetailsException implements Exception {
-  const PropertyDetailsException(this.kind, [this.message]);
+  const PropertyDetailsException(
+    this.kind, [
+    this.userMessage,
+    this.technicalDetails,
+  ]);
 
   final PropertyDetailsFailureKind kind;
-  final String? message;
+
+  /// Optional pre-sanitized customer-facing Arabic message.
+  /// Must NEVER contain raw English errors, FormatException, or HTTP status codes.
+  final String? userMessage;
+
+  /// Internal technical diagnostics (e.g. FormatException, HTTP status, backend message).
+  /// Preserved for internal debugging/logging, never exposed to the customer UI.
+  final String? technicalDetails;
+
+  /// Backwards-compatibility getter: returns userMessage if available.
+  String? get message => userMessage;
 
   @override
-  String toString() => 'PropertyDetailsException($kind, $message)';
+  String toString() =>
+      'PropertyDetailsException($kind, userMessage: $userMessage, technicalDetails: $technicalDetails)';
 }
 
 final propertyDetailsRepositoryProvider = Provider<PropertyDetailsRepository>((ref) {
@@ -59,7 +74,11 @@ class PropertyDetailsRepository {
         origin.hasQuery ||
         origin.hasFragment ||
         (origin.path.isNotEmpty && origin.path != '/')) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.configuration);
+      throw const PropertyDetailsException(
+        PropertyDetailsFailureKind.configuration,
+        null,
+        'Invalid baseUrl configuration',
+      );
     }
     return Uri(
       scheme: 'https',
@@ -76,7 +95,8 @@ class PropertyDetailsRepository {
     if (cleanId.isEmpty) {
       throw const PropertyDetailsException(
         PropertyDetailsFailureKind.notFound,
-        'معرف الوحدة غير صالح',
+        'الوحدة غير موجودة',
+        'Empty propertyId provided',
       );
     }
 
@@ -91,20 +111,37 @@ class PropertyDetailsRepository {
           'X-Client-Platform': 'flutter-customer',
         },
       ).timeout(timeout);
-    } on TimeoutException {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.timeout);
-    } on SocketException {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.network);
-    } on http.ClientException {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.network);
-    } catch (_) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.network);
+    } on TimeoutException catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.timeout,
+        null,
+        e.toString(),
+      );
+    } on SocketException catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.network,
+        null,
+        e.toString(),
+      );
+    } on http.ClientException catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.network,
+        null,
+        e.toString(),
+      );
+    } catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.network,
+        null,
+        e.toString(),
+      );
     }
 
     if (response.statusCode == 404) {
       throw const PropertyDetailsException(
         PropertyDetailsFailureKind.notFound,
         'الوحدة غير موجودة',
+        'HTTP 404',
       );
     }
 
@@ -112,29 +149,43 @@ class PropertyDetailsRepository {
       throw const PropertyDetailsException(
         PropertyDetailsFailureKind.unpublished,
         'هذه الوحدة غير معروضة للنشر حالياً',
+        'HTTP 403',
       );
     }
 
     if (response.statusCode >= 500) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.server);
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.server,
+        null,
+        'HTTP ${response.statusCode}',
+      );
     }
 
     if (response.statusCode != 200) {
       throw PropertyDetailsException(
         PropertyDetailsFailureKind.server,
-        'HTTP ${response.statusCode}',
+        null,
+        'Unexpected HTTP ${response.statusCode}: ${response.body}',
       );
     }
 
     final dynamic body;
     try {
       body = jsonDecode(utf8.decode(response.bodyBytes));
-    } catch (_) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.invalidResponse);
+    } catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.invalidResponse,
+        null,
+        'jsonDecode error: $e',
+      );
     }
 
     if (body is! Map<String, dynamic> || body['success'] != true || body['data'] is! Map<String, dynamic>) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.invalidResponse);
+      throw const PropertyDetailsException(
+        PropertyDetailsFailureKind.invalidResponse,
+        null,
+        'Invalid envelope: success is not true or data is not a map',
+      );
     }
 
     try {
@@ -142,7 +193,8 @@ class PropertyDetailsRepository {
     } catch (e) {
       throw PropertyDetailsException(
         PropertyDetailsFailureKind.invalidResponse,
-        e.toString(),
+        null,
+        'PublicPropertyDetail.fromJson error: $e',
       );
     }
   }
@@ -153,7 +205,8 @@ class PropertyDetailsRepository {
     if (cleanId.isEmpty) {
       throw const PropertyDetailsException(
         PropertyDetailsFailureKind.notFound,
-        'معرف الوحدة غير صالح',
+        'الوحدة غير موجودة',
+        'Empty propertyId provided',
       );
     }
 
@@ -168,20 +221,37 @@ class PropertyDetailsRepository {
           'X-Client-Platform': 'flutter-customer',
         },
       ).timeout(timeout);
-    } on TimeoutException {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.timeout);
-    } on SocketException {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.network);
-    } on http.ClientException {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.network);
-    } catch (_) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.network);
+    } on TimeoutException catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.timeout,
+        null,
+        e.toString(),
+      );
+    } on SocketException catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.network,
+        null,
+        e.toString(),
+      );
+    } on http.ClientException catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.network,
+        null,
+        e.toString(),
+      );
+    } catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.network,
+        null,
+        e.toString(),
+      );
     }
 
     if (response.statusCode == 404) {
       throw const PropertyDetailsException(
         PropertyDetailsFailureKind.notFound,
         'الوحدة غير موجودة',
+        'HTTP 404',
       );
     }
 
@@ -189,29 +259,43 @@ class PropertyDetailsRepository {
       throw const PropertyDetailsException(
         PropertyDetailsFailureKind.unpublished,
         'هذه الوحدة غير معروضة للنشر حالياً',
+        'HTTP 403',
       );
     }
 
     if (response.statusCode >= 500) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.server);
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.server,
+        null,
+        'HTTP ${response.statusCode}',
+      );
     }
 
     if (response.statusCode != 200) {
       throw PropertyDetailsException(
         PropertyDetailsFailureKind.server,
-        'HTTP ${response.statusCode}',
+        null,
+        'Unexpected HTTP ${response.statusCode}: ${response.body}',
       );
     }
 
     final dynamic body;
     try {
       body = jsonDecode(utf8.decode(response.bodyBytes));
-    } catch (_) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.invalidResponse);
+    } catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.invalidResponse,
+        null,
+        'jsonDecode error: $e',
+      );
     }
 
     if (body is! Map<String, dynamic> || body['success'] != true || body['data'] is! Map<String, dynamic>) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.invalidResponse);
+      throw const PropertyDetailsException(
+        PropertyDetailsFailureKind.invalidResponse,
+        null,
+        'Invalid envelope: success is not true or data is not a map',
+      );
     }
 
     try {
@@ -220,6 +304,7 @@ class PropertyDetailsRepository {
         throw const PropertyDetailsException(
           PropertyDetailsFailureKind.invalidResponse,
           'تعذر التحقق من هوية العقار في استجابة التوفر.',
+          'Mismatched propertyId in availability response',
         );
       }
       return availability;
@@ -227,7 +312,8 @@ class PropertyDetailsRepository {
       if (e is PropertyDetailsException) rethrow;
       throw PropertyDetailsException(
         PropertyDetailsFailureKind.invalidResponse,
-        e.toString(),
+        null,
+        'PropertyAvailability.fromJson error: $e',
       );
     }
   }
@@ -247,6 +333,7 @@ class PropertyDetailsRepository {
       throw const PropertyDetailsException(
         PropertyDetailsFailureKind.invalidResponse,
         'بيانات طلب السعر غير مكتملة',
+        'Missing required calculateQuote parameters',
       );
     }
 
@@ -268,30 +355,51 @@ class PropertyDetailsRepository {
           'guests': guests,
         }),
       ).timeout(timeout);
-    } on TimeoutException {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.timeout);
-    } on SocketException {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.network);
-    } on http.ClientException {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.network);
-    } catch (_) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.network);
+    } on TimeoutException catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.timeout,
+        null,
+        e.toString(),
+      );
+    } on SocketException catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.network,
+        null,
+        e.toString(),
+      );
+    } on http.ClientException catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.network,
+        null,
+        e.toString(),
+      );
+    } catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.network,
+        null,
+        e.toString(),
+      );
     }
 
     final dynamic body;
     try {
       body = jsonDecode(utf8.decode(response.bodyBytes));
-    } catch (_) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.invalidResponse);
+    } catch (e) {
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.invalidResponse,
+        null,
+        'jsonDecode error: $e',
+      );
     }
 
     if (response.statusCode == 409) {
-      final msg = body is Map<String, dynamic> && body['error'] is Map
+      final rawMsg = body is Map<String, dynamic> && body['error'] is Map
           ? body['error']['message'] as String?
           : null;
       throw PropertyDetailsException(
         PropertyDetailsFailureKind.dateOverlap,
-        msg ?? 'التواريخ المطلوبة محجوزة مسبقاً',
+        'التواريخ المطلوبة محجوزة مسبقاً',
+        rawMsg ?? '409 Conflict: dates overlap',
       );
     }
 
@@ -300,29 +408,33 @@ class PropertyDetailsRepository {
           ? body['error']
           : null;
       final code = err?['code'] as String?;
-      final msg = err?['message'] as String?;
+      final rawMsg = err?['message'] as String?;
 
       if (code == 'MIN_STAY_NOT_MET') {
         throw PropertyDetailsException(
           PropertyDetailsFailureKind.minStayNotMet,
-          msg ?? 'الحد الأدنى للإقامة ليلتان',
+          'الحد الأدنى للإقامة ليلتان',
+          rawMsg ?? 'MIN_STAY_NOT_MET',
         );
       }
       if (code == 'MAX_STAY_EXCEEDED') {
         throw PropertyDetailsException(
           PropertyDetailsFailureKind.maxStayExceeded,
-          msg ?? 'الحد الأقصى للإقامة 30 ليلة',
+          'الحد الأقصى للإقامة 30 ليلة',
+          rawMsg ?? 'MAX_STAY_EXCEEDED',
         );
       }
       if (code == 'MAX_GUESTS_EXCEEDED') {
         throw PropertyDetailsException(
           PropertyDetailsFailureKind.maxGuestsExceeded,
-          msg ?? 'عدد الضيوف يتجاوز السعة المحددة',
+          'عدد الضيوف يتجاوز السعة المحددة',
+          rawMsg ?? 'MAX_GUESTS_EXCEEDED',
         );
       }
       throw PropertyDetailsException(
         PropertyDetailsFailureKind.invalidResponse,
-        msg ?? 'بيانات الحجز غير صالحة',
+        'بيانات الحجز غير صالحة',
+        rawMsg ?? '400 Bad Request: code $code',
       );
     }
 
@@ -330,6 +442,7 @@ class PropertyDetailsRepository {
       throw const PropertyDetailsException(
         PropertyDetailsFailureKind.notFound,
         'الوحدة غير موجودة',
+        'HTTP 404',
       );
     }
 
@@ -337,22 +450,32 @@ class PropertyDetailsRepository {
       throw const PropertyDetailsException(
         PropertyDetailsFailureKind.unpublished,
         'لا يمكن حساب سعر لوحدة غير منشورة',
+        'HTTP 403',
       );
     }
 
     if (response.statusCode >= 500) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.server);
+      throw PropertyDetailsException(
+        PropertyDetailsFailureKind.server,
+        null,
+        'HTTP ${response.statusCode}',
+      );
     }
 
     if (response.statusCode != 200) {
       throw PropertyDetailsException(
         PropertyDetailsFailureKind.server,
-        'HTTP ${response.statusCode}',
+        null,
+        'Unexpected HTTP ${response.statusCode}: ${response.body}',
       );
     }
 
     if (body is! Map<String, dynamic> || body['success'] != true || body['data'] is! Map<String, dynamic>) {
-      throw const PropertyDetailsException(PropertyDetailsFailureKind.invalidResponse);
+      throw const PropertyDetailsException(
+        PropertyDetailsFailureKind.invalidResponse,
+        null,
+        'Invalid envelope: success is not true or data is not a map',
+      );
     }
 
     try {
@@ -361,6 +484,7 @@ class PropertyDetailsRepository {
         throw const PropertyDetailsException(
           PropertyDetailsFailureKind.invalidResponse,
           'تعذر التحقق من هوية العقار في استجابة السعر.',
+          'Mismatched propertyId in quote response',
         );
       }
       return quote;
@@ -368,7 +492,8 @@ class PropertyDetailsRepository {
       if (e is PropertyDetailsException) rethrow;
       throw PropertyDetailsException(
         PropertyDetailsFailureKind.invalidResponse,
-        e.toString(),
+        null,
+        'BookingQuote.fromJson error: $e',
       );
     }
   }

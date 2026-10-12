@@ -182,7 +182,10 @@ class BookingReviewRepository {
         }
 
         try {
-          return BookingRequestResult.fromJson(data);
+          return BookingRequestResult.fromJson(
+            data,
+            expectedPropertyId: request.propertyId,
+          );
         } catch (e) {
           throw BookingReviewException(
             BookingReviewFailureKind.invalidResponse,

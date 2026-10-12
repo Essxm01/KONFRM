@@ -24,9 +24,16 @@ SCOPE: Implement the Founder-approved Screen 07 Booking Request Review Concept A
 - [x] Directionality-isolated currency rendering (`KonfrmPriceText`) guarantees `13,500 ج.م` number-first across all RTL layouts.
 - [x] Screen 06 to Screen 07 wiring preserves full booking review context and returns cleanly on `تعديل`.
 - [x] Complete 8-state UI machine implemented and tested (`reviewReady`, `revalidating`, `priceChanged`, `dateConflict`, `networkError`, `authRequired`, `submitting`, `requestSent`).
-- [x] Guest authentication boundaries preserved truth-first (`BLOCKED_BY_NATIVE_AUTH`); zero mock auth fabricated.
+- [x] Strict state machine submission guard: zero protected POST requests dispatched from any non-`reviewReady` state (`priceChanged`, `dateConflict`, `networkError`, `authRequired`, `revalidating`, `submitting`, `requestSent`).
+- [x] Sequential separation of price acceptance (`قبول السعر الجديد ومتابعة المراجعة`) and booking submission (`إرسال طلب الحجز للمالك`).
+- [x] Revalidation lifecycle monotonic epoch counter (`_revalidationEpoch`) protects against out-of-order delayed responses.
+- [x] Differentiated retry: quote revalidation failure retries quote calculation; submission failure retries submission preserving exact `requestId` and fingerprint.
+- [x] Truthful auth gate: zero unsupported claims of local persistence; strictly reports `BLOCKED_BY_NATIVE_AUTH`.
+- [x] Server response status validation: non-empty status strictly matching `PENDING_OWNER_APPROVAL` and expected `propertyId`.
+- [x] Visual fidelity: removed intro header `راجع طلبك قبل الإرسال`, removed misleading single night row, sticky CTA `#000000` 54px with 6px radius.
 - [x] Multi-viewport layout (360dp, 390dp, 430dp) and 200% text scaling verified with 0 layout overflows.
-- [x] Full customer app test suite passes: 117/117 PASS.
+- [x] Physical Samsung Galaxy A56 (`SM-A566B`, Android 16) verified with 6 screenshot captures across all functional states.
+- [x] Full customer app test suite passes: 124/124 PASS.
 - [x] Static analysis passes: 0 issues in `customer_app` and `konfrm_design_system`.
 
 ---

@@ -33,9 +33,10 @@ class BookingRequestReviewView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final effectiveContext = (authToken != null && reviewContext.authToken == null)
-        ? reviewContext.copyWith(authToken: authToken)
-        : reviewContext;
+    final effectiveContext = reviewContext.copyWith(
+      authToken: authToken ?? reviewContext.authToken,
+      startRevalidating: startRevalidating,
+    );
     final state = ref.watch(bookingReviewControllerProvider(effectiveContext));
     final controller = ref.read(bookingReviewControllerProvider(effectiveContext).notifier);
 
@@ -69,26 +70,7 @@ class BookingRequestReviewView extends ConsumerWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                 children: [
-                  // 1. Intro Heading
-                  Text(
-                    'راجع طلبك قبل الإرسال',
-                    style: KonfrmTypography.pageTitle.copyWith(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 20,
-                      color: const Color(0xFF101723),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'تأكد من الوحدة والتواريخ والسعر قبل إرسال الطلب للمالك.',
-                    style: KonfrmTypography.body.copyWith(
-                      color: const Color(0xFF64748B),
-                      fontSize: 13,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // 2. Contextual State Banners (when applicable)
+                  // 1. Contextual State Banners (when applicable)
                   if (state.uiState == BookingReviewUiState.revalidating) ...[
                     _RevalidatingBanner(),
                     const SizedBox(height: 16),
@@ -427,8 +409,7 @@ class _PriceBreakdownCard extends StatelessWidget {
           // 1. Strongest Financial Anchor: إجمالي الإقامة
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Text(
@@ -441,55 +422,32 @@ class _PriceBreakdownCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              KonfrmPriceText(
-                amount: quote.totalStay,
-                amountStyle: KonfrmTypography.pageTitle.copyWith(
-                  fontSize: 21,
-                  fontWeight: FontWeight.w900,
-                  color: const Color(0xFF101723),
-                ),
-                currencyStyle: KonfrmTypography.pageTitle.copyWith(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF101723),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          const Divider(height: 1, thickness: 1, color: Color(0xFFF1F5F9)),
-          const SizedBox(height: 10),
-
-          // 2. Nightly Rate
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  'سعر الليلة الواحدة:',
-                  style: KonfrmTypography.body.copyWith(
-                    fontSize: 13,
-                    color: const Color(0xFF64748B),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: KonfrmPriceText(
+                    amount: quote.totalStay,
+                    amountStyle: KonfrmTypography.pageTitle.copyWith(
+                      fontSize: 21,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFF101723),
+                    ),
+                    currencyStyle: KonfrmTypography.pageTitle.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF101723),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              KonfrmPriceText(
-                amount: quote.pricePerNight,
-                amountStyle: KonfrmTypography.bodyStrong.copyWith(
-                  fontSize: 13.5,
-                  color: const Color(0xFF334155),
-                ),
-                currencyStyle: KonfrmTypography.body.copyWith(
-                  fontSize: 12,
-                  color: const Color(0xFF334155),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
+          const Divider(height: 1, thickness: 1, color: Color(0xFFF1F5F9)),
+          const SizedBox(height: 12),
 
-          // 3. Deposit Amount Highlight
+          // 2. Deposit Amount Highlight
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
@@ -523,17 +481,23 @@ class _PriceBreakdownCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                KonfrmPriceText(
-                  amount: quote.depositAmount,
-                  amountStyle: KonfrmTypography.bodyStrong.copyWith(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF0284C7),
-                  ),
-                  currencyStyle: KonfrmTypography.body.copyWith(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF0284C7),
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: KonfrmPriceText(
+                      amount: quote.depositAmount,
+                      amountStyle: KonfrmTypography.bodyStrong.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF0284C7),
+                      ),
+                      currencyStyle: KonfrmTypography.body.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF0284C7),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -555,15 +519,21 @@ class _PriceBreakdownCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              KonfrmPriceText(
-                amount: quote.remainingAmount,
-                amountStyle: KonfrmTypography.bodyStrong.copyWith(
-                  fontSize: 13.5,
-                  color: const Color(0xFF334155),
-                ),
-                currencyStyle: KonfrmTypography.body.copyWith(
-                  fontSize: 12,
-                  color: const Color(0xFF334155),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: KonfrmPriceText(
+                    amount: quote.remainingAmount,
+                    amountStyle: KonfrmTypography.bodyStrong.copyWith(
+                      fontSize: 13.5,
+                      color: const Color(0xFF334155),
+                    ),
+                    currencyStyle: KonfrmTypography.body.copyWith(
+                      fontSize: 12,
+                      color: const Color(0xFF334155),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -670,7 +640,7 @@ class _PriceChangedBanner extends StatelessWidget {
               const Icon(Icons.info_outline, size: 18, color: Color(0xFF0059FF)),
               const SizedBox(width: 8),
               Text(
-                'تم تحديث تفاصيل السعر',
+                hasPriceShift ? 'تم تحديث تفاصيل السعر' : 'تم تحديث تفاصيل الحجز',
                 style: KonfrmTypography.sectionTitle.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
@@ -683,7 +653,7 @@ class _PriceChangedBanner extends StatelessWidget {
           Text(
             hasPriceShift
                 ? 'السعر الحالي مختلف عن السعر الذي راجعته آخر مرة. يرجى مراجعة المبلغ الجديد والموافقة عليه قبل إرسال الطلب.'
-                : 'تم تحديث بصمة السعر من الخادم. يرجى تأكيد المراجعة للمتابعة.',
+                : 'تم تحديث بيانات العرض من الخادم دون تغيير في السعر الإجمالي. يرجى تأكيد المراجعة للمتابعة.',
             style: KonfrmTypography.body.copyWith(
               fontSize: 12.5,
               color: const Color(0xFF1E40AF),
@@ -859,7 +829,7 @@ class _AuthRequiredBanner extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'خدمة تسجيل الدخول قيد التجهيز في مرحلة التوثيق القادمة. تم حفظ بيانات الحجز وتفاصيل الإقامة بأمان، وسيتم استعادتها فور تسجيل الدخول.',
+            'خدمة تسجيل الدخول قيد التجهيز في مرحلة التوثيق القادمة. يلزم حساب عميل موثق لإرسال طلب الحجز للمالك.',
             style: KonfrmTypography.body.copyWith(
               fontSize: 12.5,
               color: const Color(0xFF1E40AF),
@@ -1032,11 +1002,8 @@ class _ReviewStickyBar extends StatelessWidget {
 
       case BookingReviewUiState.priceChanged:
         return _PrimaryActionButton(
-          label: 'أوافق على السعر الجديد وإرسال الطلب',
-          onPressed: () {
-            onAcceptNewPrice();
-            onSubmit();
-          },
+          label: 'قبول السعر الجديد ومتابعة المراجعة',
+          onPressed: onAcceptNewPrice,
           backgroundColor: const Color(0xFF000000),
         );
 
@@ -1078,7 +1045,7 @@ class _ReviewStickyBar extends StatelessWidget {
 
       case BookingReviewUiState.reviewReady:
         return _PrimaryActionButton(
-          label: 'إرسال طلب الحجز',
+          label: 'إرسال طلب الحجز للمالك',
           onPressed: onSubmit,
           backgroundColor: const Color(0xFF000000),
         );

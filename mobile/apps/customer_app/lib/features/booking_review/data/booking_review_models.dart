@@ -91,6 +91,7 @@ class BookingReviewContext {
     required this.initialQuote,
     String? requestId,
     this.authToken,
+    this.startRevalidating = false,
   })  : requestId = (requestId != null && requestId.trim().isNotEmpty)
             ? requestId.trim()
             : generateClientRequestId(),
@@ -111,11 +112,20 @@ class BookingReviewContext {
   final BookingQuote initialQuote;
   final String requestId;
   final String? authToken;
+  final bool startRevalidating;
 
   int get nights => checkOut.difference(checkIn).inDays;
   String get formattedStayDates => formatArabicStayRange(checkIn, checkOut);
   String get formattedNights => formatArabicNights(nights);
   String get formattedGuests => formatArabicGuests(guests);
+
+  /// True if stay parameters strictly satisfy canonical stay invariants.
+  bool get isValidStay =>
+      propertyId.trim().isNotEmpty &&
+      guests >= 1 &&
+      checkOut.isAfter(checkIn) &&
+      nights >= 2 &&
+      nights <= 30;
 
   /// Validates that an incoming quote matches the review context exactly.
   bool matchesQuote(BookingQuote quote) {
@@ -141,6 +151,7 @@ class BookingReviewContext {
     BookingQuote? initialQuote,
     String? requestId,
     String? authToken,
+    bool? startRevalidating,
   }) {
     return BookingReviewContext(
       propertyId: propertyId ?? this.propertyId,
@@ -153,6 +164,7 @@ class BookingReviewContext {
       initialQuote: initialQuote ?? this.initialQuote,
       requestId: requestId ?? this.requestId,
       authToken: authToken ?? this.authToken,
+      startRevalidating: startRevalidating ?? this.startRevalidating,
     );
   }
 
@@ -166,7 +178,8 @@ class BookingReviewContext {
           checkOut == other.checkOut &&
           guests == other.guests &&
           requestId == other.requestId &&
-          authToken == other.authToken;
+          authToken == other.authToken &&
+          startRevalidating == other.startRevalidating;
 
   @override
   int get hashCode => Object.hash(
@@ -176,6 +189,7 @@ class BookingReviewContext {
         guests,
         requestId,
         authToken,
+        startRevalidating,
       );
 }
 
@@ -227,10 +241,13 @@ class BookingRequestResult {
   final String checkOut;
   final String createdAt;
 
-  factory BookingRequestResult.fromJson(Map<String, dynamic> json) {
+  factory BookingRequestResult.fromJson(
+    Map<String, dynamic> json, {
+    String? expectedPropertyId,
+  }) {
     final id = json['id'];
     final bookingNumber = json['bookingNumber'] ?? json['id'];
-    final status = json['status'] ?? 'PENDING_OWNER_APPROVAL';
+    final status = json['status'];
     final propertyId = json['propertyId'] ?? '';
     final checkIn = json['checkIn'] ?? '';
     final checkOut = json['checkOut'] ?? '';
@@ -238,6 +255,21 @@ class BookingRequestResult {
 
     if (id is! String || id.trim().isEmpty) {
       throw const FormatException('BookingRequestResult requires a non-empty id');
+    }
+
+    if (status is! String || status.trim().isEmpty) {
+      throw const FormatException('BookingRequestResult requires a non-empty status');
+    }
+
+    if (status.trim() != 'PENDING_OWNER_APPROVAL') {
+      throw FormatException('Unexpected booking creation status: $status');
+    }
+
+    if (expectedPropertyId != null &&
+        expectedPropertyId.trim().isNotEmpty &&
+        propertyId.toString().trim().isNotEmpty &&
+        propertyId.toString().trim() != expectedPropertyId.trim()) {
+      throw const FormatException('BookingRequestResult propertyId mismatch');
     }
 
     return BookingRequestResult(

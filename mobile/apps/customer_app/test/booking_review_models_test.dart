@@ -215,7 +215,38 @@ void main() {
 
     test('throws FormatException on missing or invalid id', () {
       expect(
-        () => BookingRequestResult.fromJson({'status': 'PENDING'}),
+        () => BookingRequestResult.fromJson({'status': 'PENDING_OWNER_APPROVAL'}),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
+    test('throws FormatException on missing status or status other than PENDING_OWNER_APPROVAL', () {
+      // Missing status
+      expect(
+        () => BookingRequestResult.fromJson({'id': 'book_123'}),
+        throwsA(isA<FormatException>()),
+      );
+
+      // Status is CONFIRMED (not initial creation status)
+      expect(
+        () => BookingRequestResult.fromJson({
+          'id': 'book_123',
+          'status': 'CONFIRMED',
+        }),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
+    test('throws FormatException on propertyId mismatch when expectedPropertyId provided', () {
+      expect(
+        () => BookingRequestResult.fromJson(
+          {
+            'id': 'book_123',
+            'status': 'PENDING_OWNER_APPROVAL',
+            'propertyId': 'wrong_prop_456',
+          },
+          expectedPropertyId: 'expected_prop_123',
+        ),
         throwsA(isA<FormatException>()),
       );
     });

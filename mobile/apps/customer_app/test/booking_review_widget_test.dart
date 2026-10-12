@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:customer_app/features/booking_review/application/booking_review_controller.dart';
 import 'package:customer_app/features/booking_review/data/booking_review_models.dart';
 import 'package:customer_app/features/booking_review/data/booking_review_repository.dart';
 import 'package:customer_app/features/booking_review/presentation/booking_review_view.dart';
@@ -194,7 +195,7 @@ void main() {
       );
 
       // 6. Sticky Action Button
-      expect(find.text('إرسال طلب الحجز'), findsOneWidget);
+      expect(find.text('إرسال طلب الحجز للمالك'), findsOneWidget);
       final ctaFinder = find.byType(ElevatedButton);
       expect(ctaFinder, findsOneWidget);
       final btn = tester.widget<ElevatedButton>(ctaFinder);
@@ -213,8 +214,8 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      expect(find.text('إرسال طلب الحجز'), findsOneWidget);
-      await tester.tap(find.text('إرسال طلب الحجز'));
+      expect(find.text('إرسال طلب الحجز للمالك'), findsOneWidget);
+      await tester.tap(find.text('إرسال طلب الحجز للمالك'));
       await tester.pumpAndSettle();
 
       // State transitions to authRequired
@@ -258,7 +259,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('إرسال طلب الحجز'));
+      await tester.tap(find.text('إرسال طلب الحجز للمالك'));
       await tester.pumpAndSettle();
 
       // Verify network error state
@@ -294,7 +295,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('إرسال طلب الحجز'));
+      await tester.tap(find.text('إرسال طلب الحجز للمالك'));
       await tester.pumpAndSettle();
 
       // Verify date conflict state
@@ -341,7 +342,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('إرسال طلب الحجز'));
+      await tester.tap(find.text('إرسال طلب الحجز للمالك'));
       await tester.pumpAndSettle();
 
       // Verify confirmation screen
@@ -540,4 +541,261 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   });
+
+  group('Bridge 11 State-Machine & Lifecycle Regression Suite', () {
+    test('zero protected POST requests dispatched from every invalid state', () async {
+      int postCallCount = 0;
+      final mockClient = MockClient((request) async {
+        if (request.method == 'POST' && request.url.path == '/api/v1/customer/bookings') {
+          postCallCount++;
+        }
+        return http.Response('{}', 200);
+      });
+
+      final repository = BookingReviewRepository(
+        baseUrl: 'https://api.example.test',
+        client: mockClient,
+      );
+
+      final reviewContext = _createTestContext();
+
+      // Test each non-reviewReady state
+      for (final invalidState in [
+        BookingReviewUiState.priceChanged,
+        BookingReviewUiState.dateConflict,
+        BookingReviewUiState.networkError,
+        BookingReviewUiState.authRequired,
+        BookingReviewUiState.revalidating,
+        BookingReviewUiState.submitting,
+        BookingReviewUiState.requestSent,
+      ]) {
+        final controller = BookingReviewController(
+          initialContext: reviewContext,
+          repository: repository,
+          authToken: 'test_valid_token',
+        );
+
+        // Force into invalid state
+        controller.state = controller.state.copyWith(uiState: invalidState);
+
+        // Attempt submission
+        await controller.submitBookingRequest();
+
+        expect(
+          postCallCount,
+          0,
+          reason: 'Expected 0 POST calls when submitting from $invalidState',
+        );
+      }
+    });
+
+    testWidgets('separate price acceptance from submission; no silent submission', (tester) async {
+      int submitCount = 0;
+      final mockClient = MockClient((request) async {
+        if (request.method == 'POST' && request.url.path == '/api/v1/customer/bookings') {
+          submitCount++;
+          return http.Response(
+            jsonEncode({
+              'success': true,
+              'data': {
+                'id': 'book-accepted-1',
+                'bookingNumber': 'BK-ACCEPTED',
+                'status': 'PENDING_OWNER_APPROVAL',
+                'propertyId': 'prop-test-1',
+                'checkIn': '2026-10-15',
+                'checkOut': '2026-10-18',
+                'createdAt': '2026-10-12T18:00:00Z',
+              },
+            }),
+            201,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return http.Response('{}', 404);
+      });
+
+      final repository = BookingReviewRepository(
+        baseUrl: 'https://api.example.test',
+        client: mockClient,
+      );
+
+      final initialQuote = _createTestQuote(totalStay: 13500);
+      final newQuote = _createTestQuote(totalStay: 15000, quoteFingerprint: 'fp-higher-price');
+      final reviewContext = _createTestContext(quote: initialQuote).copyWith(
+        authToken: 'test_token_123',
+      );
+
+      await tester.pumpWidget(_buildTestBookingReviewApp(
+        context: reviewContext,
+        onEditDetails: () {},
+        repository: repository,
+        authToken: 'test_token_123',
+      ));
+      await tester.pumpAndSettle();
+
+      // Trigger priceChanged on controller
+      final element = tester.element(find.byType(BookingRequestReviewView));
+      final container = ProviderScope.containerOf(element);
+      final controller = container.read(bookingReviewControllerProvider(reviewContext).notifier);
+
+      controller.state = controller.state.copyWith(
+        uiState: BookingReviewUiState.priceChanged,
+        previousQuote: initialQuote,
+        currentQuote: newQuote,
+      );
+      await tester.pumpAndSettle();
+
+      // 1. Verify separate acceptance button is displayed
+      expect(find.text('قبول السعر الجديد ومتابعة المراجعة'), findsOneWidget);
+      expect(find.text('إرسال طلب الحجز للمالك'), findsNothing);
+
+      // 2. Tap acceptance button: must transition to reviewReady WITHOUT submitting
+      await tester.tap(find.text('قبول السعر الجديد ومتابعة المراجعة'));
+      await tester.pumpAndSettle();
+
+      expect(submitCount, 0, reason: 'acceptNewPrice must not dispatch submission');
+      expect(controller.state.uiState, BookingReviewUiState.reviewReady);
+      expect(controller.state.currentQuote.totalStay, 15000);
+
+      // 3. Now the distinct submission action is available
+      expect(find.text('إرسال طلب الحجز للمالك'), findsOneWidget);
+
+      // 4. Tap submission button: now submission is dispatched
+      await tester.tap(find.text('إرسال طلب الحجز للمالك'));
+      await tester.pumpAndSettle();
+
+      expect(submitCount, 1);
+      expect(find.text('تم إرسال طلبك للمالك'), findsOneWidget);
+    });
+
+    testWidgets('fingerprint-only shift does not claim monetary price increase/decrease', (tester) async {
+      final initialQuote = _createTestQuote(totalStay: 13500, quoteFingerprint: 'fp-001');
+      final fpOnlyQuote = _createTestQuote(totalStay: 13500, quoteFingerprint: 'fp-002');
+      final reviewContext = _createTestContext(quote: initialQuote);
+
+      await tester.pumpWidget(_buildTestBookingReviewApp(
+        context: reviewContext,
+        onEditDetails: () {},
+      ));
+      await tester.pumpAndSettle();
+
+      final element = tester.element(find.byType(BookingRequestReviewView));
+      final container = ProviderScope.containerOf(element);
+      final controller = container.read(bookingReviewControllerProvider(reviewContext).notifier);
+
+      controller.state = controller.state.copyWith(
+        uiState: BookingReviewUiState.priceChanged,
+        previousQuote: initialQuote,
+        currentQuote: fpOnlyQuote,
+      );
+      await tester.pumpAndSettle();
+
+      // Truthful banner: details refreshed without monetary price shift
+      expect(find.text('تم تحديث تفاصيل الحجز'), findsOneWidget);
+      expect(find.textContaining('دون تغيير في السعر الإجمالي'), findsOneWidget);
+      expect(find.text('السعر السابق'), findsNothing);
+    });
+
+    testWidgets('startRevalidating input triggers calculateQuote lifecycle in controller', (tester) async {
+      int calcCallCount = 0;
+      final mockClient = MockClient((request) async {
+        if (request.method == 'POST' && request.url.path == '/api/v1/customer/bookings/calculate') {
+          calcCallCount++;
+          return http.Response(
+            jsonEncode({
+              'success': true,
+              'data': {
+                'propertyId': 'prop-test-1',
+                'checkIn': '2026-10-15',
+                'checkOut': '2026-10-18',
+                'nights': 3,
+                'guests': 2,
+                'pricePerNight': 4500.0,
+                'totalStay': 13500.0,
+                'depositAmount': 4500.0,
+                'remainingAmount': 9000.0,
+                'currency': 'EGP',
+                'quoteFingerprint': 'fp-fresh-001',
+              },
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return http.Response('{}', 404);
+      });
+
+      final repository = BookingReviewRepository(
+        baseUrl: 'https://api.example.test',
+        client: mockClient,
+      );
+
+      final reviewContext = _createTestContext();
+
+      await tester.pumpWidget(_buildTestBookingReviewApp(
+        context: reviewContext,
+        onEditDetails: () {},
+        repository: repository,
+        startRevalidating: true,
+      ));
+      await tester.pumpAndSettle();
+
+      expect(calcCallCount, greaterThan(0), reason: 'startRevalidating: true must trigger calculateQuote');
+      expect(find.text('مراجعة طلب الحجز'), findsOneWidget);
+    });
+
+    test('retry differentiates quote revalidation failure from submission failure', () async {
+      int calcCount = 0;
+      int submitCount = 0;
+
+      final mockClient = MockClient((request) async {
+        if (request.url.path == '/api/v1/customer/bookings/calculate') {
+          calcCount++;
+          return http.Response('{}', 504);
+        }
+        if (request.url.path == '/api/v1/customer/bookings') {
+          submitCount++;
+          return http.Response('{}', 504);
+        }
+        return http.Response('{}', 404);
+      });
+
+      final repository = BookingReviewRepository(
+        baseUrl: 'https://api.example.test',
+        client: mockClient,
+      );
+
+      final reviewContext = _createTestContext();
+      final controller = BookingReviewController(
+        initialContext: reviewContext,
+        repository: repository,
+        authToken: 'test_token_123',
+      );
+
+      // 1. Revalidation failure
+      await controller.revalidateQuote();
+      expect(controller.state.uiState, BookingReviewUiState.networkError);
+      expect(controller.state.lastFailedOperation, BookingReviewOperation.quoteRevalidation);
+
+      // Calling retry() should invoke revalidateQuote, NOT submitBookingRequest
+      await controller.retry();
+      expect(calcCount, 2);
+      expect(submitCount, 0);
+
+      // 2. Submission failure
+      controller.state = controller.state.copyWith(
+        uiState: BookingReviewUiState.reviewReady,
+      );
+      await controller.submitBookingRequest();
+      expect(controller.state.uiState, BookingReviewUiState.networkError);
+      expect(controller.state.lastFailedOperation, BookingReviewOperation.bookingSubmission);
+      expect(submitCount, 1);
+
+      // Calling retry() should now invoke submitBookingRequest preserving the exact same requestId
+      await controller.retry();
+      expect(submitCount, 2);
+      expect(calcCount, 2);
+    });
+  });
 }
+

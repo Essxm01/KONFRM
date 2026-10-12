@@ -24,6 +24,14 @@ SCOPE: Implement the Founder-approved Screen 06 Property Details Concept A V3 in
   - P1-7: Physical QA clarification noted (device screenshots reflect mock runner due to `DISCOVERY_RUNTIME_QA = BLOCKED_BY_CONFIGURATION`).
   - P1-8: Screen 07 dependency handoff preserved honestly.
 - Separate Configuration Gate: `DISCOVERY_RUNTIME_QA = BLOCKED_BY_CONFIGURATION` (preserved).
+- Physical Device QA Evidence on Samsung Galaxy A56 5G (SM-A566B, Android 16 / One UI):
+  - `01_screen06_top_facts_amenities.png`: Hero gallery, 48px circle action buttons, blur counter pill, facts bar, description clamp, key amenities preview, sticky bar.
+  - `02_screen06_calendar_stepper_unselected.png`: Always-inline single-month calendar, unavailable dates disabled/grayed out, guest stepper, initial unselected state.
+  - `03_screen06_selected_dates_quote_breakdown.png`: 3-night selection (13-16 Oct) with server-authoritative canonical quote breakdown: 13,500 total, 4,500 deposit (strictly 1st night), 9,000 remainder. Explicit notice: 'لا يتم الدفع عند إرسال الطلب؛ العربون بعد موافقة المالك.'.
+  - `04_screen06_truthful_screen07_handoff.png`: Tapping 'طلب الحجز' triggers truthful SnackBar: 'شاشة طلب الحجز (Screen 07) قيد التطوير وفق معايير كونفرم.'.
+  - `05_screen06_amenities_bottom_sheet.png`: Modal bottom sheet displaying all amenities grouped with icons.
+  - `06_screen06_fullscreen_gallery_viewer.png`: Full-screen photo gallery viewer with pinch-to-zoom and thumbnail strip.
+  - `07_screen06_truthful_favorite_snackbar.png`: Tapping favorite heart button triggers truthful SnackBar: 'تسجيل الدخول مطلوب لحفظ العقار في المفضلة.' and heart remains unselected outline.
 
 ## Boundaries & Invariants
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.

@@ -215,8 +215,16 @@ class PropertyDetailsRepository {
     }
 
     try {
-      return PropertyAvailability.fromJson(body['data'] as Map<String, dynamic>);
+      final availability = PropertyAvailability.fromJson(body['data'] as Map<String, dynamic>);
+      if (availability.propertyId != cleanId) {
+        throw const PropertyDetailsException(
+          PropertyDetailsFailureKind.invalidResponse,
+          'Mismatched propertyId in availability response',
+        );
+      }
+      return availability;
     } catch (e) {
+      if (e is PropertyDetailsException) rethrow;
       throw PropertyDetailsException(
         PropertyDetailsFailureKind.invalidResponse,
         e.toString(),
@@ -348,8 +356,16 @@ class PropertyDetailsRepository {
     }
 
     try {
-      return BookingQuote.fromJson(body['data'] as Map<String, dynamic>);
+      final quote = BookingQuote.fromJson(body['data'] as Map<String, dynamic>);
+      if (quote.propertyId != cleanId) {
+        throw const PropertyDetailsException(
+          PropertyDetailsFailureKind.invalidResponse,
+          'Mismatched propertyId in quote response',
+        );
+      }
+      return quote;
     } catch (e) {
+      if (e is PropertyDetailsException) rethrow;
       throw PropertyDetailsException(
         PropertyDetailsFailureKind.invalidResponse,
         e.toString(),

@@ -1,5 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:customer_app/features/discovery/data/public_property.dart';
+import 'package:customer_app/features/property_details/application/property_details_controller.dart';
+import 'package:customer_app/features/property_details/data/property_details_models.dart';
 import 'package:customer_app/features/property_details/data/property_details_repository.dart';
 import 'package:customer_app/features/property_details/presentation/property_details_view.dart';
 import 'package:customer_app/features/property_details/presentation/widgets/amenities_bottom_sheet.dart';
@@ -88,6 +92,7 @@ Map<String, dynamic> _quoteJson({
 Widget _testApp({
   required String propertyId,
   required PropertyDetailsRepository repository,
+  PublicProperty? initialProperty,
   double textScale = 1.0,
 }) {
   return ProviderScope(
@@ -105,7 +110,10 @@ Widget _testApp({
           child: child!,
         ),
       ),
-      home: PropertyDetailsView(propertyId: propertyId),
+      home: PropertyDetailsView(
+        propertyId: propertyId,
+        initialProperty: initialProperty,
+      ),
     ),
   );
 }
@@ -162,8 +170,8 @@ void main() {
               nights: nights,
               guests: guests,
               totalStay: nights * 3000.0,
-              depositAmount: (nights * 3000.0) * 0.25,
-              remainingAmount: (nights * 3000.0) * 0.75,
+              depositAmount: 3000.0, // Canonical deposit is strictly 1st night
+              remainingAmount: (nights * 3000.0) - 3000.0,
             ),
           }),
           200,
@@ -356,6 +364,181 @@ void main() {
       expect(find.text('تعذر تحميل بيانات الإقامة'), findsOneWidget);
       expect(find.text('إعادة المحاولة'), findsOneWidget);
     });
+
+    testWidgets('initialProperty preview fails closed when GET details returns error', (
+      tester,
+    ) async {
+      final failClient = MockClient((_) async {
+        return http.Response(
+          jsonEncode({'success': false, 'error': {'message': 'Forbidden / Unpublished'}}),
+          403,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+
+      final failRepo = PropertyDetailsRepository(
+        baseUrl: 'https://api.example.test',
+        client: failClient,
+      );
+
+      final preview = PublicProperty.fromJson(_propertyJson());
+
+      await tester.pumpWidget(_testApp(
+        propertyId: 'prop-preview-fail',
+        repository: failRepo,
+        initialProperty: preview,
+      ));
+      await tester.pumpAndSettle();
+
+      // Must fail closed: honest error screen, blocking booking flow
+      expect(find.text('تعذر تحميل بيانات الإقامة'), findsOneWidget);
+      expect(find.text('إعادة المحاولة'), findsOneWidget);
+      expect(find.text('اختار إقامتك'), findsNothing);
+      expect(find.text('اختيار التواريخ'), findsNothing);
+    });
+
+    testWidgets('loading failure -> retry -> success transitions cleanly', (
+      tester,
+    ) async {
+      var attempt = 0;
+      final retryClient = MockClient((request) async {
+        if (request.url.path.contains('/availability')) {
+          return http.Response(
+            jsonEncode({'success': true, 'data': _availabilityJson()}),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        attempt++;
+        if (attempt == 1) {
+          return http.Response(
+            jsonEncode({'success': false, 'error': {'message': 'Temporary Server Outage'}}),
+            500,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return http.Response(
+          jsonEncode({'success': true, 'data': _propertyJson()}),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+
+      final retryRepo = PropertyDetailsRepository(
+        baseUrl: 'https://api.example.test',
+        client: retryClient,
+      );
+
+      await tester.pumpWidget(_testApp(propertyId: 'prop-retry', repository: retryRepo));
+      await tester.pumpAndSettle();
+
+      // Attempt 1: Error screen
+      expect(find.text('تعذر تحميل بيانات الإقامة'), findsOneWidget);
+      final retryBtn = find.text('إعادة المحاولة');
+      expect(retryBtn, findsOneWidget);
+
+      // Tap retry
+      await tester.tap(retryBtn);
+      await tester.pumpAndSettle();
+
+      // Attempt 2: Success
+      expect(find.text('تعذر تحميل بيانات الإقامة'), findsNothing);
+      expect(find.text('شاليه مطل على البحر'), findsOneWidget);
+    });
+
+    testWidgets('favorite button displays unauthenticated SnackBar and remains unselected', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_testApp(propertyId: 'prop-test-1', repository: repository));
+      await tester.pumpAndSettle();
+
+      // Initially unselected outline heart
+      final favoriteBtn = find.byIcon(Icons.favorite_border);
+      expect(favoriteBtn, findsOneWidget);
+      expect(find.byIcon(Icons.favorite), findsNothing);
+
+      // Tap favorite
+      await tester.tap(favoriteBtn);
+      await tester.pumpAndSettle();
+
+      // Truthful disclosure toast
+      expect(find.text('تسجيل الدخول مطلوب لحفظ العقار في المفضلة.'), findsOneWidget);
+
+      // Stays unselected (not faking a saved state)
+      expect(find.byIcon(Icons.favorite_border), findsOneWidget);
+      expect(find.byIcon(Icons.favorite), findsNothing);
+    });
+
+    test('controller discards stale out-of-order quote responses', () async {
+      final completer1 = Completer<BookingQuote>();
+      final completer2 = Completer<BookingQuote>();
+      var callCount = 0;
+
+      final testRepo = _ControllableQuoteRepo(
+        onQuote: (checkIn, checkOut, guests) {
+          callCount++;
+          if (callCount == 1) return completer1.future;
+          return completer2.future;
+        },
+      );
+
+      final controller = PropertyDetailsController(
+        propertyId: 'prop-race-test',
+        repository: testRepo,
+      );
+
+      controller.state = controller.state.copyWith(
+        property: PublicPropertyDetail.fromJson(_propertyJson(id: 'prop-race-test')),
+        availability: PropertyAvailability.fromJson(_availabilityJson(propertyId: 'prop-race-test')),
+      );
+
+      // 1. User selects dates A: Nov 20 to Nov 24 (4 nights)
+      controller.selectDate(DateTime.utc(2026, 11, 20));
+      controller.selectDate(DateTime.utc(2026, 11, 24));
+      expect(controller.state.isCalculatingQuote, isTrue);
+
+      // 2. User immediately changes dates to B: Nov 24 to Nov 29 (5 nights)
+      controller.selectDate(DateTime.utc(2026, 11, 24));
+      controller.selectDate(DateTime.utc(2026, 11, 29));
+      expect(controller.state.isCalculatingQuote, isTrue);
+
+      final quoteB = BookingQuote.fromJson(_quoteJson(
+        propertyId: 'prop-race-test',
+        checkIn: '2026-11-24',
+        checkOut: '2026-11-29',
+        nights: 5,
+        guests: 1,
+        totalStay: 15000.0,
+        depositAmount: 3000.0,
+        remainingAmount: 12000.0,
+      ));
+
+      final quoteA = BookingQuote.fromJson(_quoteJson(
+        propertyId: 'prop-race-test',
+        checkIn: '2026-11-20',
+        checkOut: '2026-11-24',
+        nights: 4,
+        guests: 1,
+        totalStay: 12000.0,
+        depositAmount: 3000.0,
+        remainingAmount: 9000.0,
+      ));
+
+      // 3. Second request resolves first
+      completer2.complete(quoteB);
+      await Future<void>.delayed(Duration.zero);
+      expect(controller.state.quote, isNotNull);
+      expect(controller.state.quote!.nights, 5);
+      expect(controller.state.quote!.totalStay, 15000.0);
+
+      // 4. Stale first request resolves later
+      completer1.complete(quoteA);
+      await Future<void>.delayed(Duration.zero);
+
+      // Controller state MUST retain Quote B, never regressing to stale Quote A!
+      expect(controller.state.quote!.nights, 5);
+      expect(controller.state.quote!.totalStay, 15000.0);
+    });
   });
 
   group('Screen 06 Property Details View — Multi-Viewport Layout Integrity', () {
@@ -402,4 +585,24 @@ void main() {
       expect(find.text('شاليه مطل على البحر'), findsOneWidget);
     });
   });
+}
+
+class _ControllableQuoteRepo extends PropertyDetailsRepository {
+  _ControllableQuoteRepo({required this.onQuote})
+      : super(
+          baseUrl: 'https://api.example.test',
+          client: MockClient((_) async => http.Response('{}', 200)),
+        );
+
+  final Future<BookingQuote> Function(String checkIn, String checkOut, int guests) onQuote;
+
+  @override
+  Future<BookingQuote> calculateQuote({
+    required String propertyId,
+    required String checkIn,
+    required String checkOut,
+    required int guests,
+  }) {
+    return onQuote(checkIn, checkOut, guests);
+  }
 }

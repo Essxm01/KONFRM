@@ -175,8 +175,8 @@ class UnavailableDateRange {
       throw const FormatException('Invalid UnavailableDateRange date format or range');
     }
     return UnavailableDateRange(
-      checkIn: DateTime(inDate.year, inDate.month, inDate.day),
-      checkOut: DateTime(outDate.year, outDate.month, outDate.day),
+      checkIn: DateTime.utc(inDate.year, inDate.month, inDate.day),
+      checkOut: DateTime.utc(outDate.year, outDate.month, outDate.day),
     );
   }
 
@@ -184,15 +184,19 @@ class UnavailableDateRange {
   /// Note standard hotel/vacation stay overlap semantics:
   /// Overlap occurs if targetCheckIn < checkOut AND targetCheckOut > checkIn.
   bool overlaps(DateTime targetCheckIn, DateTime targetCheckOut) {
-    final tIn = DateTime(targetCheckIn.year, targetCheckIn.month, targetCheckIn.day);
-    final tOut = DateTime(targetCheckOut.year, targetCheckOut.month, targetCheckOut.day);
-    return tIn.isBefore(checkOut) && tOut.isAfter(checkIn);
+    final tIn = DateTime.utc(targetCheckIn.year, targetCheckIn.month, targetCheckIn.day);
+    final tOut = DateTime.utc(targetCheckOut.year, targetCheckOut.month, targetCheckOut.day);
+    final cIn = DateTime.utc(checkIn.year, checkIn.month, checkIn.day);
+    final cOut = DateTime.utc(checkOut.year, checkOut.month, checkOut.day);
+    return tIn.isBefore(cOut) && tOut.isAfter(cIn);
   }
 
   /// Returns true if [date] falls within the unavailable stay nights [checkIn, checkOut).
   bool containsDate(DateTime date) {
-    final d = DateTime(date.year, date.month, date.day);
-    return (d.isAtSameMomentAs(checkIn) || d.isAfter(checkIn)) && d.isBefore(checkOut);
+    final d = DateTime.utc(date.year, date.month, date.day);
+    final cIn = DateTime.utc(checkIn.year, checkIn.month, checkIn.day);
+    final cOut = DateTime.utc(checkOut.year, checkOut.month, checkOut.day);
+    return (d.isAtSameMomentAs(cIn) || d.isAfter(cIn)) && d.isBefore(cOut);
   }
 }
 
@@ -242,8 +246,8 @@ class PropertyAvailability {
   /// Checks if a single [date] is blocked (either in past or inside an unavailable range).
   bool isDateBlocked(DateTime date, {DateTime? now}) {
     final today = now ?? DateTime.now();
-    final d = DateTime(date.year, date.month, date.day);
-    final t = DateTime(today.year, today.month, today.day);
+    final d = DateTime.utc(date.year, date.month, date.day);
+    final t = DateTime.utc(today.year, today.month, today.day);
     if (d.isBefore(t)) return true;
 
     for (final range in unavailableRanges) {
@@ -304,11 +308,21 @@ class BookingQuote {
     if (inDate == null || outDate == null) {
       throw const FormatException('Invalid BookingQuote date format');
     }
+    final inCivil = DateTime.utc(inDate.year, inDate.month, inDate.day);
+    final outCivil = DateTime.utc(outDate.year, outDate.month, outDate.day);
+    if (!outCivil.isAfter(inCivil)) {
+      throw const FormatException('BookingQuote checkOut must be strictly after checkIn');
+    }
 
     final nights = json['nights'];
-    if (nights is! int || nights < 1) {
-      throw const FormatException('Invalid BookingQuote nights');
+    if (nights is! int || nights < 2 || nights > 30) {
+      throw const FormatException('Invalid BookingQuote nights (must be between 2 and 30)');
     }
+    final calculatedNights = outCivil.difference(inCivil).inDays;
+    if (calculatedNights != nights) {
+      throw const FormatException('BookingQuote nights does not match date difference');
+    }
+
     final guests = json['guests'];
     if (guests is! int || guests < 1) {
       throw const FormatException('Invalid BookingQuote guests');
@@ -346,8 +360,8 @@ class BookingQuote {
 
     return BookingQuote(
       propertyId: propertyId,
-      checkIn: DateTime(inDate.year, inDate.month, inDate.day),
-      checkOut: DateTime(outDate.year, outDate.month, outDate.day),
+      checkIn: inCivil,
+      checkOut: outCivil,
       nights: nights,
       guests: guests,
       pricePerNight: pricePerNight.toDouble(),

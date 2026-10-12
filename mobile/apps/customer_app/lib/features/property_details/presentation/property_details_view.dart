@@ -121,7 +121,7 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
     }
 
     // If property query failed
-    if (state.propertyError != null && state.property == null) {
+    if (state.propertyError != null) {
       return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -169,8 +169,18 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
             // 1. Hero Gallery
             PropertyGallery(
               images: prop.images,
-              isFavorite: state.isFavorite,
-              onToggleFavorite: controller.toggleFavorite,
+              isFavorite: false,
+              onToggleFavorite: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'تسجيل الدخول مطلوب لحفظ العقار في المفضلة.',
+                      textDirection: TextDirection.rtl,
+                    ),
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              },
               onBack: () => Navigator.of(context).pop(),
             ),
 

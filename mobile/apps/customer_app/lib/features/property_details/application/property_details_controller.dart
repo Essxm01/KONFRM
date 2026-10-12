@@ -46,18 +46,25 @@ class PropertyDetailsState {
   int get maxStay => availability?.maxStay ?? 30;
 
   bool get hasValidDates => selectedCheckIn != null && selectedCheckOut != null;
-  int get stayNights => hasValidDates
-      ? selectedCheckOut!.difference(selectedCheckIn!).inDays
-      : 0;
+  int get stayNights {
+    if (!hasValidDates) return 0;
+    final inCivil = DateTime.utc(selectedCheckIn!.year, selectedCheckIn!.month, selectedCheckIn!.day);
+    final outCivil = DateTime.utc(selectedCheckOut!.year, selectedCheckOut!.month, selectedCheckOut!.day);
+    return outCivil.difference(inCivil).inDays;
+  }
 
   PropertyDetailsState copyWith({
     String? propertyId,
     PublicPropertyDetail? property,
+    bool clearProperty = false,
     PropertyAvailability? availability,
+    bool clearAvailability = false,
     bool? isLoadingProperty,
     bool? isLoadingAvailability,
     String? propertyError,
+    bool clearPropertyError = false,
     String? availabilityError,
+    bool clearAvailabilityError = false,
     DateTime? selectedCheckIn,
     DateTime? selectedCheckOut,
     bool clearCheckIn = false,
@@ -75,12 +82,12 @@ class PropertyDetailsState {
   }) {
     return PropertyDetailsState(
       propertyId: propertyId ?? this.propertyId,
-      property: property ?? this.property,
-      availability: availability ?? this.availability,
+      property: clearProperty ? null : (property ?? this.property),
+      availability: clearAvailability ? null : (availability ?? this.availability),
       isLoadingProperty: isLoadingProperty ?? this.isLoadingProperty,
       isLoadingAvailability: isLoadingAvailability ?? this.isLoadingAvailability,
-      propertyError: propertyError ?? this.propertyError,
-      availabilityError: availabilityError ?? this.availabilityError,
+      propertyError: clearPropertyError ? null : (propertyError ?? this.propertyError),
+      availabilityError: clearAvailabilityError ? null : (availabilityError ?? this.availabilityError),
       selectedCheckIn: clearCheckIn ? null : (selectedCheckIn ?? this.selectedCheckIn),
       selectedCheckOut: clearCheckOut ? null : (selectedCheckOut ?? this.selectedCheckOut),
       selectedGuests: selectedGuests ?? this.selectedGuests,
@@ -109,19 +116,22 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
     required this.repository,
   }) : super(PropertyDetailsState(
           propertyId: propertyId,
-          currentMonth: DateTime(DateTime.now().year, DateTime.now().month, 1),
+          currentMonth: DateTime.utc(DateTime.now().year, DateTime.now().month, 1),
         ));
 
   final PropertyDetailsRepository repository;
   static final _dateFormat = DateFormat('yyyy-MM-dd');
+  int _quoteGeneration = 0;
 
   Future<void> load({PublicPropertyDetail? initialProperty}) async {
+    _quoteGeneration++;
     state = state.copyWith(
       property: initialProperty,
-      isLoadingProperty: initialProperty == null,
+      clearProperty: initialProperty == null,
+      isLoadingProperty: true,
       isLoadingAvailability: true,
-      propertyError: null,
-      availabilityError: null,
+      clearPropertyError: true,
+      clearAvailabilityError: true,
       clearQuote: true,
       clearQuoteError: true,
       clearCalendarError: true,
@@ -136,6 +146,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
       state = state.copyWith(
         property: prop,
         isLoadingProperty: false,
+        clearPropertyError: true,
         selectedGuests: state.selectedGuests > prop.maxGuests
             ? prop.maxGuests
             : (state.selectedGuests < 1 ? 1 : state.selectedGuests),
@@ -155,6 +166,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
       state = state.copyWith(
         availability: avail,
         isLoadingAvailability: false,
+        clearAvailabilityError: true,
       );
     } catch (e) {
       final message = e is PropertyDetailsException
@@ -168,7 +180,8 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
   }
 
   void selectDate(DateTime date) {
-    final cleanDate = DateTime(date.year, date.month, date.day);
+    final cleanDate = DateTime.utc(date.year, date.month, date.day);
+    _quoteGeneration++;
 
     // If no start date, or both start and end dates are already set:
     if (state.selectedCheckIn == null || state.selectedCheckOut != null) {
@@ -183,7 +196,11 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
     }
 
     // Start date is already set, now picking end date:
-    final start = state.selectedCheckIn!;
+    final start = DateTime.utc(
+      state.selectedCheckIn!.year,
+      state.selectedCheckIn!.month,
+      state.selectedCheckIn!.day,
+    );
     if (cleanDate.isBefore(start) || cleanDate.isAtSameMomentAs(start)) {
       // Picked date on or before start: restart selection with this new date as check-in
       state = state.copyWith(
@@ -204,6 +221,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
         calendarError: 'مدة الإقامة المعتمدة من ${state.minStay} ليلتين إلى ${state.maxStay} ليلة.',
         clearCheckOut: true,
         clearQuote: true,
+        clearQuoteError: true,
       );
       return;
     }
@@ -213,6 +231,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
         calendarError: 'الحد الأقصى للإقامة ${state.maxStay} ليلة.',
         clearCheckOut: true,
         clearQuote: true,
+        clearQuoteError: true,
       );
       return;
     }
@@ -222,6 +241,7 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
         calendarError: 'الفترة تشمل يومًا غير متاح في هذا المثال. اختار فترة أخرى.',
         clearCheckOut: true,
         clearQuote: true,
+        clearQuoteError: true,
       );
       return;
     }
@@ -230,6 +250,8 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
     state = state.copyWith(
       selectedCheckOut: cleanDate,
       clearCalendarError: true,
+      clearQuote: true,
+      clearQuoteError: true,
     );
 
     // Server-authoritative quote calculation triggered immediately
@@ -239,7 +261,12 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
   void incrementGuests() {
     final max = state.maxGuests;
     if (state.selectedGuests < max) {
-      state = state.copyWith(selectedGuests: state.selectedGuests + 1);
+      _quoteGeneration++;
+      state = state.copyWith(
+        selectedGuests: state.selectedGuests + 1,
+        clearQuote: true,
+        clearQuoteError: true,
+      );
       if (state.hasValidDates) {
         calculateQuote();
       }
@@ -248,7 +275,12 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
 
   void decrementGuests() {
     if (state.selectedGuests > 1) {
-      state = state.copyWith(selectedGuests: state.selectedGuests - 1);
+      _quoteGeneration++;
+      state = state.copyWith(
+        selectedGuests: state.selectedGuests - 1,
+        clearQuote: true,
+        clearQuoteError: true,
+      );
       if (state.hasValidDates) {
         calculateQuote();
       }
@@ -258,6 +290,20 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
   Future<void> calculateQuote() async {
     if (!state.hasValidDates) return;
 
+    final generation = ++_quoteGeneration;
+    final reqPropertyId = state.propertyId;
+    final reqIn = DateTime.utc(
+      state.selectedCheckIn!.year,
+      state.selectedCheckIn!.month,
+      state.selectedCheckIn!.day,
+    );
+    final reqOut = DateTime.utc(
+      state.selectedCheckOut!.year,
+      state.selectedCheckOut!.month,
+      state.selectedCheckOut!.day,
+    );
+    final reqGuests = state.selectedGuests;
+
     state = state.copyWith(
       isCalculatingQuote: true,
       clearQuote: true,
@@ -266,16 +312,30 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
 
     try {
       final quote = await repository.calculateQuote(
-        propertyId: state.propertyId,
-        checkIn: _dateFormat.format(state.selectedCheckIn!),
-        checkOut: _dateFormat.format(state.selectedCheckOut!),
-        guests: state.selectedGuests,
+        propertyId: reqPropertyId,
+        checkIn: _dateFormat.format(reqIn),
+        checkOut: _dateFormat.format(reqOut),
+        guests: reqGuests,
       );
+
+      // Latest-request-wins protection: discard if superseded
+      if (generation != _quoteGeneration || !mounted) return;
+
+      // Identity protection: discard if quote does not match active selection
+      if (quote.propertyId != state.propertyId ||
+          quote.guests != state.selectedGuests ||
+          !state.hasValidDates ||
+          quote.checkIn != DateTime.utc(state.selectedCheckIn!.year, state.selectedCheckIn!.month, state.selectedCheckIn!.day) ||
+          quote.checkOut != DateTime.utc(state.selectedCheckOut!.year, state.selectedCheckOut!.month, state.selectedCheckOut!.day)) {
+        return;
+      }
+
       state = state.copyWith(
         quote: quote,
         isCalculatingQuote: false,
       );
     } catch (e) {
+      if (generation != _quoteGeneration || !mounted) return;
       final message = e is PropertyDetailsException
           ? e.message ?? _mapError(e.kind)
           : 'تعذّر حساب السعر';
@@ -288,23 +348,23 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
 
   void nextMonth() {
     final cur = state.currentMonth;
-    final next = DateTime(cur.year, cur.month + 1, 1);
+    final next = DateTime.utc(cur.year, cur.month + 1, 1);
     state = state.copyWith(currentMonth: next);
   }
 
   void previousMonth() {
     final cur = state.currentMonth;
-    final prev = DateTime(cur.year, cur.month - 1, 1);
+    final prev = DateTime.utc(cur.year, cur.month - 1, 1);
     // Don't allow scrolling past the current calendar month
     final now = DateTime.now();
-    final firstOfCurrent = DateTime(now.year, now.month, 1);
+    final firstOfCurrent = DateTime.utc(now.year, now.month, 1);
     if (prev.isBefore(firstOfCurrent)) return;
 
     state = state.copyWith(currentMonth: prev);
   }
 
   void toggleFavorite() {
-    state = state.copyWith(isFavorite: !state.isFavorite);
+    // Guest favorites are unauthenticated; state remains false.
   }
 
   static String _mapError(PropertyDetailsFailureKind kind) => switch (kind) {

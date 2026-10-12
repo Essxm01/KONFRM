@@ -134,8 +134,8 @@ void main() {
         'checkIn': '2026-07-01',
         'checkOut': '2026-07-05',
       });
-      expect(range.checkIn, DateTime(2026, 7, 1));
-      expect(range.checkOut, DateTime(2026, 7, 5));
+      expect(range.checkIn, DateTime.utc(2026, 7, 1));
+      expect(range.checkOut, DateTime.utc(2026, 7, 5));
     });
 
     test('throws when checkOut is before checkIn', () {
@@ -246,37 +246,106 @@ void main() {
         isFalse,
       );
     });
+
+    test('fails closed when propertyId is empty in PropertyAvailability', () {
+      expect(
+        () => PropertyAvailability.fromJson({
+          'propertyId': '   ',
+          'unavailableRanges': <dynamic>[],
+        }),
+        throwsFormatException,
+      );
+    });
   });
 
   group('BookingQuote Model Tests', () {
-    Map<String, dynamic> validQuoteJson() => {
-          'propertyId': 'prop-101',
-          'checkIn': '2026-08-10',
-          'checkOut': '2026-08-15',
-          'nights': 5,
-          'guests': 4,
-          'pricePerNight': 3000.0,
-          'totalStay': 15000.0,
-          'depositAmount': 3750.0,
-          'remainingAmount': 11250.0,
-          'currency': 'EGP',
-          'quoteFingerprint': 'fp-quote-abc-123456',
-        };
+    Map<String, dynamic> validQuoteJson({
+      int nights = 5,
+      double pricePerNight = 3000.0,
+      String checkIn = '2026-08-10',
+      String checkOut = '2026-08-15',
+    }) {
+      final totalStay = nights * pricePerNight;
+      final depositAmount = pricePerNight; // Canonical rule: deposit is strictly 1st night
+      final remainingAmount = totalStay - depositAmount;
 
-    test('parses valid BookingQuote correctly', () {
-      final quote = BookingQuote.fromJson(validQuoteJson());
+      return {
+        'propertyId': 'prop-101',
+        'checkIn': checkIn,
+        'checkOut': checkOut,
+        'nights': nights,
+        'guests': 4,
+        'pricePerNight': pricePerNight,
+        'totalStay': totalStay,
+        'depositAmount': depositAmount,
+        'remainingAmount': remainingAmount,
+        'currency': 'EGP',
+        'quoteFingerprint': 'fp-quote-abc-123456',
+      };
+    }
+
+    test('parses valid 5-night BookingQuote with canonical first-night deposit', () {
+      final quote = BookingQuote.fromJson(validQuoteJson(nights: 5, pricePerNight: 3000.0));
 
       expect(quote.propertyId, 'prop-101');
-      expect(quote.checkIn, DateTime(2026, 8, 10));
-      expect(quote.checkOut, DateTime(2026, 8, 15));
+      expect(quote.checkIn, DateTime.utc(2026, 8, 10));
+      expect(quote.checkOut, DateTime.utc(2026, 8, 15));
       expect(quote.nights, 5);
       expect(quote.guests, 4);
       expect(quote.pricePerNight, 3000.0);
       expect(quote.totalStay, 15000.0);
-      expect(quote.depositAmount, 3750.0);
-      expect(quote.remainingAmount, 11250.0);
+      expect(quote.depositAmount, 3000.0); // Exact 1st night
+      expect(quote.remainingAmount, 12000.0);
       expect(quote.currency, 'EGP');
       expect(quote.quoteFingerprint, 'fp-quote-abc-123456');
+    });
+
+    test('parses multi-night quotes: 2-night and 3-night canonical breakdowns', () {
+      // 2 nights at 3,000 EGP/night:
+      final quote2 = BookingQuote.fromJson(validQuoteJson(
+        nights: 2,
+        pricePerNight: 3000.0,
+        checkIn: '2026-08-10',
+        checkOut: '2026-08-12',
+      ));
+      expect(quote2.totalStay, 6000.0);
+      expect(quote2.depositAmount, 3000.0);
+      expect(quote2.remainingAmount, 3000.0);
+
+      // 3 nights at 4,500 EGP/night:
+      final quote3 = BookingQuote.fromJson(validQuoteJson(
+        nights: 3,
+        pricePerNight: 4500.0,
+        checkIn: '2026-08-10',
+        checkOut: '2026-08-13',
+      ));
+      expect(quote3.totalStay, 13500.0);
+      expect(quote3.depositAmount, 4500.0); // Exact 1st night
+      expect(quote3.remainingAmount, 9000.0);
+    });
+
+    test('fails closed when stay duration is below minimum 2 nights or above 30 nights', () {
+      final oneNight = validQuoteJson(
+        nights: 1,
+        checkIn: '2026-08-10',
+        checkOut: '2026-08-11',
+      );
+      expect(() => BookingQuote.fromJson(oneNight), throwsFormatException);
+
+      final thirtyOneNights = validQuoteJson(
+        nights: 31,
+        checkIn: '2026-08-01',
+        checkOut: '2026-09-01',
+      );
+      expect(() => BookingQuote.fromJson(thirtyOneNights), throwsFormatException);
+    });
+
+    test('fails closed when checkOut is not after checkIn or dates do not match nights', () {
+      final reversedDates = validQuoteJson()..['checkIn'] = '2026-08-15'..['checkOut'] = '2026-08-10';
+      expect(() => BookingQuote.fromJson(reversedDates), throwsFormatException);
+
+      final mismatchedNights = validQuoteJson()..['nights'] = 3; // Date range is 5 nights
+      expect(() => BookingQuote.fromJson(mismatchedNights), throwsFormatException);
     });
 
     test('fails closed on foreign currency or missing quote fingerprint', () {

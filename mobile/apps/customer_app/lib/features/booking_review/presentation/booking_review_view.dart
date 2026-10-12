@@ -91,7 +91,7 @@ class BookingRequestReviewView extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
                   ] else if (state.uiState == BookingReviewUiState.authRequired) ...[
-                    _AuthRequiredBanner(onDismiss: controller.dismissAuthRequired),
+                    const _AuthRequiredBanner(),
                     const SizedBox(height: 16),
                   ] else if (state.uiState == BookingReviewUiState.requestSent) ...[
                     _RequestSentCard(result: state.bookingResult),
@@ -136,6 +136,7 @@ class BookingRequestReviewView extends ConsumerWidget {
               onAcceptNewPrice: controller.acceptNewPrice,
               onEditDates: onEditDetails,
               onRetry: controller.retry,
+              onReturnToReview: controller.dismissAuthRequired,
               onDone: () => Navigator.of(context).popUntil((route) => route.isFirst),
             ),
           ],
@@ -797,9 +798,7 @@ class _NetworkErrorBanner extends StatelessWidget {
 
 /// Truthful Auth Required Banner / Notice
 class _AuthRequiredBanner extends StatelessWidget {
-  const _AuthRequiredBanner({required this.onDismiss});
-
-  final VoidCallback onDismiss;
+  const _AuthRequiredBanner();
 
   @override
   Widget build(BuildContext context) {
@@ -833,14 +832,6 @@ class _AuthRequiredBanner extends StatelessWidget {
             style: KonfrmTypography.body.copyWith(
               fontSize: 12.5,
               color: const Color(0xFF1E40AF),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: TextButton(
-              onPressed: onDismiss,
-              child: const Text('العودة للمراجعة', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
             ),
           ),
         ],
@@ -918,6 +909,7 @@ class _ReviewStickyBar extends StatelessWidget {
     required this.onAcceptNewPrice,
     required this.onEditDates,
     required this.onRetry,
+    required this.onReturnToReview,
     required this.onDone,
   });
 
@@ -926,6 +918,7 @@ class _ReviewStickyBar extends StatelessWidget {
   final VoidCallback onAcceptNewPrice;
   final VoidCallback onEditDates;
   final VoidCallback onRetry;
+  final VoidCallback onReturnToReview;
   final VoidCallback onDone;
 
   @override
@@ -1004,50 +997,36 @@ class _ReviewStickyBar extends StatelessWidget {
         return _PrimaryActionButton(
           label: 'قبول السعر الجديد ومتابعة المراجعة',
           onPressed: onAcceptNewPrice,
-          backgroundColor: const Color(0xFF000000),
         );
 
       case BookingReviewUiState.dateConflict:
         return _PrimaryActionButton(
           label: 'اختيار تواريخ جديدة',
           onPressed: onEditDates,
-          backgroundColor: const Color(0xFF0059FF),
         );
 
       case BookingReviewUiState.networkError:
         return _PrimaryActionButton(
           label: 'إعادة المحاولة',
           onPressed: onRetry,
-          backgroundColor: const Color(0xFF0059FF),
         );
 
       case BookingReviewUiState.authRequired:
         return _PrimaryActionButton(
-          label: 'تسجيل الدخول (قيد التجهيز)',
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'تسجيل الدخول غير متاح حالياً في هذه النسخة التجريبية. يلزم حساب عميل لإرسال طلب الحجز.',
-                ),
-              ),
-            );
-          },
-          backgroundColor: const Color(0xFF000000),
+          label: 'العودة للمراجعة',
+          onPressed: onReturnToReview,
         );
 
       case BookingReviewUiState.requestSent:
         return _PrimaryActionButton(
           label: 'العودة للاستكشاف',
           onPressed: onDone,
-          backgroundColor: const Color(0xFF000000),
         );
 
       case BookingReviewUiState.reviewReady:
         return _PrimaryActionButton(
           label: 'إرسال طلب الحجز للمالك',
           onPressed: onSubmit,
-          backgroundColor: const Color(0xFF000000),
         );
     }
   }
@@ -1057,12 +1036,10 @@ class _PrimaryActionButton extends StatelessWidget {
   const _PrimaryActionButton({
     required this.label,
     required this.onPressed,
-    required this.backgroundColor,
   });
 
   final String label;
   final VoidCallback onPressed;
-  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -1072,7 +1049,7 @@ class _PrimaryActionButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
+          backgroundColor: const Color(0xFF000000), // Approved KONFRM mobile primary-black baseline
           foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(

@@ -220,16 +220,23 @@ void main() {
 
       // State transitions to authRequired
       expect(find.text('تسجيل الدخول مطلوب لإرسال الطلب'), findsOneWidget);
-      expect(find.text('تسجيل الدخول (قيد التجهيز)'), findsOneWidget);
-
-      // Tapping it shows truthful SnackBar reporting native auth blocker
-      await tester.tap(find.text('تسجيل الدخول (قيد التجهيز)'));
-      await tester.pumpAndSettle();
-
       expect(
-        find.text('تسجيل الدخول غير متاح حالياً في هذه النسخة التجريبية. يلزم حساب عميل لإرسال طلب الحجز.'),
+        find.text('خدمة تسجيل الدخول قيد التجهيز في مرحلة التوثيق القادمة. يلزم حساب عميل موثق لإرسال طلب الحجز للمالك.'),
         findsOneWidget,
       );
+      // Main functional action is 'العودة للمراجعة' with primary black #000000 styling
+      expect(find.text('العودة للمراجعة'), findsOneWidget);
+      final returnBtnFinder = find.widgetWithText(ElevatedButton, 'العودة للمراجعة');
+      expect(returnBtnFinder, findsOneWidget);
+      final returnBtn = tester.widget<ElevatedButton>(returnBtnFinder);
+      expect(returnBtn.style?.backgroundColor?.resolve({}), const Color(0xFF000000));
+
+      // Tapping it cleanly returns to reviewReady state
+      await tester.tap(returnBtnFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.text('إرسال طلب الحجز للمالك'), findsOneWidget);
+      expect(find.text('تسجيل الدخول مطلوب لإرسال الطلب'), findsNothing);
     });
 
     testWidgets('network error displays customer-friendly card and allows retry', (tester) async {
@@ -795,6 +802,62 @@ void main() {
       await controller.retry();
       expect(submitCount, 2);
       expect(calcCount, 2);
+    });
+
+    testWidgets('all enabled primary CTAs follow unified #000000 background and 6px radius across states', (tester) async {
+      final reviewContext = _createTestContext();
+
+      for (final testCase in [
+        (BookingReviewUiState.reviewReady, 'إرسال طلب الحجز للمالك'),
+        (BookingReviewUiState.priceChanged, 'قبول السعر الجديد ومتابعة المراجعة'),
+        (BookingReviewUiState.dateConflict, 'اختيار تواريخ جديدة'),
+        (BookingReviewUiState.networkError, 'إعادة المحاولة'),
+        (BookingReviewUiState.authRequired, 'العودة للمراجعة'),
+        (BookingReviewUiState.requestSent, 'العودة للاستكشاف'),
+      ]) {
+        await tester.pumpWidget(_buildTestBookingReviewApp(
+          context: reviewContext,
+          onEditDetails: () {},
+        ));
+        await tester.pumpAndSettle();
+
+        final element = tester.element(find.byType(BookingRequestReviewView));
+        final container = ProviderScope.containerOf(element);
+        final controller = container.read(bookingReviewControllerProvider(reviewContext).notifier);
+
+        controller.state = controller.state.copyWith(
+          uiState: testCase.$1,
+          bookingResult: const BookingRequestResult(
+            id: 'b-1',
+            bookingNumber: 'BK-1',
+            status: 'PENDING_OWNER_APPROVAL',
+            propertyId: 'p-1',
+            checkIn: '2026-10-15',
+            checkOut: '2026-10-18',
+            createdAt: '2026-10-12T18:00:00Z',
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final btnFinder = find.widgetWithText(ElevatedButton, testCase.$2);
+        expect(btnFinder, findsOneWidget, reason: 'Expected button ${testCase.$2} in state ${testCase.$1}');
+        final btn = tester.widget<ElevatedButton>(btnFinder);
+
+        // Verify primary black #000000 baseline
+        expect(
+          btn.style?.backgroundColor?.resolve({}),
+          const Color(0xFF000000),
+          reason: 'Expected #000000 background for ${testCase.$2} in state ${testCase.$1}',
+        );
+
+        // Verify 6px border radius
+        final shape = btn.style?.shape?.resolve({}) as RoundedRectangleBorder?;
+        expect(
+          shape?.borderRadius,
+          BorderRadius.circular(6),
+          reason: 'Expected 6px radius for ${testCase.$2} in state ${testCase.$1}',
+        );
+      }
     });
   });
 }

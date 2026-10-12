@@ -1,54 +1,48 @@
-# Active Task — CUSTOMER_SCREEN_06_PROPERTY_DETAILS_V3
+# Active Task — CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2
 
-TASK_ID: CUSTOMER_SCREEN_06_PROPERTY_DETAILS_V3
+TASK_ID: CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: PENDING_BRIDGE_REVIEW
-PR: #116 (DRAFT / UNMERGED)
+STATUS: READY_FOR_BRIDGE_REVIEW
+PR: #118 (DRAFT)
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: 05270c5fb3fa4970d0e2f7ca6e4b99444f405096
-BRANCH: feat/customer-screen06-property-details-v3
-SCOPE: Implement the Founder-approved Screen 06 Property Details Concept A V3 in native Customer Flutter. Single scrollable page, photo gallery with swipe, canonical facts, description and amenities, always-inline single-month calendar respecting availability, guest stepper, server-authoritative quote, sticky decision bar. Founder explicit override: REMOVE 'كيف يتم الحجز' explainer, keep only 'لا يتم الدفع عند إرسال الطلب؛ العربون بعد موافقة المالك.'. Four root tabs preserved, bottom nav hidden on Screen 06.
-
-## Verification & Evidence
-- Unit & Widget Tests: 93/93 Customer App tests PASS (including 28/28 model tests, 24/24 widget tests, multi-viewport layout tests across 360dp, 390dp, 430dp, and 200% text scale, and 5 dedicated error sanitization & technical diagnostics tests).
-- Static Analysis: 0 issues in `customer_app`, 0 issues in `konfrm_design_system`.
-- Shared Design System: 21/21 tests PASS.
-- Android Debug APK Build: PASS (`build\app\outputs\flutter-apk\app-debug.apk`).
-- Bridge Review `5489977466` Focused Error-Sanitization Gate Resolved:
-  - Sanitized customer-facing error presentation paths across `PropertyDetailsRepository` and `PropertyDetailsController`.
-  - Prevented raw `FormatException`, raw HTTP status codes/text, and arbitrary untrusted backend error strings (SQL constraints, PGRST syntax, internal worker timeouts) from leaking into customer UI.
-  - Truthful distinctions preserved in concise, meaningful Arabic across all failure categories (unavailable property, date overlap, min/max stay, max guests, malformed responses, network/timeout/server errors).
-  - Isolated technical diagnostics safely into `PropertyDetailsException.technicalDetails` for internal monitoring and debugging without customer exposure.
-  - Added 5 focused tests in `test/property_details_widget_test.dart`:
-    1. Malformed property details response: corrupt JSON & FormatException cleanly sanitized to concise Arabic, retryable.
-    2. Malformed availability response: invalid structure & dates sanitized to concise Arabic, retryable.
-    3. Unexpected HTTP status (502, 429): raw HTTP status text sanitized to customer-friendly Arabic; technical details preserved in `technicalDetails`.
-    4. Arbitrary technical backend error text (400, 409): raw SQL constraint violation and PGRST syntax messages sanitized to approved Arabic while isolating technical diagnostics internally.
-    5. Customer-friendly quote error and retry: cleanly displays sanitized Arabic copy without developer jargon and recovers on retry success.
-- Bridge Review `5489402454` Remediation Verified:
-  - TASK 1 Canonical Stay Contract: 2–30 nights strictly enforced in `PropertyAvailability.fromJson` with boundary assertions and 5 boundary tests (min=1, 0, max=31, 365, inconsistent bounds, min=2/max=30 boundary).
-  - TASK 2 Availability Response Identity: `avail.propertyId == state.propertyId` validated in controller and repository; fails closed with clean Arabic error (`تعذر التحقق من هوية العقار في استجابة التوفر.`) and clears availability state.
-  - TASK 3 Quote State Lifecycle & Sticky Bar Integrity: `isCalculatingQuote` reset on new date selection or failure; in-flight quote state cleared on reload; `PropertyStickyBar` strictly requires valid quote before showing `مراجعة طلب الحجز` CTA; shows `حساب السعر` if dates are selected but quote is pending/null.
-  - TASK 4 Status-Bar Content Overlap on Scroll: Animated white status-bar scrim fading smoothly between 60dp and 160dp scroll offset; dynamic `SystemUiOverlayStyle` icon brightness toggled (light icons over dark hero, dark icons over white content); zero ghost text under Android status bar.
-  - TASK 5 Amenity Presentation Deduplication: `normalizeAndDeduplicate()` in `amenities_bottom_sheet.dart` deduplicates aliases (`AIR_CONDITIONING` + `AC` -> `تكييف`, `PARKING` + `موقف سيارات` -> `موقف سيارات`) while preserving distinct facts (`POOL` vs `PRIVATE_POOL`, `AIR_CONDITIONING` vs `CENTRAL_AC` -> `تكييف مركزي`, `GARAGE` -> `كراج مغطى`).
-  - TASK 6 Screen 07 Handoff Integrity: Recorded `SCREEN07_HANDOFF_BLOCKED` under Boundaries & Invariants; truthful development notice `خدمة إرسال طلبات الحجز غير متاحة حالياً في هذه النسخة التجريبية.` displayed on CTA tap.
-  - TASK 7 Copy Polish & 200% Text Scale: Clean Arabic error copy without developer jargon (`تعذر احتساب السعر حالياً. يرجى إعادة المحاولة.`); multiline wrapping for sticky button at 200% text scale.
-  - TASK 8 Cloudflare Pages Diagnosis: Check run `114763377209` failed due to 0-second Cloudflare deployment dispatch blip on `sola-owner-app`; zero diff in `owner-app/` or root config; documented per repository governance.
-- Separate Configuration Gate: `DISCOVERY_RUNTIME_QA = BLOCKED_BY_CONFIGURATION` (preserved).
-- Physical Device QA Evidence on Samsung Galaxy A56 5G (SM-A566B, Android 16 / One UI):
-  - `11_screen06_a56_top_fold_remediated.png`: Hero gallery with coherent luxury resort imagery, corrected top action buttons (Back at top-right pointing right, Favorite at top-left), lower-left photo counter pill `1 من 3`.
-  - `12_screen06_a56_amenities_sheet_remediated.png`: Amenities bottom sheet with deduplicated pills and preserved distinct facts (`مسبح`, `مسبح خاص`, `تكييف`, `تكييف مركزي`, `كراج مغطى`, etc.).
-  - `13_screen06_a56_scrolled_scrim_remediated.png`: Scrolled status bar scrim with dark icons on white background, zero ghost text under Android status bar.
-  - `14_screen06_a56_dates_selected_remediated.png`: October 2026 3-night selection (12-15 Oct) with start, range, and end highlights, guest stepper.
-  - `15_screen06_a56_price_breakdown_remediated.png`: Canonical server-authoritative quote breakdown (Total: 13,500 EGP, Deposit: 4,500 EGP = strictly 1st night, Remaining: 9,000 EGP) with explicit payment disclosure.
-  - `16_screen06_a56_handoff_snackbar_remediated.png`: Truthful consumer handoff notification `خدمة إرسال طلبات الحجز غير متاحة حالياً في هذه النسخة التجريبية.` without any developer jargon.
+BASE_MAIN_SHA: 3fef468b5dcb2fc08da2ef8ab12bd51707c8b806
+BRANCH: feat/customer-screen07-booking-review-v2
+SCOPE: Implement the Founder-approved Screen 07 Booking Request Review Concept A V2 in native Customer Flutter. Full-screen, Arabic-first RTL review screen, RTL back button to Screen 06, compact property summary, stay details with Arabic pluralization, price breakdown with prominent total and directionality-isolated currency formatting (13,500 ج.م), financial disclosure, sticky black CTA, clear confirmation disclosure, full UI state machine (REVIEW_READY, REVALIDATING, PRICE_CHANGED, DATE_CONFLICT, NETWORK_ERROR, AUTH_REQUIRED, SUBMITTING, REQUEST_SENT). Connect Screen 06 _onReviewBooking to Screen 07 when context is valid. Truthful unauthenticated handling without fake auth.
 
 ## Boundaries & Invariants
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
 - Zero business, booking, availability, pricing, commission, or financial rule changes.
-- Never invent Screen 07 or pretend it works; recorded `SCREEN07_HANDOFF_BLOCKED` as dependency.
 - Server-authoritative quote only (POST /api/v1/customer/bookings/calculate); no local price math or fake availability.
+- Protected request contract: POST /api/v1/customer/bookings with propertyId, checkIn, checkOut, guests, reviewedQuoteFingerprint, requestId.
+- Number-first currency visual format: '13,500 ج.م' guaranteed under all RTL environments.
+- Guest review permitted; authentication intercepted only on protected submission attempt.
+- Truthful auth gate: if native Auth is unavailable, report BLOCKED_BY_NATIVE_AUTH without inventing fake sessions or bypassing server auth.
+- No root Bottom Navigation on Screen 07 (focused transactional review).
 - Stay length constraints: 2-30 nights strictly enforced.
+
+## Verification & Quality Gates
+- [x] Directionality-isolated currency rendering (`KonfrmPriceText`) guarantees `13,500 ج.م` number-first across all RTL layouts.
+- [x] Screen 06 to Screen 07 wiring preserves full booking review context and returns cleanly on `تعديل`.
+- [x] Complete 8-state UI machine implemented and tested (`reviewReady`, `revalidating`, `priceChanged`, `dateConflict`, `networkError`, `authRequired`, `submitting`, `requestSent`).
+- [x] Strict state machine submission guard: zero protected POST requests dispatched from any non-`reviewReady` state (`priceChanged`, `dateConflict`, `networkError`, `authRequired`, `revalidating`, `submitting`, `requestSent`).
+- [x] Sequential separation of price acceptance (`قبول السعر الجديد ومتابعة المراجعة`) and booking submission (`إرسال طلب الحجز للمالك`).
+- [x] Revalidation lifecycle monotonic epoch counter (`_revalidationEpoch`) protects against out-of-order delayed responses.
+- [x] Differentiated retry: quote revalidation failure retries quote calculation; submission failure retries submission preserving exact `requestId` and fingerprint.
+- [x] Truthful auth gate: zero unsupported claims of local persistence; strictly reports `BLOCKED_BY_NATIVE_AUTH`.
+- [x] Server response status validation: non-empty status strictly matching `PENDING_OWNER_APPROVAL` and expected `propertyId`.
+- [x] Visual fidelity: removed intro header `راجع طلبك قبل الإرسال`, removed misleading single night row, sticky CTA `#000000` 54px with 6px radius.
+- [x] Multi-viewport layout (360dp, 390dp, 430dp) and 200% text scaling verified with 0 layout overflows.
+- [x] Physical Samsung Galaxy A56 (`SM-A566B`, Android 16) verified with 6 screenshot captures across all functional states.
+- [x] Full customer app test suite passes: 124/124 PASS.
+- [x] Static analysis passes: 0 issues in `customer_app` and `konfrm_design_system`.
+
+---
+
+## Historical Task — CUSTOMER_SCREEN_06_PROPERTY_DETAILS_V3 (MERGED)
+- PR: #116 (MERGED INTO MAIN)
+- MERGE_COMMIT: 3fef468b5dcb2fc08da2ef8ab12bd51707c8b806
+- SCOPE: Screen 06 Property Details Concept A V3 in native Customer Flutter. Single scrollable page, photo gallery, inline calendar, guest stepper, server-authoritative quote, sticky bar, and focused error sanitization.
+- VERIFICATION: 93/93 tests PASS; Samsung Galaxy A56 physical QA PASS.
 
 ---
 

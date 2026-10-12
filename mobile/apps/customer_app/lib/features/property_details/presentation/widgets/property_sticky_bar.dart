@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart' hide TextDirection;
 
+
+import '../../../booking_review/presentation/widgets/konfrm_price_text.dart';
 import '../../data/property_details_models.dart';
 
 class PropertyStickyBar extends StatelessWidget {
@@ -23,23 +24,25 @@ class PropertyStickyBar extends StatelessWidget {
   final BookingQuote? quote;
   final VoidCallback onTapCta;
 
-  static final _currencyFormat = NumberFormat('#,##0.##', 'en');
-
   @override
   Widget build(BuildContext context) {
     // 1. Determine Sticky Label & Value
     final String label;
-    final String value;
+    final num? amount;
+    final bool isDash;
 
     if (quote != null) {
       label = 'إجمالي الإقامة';
-      value = '${_currencyFormat.format(quote!.totalStay)} ج.م';
+      amount = quote!.totalStay;
+      isDash = false;
     } else if (hasCheckIn && hasCheckOut && (isCalculating || hasQuoteError)) {
       label = 'إجمالي الإقامة';
-      value = '—';
+      amount = null;
+      isDash = true;
     } else {
       label = 'السعر الأساسي لليلة';
-      value = '${_currencyFormat.format(basePricePerNight)} ج.م';
+      amount = basePricePerNight;
+      isDash = false;
     }
 
     // 2. Determine CTA Button Label & Enabled State
@@ -109,15 +112,23 @@ class PropertyStickyBar extends StatelessWidget {
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: AlignmentDirectional.centerStart,
-                      child: Text(
-                        value,
-                        textDirection: TextDirection.rtl,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF101723),
-                        ),
-                      ),
+                      child: isDash || amount == null
+                          ? const Text(
+                              '—',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF101723),
+                              ),
+                            )
+                          : KonfrmPriceText(
+                              amount: amount,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF101723),
+                              ),
+                            ),
                     ),
                   ],
                 ),

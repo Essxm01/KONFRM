@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart' hide TextDirection;
 import 'package:konfrm_design_system/konfrm_design_system.dart';
 
+import '../../../booking_review/presentation/widgets/konfrm_price_text.dart';
 import '../../data/property_details_models.dart';
 
 class QuoteBreakdownCard extends StatelessWidget {
@@ -21,8 +21,6 @@ class QuoteBreakdownCard extends StatelessWidget {
   final BookingQuote? quote;
   final String? quoteError;
   final VoidCallback onRetryQuote;
-
-  static final _currencyFormat = NumberFormat('#,##0.##', 'en');
 
   @override
   Widget build(BuildContext context) {
@@ -177,18 +175,18 @@ class QuoteBreakdownCard extends StatelessWidget {
         children: [
           _PriceRow(
             label: 'إجمالي الإقامة (${quote!.nights} ليالٍ)',
-            value: '${_currencyFormat.format(quote!.totalStay)} ج.م',
+            amount: quote!.totalStay,
             isTotal: true,
           ),
           const SizedBox(height: 6),
           _PriceRow(
             label: 'العربون بعد موافقة المالك',
-            value: '${_currencyFormat.format(quote!.depositAmount)} ج.م',
+            amount: quote!.depositAmount,
           ),
           const SizedBox(height: 4),
           _PriceRow(
             label: 'المبلغ المتبقي',
-            value: '${_currencyFormat.format(quote!.remainingAmount)} ج.م',
+            amount: quote!.remainingAmount,
           ),
         ],
       );
@@ -201,12 +199,12 @@ class QuoteBreakdownCard extends StatelessWidget {
 class _PriceRow extends StatelessWidget {
   const _PriceRow({
     required this.label,
-    required this.value,
+    required this.amount,
     this.isTotal = false,
   });
 
   final String label;
-  final String value;
+  final num amount;
   final bool isTotal;
 
   @override
@@ -227,9 +225,8 @@ class _PriceRow extends StatelessWidget {
         const SizedBox(width: 8),
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(
-            value,
-            textDirection: TextDirection.rtl,
+          child: KonfrmPriceText(
+            amount: amount,
             style: TextStyle(
               fontSize: isTotal ? 13 : 12,
               fontWeight: isTotal ? FontWeight.w900 : FontWeight.w700,

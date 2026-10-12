@@ -15,6 +15,8 @@ import 'widgets/property_facts_bar.dart';
 import 'widgets/property_gallery.dart';
 import 'widgets/property_sticky_bar.dart';
 import 'widgets/quote_breakdown_card.dart';
+import '../../booking_review/data/booking_review_models.dart';
+import '../../booking_review/presentation/booking_review_view.dart';
 
 class PropertyDetailsView extends ConsumerStatefulWidget {
   const PropertyDetailsView({
@@ -99,16 +101,39 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
   }
 
   void _onReviewBooking() {
-    // REVERSIBLE DEVELOPMENT / PRE-SCREEN-07 GATING:
-    // Screen 07 (Booking Request Review) is pending downstream implementation (SCREEN07_HANDOFF_BLOCKED).
-    // In this build, a truthful customer message is displayed; production navigation will route to Screen 07 once implemented.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'خدمة إرسال طلبات الحجز غير متاحة حالياً في هذه النسخة التجريبية.',
-          textDirection: TextDirection.rtl,
+    final state = ref.read(propertyDetailsControllerProvider(widget.propertyId));
+    final prop = state.property;
+    final quote = state.quote;
+    final checkIn = state.selectedCheckIn;
+    final checkOut = state.selectedCheckOut;
+    final guests = state.selectedGuests;
+
+    if (prop == null || quote == null || checkIn == null || checkOut == null) {
+      return;
+    }
+
+    final nights = checkOut.difference(checkIn).inDays;
+    if (nights < 2 || nights > 30) {
+      return;
+    }
+
+    final reviewContext = BookingReviewContext(
+      propertyId: prop.id,
+      propertyTitle: prop.title,
+      propertyLocation: prop.resortName ?? prop.region ?? prop.address,
+      propertyImage: prop.images.isNotEmpty ? prop.images.first.toString() : null,
+      initialQuote: quote,
+      checkIn: checkIn,
+      checkOut: checkOut,
+      guests: guests,
+    );
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => BookingRequestReviewView(
+          reviewContext: reviewContext,
+          onEditDetails: () => Navigator.of(context).pop(),
         ),
-        duration: Duration(seconds: 3),
       ),
     );
   }

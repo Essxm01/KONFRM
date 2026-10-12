@@ -1,22 +1,40 @@
-# Active Task — DEFECT_BRAND_A56_01_ADAPTIVE_ICON_REMEDIATION
+# Active Task — CUSTOMER_SCREEN_06_PROPERTY_DETAILS_V3
 
-TASK_ID: DEFECT_BRAND_A56_01_ADAPTIVE_ICON_REMEDIATION
-TASK_CLASS: DEFECT_REMEDIATION
-STATUS: IMPLEMENTED / STOP_FOR_BRIDGE_REVIEW
-PR: #114 (DRAFT / UNMERGED)
+TASK_ID: CUSTOMER_SCREEN_06_PROPERTY_DETAILS_V3
+TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
+STATUS: COMPLETED_LOCAL (READY_FOR_DRAFT_PR)
+PR: PENDING (DRAFT)
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: 6a08f064b9288b17bdb12667e6385a72d58de76e
-BRANCH: fix/defect-brand-a56-01-adaptive-icon-remediation
-DEVICE: Samsung Galaxy A56 5G / SM-A566B / Android 16 (API 36) / One UI / ar-EG
-SCOPE: Remediate DEFECT-BRAND-A56-01: calibrate Android Adaptive Icon safe-zone margin (viewport 6320x6320, 108dp canvas) inside Samsung One UI circular mask (72dp radius, 20.5% breathing room) and configure Light-first splash surface with explicit v31 styles and white window background. Zero geometry modification to Founder's geometric symbol. Zero backend/database/API changes.
+BASE_MAIN_SHA: 05270c5fb3fa4970d0e2f7ca6e4b99444f405096
+BRANCH: feat/customer-screen06-property-details-v3
+SCOPE: Implement the Founder-approved Screen 06 Property Details Concept A V3 in native Customer Flutter. Single scrollable page, photo gallery with swipe, canonical facts, description and amenities, always-inline single-month calendar respecting availability, guest stepper, server-authoritative quote, sticky decision bar. Founder explicit override: REMOVE 'كيف يتم الحجز' explainer, keep only 'لا يتم الدفع عند إرسال الطلب؛ العربون بعد موافقة المالك.'. Four root tabs preserved, bottom nav hidden on Screen 06.
+
+## Verification & Physical Evidence
+- Unit & Widget Tests: 70/70 Customer App tests PASS (including 16/16 model tests, 11/11 widget & multi-viewport tests across 360dp, 390dp, 430dp, and 200% text scale).
+- Static Analysis: 0 issues in `customer_app`, 0 issues in `konfrm_design_system`.
+- Shared Design System: 21/21 tests PASS.
+- Physical Device QA: PASS on Samsung Galaxy A56 5G (`SM-A566B`, Android 16 / One UI):
+  - `01_screen06_top_facts_amenities.png`: Photo gallery hero, 48px circle action buttons, counter pill, facts bar, description clamp, key amenities preview.
+  - `02_screen06_calendar_stepper_unselected.png`: Always-inline calendar, disabled past/booked dates, 48px circle guest stepper, unselected quote card prompt, sticky bar at initial state.
+  - `03_screen06_selected_dates_quote_breakdown.png`: Date range selection (13-16 Oct), guest stepper increment (2 guests), server quote breakdown (`13,500 ج.م`), Founder truthful disclosure (`لا يتم الدفع عند إرسال الطلب؛ العربون بعد موافقة المالك.`), sticky bar dynamic CTA.
+  - `04_screen06_truthful_screen07_handoff.png`: Truthful Screen 07 dependency notification banner (`مراجعة طلب الحجز (الشاشة 07) قيد الاعتماد والمتابعة كحزمة مستقلة.`).
+  - `05_screen06_amenities_bottom_sheet.png`: Amenities bottom sheet with all pills and `إغلاق` button.
+  - `06_screen06_fullscreen_gallery_viewer.png`: Full-screen image viewer with thumbnail filmstrip.
+- Separate Configuration Gate: `DISCOVERY_RUNTIME_QA = BLOCKED_BY_CONFIGURATION` (preserved).
 
 ## Boundaries & Invariants
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
 - Zero business, booking, availability, pricing, commission, or financial rule changes.
-- Exact Founder SVG vector path data and stroke-width 151.55 round joins strictly preserved in `ic_launcher_foreground.xml`.
-- Light-first splash surface enforced in both standard and Night mode (Master Rule MR-05).
-- Non-destructive physical device installation only (`adb install -r`).
-- Open ONE Draft PR only; STOP FOR BRIDGE REVIEW.
+- Never invent Screen 07 or pretend it works; recorded Screen 07 handoff as dependency.
+- Server-authoritative quote only (POST /api/v1/customer/bookings/calculate); no local price math or fake availability.
+- Stay length constraints: 2-30 nights strictly enforced.
+
+---
+
+## Historical Task — DEFECT_BRAND_A56_01_ADAPTIVE_ICON_REMEDIATION (MERGED)
+- PR: #114 (MERGED INTO MAIN)
+- MERGE_COMMIT: 05270c5fb3fa4970d0e2f7ca6e4b99444f405096
+- SCOPE: Android adaptive icon safe-zone calibration and v31 light-first splash screen.
 
 ---
 

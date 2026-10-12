@@ -1,22 +1,61 @@
-# Active Task — DEFECT_BRAND_A56_01_ADAPTIVE_ICON_REMEDIATION
+# Active Task — CUSTOMER_SCREEN_06_PROPERTY_DETAILS_V3
 
-TASK_ID: DEFECT_BRAND_A56_01_ADAPTIVE_ICON_REMEDIATION
-TASK_CLASS: DEFECT_REMEDIATION
-STATUS: IMPLEMENTED / STOP_FOR_BRIDGE_REVIEW
-PR: #114 (DRAFT / UNMERGED)
+TASK_ID: CUSTOMER_SCREEN_06_PROPERTY_DETAILS_V3
+TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
+STATUS: PENDING_BRIDGE_REVIEW
+PR: #116 (DRAFT / UNMERGED)
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: 6a08f064b9288b17bdb12667e6385a72d58de76e
-BRANCH: fix/defect-brand-a56-01-adaptive-icon-remediation
-DEVICE: Samsung Galaxy A56 5G / SM-A566B / Android 16 (API 36) / One UI / ar-EG
-SCOPE: Remediate DEFECT-BRAND-A56-01: calibrate Android Adaptive Icon safe-zone margin (viewport 6320x6320, 108dp canvas) inside Samsung One UI circular mask (72dp radius, 20.5% breathing room) and configure Light-first splash surface with explicit v31 styles and white window background. Zero geometry modification to Founder's geometric symbol. Zero backend/database/API changes.
+BASE_MAIN_SHA: 05270c5fb3fa4970d0e2f7ca6e4b99444f405096
+BRANCH: feat/customer-screen06-property-details-v3
+SCOPE: Implement the Founder-approved Screen 06 Property Details Concept A V3 in native Customer Flutter. Single scrollable page, photo gallery with swipe, canonical facts, description and amenities, always-inline single-month calendar respecting availability, guest stepper, server-authoritative quote, sticky decision bar. Founder explicit override: REMOVE 'كيف يتم الحجز' explainer, keep only 'لا يتم الدفع عند إرسال الطلب؛ العربون بعد موافقة المالك.'. Four root tabs preserved, bottom nav hidden on Screen 06.
+
+## Verification & Evidence
+- Unit & Widget Tests: 93/93 Customer App tests PASS (including 28/28 model tests, 24/24 widget tests, multi-viewport layout tests across 360dp, 390dp, 430dp, and 200% text scale, and 5 dedicated error sanitization & technical diagnostics tests).
+- Static Analysis: 0 issues in `customer_app`, 0 issues in `konfrm_design_system`.
+- Shared Design System: 21/21 tests PASS.
+- Android Debug APK Build: PASS (`build\app\outputs\flutter-apk\app-debug.apk`).
+- Bridge Review `5489977466` Focused Error-Sanitization Gate Resolved:
+  - Sanitized customer-facing error presentation paths across `PropertyDetailsRepository` and `PropertyDetailsController`.
+  - Prevented raw `FormatException`, raw HTTP status codes/text, and arbitrary untrusted backend error strings (SQL constraints, PGRST syntax, internal worker timeouts) from leaking into customer UI.
+  - Truthful distinctions preserved in concise, meaningful Arabic across all failure categories (unavailable property, date overlap, min/max stay, max guests, malformed responses, network/timeout/server errors).
+  - Isolated technical diagnostics safely into `PropertyDetailsException.technicalDetails` for internal monitoring and debugging without customer exposure.
+  - Added 5 focused tests in `test/property_details_widget_test.dart`:
+    1. Malformed property details response: corrupt JSON & FormatException cleanly sanitized to concise Arabic, retryable.
+    2. Malformed availability response: invalid structure & dates sanitized to concise Arabic, retryable.
+    3. Unexpected HTTP status (502, 429): raw HTTP status text sanitized to customer-friendly Arabic; technical details preserved in `technicalDetails`.
+    4. Arbitrary technical backend error text (400, 409): raw SQL constraint violation and PGRST syntax messages sanitized to approved Arabic while isolating technical diagnostics internally.
+    5. Customer-friendly quote error and retry: cleanly displays sanitized Arabic copy without developer jargon and recovers on retry success.
+- Bridge Review `5489402454` Remediation Verified:
+  - TASK 1 Canonical Stay Contract: 2–30 nights strictly enforced in `PropertyAvailability.fromJson` with boundary assertions and 5 boundary tests (min=1, 0, max=31, 365, inconsistent bounds, min=2/max=30 boundary).
+  - TASK 2 Availability Response Identity: `avail.propertyId == state.propertyId` validated in controller and repository; fails closed with clean Arabic error (`تعذر التحقق من هوية العقار في استجابة التوفر.`) and clears availability state.
+  - TASK 3 Quote State Lifecycle & Sticky Bar Integrity: `isCalculatingQuote` reset on new date selection or failure; in-flight quote state cleared on reload; `PropertyStickyBar` strictly requires valid quote before showing `مراجعة طلب الحجز` CTA; shows `حساب السعر` if dates are selected but quote is pending/null.
+  - TASK 4 Status-Bar Content Overlap on Scroll: Animated white status-bar scrim fading smoothly between 60dp and 160dp scroll offset; dynamic `SystemUiOverlayStyle` icon brightness toggled (light icons over dark hero, dark icons over white content); zero ghost text under Android status bar.
+  - TASK 5 Amenity Presentation Deduplication: `normalizeAndDeduplicate()` in `amenities_bottom_sheet.dart` deduplicates aliases (`AIR_CONDITIONING` + `AC` -> `تكييف`, `PARKING` + `موقف سيارات` -> `موقف سيارات`) while preserving distinct facts (`POOL` vs `PRIVATE_POOL`, `AIR_CONDITIONING` vs `CENTRAL_AC` -> `تكييف مركزي`, `GARAGE` -> `كراج مغطى`).
+  - TASK 6 Screen 07 Handoff Integrity: Recorded `SCREEN07_HANDOFF_BLOCKED` under Boundaries & Invariants; truthful development notice `خدمة إرسال طلبات الحجز غير متاحة حالياً في هذه النسخة التجريبية.` displayed on CTA tap.
+  - TASK 7 Copy Polish & 200% Text Scale: Clean Arabic error copy without developer jargon (`تعذر احتساب السعر حالياً. يرجى إعادة المحاولة.`); multiline wrapping for sticky button at 200% text scale.
+  - TASK 8 Cloudflare Pages Diagnosis: Check run `114763377209` failed due to 0-second Cloudflare deployment dispatch blip on `sola-owner-app`; zero diff in `owner-app/` or root config; documented per repository governance.
+- Separate Configuration Gate: `DISCOVERY_RUNTIME_QA = BLOCKED_BY_CONFIGURATION` (preserved).
+- Physical Device QA Evidence on Samsung Galaxy A56 5G (SM-A566B, Android 16 / One UI):
+  - `11_screen06_a56_top_fold_remediated.png`: Hero gallery with coherent luxury resort imagery, corrected top action buttons (Back at top-right pointing right, Favorite at top-left), lower-left photo counter pill `1 من 3`.
+  - `12_screen06_a56_amenities_sheet_remediated.png`: Amenities bottom sheet with deduplicated pills and preserved distinct facts (`مسبح`, `مسبح خاص`, `تكييف`, `تكييف مركزي`, `كراج مغطى`, etc.).
+  - `13_screen06_a56_scrolled_scrim_remediated.png`: Scrolled status bar scrim with dark icons on white background, zero ghost text under Android status bar.
+  - `14_screen06_a56_dates_selected_remediated.png`: October 2026 3-night selection (12-15 Oct) with start, range, and end highlights, guest stepper.
+  - `15_screen06_a56_price_breakdown_remediated.png`: Canonical server-authoritative quote breakdown (Total: 13,500 EGP, Deposit: 4,500 EGP = strictly 1st night, Remaining: 9,000 EGP) with explicit payment disclosure.
+  - `16_screen06_a56_handoff_snackbar_remediated.png`: Truthful consumer handoff notification `خدمة إرسال طلبات الحجز غير متاحة حالياً في هذه النسخة التجريبية.` without any developer jargon.
 
 ## Boundaries & Invariants
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
 - Zero business, booking, availability, pricing, commission, or financial rule changes.
-- Exact Founder SVG vector path data and stroke-width 151.55 round joins strictly preserved in `ic_launcher_foreground.xml`.
-- Light-first splash surface enforced in both standard and Night mode (Master Rule MR-05).
-- Non-destructive physical device installation only (`adb install -r`).
-- Open ONE Draft PR only; STOP FOR BRIDGE REVIEW.
+- Never invent Screen 07 or pretend it works; recorded `SCREEN07_HANDOFF_BLOCKED` as dependency.
+- Server-authoritative quote only (POST /api/v1/customer/bookings/calculate); no local price math or fake availability.
+- Stay length constraints: 2-30 nights strictly enforced.
+
+---
+
+## Historical Task — DEFECT_BRAND_A56_01_ADAPTIVE_ICON_REMEDIATION (MERGED)
+- PR: #114 (MERGED INTO MAIN)
+- MERGE_COMMIT: 05270c5fb3fa4970d0e2f7ca6e4b99444f405096
+- SCOPE: Android adaptive icon safe-zone calibration and v31 light-first splash screen.
 
 ---
 

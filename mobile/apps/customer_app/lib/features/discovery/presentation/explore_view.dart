@@ -9,6 +9,7 @@ import 'package:konfrm_design_system/konfrm_design_system.dart';
 import '../application/public_discovery_controller.dart';
 import '../data/public_property.dart';
 import '../data/public_property_search_repository.dart';
+import '../../property_details/presentation/property_details_view.dart';
 
 class ExploreView extends ConsumerStatefulWidget {
   const ExploreView({super.key});
@@ -305,70 +306,84 @@ class _PublicPropertyCard extends StatelessWidget {
       explicitChildNodes: true,
       child: StructuralContainer(
         padding: EdgeInsets.zero,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12),
+        child: GestureDetector(
+          excludeFromSemantics: true,
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => PropertyDetailsView(
+                  propertyId: property.id,
+                  initialProperty: property,
+                ),
               ),
-              child: AspectRatio(
-                aspectRatio: 1.4,
-                child: property.images.isEmpty
-                    ? const _PropertyImagePlaceholder()
-                    : Image.network(
-                        property.images.first.toString(),
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const _PropertyImagePlaceholder(),
-                      ),
+            );
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
+                child: AspectRatio(
+                  aspectRatio: 1.4,
+                  child: property.images.isEmpty
+                      ? const _PropertyImagePlaceholder()
+                      : Image.network(
+                          property.images.first.toString(),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const _PropertyImagePlaceholder(),
+                        ),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(property.title, style: KonfrmTypography.sectionTitle),
-                  if (location.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(location, style: KonfrmTypography.supporting),
-                  ],
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 14,
-                    runSpacing: 6,
-                    children: [
-                      _PropertyFact(
-                        icon: Icons.home_outlined,
-                        label: _unitTypeLabel(property.unitType),
-                      ),
-                      _PropertyFact(
-                        icon: Icons.bed_outlined,
-                        label: '${property.bedrooms} غرف نوم',
-                      ),
-                      _PropertyFact(
-                        icon: Icons.bathtub_outlined,
-                        label: '${property.bathrooms} حمامات',
-                      ),
-                      _PropertyFact(
-                        icon: Icons.people_outline,
-                        label: '${property.maxGuests} ضيوف',
-                      ),
+              Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(property.title, style: KonfrmTypography.sectionTitle),
+                    if (location.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(location, style: KonfrmTypography.supporting),
                     ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '${NumberFormat('#,##0.##', 'en').format(property.basePricePerNight)} ج.م / ليلة',
-                    textDirection: ui.TextDirection.rtl,
-                    style: KonfrmTypography.sectionTitle.copyWith(
-                      fontWeight: FontWeight.bold,
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 14,
+                      runSpacing: 6,
+                      children: [
+                        _PropertyFact(
+                          icon: Icons.home_outlined,
+                          label: _unitTypeLabel(property.unitType),
+                        ),
+                        _PropertyFact(
+                          icon: Icons.bed_outlined,
+                          label: '${property.bedrooms} غرف نوم',
+                        ),
+                        _PropertyFact(
+                          icon: Icons.bathtub_outlined,
+                          label: '${property.bathrooms} حمامات',
+                        ),
+                        _PropertyFact(
+                          icon: Icons.people_outline,
+                          label: '${property.maxGuests} ضيوف',
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 12),
+                    Text(
+                      '${NumberFormat('#,##0.##', 'en').format(property.basePricePerNight)} ج.م / ليلة',
+                      textDirection: ui.TextDirection.rtl,
+                      style: KonfrmTypography.sectionTitle.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -66,7 +66,7 @@ class PriceCeilingSlider extends StatelessWidget {
           children: [
             const Expanded(
               child: Text(
-                'الحد الأقصى لميزانية الليلة (اختياري)',
+                'أقصى سعر لليلة (اختياري)',
                 style: TextStyle(
                   fontFamily: KonfrmTypography.fontFamily,
                   fontSize: 14,
@@ -118,41 +118,27 @@ class PriceCeilingSlider extends StatelessWidget {
                               color: Color(0xFF64748B),
                             ),
                           ),
-                          const TextSpan(
-                            text: ' / ليلة',
-                            style: TextStyle(
-                              fontFamily: KonfrmTypography.fontFamily,
-                              fontSize: 12,
-                              color: Color(0xFF94A3B8),
-                            ),
-                          ),
                         ],
                       ),
                     ),
             ),
           ],
         ),
-        const SizedBox(height: 4),
-
-        // Explanatory helper text
-        const Text(
-          'اختر أقصى سعر لليلة لا تريد أن تتجاوزه، أو اتركه بدون حد لعرض جميع الأسعار.',
-          style: TextStyle(
-            fontFamily: KonfrmTypography.fontFamily,
-            fontSize: 12,
-            color: Color(0xFF64748B),
-            height: 1.4,
-          ),
-        ),
         const SizedBox(height: 12),
 
-        // Slider Control with KONFRM Blue accent
+        // Slider Control: muted grey when unbounded, black when active ceiling
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-            activeTrackColor: const Color(0xFF276EF1),
+            activeTrackColor: isUnbounded
+                ? const Color(0xFF94A3B8)
+                : const Color(0xFF000000),
             inactiveTrackColor: const Color(0xFFE2E8F0),
-            thumbColor: const Color(0xFF276EF1),
-            overlayColor: const Color(0x1F276EF1),
+            thumbColor: isUnbounded
+                ? const Color(0xFF94A3B8)
+                : const Color(0xFF000000),
+            overlayColor: isUnbounded
+                ? const Color(0x1F94A3B8)
+                : const Color(0x1F000000),
             trackHeight: 4,
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
           ),

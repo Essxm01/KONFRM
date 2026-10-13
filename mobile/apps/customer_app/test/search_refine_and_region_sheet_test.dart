@@ -113,6 +113,19 @@ void main() {
       expect(queryParams.containsKey('checkOut'), isFalse);
       expect(queryParams.containsKey('dates'), isFalse);
     });
+
+    test('toSearchFilters() supports multiple unit types serialized as comma-separated unitTypes', () {
+      final intent = const SearchIntent(
+        selectedRegions: ['مراسي'],
+        selectedUnitTypes: ['CHALET', 'VILLA'],
+      );
+
+      final queryFilters = intent.toSearchFilters();
+      final queryParams = queryFilters.toQueryParameters();
+
+      expect(queryParams['unitTypes'], 'CHALET,VILLA');
+      expect(queryParams.containsKey('unitType'), isFalse);
+    });
   });
 
   group('FilterMetadata Dynamic Harvesting Tests', () {
@@ -451,12 +464,8 @@ void main() {
         ),
       );
 
-      // Verify Title & Helper copy
-      expect(find.text('الحد الأقصى لميزانية الليلة (اختياري)'), findsOneWidget);
-      expect(
-        find.text('اختر أقصى سعر لليلة لا تريد أن تتجاوزه، أو اتركه بدون حد لعرض جميع الأسعار.'),
-        findsOneWidget,
-      );
+      // Verify Title & Bounds
+      expect(find.text('أقصى سعر لليلة (اختياري)'), findsOneWidget);
       expect(find.text('بدون حد أقصى'), findsNWidgets(2)); // Readout & boundary tick
       expect(find.text('1,000 ج.م'), findsOneWidget);
     });

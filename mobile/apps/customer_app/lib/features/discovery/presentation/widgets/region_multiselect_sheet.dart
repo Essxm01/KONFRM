@@ -368,20 +368,22 @@ class _RegionMultiSelectSheetState extends State<RegionMultiSelectSheet> {
       selected: isSelected,
       label: 'وجهة $resort',
       child: Material(
-        color: isSelected ? const Color(0xFF276EF1) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: isSelected ? const Color(0xFF000000) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
         child: InkWell(
           key: Key('region-chip-$resort'),
           onTap: () => _toggleRegion(resort),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
           child: Container(
             key: Key('region-row-$resort'),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            constraints: const BoxConstraints(minHeight: 44),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            alignment: Alignment.center,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isSelected
-                    ? const Color(0xFF276EF1)
+                    ? const Color(0xFF000000)
                     : const Color(0xFFE2E8F0),
                 width: 1.0,
               ),

@@ -129,7 +129,7 @@ class StayDatesIntentPicker extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: hasDates
-                          ? const Color(0xFF276EF1)
+                          ? const Color(0xFF000000)
                           : const Color(0xFFE2E8F0),
                       width: hasDates ? 1.5 : 1.0,
                     ),
@@ -178,7 +178,7 @@ class StayDatesIntentPicker extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: hasDates
-                          ? const Color(0xFF276EF1)
+                          ? const Color(0xFF000000)
                           : const Color(0xFFE2E8F0),
                       width: hasDates ? 1.5 : 1.0,
                     ),
@@ -222,7 +222,7 @@ class StayDatesIntentPicker extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-              color: const Color(0xFFEAF2FF),
+              color: const Color(0xFFF1F5F9),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
@@ -231,7 +231,7 @@ class StayDatesIntentPicker extends StatelessWidget {
                 fontFamily: KonfrmTypography.fontFamily,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF155ACE),
+                color: Color(0xFF0F172A),
               ),
             ),
           )
@@ -522,7 +522,7 @@ class _HorizontalDateRangePickerSheetState
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF276EF1),
+                        color: const Color(0xFF000000),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -540,60 +540,14 @@ class _HorizontalDateRangePickerSheetState
             ),
 
             // 4. Month Navigation Bar with Founder-Mandated Physical Arrow Direction:
-            // "<" on physical RIGHT (advances to next month in RTL)
-            // ">" on physical LEFT (returns to previous month in RTL)
+            // ">" on physical RIGHT (returns to previous month in RTL)
+            // "<" on physical LEFT (advances to next month in RTL)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Physical RIGHT: "<" arrow points to next month
-                  Semantics(
-                    button: true,
-                    label: 'الشهر التالي',
-                    child: InkWell(
-                      key: const Key('calendar-next-month-button'),
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: _currentPage < 11
-                          ? () {
-                              _pageController.nextPage(
-                                duration: const Duration(milliseconds: 250),
-                                curve: Curves.easeInOut,
-                              );
-                            }
-                          : null,
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: Icon(
-                          Icons.chevron_left_rounded,
-                          size: 22,
-                          color: _currentPage < 11
-                              ? const Color(0xFF0F172A)
-                              : const Color(0xFFCBD5E1),
-                          textDirection: TextDirection.ltr,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Physical CENTER: Month Title
-                  Text(
-                    monthTitle,
-                    style: const TextStyle(
-                      fontFamily: KonfrmTypography.fontFamily,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF0F172A),
-                    ),
-                  ),
-
-                  // Physical LEFT: ">" arrow points to previous month
+                  // Physical RIGHT: ">" arrow points to previous month
                   Semantics(
                     button: true,
                     label: 'الشهر السابق',
@@ -620,6 +574,52 @@ class _HorizontalDateRangePickerSheetState
                           Icons.chevron_right_rounded,
                           size: 22,
                           color: _currentPage > 0
+                              ? const Color(0xFF0F172A)
+                              : const Color(0xFFCBD5E1),
+                          textDirection: TextDirection.ltr,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Physical CENTER: Month Title
+                  Text(
+                    monthTitle,
+                    style: const TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+
+                  // Physical LEFT: "<" arrow points to next month
+                  Semantics(
+                    button: true,
+                    label: 'الشهر التالي',
+                    child: InkWell(
+                      key: const Key('calendar-next-month-button'),
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: _currentPage < 11
+                          ? () {
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 250),
+                                curve: Curves.easeInOut,
+                              );
+                            }
+                          : null,
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Icon(
+                          Icons.chevron_left_rounded,
+                          size: 22,
+                          color: _currentPage < 11
                               ? const Color(0xFF0F172A)
                               : const Color(0xFFCBD5E1),
                           textDirection: TextDirection.ltr,
@@ -860,12 +860,12 @@ class _CalendarDayCell extends StatelessWidget {
     BorderRadius? borderRadius;
 
     if (isStart || isEnd) {
-      bgColor = const Color(0xFF276EF1); // Approved KONFRM blue
+      bgColor = const Color(0xFF000000); // Black endpoints
       textColor = Colors.white;
       borderRadius = BorderRadius.circular(12);
     } else if (isInRange) {
-      bgColor = const Color(0xFFEAF2FF); // Softer light-blue range fill
-      textColor = const Color(0xFF155ACE);
+      bgColor = const Color(0xFFF1F5F9); // Subtle neutral range fill
+      textColor = const Color(0xFF0F172A);
       borderRadius = BorderRadius.zero;
     } else if (isPast) {
       textColor = const Color(0xFFCBD5E1);

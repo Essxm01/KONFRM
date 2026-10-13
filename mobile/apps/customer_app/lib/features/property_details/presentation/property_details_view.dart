@@ -23,10 +23,16 @@ class PropertyDetailsView extends ConsumerStatefulWidget {
     super.key,
     required this.propertyId,
     this.initialProperty,
+    this.initialCheckIn,
+    this.initialCheckOut,
+    this.initialGuests,
   });
 
   final String propertyId;
   final PublicProperty? initialProperty;
+  final DateTime? initialCheckIn;
+  final DateTime? initialCheckOut;
+  final int? initialGuests;
 
   @override
   ConsumerState<PropertyDetailsView> createState() => _PropertyDetailsViewState();
@@ -49,7 +55,12 @@ class _PropertyDetailsViewState extends ConsumerState<PropertyDetailsView> {
           : null;
       ref
           .read(propertyDetailsControllerProvider(widget.propertyId).notifier)
-          .load(initialProperty: initialDetail);
+          .load(
+            initialProperty: initialDetail,
+            initialCheckIn: widget.initialCheckIn,
+            initialCheckOut: widget.initialCheckOut,
+            initialGuests: widget.initialGuests,
+          );
     });
   }
 

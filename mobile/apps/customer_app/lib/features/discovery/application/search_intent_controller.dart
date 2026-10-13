@@ -12,15 +12,21 @@ final searchIntentControllerProvider =
 /// Provider for dynamic filter metadata derived from authentic public listings.
 final filterMetadataProvider = Provider<FilterMetadata>((ref) {
   final discoveryState = ref.watch(publicDiscoveryControllerProvider);
-  return FilterMetadata.fromProperties(discoveryState.properties);
+  final properties = discoveryState.catalogProperties.isNotEmpty
+      ? discoveryState.catalogProperties
+      : discoveryState.properties;
+  return FilterMetadata.fromProperties(properties);
 });
 
 /// Provider for dynamic filter metadata scoped to specific selected destinations.
 final scopedFilterMetadataProvider =
     Provider.family<FilterMetadata, List<String>>((ref, destinations) {
       final discoveryState = ref.watch(publicDiscoveryControllerProvider);
+      final properties = discoveryState.catalogProperties.isNotEmpty
+          ? discoveryState.catalogProperties
+          : discoveryState.properties;
       return FilterMetadata.fromProperties(
-        discoveryState.properties,
+        properties,
         selectedDestinations: destinations,
       );
     });

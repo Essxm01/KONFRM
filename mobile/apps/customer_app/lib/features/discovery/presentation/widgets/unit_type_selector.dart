@@ -81,20 +81,20 @@ class UnitTypeSelector extends StatelessWidget {
       selected: isSelected,
       label: 'نوع $label',
       child: Material(
-        color: isSelected ? const Color(0xFF276EF1) : const Color(0xFFF8FAFC),
+        color: isSelected ? const Color(0xFF000000) : Colors.white,
         borderRadius: BorderRadius.circular(8),
         child: InkWell(
           key: key,
           onTap: onTap,
           borderRadius: BorderRadius.circular(8),
           child: Container(
-            constraints: const BoxConstraints(minHeight: 40, minWidth: 54),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            constraints: const BoxConstraints(minHeight: 44, minWidth: 54),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: isSelected
-                    ? const Color(0xFF276EF1)
+                    ? const Color(0xFF000000)
                     : const Color(0xFFE2E8F0),
               ),
             ),
@@ -105,7 +105,7 @@ class UnitTypeSelector extends StatelessWidget {
                   fontFamily: KonfrmTypography.fontFamily,
                   fontSize: 13,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                  color: isSelected ? Colors.white : const Color(0xFF334155),
+                  color: isSelected ? Colors.white : const Color(0xFF1E293B),
                 ),
               ),
             ),

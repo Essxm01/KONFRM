@@ -161,11 +161,11 @@ class InlineAvailabilityCalendar extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Next Month Button ("<" arrow on physical RIGHT side in RTL)
+                  // Previous Month Button (">" arrow on physical RIGHT side in RTL)
                   _CalNavButton(
-                    icon: Icons.chevron_left,
-                    label: 'الشهر التالي',
-                    onPressed: onNextMonth,
+                    icon: Icons.chevron_right,
+                    label: 'الشهر السابق',
+                    onPressed: canGoBack ? onPreviousMonth : null,
                   ),
                   Expanded(
                     child: Center(
@@ -181,11 +181,11 @@ class InlineAvailabilityCalendar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Previous Month Button (">" arrow on physical LEFT side in RTL)
+                  // Next Month Button ("<" arrow on physical LEFT side in RTL)
                   _CalNavButton(
-                    icon: Icons.chevron_right,
-                    label: 'الشهر السابق',
-                    onPressed: canGoBack ? onPreviousMonth : null,
+                    icon: Icons.chevron_left,
+                    label: 'الشهر التالي',
+                    onPressed: onNextMonth,
                   ),
                 ],
               ),
@@ -390,12 +390,12 @@ class _DayCell extends StatelessWidget {
     BorderRadius? borderRadius;
 
     if (isSelected) {
-      bgColor = const Color(0xFF276EF1);
+      bgColor = const Color(0xFF000000);
       textColor = Colors.white;
       borderRadius = BorderRadius.circular(12);
     } else if (isInRange) {
-      bgColor = const Color(0xFFEAF2FF);
-      textColor = const Color(0xFF155ACE);
+      bgColor = const Color(0xFFF1F5F9);
+      textColor = const Color(0xFF101723);
       borderRadius = BorderRadius.zero;
     } else if (isBlocked) {
       textColor = const Color(0xFFBFC6CE);

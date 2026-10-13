@@ -117,6 +117,7 @@ class SearchIntent {
     return PublicPropertySearchFilters(
       destinations: selectedRegions,
       unitType: selectedUnitTypes.length == 1 ? selectedUnitTypes.first : '',
+      unitTypes: selectedUnitTypes,
       guests: guestCount > 1 ? guestCount : null,
       maxPrice: maxPricePerNight,
     );
@@ -228,10 +229,12 @@ class FilterMetadata {
         final reg = p.region?.trim().toLowerCase() ?? '';
         return selectedDestinations.any((d) {
           final target = d.trim().toLowerCase();
-          return resort.contains(target) ||
-              reg.contains(target) ||
-              target.contains(resort) ||
-              target.contains(reg);
+          if (target.isEmpty) return false;
+          final matchesResort = resort.isNotEmpty &&
+              (resort.contains(target) || target.contains(resort));
+          final matchesReg = reg.isNotEmpty &&
+              (reg.contains(target) || target.contains(reg));
+          return matchesResort || matchesReg;
         });
       }).toList();
       if (filtered.isNotEmpty) {

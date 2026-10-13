@@ -21,11 +21,13 @@ class PublicDiscoveryState {
   const PublicDiscoveryState({
     required this.status,
     this.properties = const [],
+    this.catalogProperties = const [],
     this.filters = const PublicPropertySearchFilters(),
   });
 
   final PublicDiscoveryStatus status;
   final List<PublicProperty> properties;
+  final List<PublicProperty> catalogProperties;
   final PublicPropertySearchFilters filters;
 
   bool get isLoading => status == PublicDiscoveryStatus.loading;
@@ -60,28 +62,35 @@ class PublicDiscoveryController extends StateNotifier<PublicDiscoveryState> {
     state = PublicDiscoveryState(
       status: PublicDiscoveryStatus.loading,
       properties: state.properties,
+      catalogProperties: state.catalogProperties,
       filters: currentFilters,
     );
     try {
       final properties = await _repository.search(currentFilters);
       if (generation != _requestGeneration) return;
+      final catalog = state.catalogProperties.isNotEmpty
+          ? state.catalogProperties
+          : properties;
       state = PublicDiscoveryState(
         status: properties.isEmpty
             ? PublicDiscoveryStatus.empty
             : PublicDiscoveryStatus.results,
         properties: properties,
+        catalogProperties: catalog,
         filters: currentFilters,
       );
     } on PublicSearchException catch (error) {
       if (generation != _requestGeneration) return;
       state = PublicDiscoveryState(
         status: _statusFor(error.kind),
+        catalogProperties: state.catalogProperties,
         filters: currentFilters,
       );
     } catch (_) {
       if (generation != _requestGeneration) return;
       state = PublicDiscoveryState(
         status: PublicDiscoveryStatus.invalidResponse,
+        catalogProperties: state.catalogProperties,
         filters: currentFilters,
       );
     }

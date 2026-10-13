@@ -82,18 +82,15 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
         availableDestinations: metadata.availableDestinations,
       );
       if (selectedRegions != null && mounted) {
-        final updatedIntent = currentIntent.copyWith(
+        final draftIntent = currentIntent.copyWith(
           selectedRegions: selectedRegions,
         );
-        ref
-            .read(searchIntentControllerProvider.notifier)
-            .updateIntent(updatedIntent);
 
         if (selectedRegions.isNotEmpty) {
           // Advance to Screen 04 Search & Refine (Option A approved flow)
           final applied = await SearchRefineView.push(
             context,
-            initialIntent: updatedIntent,
+            initialIntent: draftIntent,
           );
           if (applied != null && mounted) {
             ref
@@ -102,15 +99,14 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
             ref
                 .read(publicDiscoveryControllerProvider.notifier)
                 .load(applied.toSearchFilters());
-          } else if (mounted) {
-            ref
-                .read(publicDiscoveryControllerProvider.notifier)
-                .load(updatedIntent.toSearchFilters());
           }
         } else {
           ref
+              .read(searchIntentControllerProvider.notifier)
+              .updateIntent(draftIntent);
+          ref
               .read(publicDiscoveryControllerProvider.notifier)
-              .load(updatedIntent.toSearchFilters());
+              .load(draftIntent.toSearchFilters());
         }
       }
     }
@@ -151,7 +147,11 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
           const SizedBox(height: 20),
 
           // Results Feed
-          _DiscoveryResults(state: state, onRetry: _searchNow),
+          _DiscoveryResults(
+            state: state,
+            intent: intent,
+            onRetry: _searchNow,
+          ),
         ],
       ),
     );
@@ -159,9 +159,14 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
 }
 
 class _DiscoveryResults extends StatelessWidget {
-  const _DiscoveryResults({required this.state, required this.onRetry});
+  const _DiscoveryResults({
+    required this.state,
+    this.intent,
+    required this.onRetry,
+  });
 
   final PublicDiscoveryState state;
+  final SearchIntent? intent;
   final VoidCallback onRetry;
 
   @override
@@ -173,7 +178,7 @@ class _DiscoveryResults extends StatelessWidget {
           Text('أماكن الإقامة', style: KonfrmTypography.sectionTitle),
           const SizedBox(height: 12),
           for (final property in state.properties) ...[
-            _PublicPropertyCard(property: property),
+            _PublicPropertyCard(property: property, intent: intent),
             const SizedBox(height: 16),
           ],
         ],
@@ -250,9 +255,10 @@ class _DiscoveryResults extends StatelessWidget {
 }
 
 class _PublicPropertyCard extends StatelessWidget {
-  const _PublicPropertyCard({required this.property});
+  const _PublicPropertyCard({required this.property, this.intent});
 
   final PublicProperty property;
+  final SearchIntent? intent;
 
   @override
   Widget build(BuildContext context) {
@@ -277,6 +283,12 @@ class _PublicPropertyCard extends StatelessWidget {
                 builder: (context) => PropertyDetailsView(
                   propertyId: property.id,
                   initialProperty: property,
+                  initialCheckIn: intent?.checkInDate,
+                  initialCheckOut: intent?.checkOutDate,
+                  initialGuests:
+                      (intent != null && intent!.guestCount > 1)
+                          ? intent!.guestCount
+                          : null,
                 ),
               ),
             );

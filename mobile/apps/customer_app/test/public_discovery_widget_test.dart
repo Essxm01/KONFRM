@@ -205,10 +205,10 @@ void main() {
       expect(find.text('اختيار منطقة أو أكثر'), findsOneWidget);
       expect(find.text('اختار المنطقة'), findsNothing);
 
-      // Tap search trigger opens Screen 04 bottom sheet
+      // Tap search trigger opens Region bottom sheet
       await tester.tap(find.byKey(const Key('explore-search-trigger')));
       await tester.pumpAndSettle();
-      expect(find.text('البحث وتحديد الوجهة'), findsOneWidget);
+      expect(find.text('تحديد الوجهات'), findsOneWidget);
       expect(
         find.byKey(const Key('search-sheet-dismiss-button')),
         findsOneWidget,
@@ -217,7 +217,7 @@ void main() {
       // Dismiss bottom sheet
       await tester.tap(find.byKey(const Key('search-sheet-dismiss-button')));
       await tester.pumpAndSettle();
-      expect(find.text('البحث وتحديد الوجهة'), findsNothing);
+      expect(find.text('تحديد الوجهات'), findsNothing);
 
       // Preserve tab state across navigation
       await tester.tap(find.byKey(const Key('customer-destination-1')));
@@ -235,9 +235,7 @@ void main() {
         const MaterialApp(
           home: Directionality(
             textDirection: TextDirection.rtl,
-            child: Scaffold(
-              body: ExploreSearchTrigger(),
-            ),
+            child: Scaffold(body: ExploreSearchTrigger()),
           ),
         ),
       );
@@ -252,9 +250,7 @@ void main() {
           home: Directionality(
             textDirection: TextDirection.rtl,
             child: Scaffold(
-              body: ExploreSearchTrigger(
-                selectedRegions: ['مراسي'],
-              ),
+              body: ExploreSearchTrigger(selectedRegions: ['مراسي']),
             ),
           ),
         ),
@@ -263,7 +259,9 @@ void main() {
       expect(find.textContaining('انقر للتعديل'), findsOneWidget);
     });
 
-    testWidgets('renders two selected regions clearly separated', (tester) async {
+    testWidgets('renders two selected regions clearly separated', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Directionality(
@@ -304,9 +302,7 @@ void main() {
           const MaterialApp(
             home: Directionality(
               textDirection: TextDirection.rtl,
-              child: Scaffold(
-                body: ExploreSearchTrigger(),
-              ),
+              child: Scaffold(body: ExploreSearchTrigger()),
             ),
           ),
         );
@@ -326,16 +322,17 @@ void main() {
           const MaterialApp(
             home: Directionality(
               textDirection: TextDirection.rtl,
-              child: Scaffold(
-                body: ExploreHeader(),
-              ),
+              child: Scaffold(body: ExploreHeader()),
             ),
           ),
         );
         expect(find.text('أهلًا بك'), findsOneWidget);
         expect(find.text('اكتشف وجهتك القادمة'), findsOneWidget);
         expect(find.byIcon(Icons.person_outline_rounded), findsOneWidget);
-        expect(find.byKey(const Key('explore-notification-bell')), findsNothing);
+        expect(
+          find.byKey(const Key('explore-notification-bell')),
+          findsNothing,
+        );
       },
     );
 
@@ -346,11 +343,7 @@ void main() {
           const MaterialApp(
             home: Directionality(
               textDirection: TextDirection.rtl,
-              child: Scaffold(
-                body: ExploreHeader(
-                  userName: 'عمر شريف',
-                ),
-              ),
+              child: Scaffold(body: ExploreHeader(userName: 'عمر شريف')),
             ),
           ),
         );
@@ -360,26 +353,25 @@ void main() {
       },
     );
 
-    testWidgets(
-      'renders custom greeting override and location subtitle',
-      (tester) async {
-        await tester.pumpWidget(
-          const MaterialApp(
-            home: Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                body: ExploreHeader(
-                  greeting: 'مرحبًا بك في كونفرم',
-                  location: 'الساحل الشمالي، مصر',
-                ),
+    testWidgets('renders custom greeting override and location subtitle', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: ExploreHeader(
+                greeting: 'مرحبًا بك في كونفرم',
+                location: 'الساحل الشمالي، مصر',
               ),
             ),
           ),
-        );
-        expect(find.text('مرحبًا بك في كونفرم'), findsOneWidget);
-        expect(find.text('الساحل الشمالي، مصر'), findsOneWidget);
-      },
-    );
+        ),
+      );
+      expect(find.text('مرحبًا بك في كونفرم'), findsOneWidget);
+      expect(find.text('الساحل الشمالي، مصر'), findsOneWidget);
+    });
 
     testWidgets(
       'satisfies RTL visual ordering (avatar on the RIGHT, notification on the LEFT)',
@@ -388,16 +380,14 @@ void main() {
           const MaterialApp(
             home: Directionality(
               textDirection: TextDirection.rtl,
-              child: Scaffold(
-                body: ExploreHeader(
-                  showNotification: true,
-                ),
-              ),
+              child: Scaffold(body: ExploreHeader(showNotification: true)),
             ),
           ),
         );
         final avatarPos = tester.getTopRight(find.byType(Material).at(1));
-        final bellPos = tester.getTopLeft(find.byKey(const Key('explore-notification-bell')));
+        final bellPos = tester.getTopLeft(
+          find.byKey(const Key('explore-notification-bell')),
+        );
         // In RTL: avatar is on the RIGHT (higher X), bell icon is on the LEFT (lower X)
         expect(avatarPos.dx, greaterThan(bellPos.dx));
       },
@@ -410,9 +400,7 @@ void main() {
           home: Directionality(
             textDirection: TextDirection.rtl,
             child: Scaffold(
-              body: ExploreHeader(
-                onProfileTap: () => tapped = true,
-              ),
+              body: ExploreHeader(onProfileTap: () => tapped = true),
             ),
           ),
         ),
@@ -445,14 +433,14 @@ void main() {
       },
     );
 
-    testWidgets('avatar container satisfies >= 44dp touch target', (tester) async {
+    testWidgets('avatar container satisfies >= 44dp touch target', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Directionality(
             textDirection: TextDirection.rtl,
-            child: Scaffold(
-              body: ExploreHeader(),
-            ),
+            child: Scaffold(body: ExploreHeader()),
           ),
         ),
       );

@@ -5,14 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:konfrm_design_system/konfrm_design_system.dart';
 
 import '../application/public_discovery_controller.dart';
+import '../application/search_intent_controller.dart';
 import '../data/public_property.dart';
-import '../data/public_property_search_repository.dart';
+import '../data/search_intent_models.dart';
 import '../../booking_review/presentation/widgets/konfrm_price_text.dart';
 import '../../property_details/presentation/property_details_view.dart';
 
+import 'search_refine_view.dart';
 import 'widgets/avatar_candidates.dart';
 import 'widgets/explore_header.dart';
 import 'widgets/explore_search_trigger.dart';
+import 'widgets/region_multiselect_sheet.dart';
 
 class ExploreView extends ConsumerStatefulWidget {
   const ExploreView({
@@ -39,102 +42,85 @@ class ExploreView extends ConsumerStatefulWidget {
 }
 
 class _ExploreViewState extends ConsumerState<ExploreView> {
-  final PublicPropertySearchFilters _filters =
-      const PublicPropertySearchFilters();
+  SearchIntent get _intent => ref.watch(searchIntentControllerProvider);
 
-  List<String> get _selectedRegions => _filters.destinations.isNotEmpty
-      ? _filters.destinations
-      : (_filters.destination.trim().isNotEmpty
-          ? [_filters.destination.trim()]
-          : const []);
+  List<String> get _selectedRegions => _intent.selectedRegions;
 
   void _searchNow() {
-    ref.read(publicDiscoveryControllerProvider.notifier).load(_filters);
+    final intent = ref.read(searchIntentControllerProvider);
+    ref
+        .read(publicDiscoveryControllerProvider.notifier)
+        .load(intent.toSearchFilters());
   }
 
   Future<void> _refresh() async {
-    await ref.read(publicDiscoveryControllerProvider.notifier).load(_filters);
+    final intent = ref.read(searchIntentControllerProvider);
+    await ref
+        .read(publicDiscoveryControllerProvider.notifier)
+        .load(intent.toSearchFilters());
   }
 
-  void _openSearchAndRefine({bool focusOnRefine = false}) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD1D5DB),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    focusOnRefine ? 'خيارات التصفية' : 'البحث وتحديد الوجهة',
-                    style: KonfrmTypography.sectionTitle,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'شاشة البحث والتصفية (Screen 04) ومحدد المناطق المتعددة قيد الإعداد لمراجعة التصميم المخصصة مع المؤسس.',
-                style: KonfrmTypography.body.copyWith(
-                  color: const Color(0xFF4B5563),
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                height: 52,
-                child: ElevatedButton(
-                  key: const Key('search-sheet-dismiss-button'),
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF000000),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'فهمت',
-                    style: TextStyle(
-                      fontFamily: KonfrmTypography.fontFamily,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  Future<void> _openSearchAndRefine({bool focusOnRefine = false}) async {
+    final currentIntent = ref.read(searchIntentControllerProvider);
+    final metadata = ref.read(filterMetadataProvider);
+
+    if (focusOnRefine) {
+      final applied = await SearchRefineView.push(
+        context,
+        initialIntent: currentIntent,
+      );
+      if (applied != null && mounted) {
+        ref.read(searchIntentControllerProvider.notifier).updateIntent(applied);
+        ref
+            .read(publicDiscoveryControllerProvider.notifier)
+            .load(applied.toSearchFilters());
+      }
+    } else {
+      final selectedRegions = await RegionMultiSelectSheet.show(
+        context: context,
+        initialSelected: currentIntent.selectedRegions,
+        availableDestinations: metadata.availableDestinations,
+      );
+      if (selectedRegions != null && mounted) {
+        final updatedIntent = currentIntent.copyWith(
+          selectedRegions: selectedRegions,
+        );
+        ref
+            .read(searchIntentControllerProvider.notifier)
+            .updateIntent(updatedIntent);
+
+        if (selectedRegions.isNotEmpty) {
+          // Advance to Screen 04 Search & Refine (Option A approved flow)
+          final applied = await SearchRefineView.push(
+            context,
+            initialIntent: updatedIntent,
+          );
+          if (applied != null && mounted) {
+            ref
+                .read(searchIntentControllerProvider.notifier)
+                .updateIntent(applied);
+            ref
+                .read(publicDiscoveryControllerProvider.notifier)
+                .load(applied.toSearchFilters());
+          } else if (mounted) {
+            ref
+                .read(publicDiscoveryControllerProvider.notifier)
+                .load(updatedIntent.toSearchFilters());
+          }
+        } else {
+          ref
+              .read(publicDiscoveryControllerProvider.notifier)
+              .load(updatedIntent.toSearchFilters());
+        }
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(publicDiscoveryControllerProvider);
+    final intent = _intent;
+
     return RefreshIndicator(
       onRefresh: _refresh,
       child: ListView(
@@ -158,6 +144,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
           ExploreSearchTrigger(
             key: const Key('explore-search-trigger'),
             selectedRegions: _selectedRegions,
+            subtitle: intent.formattedDateRange,
             onTap: () => _openSearchAndRefine(focusOnRefine: false),
             onTuneTap: () => _openSearchAndRefine(focusOnRefine: true),
           ),
@@ -400,10 +387,17 @@ class _PublicPropertyCard extends StatelessWidget {
                       runSpacing: 4,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        if (_informativeUnitType(property.unitType, property.propertyType) != null)
+                        if (_informativeUnitType(
+                              property.unitType,
+                              property.propertyType,
+                            ) !=
+                            null)
                           _PropertyFactItem(
                             icon: Icons.home_outlined,
-                            label: _informativeUnitType(property.unitType, property.propertyType)!,
+                            label: _informativeUnitType(
+                              property.unitType,
+                              property.propertyType,
+                            )!,
                           ),
                         _PropertyFactItem(
                           icon: Icons.bed_outlined,

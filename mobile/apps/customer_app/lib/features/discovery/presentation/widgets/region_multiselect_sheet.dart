@@ -1,0 +1,480 @@
+import 'package:flutter/material.dart';
+import 'package:konfrm_design_system/konfrm_design_system.dart';
+
+import '../../data/search_intent_models.dart';
+
+/// Modal bottom sheet for Egyptian coastal multi-region selection.
+///
+/// Follows governing DF2 tokens:
+/// - 16px top border radius
+/// - Arabic RTL physical alignment (checkbox at physical right)
+/// - Cairo Profile B typography
+/// - 54dp sticky primary CTA with 12dp button radius
+class RegionMultiSelectSheet extends StatefulWidget {
+  const RegionMultiSelectSheet({
+    super.key,
+    required this.initialSelected,
+    this.availableDestinations = const [],
+    required this.onConfirm,
+  });
+
+  /// The list of initially selected regions.
+  final List<String> initialSelected;
+
+  /// Authentic destinations available in inventory.
+  final List<String> availableDestinations;
+
+  /// Callback when user confirms selection.
+  final ValueChanged<List<String>> onConfirm;
+
+  /// Static helper to display this sheet using the canonical 16px radius modal.
+  static Future<List<String>?> show({
+    required BuildContext context,
+    required List<String> initialSelected,
+    List<String> availableDestinations = const [],
+  }) {
+    return showModalBottomSheet<List<String>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return RegionMultiSelectSheet(
+          initialSelected: initialSelected,
+          availableDestinations: availableDestinations,
+          onConfirm: (selected) => Navigator.of(context).pop(selected),
+        );
+      },
+    );
+  }
+
+  @override
+  State<RegionMultiSelectSheet> createState() => _RegionMultiSelectSheetState();
+}
+
+class _RegionMultiSelectSheetState extends State<RegionMultiSelectSheet> {
+  late final Set<String> _selected;
+  final TextEditingController _searchController = TextEditingController();
+  String _filterQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = Set<String>.from(widget.initialSelected);
+    _searchController.addListener(() {
+      final query = _searchController.text.trim();
+      if (query != _filterQuery) {
+        setState(() => _filterQuery = query);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<String> get _allDestinations {
+    if (widget.availableDestinations.isNotEmpty) {
+      return widget.availableDestinations;
+    }
+    // Fallback to canonical coastal options when inventory is not yet loaded
+    return CoastalRegionGroup.canonicalGroups
+        .expand((g) => g.knownResorts)
+        .toList();
+  }
+
+  void _toggleRegion(String region) {
+    setState(() {
+      if (_selected.contains(region)) {
+        _selected.remove(region);
+      } else {
+        _selected.add(region);
+      }
+    });
+  }
+
+  void _clearAll() {
+    setState(() {
+      _selected.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final sheetHeight = mediaQuery.size.height * 0.85;
+
+    final allDestinations = _allDestinations;
+    final filteredDestinations = _filterQuery.isEmpty
+        ? allDestinations
+        : allDestinations
+              .where(
+                (d) =>
+                    d.toLowerCase().contains(_filterQuery.toLowerCase()) ||
+                    _filterQuery.toLowerCase().contains(d.toLowerCase()),
+              )
+              .toList();
+
+    final categorized = CoastalRegionGroup.categorize(filteredDestinations);
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Container(
+        height: sheetHeight,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: Column(
+          children: [
+            // 1. Drag Handle
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFCBD5E1),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+
+            // 2. Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'تحديد الوجهات',
+                    style: TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                  IconButton(
+                    key: const Key('region-sheet-close-button'),
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      color: Color(0xFF64748B),
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+            ),
+
+            // 3. Search Filter Input
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+              child: Container(
+                height: 46,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.search_rounded,
+                      size: 20,
+                      color: Color(0xFF64748B),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        key: const Key('region-search-input'),
+                        controller: _searchController,
+                        style: const TextStyle(
+                          fontFamily: KonfrmTypography.fontFamily,
+                          fontSize: 14,
+                          color: Color(0xFF0F172A),
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: 'ابحث عن قرية أو منطقة...',
+                          hintStyle: TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 13,
+                            color: Color(0xFF94A3B8),
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ),
+                    if (_filterQuery.isNotEmpty)
+                      GestureDetector(
+                        onTap: () => _searchController.clear(),
+                        child: const Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.close_rounded,
+                            size: 16,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+            // 4. Selected Summary Chips Track
+            if (_selected.isNotEmpty)
+              Container(
+                margin: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                height: 38,
+                child: Row(
+                  children: [
+                    Text(
+                      'المحدد (${_selected.length}):',
+                      style: const TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          for (final region in _selected)
+                            Container(
+                              margin: const EdgeInsetsDirectional.only(end: 6),
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                8,
+                                4,
+                                4,
+                                4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: const Color(0xFFCBD5E1),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    region,
+                                    style: const TextStyle(
+                                      fontFamily: KonfrmTypography.fontFamily,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  GestureDetector(
+                                    onTap: () => _toggleRegion(region),
+                                    child: const Icon(
+                                      Icons.close_rounded,
+                                      size: 14,
+                                      color: Color(0xFF475569),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      key: const Key('region-clear-all-button'),
+                      onPressed: _clearAll,
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        minimumSize: const Size(40, 32),
+                      ),
+                      child: const Text(
+                        'مسح الكل',
+                        style: TextStyle(
+                          fontFamily: KonfrmTypography.fontFamily,
+                          fontSize: 12,
+                          color: Color(0xFFDC2626),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            const Divider(height: 16, thickness: 1, color: Color(0xFFF1F5F9)),
+
+            // 5. Categorized Destination List
+            Expanded(
+              child: categorized.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          _filterQuery.isNotEmpty
+                              ? 'لا توجد وجهات مطابقة لـ "$_filterQuery"'
+                              : 'لا توجد وجهات متاحة حالياً',
+                          style: const TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 14,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: categorized.length,
+                      itemBuilder: (context, groupIndex) {
+                        final groupEntry = categorized.entries.elementAt(
+                          groupIndex,
+                        );
+                        final groupName = groupEntry.key;
+                        final resorts = groupEntry.value;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 12,
+                                bottom: 6,
+                              ),
+                              child: Text(
+                                groupName,
+                                style: const TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF475569),
+                                ),
+                              ),
+                            ),
+                            for (final resort in resorts)
+                              _buildRegionRow(resort),
+                          ],
+                        );
+                      },
+                    ),
+            ),
+
+            // 6. Sticky Bottom Action CTA
+            SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  border: Border(top: BorderSide(color: Color(0xFFF1F5F9))),
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 54,
+                  child: ElevatedButton(
+                    key: const Key('search-sheet-dismiss-button'),
+                    onPressed: () {
+                      widget.onConfirm(_selected.toList(growable: false));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF000000),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      _selected.isEmpty
+                          ? 'تأكيد الوجهات (الكل)'
+                          : 'تأكيد الوجهات (${_selected.length} محددة)',
+                      style: const TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRegionRow(String resort) {
+    final isSelected = _selected.contains(resort);
+
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: 'وجهة $resort',
+      child: InkWell(
+        key: Key('region-row-$resort'),
+        onTap: () => _toggleRegion(resort),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 50),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          child: Row(
+            children: [
+              // Custom checkbox at physical right (RTL Start)
+              Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? const Color(0xFF000000)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: isSelected
+                        ? const Color(0xFF000000)
+                        : const Color(0xFFCBD5E1),
+                    width: 1.5,
+                  ),
+                ),
+                child: isSelected
+                    ? const Center(
+                        child: Icon(
+                          Icons.check_rounded,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 14),
+              // Resort / Region name
+              Expanded(
+                child: Text(
+                  resort,
+                  style: TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 15,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: const Color(0xFF0F172A),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -1,34 +1,42 @@
-# Active Task — CUSTOMER_SCREEN_03_PROPERTY_CARD_COMPACTNESS_REMEDIATION
+# Active Task — CUSTOMER_SCREEN04_SEARCH_REFINE_AND_REGION_SELECTOR
 
-TASK_ID: CUSTOMER_SCREEN_03_PROPERTY_CARD_COMPACTNESS_REMEDIATION
+TASK_ID: CUSTOMER_SCREEN04_SEARCH_REFINE_AND_REGION_SELECTOR
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: AWAITING_FOUNDER_COMPACT_CARD_VISUAL_APPROVAL
-PR: #120 (AWAITING FOUNDER FINAL REVIEW)
+STATUS: CANDIDATE_AWAITING_FOUNDER_REVIEW
+ISSUE: #123 (Linked to approved design issue #122)
+BRANCH: feat/customer-screen04-search-refine
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: f6911eeecfa100cbbfec935e15769e66966ce835
-FEATURE_BASE_COMMIT_SHA: b7e991ab7ce99818db2f51f4963553fe1fc53a73
-BRANCH: feat/customer-screen03-explore-redesign
-SCOPE: Remediate property card compactness on native Flutter Customer Screen 03 (Explore) per Founder directive: (1) Retain canonical 1.45:1 authentic property image aspect ratio initially; (2) Eliminate the four individually bordered fact pills (`_PropertyFactBadge`); (3) Implement compact, unboxed, RTL-friendly single-line property facts row with outline icons (`Icons.bed_outlined`, `Icons.bathtub_outlined`, `Icons.people_outline`) and concise Arabic labels; (4) Show real known unit type (`_informativeUnitType`) only when informative, eliminating generic 'مكان للإقامة' fallback entirely; (5) Streamline padding and vertical spacing between card elements, saving 70.8dp in card height; (6) Verify 48dp favorite touch target requirement with centered 36dp visual pill; (7) Eliminate 200% text scale RenderFlex overflow; (8) Capture BEFORE and AFTER physical Samsung Galaxy A56 5G evidence at 100%, scrolled, 130%, and 200% font scales.
+FEATURE_BASE_COMMIT_SHA: 093c141a736535fe8d165db7b7bafe6dbac4a29f
+SCOPE: Implement approved Screen 04 (Search & Refine) and Region Multi-Select Bottom Sheet in native Flutter Customer App (`mobile/apps/customer_app`): (1) Implement Region Multi-Select Bottom Sheet (`RegionMultiSelectSheet`) with authentic coastal Egyptian clusters, multi-selection chips/checkboxes, dynamic summary grammar, dynamic options harvesting, and 16px sheet top radius; (2) Implement Screen 04 Search & Refine (`SearchRefineView`) as a dedicated full-page nested route (`FULL_PAGE_NESTED`) with sticky top bar, destination trigger, stay dates intent picker (2-30 nights, local Cairo time, intent-only), guest stepper (44×44dp targets), unit types chips, budget slider (with unbounded upper tick), clear/reset affordance, and sticky black CTA «عرض النتائج» (54dp height, 12dp radius); (3) Wire Two-Tier Entry on Screen 03 `ExploreSearchTrigger` (pill body opens `RegionMultiSelectSheet`; circular tune button opens `SearchRefineView`); (4) Implement `SearchIntentController` and state models in Riverpod with draft vs applied semantics, clean reset, and validation; (5) Pass search intent parameters cleanly to Screen 05 / Screen 06; (6) Verify TalkBack accessibility, 48dp touch targets, Cairo font typography, RTL layout, and text scale up to 200%; (7) Physical Samsung Galaxy A56 5G runtime verification.
 
 ## Boundaries & Invariants
 - Zero global design system migration or token mutations.
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
 - Zero fake property metadata, reviews, or synthetic badges.
+- Public search API does NOT accept or filter dates: dates remain search intent ONLY (MR-11 & P5/C2).
+- Dynamic destination harvesting from authentic public listings; no fabricated `/regions` endpoints.
 - Preserve 4-tab Customer navigation shell and real public search repository integration.
-- Preserve Screen 04/05 boundaries: compact search trigger acts as an entry point with truthful dependency bottom sheet.
 - Strictly no merge or deployment without explicit Founder authorization.
 
 ## Verification & Quality Gates
-- [x] Four individually bordered fact badges removed; replaced with compact unboxed facts row (`_PropertyFactItem`).
-- [x] Generic fallback `مكان للإقامة` completely removed; real unit type shown only when informative.
-- [x] Favorite button touch target verified and expanded to 48×48dp (`SizedBox(width: 48, height: 48)`) with centered 36dp visual pill and in-session toggle.
-- [x] Card information section height reduced from 210.80dp to 140.00dp (-70.80dp / -33.6% reduction).
-- [x] Total card height reduced from 452.18dp to 381.38dp (-70.80dp / -15.7% reduction).
-- [x] 200% text scale RenderFlex overflow eliminated; price remains prominently visible above bottom nav.
-- [x] Customer app automated test suite passes: 151/151 PASS across all 13 test suites.
-- [x] Static analysis passes: 0 issues in `customer_app`.
-- [x] Physical Samsung Galaxy A56 5G verified with 4 BEFORE and 4 AFTER canonical captures.
-- [x] Status submitted for Founder review: `AWAITING_FOUNDER_COMPACT_CARD_VISUAL_APPROVAL`.
+- [x] `RegionMultiSelectSheet` implemented with 16px top radius, search filter, coastal hierarchy, and selection summary.
+- [x] `SearchRefineView` implemented as dedicated full-page route with sticky top bar and sticky 12dp CTA.
+- [x] Two-Tier Entry wired from Screen 03 `ExploreSearchTrigger`.
+- [x] Riverpod `searchIntentControllerProvider` manages draft vs applied search intent state.
+- [x] Stay dates validated for 2-30 nights; dates treated strictly as customer intent (never sent to `/properties/search`).
+- [x] Guest stepper, unit types, and budget slider functional with accessible labels and live regions.
+- [x] Customer app automated test suite passes with 100% pass rate (161/161 tests PASS).
+- [x] Static analysis passes: 0 issues in `customer_app` (`flutter analyze`).
+- [x] Samsung Galaxy A56 5G physical runtime validation captured across viewports and font scales (100%, 130%, 200%).
+
+---
+
+## Approved Milestone — CUSTOMER_SCREEN_03_PROPERTY_CARD_COMPACTNESS_REMEDIATION (FOUNDER APPROVED)
+- COMMIT: 093c141a736535fe8d165db7b7bafe6dbac4a29f
+- PR: #120 (AWAITING FORMAL MERGE AUTHORIZATION)
+- SCOPE: Remediate property card compactness on native Flutter Customer Screen 03 (Explore): unboxed single-line facts, real unit type only, 381.38dp total height (-70.80dp reduction), 48×48dp favorite touch target, 200% font scale overflow eliminated, Samsung Galaxy A56 5G physical QA passed across 100%, scrolled, 130%, and 200% font scales.
+
 
 ---
 

@@ -1,40 +1,41 @@
-# Active Task — CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2
+# Active Task — CUSTOMER_SCREEN_03_PREMIUM_PERSONALIZED_HEADER
 
-TASK_ID: CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2
+TASK_ID: CUSTOMER_SCREEN_03_PREMIUM_PERSONALIZED_HEADER
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: READY_FOR_BRIDGE_REVIEW
-PR: #118 (DRAFT)
+STATUS: CANDIDATE_VERIFIED_ON_HARDWARE
+PR: PENDING_PUBLICATION
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: 3fef468b5dcb2fc08da2ef8ab12bd51707c8b806
-BRANCH: feat/customer-screen07-booking-review-v2
-SCOPE: Implement the Founder-approved Screen 07 Booking Request Review Concept A V2 in native Customer Flutter. Full-screen, Arabic-first RTL review screen, RTL back button to Screen 06, compact property summary, stay details with Arabic pluralization, price breakdown with prominent total and directionality-isolated currency formatting (13,500 ج.م), financial disclosure, sticky black CTA, clear confirmation disclosure, full UI state machine (REVIEW_READY, REVALIDATING, PRICE_CHANGED, DATE_CONFLICT, NETWORK_ERROR, AUTH_REQUIRED, SUBMITTING, REQUEST_SENT). Connect Screen 06 _onReviewBooking to Screen 07 when context is valid. Truthful unauthenticated handling without fake auth.
+BASE_MAIN_SHA: f6911ee67b57b11ce13d7ff8fbe29a6b57e4eef6
+CANDIDATE_SHA: b7e991ab7ce99818db2f51f4963553fe1fc53a73
+BRANCH: feat/customer-screen03-explore-redesign
+SCOPE: Implement the Founder-approved premium personalized header candidate and compact pill search trigger on native Customer Flutter Screen 03 (Explore). Replaces rejected baseline header ('كونفرم | استكشف') with ExploreHeader featuring RTL-native circular profile avatar (44dp touch target, #F3F4F6 background, 1px #E5E7EB border, neutral silhouette for guest, time-aware greeting and photo/initials fallback for auth), contextual subline ('اكتشف وجهتك القادمة'), omit dead notification bell in production guest mode, wire avatar tap to Tab 3 (Account), preserve compact pill search trigger (ExploreSearchTrigger), and pull real property cards ('ايمان') above the fold.
 
 ## Boundaries & Invariants
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
-- Zero business, booking, availability, pricing, commission, or financial rule changes.
-- Server-authoritative quote only (POST /api/v1/customer/bookings/calculate); no local price math or fake availability.
-- Protected request contract: POST /api/v1/customer/bookings with propertyId, checkIn, checkOut, guests, reviewedQuoteFingerprint, requestId.
-- Number-first currency visual format: '13,500 ج.م' guaranteed under all RTL environments.
-- Guest review permitted; authentication intercepted only on protected submission attempt.
-- Truthful auth gate: if native Auth is unavailable, report BLOCKED_BY_NATIVE_AUTH without inventing fake sessions or bypassing server auth.
-- No root Bottom Navigation on Screen 07 (focused transactional review).
-- Stay length constraints: 2-30 nights strictly enforced.
+- Zero fake user profiles, fake photo URLs, or fake location lookups (no runtime GPS packages or permission dialogs).
+- Zero dead buttons: notification bell strictly omitted in guest mode where native inbox does not yet exist.
+- Preserve 4-tab Customer navigation shell and real public search repository integration.
+- Preserve Screen 04 boundaries: compact search trigger acts as entry point, displaying truthful dependency notice to Screen 04 (Search & Refine).
 
 ## Verification & Quality Gates
-- [x] Directionality-isolated currency rendering (`KonfrmPriceText`) guarantees `13,500 ج.م` number-first across all RTL layouts.
-- [x] Screen 06 to Screen 07 wiring preserves full booking review context and returns cleanly on `تعديل`.
-- [x] Complete 8-state UI machine implemented and tested (`reviewReady`, `revalidating`, `priceChanged`, `dateConflict`, `networkError`, `authRequired`, `submitting`, `requestSent`).
-- [x] Strict state machine submission guard: zero protected POST requests dispatched from any non-`reviewReady` state (`priceChanged`, `dateConflict`, `networkError`, `authRequired`, `revalidating`, `submitting`, `requestSent`).
-- [x] Sequential separation of price acceptance (`قبول السعر الجديد ومتابعة المراجعة`) and booking submission (`إرسال طلب الحجز للمالك`).
-- [x] Revalidation lifecycle monotonic epoch counter (`_revalidationEpoch`) protects against out-of-order delayed responses.
-- [x] Differentiated retry: quote revalidation failure retries quote calculation; submission failure retries submission preserving exact `requestId` and fingerprint.
-- [x] Truthful auth gate: zero unsupported claims of local persistence; strictly reports `BLOCKED_BY_NATIVE_AUTH`.
-- [x] Server response status validation: non-empty status strictly matching `PENDING_OWNER_APPROVAL` and expected `propertyId`.
-- [x] Visual fidelity: removed intro header `راجع طلبك قبل الإرسال`, removed misleading single night row, sticky CTA `#000000` 54px with 6px radius.
-- [x] Multi-viewport layout (360dp, 390dp, 430dp) and 200% text scaling verified with 0 layout overflows.
-- [x] Physical Samsung Galaxy A56 (`SM-A566B`, Android 16) verified with 6 screenshot captures across all functional states.
-- [x] Full customer app test suite passes: 124/124 PASS.
-- [x] Static analysis passes: 0 issues in `customer_app` and `konfrm_design_system`.
+- [x] ExploreHeader widget implements exact RTL hierarchy: avatar on physical right, two-line text column, optional notification slot on physical left.
+- [x] Avatar touch target strictly conforms to 44×44dp minimum and navigates to Tab 3 (AccountView).
+- [x] Compact search trigger (`ExploreSearchTrigger`) preserved with 56dp height, 28dp pill radius, and RTL iconography.
+- [x] Multi-viewport layout (360dp, 390dp, 430dp) and 130%-200% text scaling verified with zero overflows.
+- [x] Physical Samsung Galaxy A56 5G (`SM_A566B`, Android 16 / One UI 8) verified with 4 screenshot captures.
+- [x] Real API property data ('ايمان') loaded live without fabricated fallbacks.
+- [x] Full customer app test suite passes: 139/139 PASS.
+- [x] Static analysis passes: 0 issues in `customer_app`.
+- [x] Dedicated Design Review and Architectural Specification for Screen 04, Region Multi-Select Bottom Sheet, and Screen 05 delivered for Founder review.
+- [ ] Awaiting Founder decision on Screen 04 presentation model (Full-Page vs Modal Sheet) and Region selection mechanics before initiating Flutter implementation.
+
+---
+
+## Historical Task — CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2 (MERGED)
+- PR: #118 (MERGED INTO MAIN)
+- MERGE_COMMIT: f6911ee67b57b11ce13d7ff8fbe29a6b57e4eef6
+- SCOPE: Implement the Founder-approved Screen 07 Booking Request Review Concept A V2 in native Customer Flutter. Full-screen, Arabic-first RTL review screen, RTL back button to Screen 06, compact property summary, stay details with Arabic pluralization, price breakdown with prominent total and directionality-isolated currency formatting (13,500 ج.م), financial disclosure, sticky black CTA, clear confirmation disclosure, full UI state machine.
+- VERIFICATION: 124/124 tests PASS; Samsung Galaxy A56 physical QA PASS; Bridge 11 review PASS.
 
 ---
 

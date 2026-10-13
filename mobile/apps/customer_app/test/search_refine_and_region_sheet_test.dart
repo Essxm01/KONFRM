@@ -243,6 +243,226 @@ void main() {
 
       expect(confirmedResult, containsAll(['مراسي', 'هاسيندا وايت']));
     });
+
+    testWidgets('renders empty, loading, and error states truthfully without fallback', (
+      tester,
+    ) async {
+      // 1. Loading state
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: RegionMultiSelectSheet(
+                initialSelected: const [],
+                availableDestinations: const [],
+                isLoading: true,
+                onConfirm: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('جارٍ تحميل الوجهات المتاحة...'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      // 2. Error state
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: RegionMultiSelectSheet(
+                initialSelected: const [],
+                availableDestinations: const [],
+                hasError: true,
+                errorMessage: 'فشل الاتصال بالخادم',
+                onConfirm: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('فشل الاتصال بالخادم'), findsOneWidget);
+
+      // 3. Truthfully empty inventory (no fallback to hardcoded list)
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: RegionMultiSelectSheet(
+                initialSelected: const [],
+                availableDestinations: const [],
+                isLoading: false,
+                hasError: false,
+                onConfirm: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('لا توجد وجهات متاحة حالياً'), findsOneWidget);
+      // Zero fabricated destinations
+      expect(find.byKey(const Key('region-row-مراسي')), findsNothing);
+      expect(find.byKey(const Key('region-row-تلال')), findsNothing);
+    });
+
+    for (final width in [360.0, 384.0, 430.0]) {
+      testWidgets(
+        'geometric regression: destination chips wrap horizontally on $width dp viewport',
+        (tester) async {
+          tester.view.physicalSize = Size(width * 3.0, 800.0 * 3.0);
+          tester.view.devicePixelRatio = 3.0;
+          addTearDown(() => tester.view.resetPhysicalSize());
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Scaffold(
+                  body: Builder(
+                    builder: (context) {
+                      return ElevatedButton(
+                        onPressed: () {
+                          RegionMultiSelectSheet.show(
+                            context: context,
+                            initialSelected: const [],
+                            availableDestinations: const [
+                              'مراسي',
+                              'أمواج',
+                              'تلال',
+                              'قرية سياحية طويلة جداً تتجاوز عرض الصف الواحد بالكامل في الساحل الشمالي',
+                            ],
+                          );
+                        },
+                        child: const Text('افتح'),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          await tester.tap(find.text('افتح'));
+          await tester.pumpAndSettle();
+
+          final chip1Finder = find.byKey(const Key('region-row-مراسي'));
+          final chip2Finder = find.byKey(const Key('region-row-أمواج'));
+          final longChipFinder = find.byKey(
+            const Key(
+              'region-row-قرية سياحية طويلة جداً تتجاوز عرض الصف الواحد بالكامل في الساحل الشمالي',
+            ),
+          );
+
+          expect(chip1Finder, findsOneWidget);
+          expect(chip2Finder, findsOneWidget);
+          expect(longChipFinder, findsOneWidget);
+
+          final chip1Rect = tester.getRect(chip1Finder);
+          final chip2Rect = tester.getRect(chip2Finder);
+          final longChipRect = tester.getRect(longChipFinder);
+
+          // 1. At least two short destination chips occupy the same visual row
+          expect(
+            (chip1Rect.top - chip2Rect.top).abs(),
+            lessThanOrEqualTo(1.0),
+          );
+
+          // 2. They have different horizontal positions
+          expect(chip1Rect.left, isNot(equals(chip2Rect.left)));
+
+          // 3. Neither occupies the entire available sheet width unnecessarily
+          final availableSheetWidth = width - 40; // 20dp padding on each side
+          expect(chip1Rect.width, lessThan(availableSheetWidth * 0.7));
+          expect(chip2Rect.width, lessThan(availableSheetWidth * 0.7));
+
+          // 4. In RTL, first chip (مراسي) is physically to the RIGHT of second chip (أمواج)
+          expect(chip1Rect.left, greaterThan(chip2Rect.left));
+
+          // 5. Longer label wraps onto a subsequent row
+          expect(longChipRect.top, greaterThan(chip1Rect.bottom));
+
+          // 6. Interactive height is at least 44dp
+          expect(chip1Rect.height, greaterThanOrEqualTo(44.0));
+          expect(chip2Rect.height, greaterThanOrEqualTo(44.0));
+        },
+      );
+    }
+
+    for (final textScale in [1.0, 1.3, 2.0]) {
+      testWidgets(
+        'RTL order and layout integrity at ${textScale * 100}% text scale',
+        (tester) async {
+          tester.view.physicalSize = const Size(384.0 * 3.0, 850.0 * 3.0);
+          tester.view.devicePixelRatio = 3.0;
+          addTearDown(() => tester.view.resetPhysicalSize());
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: MediaQuery(
+                data: MediaQueryData(
+                  size: const Size(384, 850),
+                  textScaler: TextScaler.linear(textScale),
+                ),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Scaffold(
+                    body: Builder(
+                      builder: (context) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            RegionMultiSelectSheet.show(
+                              context: context,
+                              initialSelected: const ['مراسي'],
+                              availableDestinations: const [
+                                'مراسي',
+                                'أمواج',
+                                'تلال',
+                              ],
+                            );
+                          },
+                          child: const Text('افتح'),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          await tester.tap(find.text('افتح'));
+          await tester.pumpAndSettle();
+
+          final chip1Finder = find.byKey(const Key('region-row-مراسي'));
+          final chip2Finder = find.byKey(const Key('region-row-أمواج'));
+          expect(chip1Finder, findsOneWidget);
+          expect(chip2Finder, findsOneWidget);
+
+          final chip1Rect = tester.getRect(chip1Finder);
+          final chip2Rect = tester.getRect(chip2Finder);
+
+          // At 100% and 130%, both chips fit on the first row with مراسي to the right of أمواج
+          if (textScale <= 1.3) {
+            expect(
+              (chip1Rect.top - chip2Rect.top).abs(),
+              lessThanOrEqualTo(1.0),
+            );
+            expect(chip1Rect.left, greaterThan(chip2Rect.left));
+          }
+
+          // Tap toggle works
+          await tester.tap(chip2Finder);
+          await tester.pumpAndSettle();
+          expect(find.text('المحدد (2)'), findsOneWidget);
+
+          // No unhandled overflow exceptions
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
   });
 
   group('Screen 04 SearchRefineView Component Tests', () {

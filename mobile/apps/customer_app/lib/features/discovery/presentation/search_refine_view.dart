@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:konfrm_design_system/konfrm_design_system.dart';
 
+import '../application/public_discovery_controller.dart';
 import '../application/search_intent_controller.dart';
 import '../data/search_intent_models.dart';
 import 'widgets/guest_stepper_field.dart';
@@ -57,10 +58,13 @@ class _SearchRefineViewState extends ConsumerState<SearchRefineView> {
 
   Future<void> _openRegionSelector() async {
     final metadata = ref.read(filterMetadataProvider);
+    final discoveryState = ref.read(publicDiscoveryControllerProvider);
     final selected = await RegionMultiSelectSheet.show(
       context: context,
       initialSelected: _draft.selectedRegions,
       availableDestinations: metadata.availableDestinations,
+      isLoading: discoveryState.isLoading,
+      hasError: discoveryState.canRetry,
     );
 
     if (selected != null) {

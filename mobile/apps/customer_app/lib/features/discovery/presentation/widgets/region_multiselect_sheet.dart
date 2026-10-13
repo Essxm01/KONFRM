@@ -15,14 +15,26 @@ class RegionMultiSelectSheet extends StatefulWidget {
     super.key,
     required this.initialSelected,
     this.availableDestinations = const [],
+    this.isLoading = false,
+    this.hasError = false,
+    this.errorMessage,
     required this.onConfirm,
   });
 
   /// The list of initially selected regions.
   final List<String> initialSelected;
 
-  /// Authentic destinations available in inventory.
+  /// Authentic destinations available in published inventory.
   final List<String> availableDestinations;
+
+  /// Whether published inventory is currently being loaded.
+  final bool isLoading;
+
+  /// Whether published inventory failed to load.
+  final bool hasError;
+
+  /// Optional error message on inventory load failure.
+  final String? errorMessage;
 
   /// Callback when user confirms selection.
   final ValueChanged<List<String>> onConfirm;
@@ -32,6 +44,9 @@ class RegionMultiSelectSheet extends StatefulWidget {
     required BuildContext context,
     required List<String> initialSelected,
     List<String> availableDestinations = const [],
+    bool isLoading = false,
+    bool hasError = false,
+    String? errorMessage,
   }) {
     return showModalBottomSheet<List<String>>(
       context: context,
@@ -41,6 +56,9 @@ class RegionMultiSelectSheet extends StatefulWidget {
         return RegionMultiSelectSheet(
           initialSelected: initialSelected,
           availableDestinations: availableDestinations,
+          isLoading: isLoading,
+          hasError: hasError,
+          errorMessage: errorMessage,
           onConfirm: (selected) => Navigator.of(context).pop(selected),
         );
       },
@@ -74,15 +92,9 @@ class _RegionMultiSelectSheetState extends State<RegionMultiSelectSheet> {
     super.dispose();
   }
 
-  List<String> get _allDestinations {
-    if (widget.availableDestinations.isNotEmpty) {
-      return widget.availableDestinations;
-    }
-    // Fallback to canonical coastal options when inventory is not yet loaded
-    return CoastalRegionGroup.canonicalGroups
-        .expand((g) => g.knownResorts)
-        .toList();
-  }
+  /// Selectable destinations originate strictly from actual published inventory metadata.
+  /// Zero synthetic or hardcoded resort lists are fabricated.
+  List<String> get _allDestinations => widget.availableDestinations;
 
   void _toggleRegion(String region) {
     setState(() {
@@ -267,19 +279,106 @@ class _RegionMultiSelectSheetState extends State<RegionMultiSelectSheet> {
 
             // 5. Categorized Destination Flowing Chips (Wrap)
             Expanded(
-              child: categorized.isEmpty
+              child: widget.isLoading && allDestinations.isEmpty
+                  ? const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 28,
+                              height: 28,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color(0xFF000000),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'جارٍ تحميل الوجهات المتاحة...',
+                              style: TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 14,
+                                color: Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : widget.hasError && allDestinations.isEmpty
                   ? Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Text(
-                          _filterQuery.isNotEmpty
-                              ? 'لا توجد وجهات مطابقة لـ "$_filterQuery"'
-                              : 'لا توجد وجهات متاحة حالياً',
-                          style: const TextStyle(
-                            fontFamily: KonfrmTypography.fontFamily,
-                            fontSize: 14,
-                            color: Color(0xFF64748B),
-                          ),
+                        padding: const EdgeInsets.all(32),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.cloud_off_rounded,
+                              size: 36,
+                              color: Color(0xFF94A3B8),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              widget.errorMessage ??
+                                  'تعذر تحميل الوجهات من الخادم حالياً.',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 14,
+                                color: Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : categorized.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (_filterQuery.isEmpty) ...[
+                              const Icon(
+                                Icons.location_off_rounded,
+                                size: 36,
+                                color: Color(0xFF94A3B8),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                'لا توجد وجهات متاحة حالياً',
+                                style: TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF0F172A),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                'لم يتم العثور على أماكن إقامة منشورة في الوقت الحالي.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 13,
+                                  color: Color(0xFF64748B),
+                                ),
+                              ),
+                            ] else
+                              Text(
+                                'لا توجد وجهات مطابقة لـ "$_filterQuery"',
+                                style: const TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 14,
+                                  color: Color(0xFF64748B),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     )
@@ -378,7 +477,6 @@ class _RegionMultiSelectSheetState extends State<RegionMultiSelectSheet> {
             key: Key('region-row-$resort'),
             constraints: const BoxConstraints(minHeight: 44),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            alignment: Alignment.center,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
@@ -388,13 +486,17 @@ class _RegionMultiSelectSheetState extends State<RegionMultiSelectSheet> {
                 width: 1.0,
               ),
             ),
-            child: Text(
-              resort,
-              style: TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? Colors.white : const Color(0xFF1E293B),
+            child: Center(
+              widthFactor: 1.0,
+              child: Text(
+                resort,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: KonfrmTypography.fontFamily,
+                  fontSize: 13,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  color: isSelected ? Colors.white : const Color(0xFF1E293B),
+                ),
               ),
             ),
           ),

@@ -27,10 +27,20 @@ SCOPE: Implement approved Screen 04 (Search & Refine) and Region Multi-Select Bo
 - [x] Riverpod `searchIntentControllerProvider` manages draft vs applied search intent state.
 - [x] Stay dates validated for 2-30 nights; dates treated strictly as customer intent (never sent to `/properties/search`).
 - [x] Guest stepper, unit types, and budget slider functional with accessible labels and live regions.
-- [x] Customer app automated test suite passes with 100% pass rate (166/166 tests PASS).
+- [x] Customer app automated test suite passes with 100% pass rate (173/173 tests PASS).
 - [x] Design system test suite passes: 21/21 PASS (`flutter test; flutter analyze` in `konfrm_design_system`).
 - [x] Static analysis passes: 0 issues across all packages (`flutter analyze`).
 - [x] Samsung Galaxy A56 5G physical runtime validation captured across viewports and font scales (100%, 130%, 200%).
+- [x] **Targeted Remediation Executed & Physical Evidence Captured:**
+  - [x] **Issue 1 (Destination Buttons Shrink-Wrapping):** Removed `alignment: Alignment.center` from `Container` in `RegionMultiSelectSheet._buildDestinationChip()`. Replaced with intrinsic `Center(widthFactor: 1.0, child: Text(...))` inside `BoxConstraints(minHeight: 44.0)` with 16dp horizontal padding. Chips shrink-wrap naturally around Arabic text and multiple destinations sit side-by-side in the same horizontal row with 8dp gaps.
+  - [x] **Issue 2 (Truthful Destination Inventory):** Removed fallback injecting 26 hardcoded names from `_allDestinations`. Destinations strictly derived from authentic published inventory (`widget.availableDestinations`). Wired explicit loading spinner, error message, and empty state.
+  - [x] **Issue 3 (Backend Query Completeness):** Audited `backend/server/src/services/dbRepository.ts` SQL query. Confirmed `GET /api/v1/customer/properties/search` has no `LIMIT`/`OFFSET`, returning 100% of published inventory. Documented deferred aggregation endpoint requirement under Issue #133.
+  - [x] Samsung Galaxy A56 5G physical hardware evidence artifacts:
+    - `01_screen04_a56_region_sheet_empty.png` (Before: full-width stacked buttons)
+    - `08_screen04_a56_region_sheet_unselected_shrinkwrapped.png` (After: unselected shrink-wrapped chips in same row)
+    - `09_screen04_a56_region_sheet_multiselected_row.png` (After: multi-selected chips in same row)
+    - `10_screen04_a56_destination_handoff.png` (Screen 04 destination summary with multi-selected chips)
+    - `11_screen03_a56_applied_results.png` (Screen 03 Explore feed with live filtered results)
 - [x] **Final Founder-Directed Remediation Executed & Physical Evidence Captured:**
   - [x] Monochrome visual direction applied across Customer App (Black `#000000` for primary/selected, White for surfaces, Neutral greys `#F1F5F9` / `#E2E8F0` / `#94A3B8` for inactive/borders). Blue accents removed per Founder directive.
   - [x] Region Multi-Select chips redesigned as 12dp rounded rectangles with 44dp touch targets; Selected: solid black (`#000000`) with white text; Unselected: white with `#E2E8F0` outline and `#1E293B` text.

@@ -63,6 +63,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
   Future<void> _openSearchAndRefine({bool focusOnRefine = false}) async {
     final currentIntent = ref.read(searchIntentControllerProvider);
     final metadata = ref.read(filterMetadataProvider);
+    final discoveryState = ref.read(publicDiscoveryControllerProvider);
 
     if (focusOnRefine) {
       final applied = await SearchRefineView.push(
@@ -80,6 +81,8 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
         context: context,
         initialSelected: currentIntent.selectedRegions,
         availableDestinations: metadata.availableDestinations,
+        isLoading: discoveryState.isLoading,
+        hasError: discoveryState.canRetry,
       );
       if (selectedRegions != null && mounted) {
         final draftIntent = currentIntent.copyWith(

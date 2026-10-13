@@ -357,12 +357,15 @@ class CoastalRegionGroup {
     for (final group in canonicalGroups) {
       final matches = <String>[];
       for (final dest in destinations) {
-        final matchesKnown = group.knownResorts.any(
-          (known) =>
-              dest.contains(known) ||
-              known.contains(dest) ||
-              dest.toLowerCase().contains(known.toLowerCase()),
-        );
+        final matchesKnown = dest == group.name ||
+            dest.contains(group.name) ||
+            group.name.contains(dest) ||
+            group.knownResorts.any(
+              (known) =>
+                  dest.contains(known) ||
+                  known.contains(dest) ||
+                  dest.toLowerCase().contains(known.toLowerCase()),
+            );
         if (matchesKnown && !matches.contains(dest)) {
           matches.add(dest);
           remaining.remove(dest);

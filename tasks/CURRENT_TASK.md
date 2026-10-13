@@ -1,40 +1,42 @@
-# Active Task — CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2
+# Active Task — CUSTOMER_SCREEN_03_PROPERTY_CARD_COMPACTNESS_REMEDIATION
 
-TASK_ID: CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2
+TASK_ID: CUSTOMER_SCREEN_03_PROPERTY_CARD_COMPACTNESS_REMEDIATION
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: READY_FOR_BRIDGE_REVIEW
-PR: #118 (DRAFT)
+STATUS: AWAITING_FOUNDER_COMPACT_CARD_VISUAL_APPROVAL
+PR: #120 (AWAITING FOUNDER FINAL REVIEW)
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: 3fef468b5dcb2fc08da2ef8ab12bd51707c8b806
-BRANCH: feat/customer-screen07-booking-review-v2
-SCOPE: Implement the Founder-approved Screen 07 Booking Request Review Concept A V2 in native Customer Flutter. Full-screen, Arabic-first RTL review screen, RTL back button to Screen 06, compact property summary, stay details with Arabic pluralization, price breakdown with prominent total and directionality-isolated currency formatting (13,500 ج.م), financial disclosure, sticky black CTA, clear confirmation disclosure, full UI state machine (REVIEW_READY, REVALIDATING, PRICE_CHANGED, DATE_CONFLICT, NETWORK_ERROR, AUTH_REQUIRED, SUBMITTING, REQUEST_SENT). Connect Screen 06 _onReviewBooking to Screen 07 when context is valid. Truthful unauthenticated handling without fake auth.
+BASE_MAIN_SHA: f6911eeecfa100cbbfec935e15769e66966ce835
+FEATURE_BASE_COMMIT_SHA: b7e991ab7ce99818db2f51f4963553fe1fc53a73
+BRANCH: feat/customer-screen03-explore-redesign
+SCOPE: Remediate property card compactness on native Flutter Customer Screen 03 (Explore) per Founder directive: (1) Retain canonical 1.45:1 authentic property image aspect ratio initially; (2) Eliminate the four individually bordered fact pills (`_PropertyFactBadge`); (3) Implement compact, unboxed, RTL-friendly single-line property facts row with outline icons (`Icons.bed_outlined`, `Icons.bathtub_outlined`, `Icons.people_outline`) and concise Arabic labels; (4) Show real known unit type (`_informativeUnitType`) only when informative, eliminating generic 'مكان للإقامة' fallback entirely; (5) Streamline padding and vertical spacing between card elements, saving 70.8dp in card height; (6) Verify 48dp favorite touch target requirement with centered 36dp visual pill; (7) Eliminate 200% text scale RenderFlex overflow; (8) Capture BEFORE and AFTER physical Samsung Galaxy A56 5G evidence at 100%, scrolled, 130%, and 200% font scales.
 
 ## Boundaries & Invariants
+- Zero global design system migration or token mutations.
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
-- Zero business, booking, availability, pricing, commission, or financial rule changes.
-- Server-authoritative quote only (POST /api/v1/customer/bookings/calculate); no local price math or fake availability.
-- Protected request contract: POST /api/v1/customer/bookings with propertyId, checkIn, checkOut, guests, reviewedQuoteFingerprint, requestId.
-- Number-first currency visual format: '13,500 ج.م' guaranteed under all RTL environments.
-- Guest review permitted; authentication intercepted only on protected submission attempt.
-- Truthful auth gate: if native Auth is unavailable, report BLOCKED_BY_NATIVE_AUTH without inventing fake sessions or bypassing server auth.
-- No root Bottom Navigation on Screen 07 (focused transactional review).
-- Stay length constraints: 2-30 nights strictly enforced.
+- Zero fake property metadata, reviews, or synthetic badges.
+- Preserve 4-tab Customer navigation shell and real public search repository integration.
+- Preserve Screen 04/05 boundaries: compact search trigger acts as an entry point with truthful dependency bottom sheet.
+- Strictly no merge or deployment without explicit Founder authorization.
 
 ## Verification & Quality Gates
-- [x] Directionality-isolated currency rendering (`KonfrmPriceText`) guarantees `13,500 ج.م` number-first across all RTL layouts.
-- [x] Screen 06 to Screen 07 wiring preserves full booking review context and returns cleanly on `تعديل`.
-- [x] Complete 8-state UI machine implemented and tested (`reviewReady`, `revalidating`, `priceChanged`, `dateConflict`, `networkError`, `authRequired`, `submitting`, `requestSent`).
-- [x] Strict state machine submission guard: zero protected POST requests dispatched from any non-`reviewReady` state (`priceChanged`, `dateConflict`, `networkError`, `authRequired`, `revalidating`, `submitting`, `requestSent`).
-- [x] Sequential separation of price acceptance (`قبول السعر الجديد ومتابعة المراجعة`) and booking submission (`إرسال طلب الحجز للمالك`).
-- [x] Revalidation lifecycle monotonic epoch counter (`_revalidationEpoch`) protects against out-of-order delayed responses.
-- [x] Differentiated retry: quote revalidation failure retries quote calculation; submission failure retries submission preserving exact `requestId` and fingerprint.
-- [x] Truthful auth gate: zero unsupported claims of local persistence; strictly reports `BLOCKED_BY_NATIVE_AUTH`.
-- [x] Server response status validation: non-empty status strictly matching `PENDING_OWNER_APPROVAL` and expected `propertyId`.
-- [x] Visual fidelity: removed intro header `راجع طلبك قبل الإرسال`, removed misleading single night row, sticky CTA `#000000` 54px with 6px radius.
-- [x] Multi-viewport layout (360dp, 390dp, 430dp) and 200% text scaling verified with 0 layout overflows.
-- [x] Physical Samsung Galaxy A56 (`SM-A566B`, Android 16) verified with 6 screenshot captures across all functional states.
-- [x] Full customer app test suite passes: 124/124 PASS.
-- [x] Static analysis passes: 0 issues in `customer_app` and `konfrm_design_system`.
+- [x] Four individually bordered fact badges removed; replaced with compact unboxed facts row (`_PropertyFactItem`).
+- [x] Generic fallback `مكان للإقامة` completely removed; real unit type shown only when informative.
+- [x] Favorite button touch target verified and expanded to 48×48dp (`SizedBox(width: 48, height: 48)`) with centered 36dp visual pill and in-session toggle.
+- [x] Card information section height reduced from 210.80dp to 140.00dp (-70.80dp / -33.6% reduction).
+- [x] Total card height reduced from 452.18dp to 381.38dp (-70.80dp / -15.7% reduction).
+- [x] 200% text scale RenderFlex overflow eliminated; price remains prominently visible above bottom nav.
+- [x] Customer app automated test suite passes: 151/151 PASS across all 13 test suites.
+- [x] Static analysis passes: 0 issues in `customer_app`.
+- [x] Physical Samsung Galaxy A56 5G verified with 4 BEFORE and 4 AFTER canonical captures.
+- [x] Status submitted for Founder review: `AWAITING_FOUNDER_COMPACT_CARD_VISUAL_APPROVAL`.
+
+---
+
+## Historical Task — CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2 (MERGED)
+- PR: #118 (MERGED INTO MAIN)
+- MERGE_COMMIT: f6911eeecfa100cbbfec935e15769e66966ce835
+- SCOPE: Implement the Founder-approved Screen 07 Booking Request Review Concept A V2 in native Customer Flutter. Full-screen, Arabic-first RTL review screen, RTL back button to Screen 06, compact property summary, stay details with Arabic pluralization, price breakdown with prominent total and directionality-isolated currency formatting (13,500 ج.م), financial disclosure, sticky black CTA, clear confirmation disclosure, full UI state machine.
+- VERIFICATION: 124/124 tests PASS; Samsung Galaxy A56 physical QA PASS; Bridge 11 review PASS.
 
 ---
 

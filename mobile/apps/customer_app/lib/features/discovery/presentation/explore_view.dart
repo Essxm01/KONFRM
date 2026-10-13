@@ -1,87 +1,135 @@
-import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:konfrm_design_system/konfrm_design_system.dart';
 
 import '../application/public_discovery_controller.dart';
 import '../data/public_property.dart';
 import '../data/public_property_search_repository.dart';
+import '../../booking_review/presentation/widgets/konfrm_price_text.dart';
 import '../../property_details/presentation/property_details_view.dart';
 
+import 'widgets/avatar_candidates.dart';
+import 'widgets/explore_header.dart';
+import 'widgets/explore_search_trigger.dart';
+
 class ExploreView extends ConsumerStatefulWidget {
-  const ExploreView({super.key});
+  const ExploreView({
+    super.key,
+    this.userName,
+    this.avatarUrl,
+    this.location,
+    this.onAccountTap,
+    this.onNotificationTap,
+    this.showNotification = false,
+    this.avatarStyle = AvatarCandidateStyle.branded,
+  });
+
+  final String? userName;
+  final String? avatarUrl;
+  final String? location;
+  final VoidCallback? onAccountTap;
+  final VoidCallback? onNotificationTap;
+  final bool showNotification;
+  final AvatarCandidateStyle avatarStyle;
 
   @override
   ConsumerState<ExploreView> createState() => _ExploreViewState();
 }
 
 class _ExploreViewState extends ConsumerState<ExploreView> {
-  final _destinationController = TextEditingController();
-  final _guestsController = TextEditingController();
-  final _maxPriceController = TextEditingController();
-  String _unitType = '';
-  Timer? _debounce;
-  String? _guestsError;
-  String? _priceError;
+  final PublicPropertySearchFilters _filters =
+      const PublicPropertySearchFilters();
 
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    _destinationController.dispose();
-    _guestsController.dispose();
-    _maxPriceController.dispose();
-    super.dispose();
-  }
-
-  PublicPropertySearchFilters get _filters => PublicPropertySearchFilters(
-    destination: _destinationController.text,
-    unitType: _unitType,
-    guests: int.tryParse(_guestsController.text.trim()),
-    maxPrice: double.tryParse(_maxPriceController.text.trim()),
-  );
-
-  bool _validateFilters() {
-    final guestsText = _guestsController.text.trim();
-    final priceText = _maxPriceController.text.trim();
-    final guests = int.tryParse(guestsText);
-    final price = double.tryParse(priceText);
-    final guestsError = guestsText.isNotEmpty && (guests == null || guests < 1)
-        ? 'أدخل عدداً صحيحاً موجباً'
-        : null;
-    final priceError =
-        priceText.isNotEmpty && (price == null || !price.isFinite || price <= 0)
-        ? 'أدخل سعراً موجباً'
-        : null;
-    if (_guestsError != guestsError || _priceError != priceError) {
-      setState(() {
-        _guestsError = guestsError;
-        _priceError = priceError;
-      });
-    }
-    return guestsError == null && priceError == null;
-  }
-
-  void _scheduleSearch() {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 350), () {
-      if (mounted) {
-        _searchNow();
-      }
-    });
-  }
+  List<String> get _selectedRegions => _filters.destinations.isNotEmpty
+      ? _filters.destinations
+      : (_filters.destination.trim().isNotEmpty
+          ? [_filters.destination.trim()]
+          : const []);
 
   void _searchNow() {
-    _debounce?.cancel();
-    if (!_validateFilters()) return;
     ref.read(publicDiscoveryControllerProvider.notifier).load(_filters);
   }
 
   Future<void> _refresh() async {
-    if (!_validateFilters()) return;
     await ref.read(publicDiscoveryControllerProvider.notifier).load(_filters);
+  }
+
+  void _openSearchAndRefine({bool focusOnRefine = false}) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD1D5DB),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    focusOnRefine ? 'خيارات التصفية' : 'البحث وتحديد الوجهة',
+                    style: KonfrmTypography.sectionTitle,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'شاشة البحث والتصفية (Screen 04) ومحدد المناطق المتعددة قيد الإعداد لمراجعة التصميم المخصصة مع المؤسس.',
+                style: KonfrmTypography.body.copyWith(
+                  color: const Color(0xFF4B5563),
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 52,
+                child: ElevatedButton(
+                  key: const Key('search-sheet-dismiss-button'),
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF000000),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'فهمت',
+                    style: TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -91,105 +139,31 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
       onRefresh: _refresh,
       child: ListView(
         key: const Key('explore-scroll-view'),
-        padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 24),
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 24),
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const KonfrmBrandSymbol(size: 32),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('كونفرم | استكشف', style: KonfrmTypography.display),
-                    const SizedBox(height: 4),
-                    Text(
-                      'ابحث عن بيوت العطلات والشاليهات الموثقة',
-                      style: KonfrmTypography.body,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          // Personalized Header (Founder-directed candidate)
+          ExploreHeader(
+            key: const Key('explore-header'),
+            userName: widget.userName,
+            avatarUrl: widget.avatarUrl,
+            location: widget.location,
+            onProfileTap: widget.onAccountTap,
+            onNotificationTap: widget.onNotificationTap,
+            showNotification: widget.showNotification,
+            avatarStyle: widget.avatarStyle,
           ),
-          const SizedBox(height: 18),
-          SearchField(
-            key: const Key('discovery-destination'),
-            label: 'الوجهة أو اسم العقار',
-            placeholder: 'مثال: الساحل الشمالي',
-            controller: _destinationController,
-            loading: state.isLoading,
-            onChanged: (_) => _scheduleSearch(),
-            onSubmitted: (_) => _searchNow(),
-          ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            key: const Key('discovery-unit-type'),
-            initialValue: _unitType,
-            isExpanded: true,
-            decoration: const InputDecoration(
-              labelText: 'نوع الوحدة',
-              border: OutlineInputBorder(),
-            ),
-            items: const [
-              DropdownMenuItem(value: '', child: Text('كل الأنواع')),
-              DropdownMenuItem(value: 'CHALET', child: Text('شاليه')),
-              DropdownMenuItem(value: 'VILLA', child: Text('فيلا')),
-              DropdownMenuItem(value: 'APARTMENT', child: Text('شقة')),
-              DropdownMenuItem(value: 'STUDIO', child: Text('استوديو')),
-            ],
-            onChanged: (value) {
-              setState(() => _unitType = value ?? '');
-              _scheduleSearch();
-            },
-          ),
-          const SizedBox(height: 12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: InputField(
-                  key: const Key('discovery-guests'),
-                  label: 'عدد الضيوف',
-                  controller: _guestsController,
-                  keyboardType: TextInputType.number,
-                  textDirection: ui.TextDirection.ltr,
-                  error: _guestsError,
-                  onChanged: (_) {
-                    if (_guestsError != null) {
-                      setState(() => _guestsError = null);
-                    }
-                    _scheduleSearch();
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: InputField(
-                  key: const Key('discovery-max-price'),
-                  label: 'الحد الأقصى للسعر',
-                  controller: _maxPriceController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  textDirection: ui.TextDirection.ltr,
-                  error: _priceError,
-                  onChanged: (_) {
-                    if (_priceError != null) setState(() => _priceError = null);
-                    _scheduleSearch();
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          PrimaryButton(
-            key: const Key('discovery-submit'),
-            label: 'ابحث عن أماكن الإقامة',
-            onPressed: state.isLoading ? null : _searchNow,
+          const SizedBox(height: 16),
+
+          // Pill-style Search Trigger
+          ExploreSearchTrigger(
+            key: const Key('explore-search-trigger'),
+            selectedRegions: _selectedRegions,
+            onTap: () => _openSearchAndRefine(focusOnRefine: false),
+            onTuneTap: () => _openSearchAndRefine(focusOnRefine: true),
           ),
           const SizedBox(height: 20),
+
+          // Results Feed
           _DiscoveryResults(state: state, onRetry: _searchNow),
         ],
       ),
@@ -209,11 +183,11 @@ class _DiscoveryResults extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('نتائج البحث', style: KonfrmTypography.sectionTitle),
+          Text('أماكن الإقامة', style: KonfrmTypography.sectionTitle),
           const SizedBox(height: 12),
           for (final property in state.properties) ...[
             _PublicPropertyCard(property: property),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
           ],
         ],
       );
@@ -301,6 +275,7 @@ class _PublicPropertyCard extends StatelessWidget {
         .where((part) => part.isNotEmpty)
         .toSet()
         .join('، ');
+
     return Semantics(
       container: true,
       explicitChildNodes: true,
@@ -322,62 +297,164 @@ class _PublicPropertyCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Hero Image + Vignette Scrim + Favorite Action
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(12),
                 ),
-                child: AspectRatio(
-                  aspectRatio: 1.4,
-                  child: property.images.isEmpty
-                      ? const _PropertyImagePlaceholder()
-                      : Image.network(
-                          property.images.first.toString(),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const _PropertyImagePlaceholder(),
+                child: Stack(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 1.45,
+                      child: property.images.isEmpty
+                          ? const _PropertyImagePlaceholder()
+                          : Image.network(
+                              property.images.first.toString(),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const _PropertyImagePlaceholder(),
+                            ),
+                    ),
+                    // Subtle vignette gradient for upper controls
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: 52,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.22),
+                              Colors.transparent,
+                            ],
+                          ),
                         ),
+                      ),
+                    ),
+                    // Favorite Heart Action (48dp touch target, top-left in RTL)
+                    PositionedDirectional(
+                      top: 4,
+                      end: 4,
+                      child: _FavoriteHeartButton(
+                        propertyId: property.id,
+                        propertyTitle: property.title,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              // Compact Content Block
               Padding(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(property.title, style: KonfrmTypography.sectionTitle),
+                    // Property Name / Title
+                    Text(
+                      property.title,
+                      style: const TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF111827),
+                        height: 1.25,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    // Secondary Location Line
                     if (location.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text(location, style: KonfrmTypography.supporting),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: Color(0xFF64748B),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              location,
+                              style: const TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF64748B),
+                                height: 1.2,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
+                    // Compact Unboxed Property Facts Row
                     Wrap(
-                      spacing: 14,
-                      runSpacing: 6,
+                      spacing: 12,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        _PropertyFact(
-                          icon: Icons.home_outlined,
-                          label: _unitTypeLabel(property.unitType),
-                        ),
-                        _PropertyFact(
+                        if (_informativeUnitType(property.unitType, property.propertyType) != null)
+                          _PropertyFactItem(
+                            icon: Icons.home_outlined,
+                            label: _informativeUnitType(property.unitType, property.propertyType)!,
+                          ),
+                        _PropertyFactItem(
                           icon: Icons.bed_outlined,
                           label: '${property.bedrooms} غرف نوم',
                         ),
-                        _PropertyFact(
+                        _PropertyFactItem(
                           icon: Icons.bathtub_outlined,
-                          label: '${property.bathrooms} حمامات',
+                          label: '${property.bathrooms} حمام',
                         ),
-                        _PropertyFact(
+                        _PropertyFactItem(
                           icon: Icons.people_outline,
                           label: '${property.maxGuests} ضيوف',
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      '${NumberFormat('#,##0.##', 'en').format(property.basePricePerNight)} ج.م / ليلة',
+                    const SizedBox(height: 10),
+                    // Prominent Nightly Price Anchor
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 5,
                       textDirection: ui.TextDirection.rtl,
-                      style: KonfrmTypography.sectionTitle.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      children: [
+                        KonfrmPriceText(
+                          amount: property.basePricePerNight,
+                          amountStyle: const TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF111827),
+                            height: 1.2,
+                          ),
+                          currencyStyle: const TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF111827),
+                            height: 1.2,
+                          ),
+                        ),
+                        const Text(
+                          '/ ليلة',
+                          textDirection: ui.TextDirection.rtl,
+                          style: TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF64748B),
+                            height: 1.2,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -389,31 +466,153 @@ class _PublicPropertyCard extends StatelessWidget {
     );
   }
 
-  String _unitTypeLabel(String unitType) => switch (unitType.toUpperCase()) {
-    'CHALET' => 'شاليه',
-    'VILLA' => 'فيلا',
-    'APARTMENT' => 'شقة',
-    'STUDIO' => 'استوديو',
-    'CABIN' => 'كوخ',
-    _ => 'مكان للإقامة',
-  };
+  String? _informativeUnitType(String unitType, String? propertyType) {
+    final candidates = [unitType, propertyType ?? ''];
+    for (final raw in candidates) {
+      final normalized = raw.trim().toUpperCase();
+      if (normalized.isEmpty) continue;
+      switch (normalized) {
+        case 'CHALET':
+        case 'شاليه':
+          return 'شاليه';
+        case 'VILLA':
+        case 'فيلا':
+          return 'فيلا';
+        case 'APARTMENT':
+        case 'شقة':
+          return 'شقة';
+        case 'STUDIO':
+        case 'استوديو':
+          return 'استوديو';
+        case 'CABIN':
+        case 'كوخ':
+          return 'كوخ';
+        case 'TOWNHOUSE':
+        case 'تاون هاوس':
+          return 'تاون هاوس';
+        case 'PENTHOUSE':
+        case 'بنتهاوس':
+          return 'بنتهاوس';
+        case 'TWINHOUSE':
+        case 'توين هاوس':
+          return 'توين هاوس';
+        case 'DUPLEX':
+        case 'دوبلكس':
+          return 'دوبلكس';
+      }
+    }
+    return null;
+  }
 }
 
-class _PropertyFact extends StatelessWidget {
-  const _PropertyFact({required this.icon, required this.label});
+class _FavoriteHeartButton extends StatefulWidget {
+  const _FavoriteHeartButton({
+    required this.propertyId,
+    required this.propertyTitle,
+  });
+
+  final String propertyId;
+  final String propertyTitle;
+
+  @override
+  State<_FavoriteHeartButton> createState() => _FavoriteHeartButtonState();
+}
+
+class _FavoriteHeartButtonState extends State<_FavoriteHeartButton> {
+  bool _isFavorite = false;
+
+  void _toggleFavorite() {
+    setState(() {
+      _isFavorite = !_isFavorite;
+    });
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _isFavorite
+              ? 'تمت إضافة "${widget.propertyTitle}" إلى المفضلة (جلسة حالية).'
+              : 'تمت إزالة "${widget.propertyTitle}" من المفضلة.',
+          textDirection: ui.TextDirection.rtl,
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: _isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة',
+      child: GestureDetector(
+        key: Key('property-favorite-heart-${widget.propertyId}'),
+        behavior: HitTestBehavior.opaque,
+        onTap: _toggleFavorite,
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: Center(
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.92),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x1F000000),
+                    blurRadius: 6,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Icon(
+                  _isFavorite
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                  size: 20,
+                  color: _isFavorite
+                      ? const Color(0xFFE34154)
+                      : const Color(0xFF1E293B),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PropertyFactItem extends StatelessWidget {
+  const _PropertyFactItem({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Icon(icon, size: 18, color: KonfrmColors.primary),
-      const SizedBox(width: 4),
-      Text(label, style: KonfrmTypography.supporting),
-    ],
-  );
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(icon, size: 14, color: const Color(0xFF64748B)),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontFamily: KonfrmTypography.fontFamily,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF475569),
+            height: 1.2,
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _PropertyImagePlaceholder extends StatelessWidget {
@@ -423,7 +622,7 @@ class _PropertyImagePlaceholder extends StatelessWidget {
   Widget build(BuildContext context) => const ColoredBox(
     color: Color(0xFFF1F5F9),
     child: Center(
-      child: Icon(Icons.image_outlined, size: 36, color: Color(0xFF64748B)),
+      child: Icon(Icons.image_rounded, size: 36, color: Color(0xFF64748B)),
     ),
   );
 }

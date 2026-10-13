@@ -26,12 +26,14 @@ class PublicSearchException implements Exception {
 class PublicPropertySearchFilters {
   const PublicPropertySearchFilters({
     this.destination = '',
+    this.destinations = const [],
     this.unitType = '',
     this.guests,
     this.maxPrice,
   });
 
   final String destination;
+  final List<String> destinations;
   final String unitType;
   final int? guests;
   final double? maxPrice;
@@ -44,8 +46,12 @@ class PublicPropertySearchFilters {
       throw const PublicSearchException(PublicSearchFailureKind.invalidFilters);
     }
     final query = <String, String>{};
-    final destinationValue = destination.trim();
-    if (destinationValue.isNotEmpty) query['destination'] = destinationValue;
+    if (destinations.isNotEmpty) {
+      query['destinations'] = destinations.join(',');
+    } else {
+      final destinationValue = destination.trim();
+      if (destinationValue.isNotEmpty) query['destination'] = destinationValue;
+    }
     final unitTypeValue = unitType.trim().toUpperCase();
     if (unitTypeValue.isNotEmpty && unitTypeValue != 'ALL') {
       query['unitType'] = unitTypeValue;

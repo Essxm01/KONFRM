@@ -123,16 +123,42 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
   static final _dateFormat = DateFormat('yyyy-MM-dd');
   int _quoteGeneration = 0;
 
-  Future<void> load({PublicPropertyDetail? initialProperty}) async {
+  Future<void> load({
+    PublicPropertyDetail? initialProperty,
+    DateTime? initialCheckIn,
+    DateTime? initialCheckOut,
+    int? initialGuests,
+  }) async {
     _quoteGeneration++;
+    final cleanIn = initialCheckIn != null
+        ? DateTime.utc(
+            initialCheckIn.year,
+            initialCheckIn.month,
+            initialCheckIn.day,
+          )
+        : null;
+    final cleanOut = initialCheckOut != null
+        ? DateTime.utc(
+            initialCheckOut.year,
+            initialCheckOut.month,
+            initialCheckOut.day,
+          )
+        : null;
+    final int guests = initialGuests != null && initialGuests > 0
+        ? initialGuests
+        : state.selectedGuests;
+
     state = state.copyWith(
       property: initialProperty,
       clearProperty: initialProperty == null,
       isLoadingProperty: true,
       isLoadingAvailability: true,
       isCalculatingQuote: false,
-      clearCheckIn: true,
-      clearCheckOut: true,
+      selectedCheckIn: cleanIn,
+      selectedCheckOut: cleanOut,
+      clearCheckIn: cleanIn == null,
+      clearCheckOut: cleanOut == null,
+      selectedGuests: guests,
       clearPropertyError: true,
       clearAvailabilityError: true,
       clearQuote: true,
@@ -183,6 +209,19 @@ class PropertyDetailsController extends StateNotifier<PropertyDetailsState> {
           isLoadingAvailability: false,
           clearAvailabilityError: true,
         );
+        if (state.hasValidDates) {
+          final conflict = avail.hasConflict(
+            state.selectedCheckIn!,
+            state.selectedCheckOut!,
+          );
+          if (!conflict) {
+            calculateQuote();
+          } else {
+            state = state.copyWith(
+              calendarError: 'التواريخ المختارة غير متاحة للحجز.',
+            );
+          }
+        }
       }
     } catch (e) {
       final String message;

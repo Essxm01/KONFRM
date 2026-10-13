@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:customer_app/app/app.dart';
+import 'package:customer_app/features/booking_review/presentation/widgets/konfrm_price_text.dart';
 import 'package:customer_app/features/discovery/data/public_property_search_repository.dart';
+import 'package:customer_app/features/discovery/presentation/widgets/explore_header.dart';
+import 'package:customer_app/features/discovery/presentation/widgets/explore_search_trigger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -58,10 +61,14 @@ void main() {
     await tester.pumpWidget(_app(repository));
     await tester.pumpAndSettle();
 
+    expect(find.text('أماكن الإقامة'), findsOneWidget);
     expect(find.text('شاليه للاختبار'), findsOneWidget);
-    expect(find.textContaining('2,800 ج.م / ليلة'), findsOneWidget);
+    expect(find.byType(KonfrmPriceText), findsOneWidget);
+    expect(find.text('2,800'), findsOneWidget);
+    expect(find.text('ج.م'), findsOneWidget);
+    expect(find.text('/ ليلة'), findsOneWidget);
     expect(find.text('مطروح، الساحل الشمالي'), findsOneWidget);
-    expect(find.byIcon(Icons.image_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.image_rounded), findsOneWidget);
     expect(find.byType(OutlinedButton), findsNothing);
     expect(find.text('احجز'), findsNothing);
     expect(find.text('أضف للمفضلة'), findsNothing);
@@ -78,9 +85,16 @@ void main() {
     final semantics = tester.ensureSemantics();
     await tester.pumpWidget(_app(repository));
     await tester.pumpAndSettle();
-    expect(find.bySemanticsLabel('الوجهة أو اسم العقار'), findsOneWidget);
+    expect(find.text('أهلًا بك'), findsOneWidget);
+    expect(find.text('اكتشف وجهتك القادمة'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(
+        'البحث عن أماكن الإقامة: إلى أين؟، اختيار منطقة أو أكثر',
+      ),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel('خيارات التصفية والتعديل'), findsOneWidget);
     expect(find.bySemanticsLabel('شاليه للاختبار'), findsOneWidget);
-    expect(find.bySemanticsLabel('ابحث عن أماكن الإقامة'), findsOneWidget);
     semantics.dispose();
   });
 
@@ -111,7 +125,7 @@ void main() {
     await tester.pumpWidget(_app(repository));
     await tester.pumpAndSettle();
     expect(find.text('شاليه للاختبار'), findsOneWidget);
-    expect(find.byIcon(Icons.image_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.image_rounded), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -130,7 +144,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('تعذر قراءة نتائج البحث'), findsOneWidget);
     expect(find.text('شاليه للاختبار'), findsNothing);
-    expect(find.byIcon(Icons.image_outlined), findsNothing);
+    expect(find.byIcon(Icons.image_rounded), findsNothing);
   });
 
   testWidgets('announces initial loading while the public request is pending', (
@@ -175,46 +189,265 @@ void main() {
     },
   );
 
-  testWidgets('search input submits destination and preserves tab state', (
-    tester,
-  ) async {
-    final requestQueries = <Map<String, String>>[];
-    final repository = PublicPropertySearchRepository(
-      baseUrl: 'https://api.example.test',
-      client: MockClient((request) async {
-        requestQueries.add(request.url.queryParameters);
-        return _response([]);
-      }),
-    );
-    await tester.pumpWidget(_app(repository));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'pill search trigger opens Screen 04 bottom sheet and preserves tab state',
+    (tester) async {
+      final repository = PublicPropertySearchRepository(
+        baseUrl: 'https://api.example.test',
+        client: MockClient((_) async => _response([])),
+      );
+      await tester.pumpWidget(_app(repository));
+      await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField).first, 'العين السخنة');
-    await tester.testTextInput.receiveAction(TextInputAction.search);
-    await tester.pumpAndSettle();
-    expect(requestQueries.last['destination'], 'العين السخنة');
+      // Verify search trigger is rendered with default state
+      expect(find.byKey(const Key('explore-search-trigger')), findsOneWidget);
+      expect(find.text('إلى أين؟'), findsOneWidget);
+      expect(find.text('اختيار منطقة أو أكثر'), findsOneWidget);
+      expect(find.text('اختار المنطقة'), findsNothing);
 
-    final guestsField = find.descendant(
-      of: find.byKey(const Key('discovery-guests')),
-      matching: find.byType(TextField),
-    );
-    await tester.enterText(guestsField, '5');
-    await tester.pump(const Duration(milliseconds: 400));
-    await tester.pumpAndSettle();
-    expect(requestQueries.last['destination'], 'العين السخنة');
-    expect(requestQueries.last['guests'], '5');
+      // Tap search trigger opens Region bottom sheet
+      await tester.tap(find.byKey(const Key('explore-search-trigger')));
+      await tester.pumpAndSettle();
+      expect(find.text('تحديد الوجهات'), findsOneWidget);
+      expect(
+        find.byKey(const Key('search-sheet-dismiss-button')),
+        findsOneWidget,
+      );
 
-    await tester.tap(find.byKey(const Key('customer-destination-1')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('customer-destination-0')));
-    await tester.pumpAndSettle();
-    expect(find.byType(TextField).first, findsOneWidget);
-    expect(
-      (find.byType(TextField).first.evaluate().single.widget as TextField)
-          .controller!
-          .text,
-      'العين السخنة',
+      // Dismiss bottom sheet
+      await tester.tap(find.byKey(const Key('search-sheet-dismiss-button')));
+      await tester.pumpAndSettle();
+      expect(find.text('تحديد الوجهات'), findsNothing);
+
+      // Preserve tab state across navigation
+      await tester.tap(find.byKey(const Key('customer-destination-1')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('customer-destination-0')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('explore-search-trigger')), findsOneWidget);
+      expect(find.text('إلى أين؟'), findsOneWidget);
+    },
+  );
+
+  group('ExploreSearchTrigger state behavior', () {
+    testWidgets('renders default empty state', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(body: ExploreSearchTrigger()),
+          ),
+        ),
+      );
+      expect(find.text('إلى أين؟'), findsOneWidget);
+      expect(find.text('اختيار منطقة أو أكثر'), findsOneWidget);
+      expect(find.text('اختار المنطقة'), findsNothing);
+    });
+
+    testWidgets('renders single selected region', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: ExploreSearchTrigger(selectedRegions: ['مراسي']),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('مراسي'), findsOneWidget);
+      expect(find.textContaining('انقر للتعديل'), findsOneWidget);
+    });
+
+    testWidgets('renders two selected regions clearly separated', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: ExploreSearchTrigger(
+                selectedRegions: ['مراسي', 'سيدي عبد الرحمن'],
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('مراسي، سيدي عبد الرحمن'), findsOneWidget);
+    });
+
+    testWidgets('renders more than two regions as first + count summary', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: ExploreSearchTrigger(
+                selectedRegions: ['مراسي', 'سيدي عبد الرحمن', 'رأس الحكمة'],
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('مراسي + 2 مناطق'), findsOneWidget);
+    });
+
+    testWidgets(
+      'satisfies RTL visual ordering (search icon right, tune icon left)',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scaffold(body: ExploreSearchTrigger()),
+            ),
+          ),
+        );
+        final searchPos = tester.getTopRight(find.byIcon(Icons.search_rounded));
+        final tunePos = tester.getTopLeft(find.byIcon(Icons.tune_rounded));
+        // In RTL: search icon is on the RIGHT (higher X), tune icon is on the LEFT (lower X)
+        expect(searchPos.dx, greaterThan(tunePos.dx));
+      },
     );
+  });
+
+  group('ExploreHeader state behavior', () {
+    testWidgets(
+      'renders default guest state with generic avatar and neutral discovery copy',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scaffold(body: ExploreHeader()),
+            ),
+          ),
+        );
+        expect(find.text('أهلًا بك'), findsOneWidget);
+        expect(find.text('اكتشف وجهتك القادمة'), findsOneWidget);
+        expect(find.byIcon(Icons.person_outline_rounded), findsOneWidget);
+        expect(
+          find.byKey(const Key('explore-notification-bell')),
+          findsNothing,
+        );
+      },
+    );
+
+    testWidgets(
+      'renders authenticated state with user initials and contextual greeting',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scaffold(body: ExploreHeader(userName: 'عمر شريف')),
+            ),
+          ),
+        );
+        expect(find.text('عش'), findsOneWidget);
+        expect(find.textContaining('عمر شريف'), findsOneWidget);
+        expect(find.text('اكتشف وجهتك القادمة'), findsOneWidget);
+      },
+    );
+
+    testWidgets('renders custom greeting override and location subtitle', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: ExploreHeader(
+                greeting: 'مرحبًا بك في كونفرم',
+                location: 'الساحل الشمالي، مصر',
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('مرحبًا بك في كونفرم'), findsOneWidget);
+      expect(find.text('الساحل الشمالي، مصر'), findsOneWidget);
+    });
+
+    testWidgets(
+      'satisfies RTL visual ordering (avatar on the RIGHT, notification on the LEFT)',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scaffold(body: ExploreHeader(showNotification: true)),
+            ),
+          ),
+        );
+        final avatarPos = tester.getTopRight(find.byType(Material).at(1));
+        final bellPos = tester.getTopLeft(
+          find.byKey(const Key('explore-notification-bell')),
+        );
+        // In RTL: avatar is on the RIGHT (higher X), bell icon is on the LEFT (lower X)
+        expect(avatarPos.dx, greaterThan(bellPos.dx));
+      },
+    );
+
+    testWidgets('tapping avatar invokes onProfileTap callback', (tester) async {
+      var tapped = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: ExploreHeader(onProfileTap: () => tapped = true),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.byKey(const Key('explore-profile-avatar')));
+      await tester.pumpAndSettle();
+      expect(tapped, isTrue);
+    });
+
+    testWidgets(
+      'tapping notification bell invokes onNotificationTap callback',
+      (tester) async {
+        var notified = false;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scaffold(
+                body: ExploreHeader(
+                  showNotification: true,
+                  onNotificationTap: () => notified = true,
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.byKey(const Key('explore-notification-bell')));
+        await tester.pumpAndSettle();
+        expect(notified, isTrue);
+      },
+    );
+
+    testWidgets('avatar container satisfies >= 44dp touch target', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(body: ExploreHeader()),
+          ),
+        ),
+      );
+      final size = tester.getSize(find.byType(InkWell).first);
+      expect(size.width, greaterThanOrEqualTo(44.0));
+      expect(size.height, greaterThanOrEqualTo(44.0));
+    });
   });
 
   for (final width in [360.0, 390.0, 430.0]) {

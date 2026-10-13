@@ -26,13 +26,17 @@ class PublicSearchException implements Exception {
 class PublicPropertySearchFilters {
   const PublicPropertySearchFilters({
     this.destination = '',
+    this.destinations = const [],
     this.unitType = '',
+    this.unitTypes = const [],
     this.guests,
     this.maxPrice,
   });
 
   final String destination;
+  final List<String> destinations;
   final String unitType;
+  final List<String> unitTypes;
   final int? guests;
   final double? maxPrice;
 
@@ -44,11 +48,24 @@ class PublicPropertySearchFilters {
       throw const PublicSearchException(PublicSearchFailureKind.invalidFilters);
     }
     final query = <String, String>{};
-    final destinationValue = destination.trim();
-    if (destinationValue.isNotEmpty) query['destination'] = destinationValue;
-    final unitTypeValue = unitType.trim().toUpperCase();
-    if (unitTypeValue.isNotEmpty && unitTypeValue != 'ALL') {
-      query['unitType'] = unitTypeValue;
+    if (destinations.isNotEmpty) {
+      query['destinations'] = destinations.join(',');
+    } else {
+      final destinationValue = destination.trim();
+      if (destinationValue.isNotEmpty) query['destination'] = destinationValue;
+    }
+    if (unitTypes.isNotEmpty) {
+      if (unitTypes.length == 1) {
+        query['unitType'] = unitTypes.first.trim().toUpperCase();
+      } else {
+        query['unitTypes'] =
+            unitTypes.map((u) => u.trim().toUpperCase()).join(',');
+      }
+    } else {
+      final unitTypeValue = unitType.trim().toUpperCase();
+      if (unitTypeValue.isNotEmpty && unitTypeValue != 'ALL') {
+        query['unitType'] = unitTypeValue;
+      }
     }
     if (guests != null) query['guests'] = '${guests!}';
     if (maxPrice != null) {

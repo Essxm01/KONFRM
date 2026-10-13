@@ -93,6 +93,9 @@ Widget _testApp({
   required String propertyId,
   required PropertyDetailsRepository repository,
   PublicProperty? initialProperty,
+  DateTime? initialCheckIn,
+  DateTime? initialCheckOut,
+  int? initialGuests,
   double textScale = 1.0,
 }) {
   return ProviderScope(
@@ -113,6 +116,9 @@ Widget _testApp({
       home: PropertyDetailsView(
         propertyId: propertyId,
         initialProperty: initialProperty,
+        initialCheckIn: initialCheckIn,
+        initialCheckOut: initialCheckOut,
+        initialGuests: initialGuests,
       ),
     ),
   );
@@ -1065,6 +1071,32 @@ void main() {
       expect(stateAfterRetry.quote, isNotNull);
       expect(stateAfterRetry.quote!.totalStay, 9000.0);
       expect(find.text('إجمالي الإقامة (3 ليالٍ)', skipOffstage: false), findsOneWidget);
+    });
+
+    testWidgets('search intent dates and guests handoff automatically populates details and calculates quote', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _testApp(
+          propertyId: 'prop-test-1',
+          repository: repository,
+          initialCheckIn: DateTime.utc(2026, 11, 20),
+          initialCheckOut: DateTime.utc(2026, 11, 24),
+          initialGuests: 2,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final element = tester.element(find.byType(PropertyDetailsView));
+      final container = ProviderScope.containerOf(element);
+      final state = container.read(propertyDetailsControllerProvider('prop-test-1'));
+
+      expect(state.selectedCheckIn, DateTime.utc(2026, 11, 20));
+      expect(state.selectedCheckOut, DateTime.utc(2026, 11, 24));
+      expect(state.selectedGuests, 2);
+      expect(state.quote, isNotNull);
+      expect(state.quote!.nights, 4);
+      expect(find.text('إجمالي الإقامة (4 ليالٍ)', skipOffstage: false), findsOneWidget);
     });
   });
 }

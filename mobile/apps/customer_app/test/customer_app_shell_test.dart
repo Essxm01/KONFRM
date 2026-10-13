@@ -18,13 +18,13 @@ void main() {
         expect(Directionality.of(context), equals(TextDirection.rtl));
 
         // Verify initial tab is Explore (Index 0)
-        expect(find.text('كونفرم | استكشف'), findsOneWidget);
-        expect(
-          find.text('ابحث عن بيوت العطلات والشاليهات الموثقة'),
-          findsOneWidget,
-        );
-        expect(find.byKey(const Key('discovery-destination')), findsOneWidget);
-        expect(find.byKey(const Key('discovery-submit')), findsOneWidget);
+        expect(find.byKey(const Key('explore-header')), findsOneWidget);
+        expect(find.text('أهلًا بك'), findsOneWidget);
+        expect(find.text('اكتشف وجهتك القادمة'), findsOneWidget);
+        expect(find.text('كونفرم | استكشف'), findsNothing);
+        expect(find.byKey(const Key('explore-search-trigger')), findsOneWidget);
+        expect(find.text('إلى أين؟'), findsOneWidget);
+        expect(find.text('اختيار منطقة أو أكثر'), findsOneWidget);
 
         // Verify CustomerBottomNavigation has 4 destinations
         expect(find.byKey(const Key('customer-destination-0')), findsOneWidget);
@@ -47,7 +47,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tab 0 -> Explore is active
-      expect(find.text('كونفرم | استكشف'), findsOneWidget);
+      expect(find.text('أهلًا بك'), findsOneWidget);
 
       // Tap Tab 1: Favorites
       await tester.tap(find.byKey(const Key('customer-destination-1')));
@@ -77,7 +77,7 @@ void main() {
       // Tap Tab 0: Explore again
       await tester.tap(find.byKey(const Key('customer-destination-0')));
       await tester.pumpAndSettle();
-      expect(find.text('كونفرم | استكشف'), findsOneWidget);
+      expect(find.text('أهلًا بك'), findsOneWidget);
     });
 
     testWidgets(
@@ -100,7 +100,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Must be returned to Tab 0 (Explore)
-        expect(find.text('كونفرم | استكشف'), findsOneWidget);
+        expect(find.text('أهلًا بك'), findsOneWidget);
 
         // Navigate to Tab 2 (Bookings)
         await tester.tap(find.byKey(const Key('customer-destination-2')));
@@ -116,7 +116,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Must be returned to Tab 0 (Explore)
-        expect(find.text('كونفرم | استكشف'), findsOneWidget);
+        expect(find.text('أهلًا بك'), findsOneWidget);
 
         // Navigate to Tab 3 (Account)
         await tester.tap(find.byKey(const Key('customer-destination-3')));
@@ -129,7 +129,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Must be returned to Tab 0 (Explore)
-        expect(find.text('كونفرم | استكشف'), findsOneWidget);
+        expect(find.text('أهلًا بك'), findsOneWidget);
 
         // On Tab 0, system back allows pop
         final bool handledFromTab0 = await tester.binding.handlePopRoute();
@@ -195,7 +195,7 @@ void main() {
         // Tap recovery button "استكشف العقارات"
         await tester.tap(find.text('استكشف العقارات'));
         await tester.pumpAndSettle();
-        expect(find.text('كونفرم | استكشف'), findsOneWidget);
+        expect(find.text('أهلًا بك'), findsOneWidget);
 
         // Test Bookings recovery -> Explore
         await tester.tap(find.byKey(const Key('customer-destination-2')));
@@ -208,7 +208,7 @@ void main() {
         // Tap recovery button "استكشف الآن"
         await tester.tap(find.text('استكشف الآن'));
         await tester.pumpAndSettle();
-        expect(find.text('كونفرم | استكشف'), findsOneWidget);
+        expect(find.text('أهلًا بك'), findsOneWidget);
       },
     );
 
@@ -218,10 +218,10 @@ void main() {
       await tester.pumpWidget(const KonfrmCustomerApp());
       await tester.pumpAndSettle();
 
-      // 1. Explore Tab: search is connected to the configured public endpoint.
+      // 1. Explore Tab: search trigger is connected and tappable.
       expect(find.text('تحديث النتائج'), findsNothing);
-      expect(find.byKey(const Key('discovery-submit')), findsOneWidget);
-      expect(find.byType(TextField), findsNWidgets(3));
+      expect(find.byKey(const Key('explore-search-trigger')), findsOneWidget);
+      expect(find.text('إلى أين؟'), findsOneWidget);
 
       // 2. Account Tab: No dead login button
       await tester.tap(find.byKey(const Key('customer-destination-3')));
@@ -363,7 +363,7 @@ void main() {
 
         // Explore
         expect(tester.takeException(), isNull);
-        expect(find.text('كونفرم | استكشف'), findsOneWidget);
+        expect(find.text('أهلًا بك'), findsOneWidget);
 
         // Favorites
         await tester.tap(find.byKey(const Key('customer-destination-1')));

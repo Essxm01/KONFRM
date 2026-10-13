@@ -120,3 +120,33 @@ Splash/onboarding are never session validation, and a pure Customer still cannot
 
 ### Related
 `owner-app/src/utils/ownerFirstRun.ts`, `owner-app/src/App.tsx`, `DESIGN_SYSTEM/EXPERIENCE/DECISIONS.json`
+
+## ADR-008 — Customer Search Journey (Screens 03, 04, 05) Architecture & Filter Model
+
+**Date:** 2026-10-13
+**Status:** Active (Founder-Approved Architecture Specification)
+
+### Context
+Screen 03 (Explore), Screen 04 (Search & Refine), the Region Multi-Select Bottom Sheet, and Screen 05 (Search Results) constitute an interconnected search and discovery journey requiring coherent surface hierarchy, state preservation, and accessible Arabic RTL ergonomics.
+
+### Decision
+1. **Screen 03 Two-Tier Entry:** Tapping the main pill search trigger body opens the **Region Multi-Select Bottom Sheet** directly (location-first); tapping the tune/filter icon opens **Screen 04 (Search & Refine)** directly with all advanced filters.
+2. **Screen 04 Surface Presentation:** Screen 04 is a dedicated **Full-Page Route (`FULL_PAGE_NESTED`)** with top sticky navigation to maximize vertical space for stay dates, guest counter, unit types, and price slider.
+3. **Screen 05 Hybrid Interactive Filter Chips:** Active filter chips implement dual interaction:
+   - Tapping the chip label/body opens the specific filter editor with existing selections preserved.
+   - Tapping an explicit, accessible (×) control removes only that filter and refreshes Screen 05 results in place.
+   - For aggregated multi-region chips, tapping the body opens the Region Multi-Select editor. Never silently clear all selected regions on label tap.
+4. **State Synchronization & Truthfulness:**
+   - Filter state remains synchronized across Screen 03, Screen 04, and Screen 05.
+   - Unrelated filters are strictly preserved when editing or removing a specific parameter.
+   - Zero-match queries render explicit empty results; never silently fall back to all properties.
+   - Dates remain customer search intent only (2–30 nights); never sent to the search API as availability filters or claimed as guaranteed availability.
+
+### Consequences
+1. Design contracts and future Flutter implementations for Screens 04, 05, and Region Selection must adhere to this architecture.
+2. **Implementation Status Boundary:** This ADR documents the approved interaction and surface architecture only. Executable code for Screen 04 (Search & Refine), Region Multi-Select, and Screen 05 (Search Results) remains **strictly unimplemented**.
+3. In PR #120 (Screen 03), the search trigger opens a temporary dependency notice bottom sheet pending formal authorization of the search execution task.
+
+### Related
+`tasks/screen04_search_refine_and_region_selector_design_review.md`, `mobile/apps/customer_app/lib/features/discovery/`
+

@@ -1,40 +1,85 @@
-# Active Task — CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2
+# Active Task — CUSTOMER_SCREEN04_SEARCH_REFINE_AND_REGION_SELECTOR
 
-TASK_ID: CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2
+TASK_ID: CUSTOMER_SCREEN04_SEARCH_REFINE_AND_REGION_SELECTOR
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: READY_FOR_BRIDGE_REVIEW
-PR: #118 (DRAFT)
+STATUS: CANDIDATE_AWAITING_FOUNDER_REVIEW
+ISSUE: #123 (Linked to approved design issue #122)
+PR: #132 (DRAFT)
+BRANCH: feat/customer-screen04-search-refine
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: 3fef468b5dcb2fc08da2ef8ab12bd51707c8b806
-BRANCH: feat/customer-screen07-booking-review-v2
-SCOPE: Implement the Founder-approved Screen 07 Booking Request Review Concept A V2 in native Customer Flutter. Full-screen, Arabic-first RTL review screen, RTL back button to Screen 06, compact property summary, stay details with Arabic pluralization, price breakdown with prominent total and directionality-isolated currency formatting (13,500 ج.م), financial disclosure, sticky black CTA, clear confirmation disclosure, full UI state machine (REVIEW_READY, REVALIDATING, PRICE_CHANGED, DATE_CONFLICT, NETWORK_ERROR, AUTH_REQUIRED, SUBMITTING, REQUEST_SENT). Connect Screen 06 _onReviewBooking to Screen 07 when context is valid. Truthful unauthenticated handling without fake auth.
+BASE_MAIN_SHA: f6911eeecfa100cbbfec935e15769e66966ce835
+FEATURE_BASE_COMMIT_SHA: 093c141a736535fe8d165db7b7bafe6dbac4a29f
+SCOPE: Implement approved Screen 04 (Search & Refine) and Region Multi-Select Bottom Sheet in native Flutter Customer App (`mobile/apps/customer_app`): (1) Implement Region Multi-Select Bottom Sheet (`RegionMultiSelectSheet`) with authentic coastal Egyptian clusters, multi-selection chips/checkboxes, dynamic summary grammar, dynamic options harvesting, and 16px sheet top radius; (2) Implement Screen 04 Search & Refine (`SearchRefineView`) as a dedicated full-page nested route (`FULL_PAGE_NESTED`) with sticky top bar, destination trigger, stay dates intent picker (2-30 nights, local Cairo time, intent-only), guest stepper (44×44dp targets), unit types chips, budget slider (with unbounded upper tick), clear/reset affordance, and sticky black CTA «عرض النتائج» (54dp height, 12dp radius); (3) Wire Two-Tier Entry on Screen 03 `ExploreSearchTrigger` (pill body opens `RegionMultiSelectSheet`; circular tune button opens `SearchRefineView`); (4) Implement `SearchIntentController` and state models in Riverpod with draft vs applied semantics, clean reset, and validation; (5) Pass search intent parameters cleanly to Screen 05 / Screen 06; (6) Verify TalkBack accessibility, 48dp touch targets, Cairo font typography, RTL layout, and text scale up to 200%; (7) Physical Samsung Galaxy A56 5G runtime verification.
 
 ## Boundaries & Invariants
+- Zero global design system migration or token mutations.
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
-- Zero business, booking, availability, pricing, commission, or financial rule changes.
-- Server-authoritative quote only (POST /api/v1/customer/bookings/calculate); no local price math or fake availability.
-- Protected request contract: POST /api/v1/customer/bookings with propertyId, checkIn, checkOut, guests, reviewedQuoteFingerprint, requestId.
-- Number-first currency visual format: '13,500 ج.م' guaranteed under all RTL environments.
-- Guest review permitted; authentication intercepted only on protected submission attempt.
-- Truthful auth gate: if native Auth is unavailable, report BLOCKED_BY_NATIVE_AUTH without inventing fake sessions or bypassing server auth.
-- No root Bottom Navigation on Screen 07 (focused transactional review).
-- Stay length constraints: 2-30 nights strictly enforced.
+- Zero fake property metadata, reviews, or synthetic badges.
+- Public search API does NOT accept or filter dates: dates remain search intent ONLY (MR-11 & P5/C2).
+- Dynamic destination harvesting from authentic public listings; no fabricated `/regions` endpoints.
+- Preserve 4-tab Customer navigation shell and real public search repository integration.
+- Strictly no merge or deployment without explicit Founder authorization.
 
 ## Verification & Quality Gates
-- [x] Directionality-isolated currency rendering (`KonfrmPriceText`) guarantees `13,500 ج.م` number-first across all RTL layouts.
-- [x] Screen 06 to Screen 07 wiring preserves full booking review context and returns cleanly on `تعديل`.
-- [x] Complete 8-state UI machine implemented and tested (`reviewReady`, `revalidating`, `priceChanged`, `dateConflict`, `networkError`, `authRequired`, `submitting`, `requestSent`).
-- [x] Strict state machine submission guard: zero protected POST requests dispatched from any non-`reviewReady` state (`priceChanged`, `dateConflict`, `networkError`, `authRequired`, `revalidating`, `submitting`, `requestSent`).
-- [x] Sequential separation of price acceptance (`قبول السعر الجديد ومتابعة المراجعة`) and booking submission (`إرسال طلب الحجز للمالك`).
-- [x] Revalidation lifecycle monotonic epoch counter (`_revalidationEpoch`) protects against out-of-order delayed responses.
-- [x] Differentiated retry: quote revalidation failure retries quote calculation; submission failure retries submission preserving exact `requestId` and fingerprint.
-- [x] Truthful auth gate: zero unsupported claims of local persistence; strictly reports `BLOCKED_BY_NATIVE_AUTH`.
-- [x] Server response status validation: non-empty status strictly matching `PENDING_OWNER_APPROVAL` and expected `propertyId`.
-- [x] Visual fidelity: removed intro header `راجع طلبك قبل الإرسال`, removed misleading single night row, sticky CTA `#000000` 54px with 6px radius.
-- [x] Multi-viewport layout (360dp, 390dp, 430dp) and 200% text scaling verified with 0 layout overflows.
-- [x] Physical Samsung Galaxy A56 (`SM-A566B`, Android 16) verified with 6 screenshot captures across all functional states.
-- [x] Full customer app test suite passes: 124/124 PASS.
-- [x] Static analysis passes: 0 issues in `customer_app` and `konfrm_design_system`.
+- [x] `RegionMultiSelectSheet` implemented with 16px top radius, search filter, coastal hierarchy, and selection summary.
+- [x] `SearchRefineView` implemented as dedicated full-page route with sticky top bar and sticky 12dp CTA.
+- [x] Two-Tier Entry wired from Screen 03 `ExploreSearchTrigger`.
+- [x] Riverpod `searchIntentControllerProvider` manages draft vs applied search intent state.
+- [x] Stay dates validated for 2-30 nights; dates treated strictly as customer intent (never sent to `/properties/search`).
+- [x] Guest stepper, unit types, and budget slider functional with accessible labels and live regions.
+- [x] Customer app automated test suite passes with 100% pass rate (173/173 tests PASS).
+- [x] Design system test suite passes: 21/21 PASS (`flutter test; flutter analyze` in `konfrm_design_system`).
+- [x] Static analysis passes: 0 issues across all packages (`flutter analyze`).
+- [x] Samsung Galaxy A56 5G physical runtime validation captured across viewports and font scales (100%, 130%, 200%).
+- [x] **Targeted Remediation Executed & Physical Evidence Captured:**
+  - [x] **Issue 1 (Destination Buttons Shrink-Wrapping):** Removed `alignment: Alignment.center` from `Container` in `RegionMultiSelectSheet._buildDestinationChip()`. Replaced with intrinsic `Center(widthFactor: 1.0, child: Text(...))` inside `BoxConstraints(minHeight: 44.0)` with 16dp horizontal padding. Chips shrink-wrap naturally around Arabic text and multiple destinations sit side-by-side in the same horizontal row with 8dp gaps.
+  - [x] **Issue 2 (Truthful Destination Inventory):** Removed fallback injecting 26 hardcoded names from `_allDestinations`. Destinations strictly derived from authentic published inventory (`widget.availableDestinations`). Wired explicit loading spinner, error message, and empty state.
+  - [x] **Issue 3 (Backend Query Completeness):** Audited `backend/server/src/services/dbRepository.ts` SQL query. Confirmed `GET /api/v1/customer/properties/search` has no `LIMIT`/`OFFSET`, returning 100% of published inventory. Documented deferred aggregation endpoint requirement under Issue #133.
+  - [x] Samsung Galaxy A56 5G physical hardware evidence artifacts:
+    - `01_screen04_a56_region_sheet_empty.png` (Before: full-width stacked buttons)
+    - `08_screen04_a56_region_sheet_unselected_shrinkwrapped.png` (After: unselected shrink-wrapped chips in same row)
+    - `09_screen04_a56_region_sheet_multiselected_row.png` (After: multi-selected chips in same row)
+    - `10_screen04_a56_destination_handoff.png` (Screen 04 destination summary with multi-selected chips)
+    - `11_screen03_a56_applied_results.png` (Screen 03 Explore feed with live filtered results)
+- [x] **Final Founder-Directed Remediation Executed & Physical Evidence Captured:**
+  - [x] Monochrome visual direction applied across Customer App (Black `#000000` for primary/selected, White for surfaces, Neutral greys `#F1F5F9` / `#E2E8F0` / `#94A3B8` for inactive/borders). Blue accents removed per Founder directive.
+  - [x] Region Multi-Select chips redesigned as 12dp rounded rectangles with 44dp touch targets; Selected: solid black (`#000000`) with white text; Unselected: white with `#E2E8F0` outline and `#1E293B` text.
+  - [x] Unit types chips converted to monochrome black selected chips with white text and 44dp touch target.
+  - [x] Budget section simplified: heading set to `أقصى سعر لليلة (اختياري)`; verbose explanatory copy removed; default readout `بدون حد أقصى`; selected readout `حتى X,XXX ج.م` without `/ ليلة`; slider track/thumb muted grey (`#94A3B8`) when unbounded, solid black (`#000000`) when active ceiling.
+  - [x] RTL calendar navigation calibrated across Screen 04 and Screen 06 Property Details:
+    - Older months on physical RIGHT; Future months on physical LEFT.
+    - Physical RIGHT arrow is `>` (`Icons.chevron_right_rounded` / `Icons.chevron_right`) and returns to previous month (`previousPage` / `onPreviousMonth`).
+    - Physical LEFT arrow is `<` (`Icons.chevron_left_rounded` / `Icons.chevron_left`) and advances to next month (`nextPage` / `onNextMonth`).
+    - Selected dates: Black solid endpoints (`#000000`), subtle neutral range fill (`#F1F5F9`).
+  - [x] Functional defects resolved:
+    - Multiple unit types serialized as `unitTypes=CHALET,VILLA` and single as `unitType=CHALET`.
+    - Draft vs applied search intent isolation preserved on cancellation/back.
+    - Filter metadata catalog options preserved across filtered loads (`catalogProperties`).
+    - Search dates and guest count handed off to Screen 06 Property Details, automatically triggering server quote calculation.
+  - [x] Samsung Galaxy A56 5G physical hardware evidence artifacts:
+    - `01_screen04_a56_region_sheet_empty.png` (Empty / default destination sheet with 12dp rectangular chips)
+    - `02_screen04_a56_region_sheet_multi_selected.png` (Multi-selected destinations in solid black with white text)
+    - `03_screen04_a56_budget_unbounded.png` (Budget unbounded `بدون حد أقصى` with muted grey slider)
+    - `04_screen04_a56_budget_numeric_ceiling.png` (Numeric ceiling `حتى 4,000 ج.م` with solid black slider)
+    - `05_screen04_a56_dates_picker_monochrome.png` (Horizontal date picker with black endpoints, neutral fill, and RTL arrows)
+    - `06_screen06_a56_calendar_arrows_monochrome.png` (Property details calendar with RTL arrows, handed-off dates, and auto quote)
+    - `07_screen03_a56_explore_harmonized.png` (Screen 03 feed with applied search intent, Candidate 3 avatar, and 381dp compact card)
+
+---
+
+## Approved Milestone — CUSTOMER_SCREEN_03_PROPERTY_CARD_COMPACTNESS_REMEDIATION (FOUNDER APPROVED)
+- COMMIT: 093c141a736535fe8d165db7b7bafe6dbac4a29f
+- PR: #120 (AWAITING FORMAL MERGE AUTHORIZATION)
+- SCOPE: Remediate property card compactness on native Flutter Customer Screen 03 (Explore): unboxed single-line facts, real unit type only, 381.38dp total height (-70.80dp reduction), 48×48dp favorite touch target, 200% font scale overflow eliminated, Samsung Galaxy A56 5G physical QA passed across 100%, scrolled, 130%, and 200% font scales.
+
+
+---
+
+## Historical Task — CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2 (MERGED)
+- PR: #118 (MERGED INTO MAIN)
+- MERGE_COMMIT: f6911eeecfa100cbbfec935e15769e66966ce835
+- SCOPE: Implement the Founder-approved Screen 07 Booking Request Review Concept A V2 in native Customer Flutter. Full-screen, Arabic-first RTL review screen, RTL back button to Screen 06, compact property summary, stay details with Arabic pluralization, price breakdown with prominent total and directionality-isolated currency formatting (13,500 ج.م), financial disclosure, sticky black CTA, clear confirmation disclosure, full UI state machine.
+- VERIFICATION: 124/124 tests PASS; Samsung Galaxy A56 physical QA PASS; Bridge 11 review PASS.
 
 ---
 

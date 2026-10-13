@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -11,77 +10,123 @@ import '../data/public_property.dart';
 import '../data/public_property_search_repository.dart';
 import '../../property_details/presentation/property_details_view.dart';
 
+import 'widgets/explore_header.dart';
+import 'widgets/explore_search_trigger.dart';
+
 class ExploreView extends ConsumerStatefulWidget {
-  const ExploreView({super.key});
+  const ExploreView({
+    super.key,
+    this.userName,
+    this.avatarUrl,
+    this.location,
+    this.onAccountTap,
+    this.onNotificationTap,
+    this.showNotification = false,
+  });
+
+  final String? userName;
+  final String? avatarUrl;
+  final String? location;
+  final VoidCallback? onAccountTap;
+  final VoidCallback? onNotificationTap;
+  final bool showNotification;
 
   @override
   ConsumerState<ExploreView> createState() => _ExploreViewState();
 }
 
 class _ExploreViewState extends ConsumerState<ExploreView> {
-  final _destinationController = TextEditingController();
-  final _guestsController = TextEditingController();
-  final _maxPriceController = TextEditingController();
-  String _unitType = '';
-  Timer? _debounce;
-  String? _guestsError;
-  String? _priceError;
+  final PublicPropertySearchFilters _filters =
+      const PublicPropertySearchFilters();
 
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    _destinationController.dispose();
-    _guestsController.dispose();
-    _maxPriceController.dispose();
-    super.dispose();
-  }
-
-  PublicPropertySearchFilters get _filters => PublicPropertySearchFilters(
-    destination: _destinationController.text,
-    unitType: _unitType,
-    guests: int.tryParse(_guestsController.text.trim()),
-    maxPrice: double.tryParse(_maxPriceController.text.trim()),
-  );
-
-  bool _validateFilters() {
-    final guestsText = _guestsController.text.trim();
-    final priceText = _maxPriceController.text.trim();
-    final guests = int.tryParse(guestsText);
-    final price = double.tryParse(priceText);
-    final guestsError = guestsText.isNotEmpty && (guests == null || guests < 1)
-        ? 'أدخل عدداً صحيحاً موجباً'
-        : null;
-    final priceError =
-        priceText.isNotEmpty && (price == null || !price.isFinite || price <= 0)
-        ? 'أدخل سعراً موجباً'
-        : null;
-    if (_guestsError != guestsError || _priceError != priceError) {
-      setState(() {
-        _guestsError = guestsError;
-        _priceError = priceError;
-      });
-    }
-    return guestsError == null && priceError == null;
-  }
-
-  void _scheduleSearch() {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 350), () {
-      if (mounted) {
-        _searchNow();
-      }
-    });
-  }
+  List<String> get _selectedRegions => _filters.destinations.isNotEmpty
+      ? _filters.destinations
+      : (_filters.destination.trim().isNotEmpty
+          ? [_filters.destination.trim()]
+          : const []);
 
   void _searchNow() {
-    _debounce?.cancel();
-    if (!_validateFilters()) return;
     ref.read(publicDiscoveryControllerProvider.notifier).load(_filters);
   }
 
   Future<void> _refresh() async {
-    if (!_validateFilters()) return;
     await ref.read(publicDiscoveryControllerProvider.notifier).load(_filters);
+  }
+
+  void _openSearchAndRefine({bool focusOnRefine = false}) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD1D5DB),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    focusOnRefine ? 'خيارات التصفية' : 'البحث وتحديد الوجهة',
+                    style: KonfrmTypography.sectionTitle,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'شاشة البحث والتصفية (Screen 04) ومحدد المناطق المتعددة قيد الإعداد لمراجعة التصميم المخصصة مع المؤسس.',
+                style: KonfrmTypography.body.copyWith(
+                  color: const Color(0xFF4B5563),
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 52,
+                child: ElevatedButton(
+                  key: const Key('search-sheet-dismiss-button'),
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF000000),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'فهمت',
+                    style: TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -91,105 +136,30 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
       onRefresh: _refresh,
       child: ListView(
         key: const Key('explore-scroll-view'),
-        padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 24),
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 24),
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const KonfrmBrandSymbol(size: 32),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('كونفرم | استكشف', style: KonfrmTypography.display),
-                    const SizedBox(height: 4),
-                    Text(
-                      'ابحث عن بيوت العطلات والشاليهات الموثقة',
-                      style: KonfrmTypography.body,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          // Personalized Header (Founder-directed candidate)
+          ExploreHeader(
+            key: const Key('explore-header'),
+            userName: widget.userName,
+            avatarUrl: widget.avatarUrl,
+            location: widget.location,
+            onProfileTap: widget.onAccountTap,
+            onNotificationTap: widget.onNotificationTap,
+            showNotification: widget.showNotification,
           ),
-          const SizedBox(height: 18),
-          SearchField(
-            key: const Key('discovery-destination'),
-            label: 'الوجهة أو اسم العقار',
-            placeholder: 'مثال: الساحل الشمالي',
-            controller: _destinationController,
-            loading: state.isLoading,
-            onChanged: (_) => _scheduleSearch(),
-            onSubmitted: (_) => _searchNow(),
-          ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            key: const Key('discovery-unit-type'),
-            initialValue: _unitType,
-            isExpanded: true,
-            decoration: const InputDecoration(
-              labelText: 'نوع الوحدة',
-              border: OutlineInputBorder(),
-            ),
-            items: const [
-              DropdownMenuItem(value: '', child: Text('كل الأنواع')),
-              DropdownMenuItem(value: 'CHALET', child: Text('شاليه')),
-              DropdownMenuItem(value: 'VILLA', child: Text('فيلا')),
-              DropdownMenuItem(value: 'APARTMENT', child: Text('شقة')),
-              DropdownMenuItem(value: 'STUDIO', child: Text('استوديو')),
-            ],
-            onChanged: (value) {
-              setState(() => _unitType = value ?? '');
-              _scheduleSearch();
-            },
-          ),
-          const SizedBox(height: 12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: InputField(
-                  key: const Key('discovery-guests'),
-                  label: 'عدد الضيوف',
-                  controller: _guestsController,
-                  keyboardType: TextInputType.number,
-                  textDirection: ui.TextDirection.ltr,
-                  error: _guestsError,
-                  onChanged: (_) {
-                    if (_guestsError != null) {
-                      setState(() => _guestsError = null);
-                    }
-                    _scheduleSearch();
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: InputField(
-                  key: const Key('discovery-max-price'),
-                  label: 'الحد الأقصى للسعر',
-                  controller: _maxPriceController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  textDirection: ui.TextDirection.ltr,
-                  error: _priceError,
-                  onChanged: (_) {
-                    if (_priceError != null) setState(() => _priceError = null);
-                    _scheduleSearch();
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          PrimaryButton(
-            key: const Key('discovery-submit'),
-            label: 'ابحث عن أماكن الإقامة',
-            onPressed: state.isLoading ? null : _searchNow,
+          const SizedBox(height: 16),
+
+          // Pill-style Search Trigger
+          ExploreSearchTrigger(
+            key: const Key('explore-search-trigger'),
+            selectedRegions: _selectedRegions,
+            onTap: () => _openSearchAndRefine(focusOnRefine: false),
+            onTuneTap: () => _openSearchAndRefine(focusOnRefine: true),
           ),
           const SizedBox(height: 20),
+
+          // Results Feed
           _DiscoveryResults(state: state, onRetry: _searchNow),
         ],
       ),

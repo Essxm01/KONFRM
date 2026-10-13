@@ -52,7 +52,7 @@ class _CustomerAppShellState extends State<CustomerAppShell> {
           child: IndexedStack(
             index: _selectedIndex,
             children: [
-              const ExploreView(),
+              ExploreView(onAccountTap: () => _onSelectTab(3)),
               FavoritesView(onExplore: () => _onSelectTab(0)),
               BookingsView(onExplore: () => _onSelectTab(0)),
               const AccountView(),

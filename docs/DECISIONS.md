@@ -143,7 +143,9 @@ Screen 03 (Explore), Screen 04 (Search & Refine), the Region Multi-Select Bottom
    - Dates remain customer search intent only (2–30 nights); never sent to the search API as availability filters or claimed as guaranteed availability.
 
 ### Consequences
-Design contracts and future Flutter implementations for Screens 04, 05, and Region Selection must adhere to this architecture. Implementation requires dedicated Founder review before coding.
+1. Design contracts and future Flutter implementations for Screens 04, 05, and Region Selection must adhere to this architecture.
+2. **Implementation Status Boundary:** This ADR documents the approved interaction and surface architecture only. Executable code for Screen 04 (Search & Refine), Region Multi-Select, and Screen 05 (Search Results) remains **strictly unimplemented**.
+3. In PR #120 (Screen 03), the search trigger opens a temporary dependency notice bottom sheet pending formal authorization of the search execution task.
 
 ### Related
 `tasks/screen04_search_refine_and_region_selector_design_review.md`, `mobile/apps/customer_app/lib/features/discovery/`

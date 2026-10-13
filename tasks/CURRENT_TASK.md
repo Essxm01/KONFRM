@@ -5,35 +5,35 @@ TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
 STATUS: CANDIDATE_VERIFIED_ON_HARDWARE
 PR: #120 (DRAFT)
 EXECUTION_STARTED: YES
-BASE_MAIN_SHA: f6911ee67b57b11ce13d7ff8fbe29a6b57e4eef6
-CANDIDATE_SHA: b7e991ab7ce99818db2f51f4963553fe1fc53a73
+BASE_MAIN_SHA: f6911eeecfa100cbbfec935e15769e66966ce835
+FEATURE_BASE_COMMIT_SHA: b7e991ab7ce99818db2f51f4963553fe1fc53a73
 BRANCH: feat/customer-screen03-explore-redesign
-SCOPE: Implement the Founder-approved premium personalized header candidate and compact pill search trigger on native Customer Flutter Screen 03 (Explore). Replaces rejected baseline header ('كونفرم | استكشف') with ExploreHeader featuring RTL-native circular profile avatar (44dp touch target, #F3F4F6 background, 1px #E5E7EB border, neutral silhouette for guest, time-aware greeting and photo/initials fallback for auth), contextual subline ('اكتشف وجهتك القادمة'), omit dead notification bell in production guest mode, wire avatar tap to Tab 3 (Account), preserve compact pill search trigger (ExploreSearchTrigger), and pull real property cards ('ايمان') above the fold.
+SCOPE: Implement the Founder-approved premium personalized header candidate and compact pill search trigger on native Customer Flutter Screen 03 (Explore). Replaces rejected baseline header ('كونفرم | استكشف') with ExploreHeader featuring RTL-native circular profile avatar (44dp touch target, #F3F4F6 background, 1px #E5E7EB border, neutral silhouette for guest, time-aware greeting and photo/initials fallback for auth), contextual subline ('اكتشف وجهتك القادمة'), omit dead notification bell in production guest mode, wire avatar tap to Tab 3 (Account), preserve compact pill search trigger (ExploreSearchTrigger with 70dp min-height and 26dp radius), and pull real property cards ('ايمان') above the fold.
 
 ## Boundaries & Invariants
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
 - Zero fake user profiles, fake photo URLs, or fake location lookups (no runtime GPS packages or permission dialogs).
 - Zero dead buttons: notification bell strictly omitted in guest mode where native inbox does not yet exist.
 - Preserve 4-tab Customer navigation shell and real public search repository integration.
-- Preserve Screen 04 boundaries: compact search trigger acts as entry point, displaying truthful dependency notice to Screen 04 (Search & Refine).
+- Preserve Screen 04/05 boundaries: compact search trigger acts as an entry point, currently displaying a temporary dependency notice bottom sheet to Screen 04 (Search & Refine). End-to-end search filtering remains unimplemented pending dedicated task authorization.
 
 ## Verification & Quality Gates
 - [x] ExploreHeader widget implements exact RTL hierarchy: avatar on physical right, two-line text column, optional notification slot on physical left.
 - [x] Avatar touch target strictly conforms to 44×44dp minimum and navigates to Tab 3 (AccountView).
-- [x] Compact search trigger (`ExploreSearchTrigger`) preserved with 56dp height, 28dp pill radius, and RTL iconography.
-- [x] Multi-viewport layout (360dp, 390dp, 430dp) and 130%-200% text scaling verified with zero overflows.
+- [x] Compact search trigger (`ExploreSearchTrigger`) implemented with 70dp min-height, 26dp pill radius, and RTL iconography matching executable code.
+- [x] Multi-viewport layout (360dp, 390dp, 430dp) and 130%-200% text scaling verified on physical Samsung Galaxy A56 hardware with zero overflows.
 - [x] Physical Samsung Galaxy A56 5G (`SM_A566B`, Android 16 / One UI 8) verified with 4 screenshot captures.
-- [x] Real API property data ('ايمان') loaded live without fabricated fallbacks.
-- [x] Full customer app test suite passes: 139/139 PASS.
+- [x] Real API property data ('ايمان' at 2,000 EGP/night, 'ببببببب' at 5,000 EGP/night) loaded live from Cloudflare Worker without fabricated fallbacks.
+- [x] Customer app automated test suite passes: 139/139 PASS (widget/unit tests verify isolated components; end-to-end search remains separate pending Screen 04/05).
 - [x] Static analysis passes: 0 issues in `customer_app`.
-- [x] Dedicated Design Review and Architectural Specification for Screen 04, Region Multi-Select Bottom Sheet, and Screen 05 delivered for Founder review.
-- [ ] Awaiting Founder decision on Screen 04 presentation model (Full-Page vs Modal Sheet) and Region selection mechanics before initiating Flutter implementation.
+- [x] Dedicated Design Review and Architectural Specification for Screen 04, Region Multi-Select Bottom Sheet, and Screen 05 formally delivered and recorded in ADR-008 and `tasks/screen04_search_refine_and_region_selector_design_review.md`.
+- [ ] Awaiting Founder visual review on physical device and formal execution authorization before initiating Screens 04/05 implementation.
 
 ---
 
 ## Historical Task — CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2 (MERGED)
 - PR: #118 (MERGED INTO MAIN)
-- MERGE_COMMIT: f6911ee67b57b11ce13d7ff8fbe29a6b57e4eef6
+- MERGE_COMMIT: f6911eeecfa100cbbfec935e15769e66966ce835
 - SCOPE: Implement the Founder-approved Screen 07 Booking Request Review Concept A V2 in native Customer Flutter. Full-screen, Arabic-first RTL review screen, RTL back button to Screen 06, compact property summary, stay details with Arabic pluralization, price breakdown with prominent total and directionality-isolated currency formatting (13,500 ج.م), financial disclosure, sticky black CTA, clear confirmation disclosure, full UI state machine.
 - VERIFICATION: 124/124 tests PASS; Samsung Galaxy A56 physical QA PASS; Bridge 11 review PASS.
 

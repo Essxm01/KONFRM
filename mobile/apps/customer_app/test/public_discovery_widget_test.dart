@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:customer_app/app/app.dart';
+import 'package:customer_app/features/booking_review/presentation/widgets/konfrm_price_text.dart';
 import 'package:customer_app/features/discovery/data/public_property_search_repository.dart';
 import 'package:customer_app/features/discovery/presentation/widgets/explore_header.dart';
 import 'package:customer_app/features/discovery/presentation/widgets/explore_search_trigger.dart';
@@ -60,10 +61,14 @@ void main() {
     await tester.pumpWidget(_app(repository));
     await tester.pumpAndSettle();
 
+    expect(find.text('أماكن الإقامة'), findsOneWidget);
     expect(find.text('شاليه للاختبار'), findsOneWidget);
-    expect(find.textContaining('2,800 ج.م / ليلة'), findsOneWidget);
+    expect(find.byType(KonfrmPriceText), findsOneWidget);
+    expect(find.text('2,800'), findsOneWidget);
+    expect(find.text('ج.م'), findsOneWidget);
+    expect(find.text('/ ليلة'), findsOneWidget);
     expect(find.text('مطروح، الساحل الشمالي'), findsOneWidget);
-    expect(find.byIcon(Icons.image_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.image_rounded), findsOneWidget);
     expect(find.byType(OutlinedButton), findsNothing);
     expect(find.text('احجز'), findsNothing);
     expect(find.text('أضف للمفضلة'), findsNothing);
@@ -120,7 +125,7 @@ void main() {
     await tester.pumpWidget(_app(repository));
     await tester.pumpAndSettle();
     expect(find.text('شاليه للاختبار'), findsOneWidget);
-    expect(find.byIcon(Icons.image_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.image_rounded), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -139,7 +144,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('تعذر قراءة نتائج البحث'), findsOneWidget);
     expect(find.text('شاليه للاختبار'), findsNothing);
-    expect(find.byIcon(Icons.image_outlined), findsNothing);
+    expect(find.byIcon(Icons.image_rounded), findsNothing);
   });
 
   testWidgets('announces initial loading while the public request is pending', (

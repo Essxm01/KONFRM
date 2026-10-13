@@ -2,14 +2,15 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:konfrm_design_system/konfrm_design_system.dart';
 
 import '../application/public_discovery_controller.dart';
 import '../data/public_property.dart';
 import '../data/public_property_search_repository.dart';
+import '../../booking_review/presentation/widgets/konfrm_price_text.dart';
 import '../../property_details/presentation/property_details_view.dart';
 
+import 'widgets/avatar_candidates.dart';
 import 'widgets/explore_header.dart';
 import 'widgets/explore_search_trigger.dart';
 
@@ -22,6 +23,7 @@ class ExploreView extends ConsumerStatefulWidget {
     this.onAccountTap,
     this.onNotificationTap,
     this.showNotification = false,
+    this.avatarStyle = AvatarCandidateStyle.silhouette,
   });
 
   final String? userName;
@@ -30,6 +32,7 @@ class ExploreView extends ConsumerStatefulWidget {
   final VoidCallback? onAccountTap;
   final VoidCallback? onNotificationTap;
   final bool showNotification;
+  final AvatarCandidateStyle avatarStyle;
 
   @override
   ConsumerState<ExploreView> createState() => _ExploreViewState();
@@ -147,6 +150,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
             onProfileTap: widget.onAccountTap,
             onNotificationTap: widget.onNotificationTap,
             showNotification: widget.showNotification,
+            avatarStyle: widget.avatarStyle,
           ),
           const SizedBox(height: 16),
 
@@ -179,7 +183,7 @@ class _DiscoveryResults extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('نتائج البحث', style: KonfrmTypography.sectionTitle),
+          Text('أماكن الإقامة', style: KonfrmTypography.sectionTitle),
           const SizedBox(height: 12),
           for (final property in state.properties) ...[
             _PublicPropertyCard(property: property),
@@ -324,30 +328,46 @@ class _PublicPropertyCard extends StatelessWidget {
                       runSpacing: 6,
                       children: [
                         _PropertyFact(
-                          icon: Icons.home_outlined,
+                          icon: Icons.home_rounded,
                           label: _unitTypeLabel(property.unitType),
                         ),
                         _PropertyFact(
-                          icon: Icons.bed_outlined,
+                          icon: Icons.bed_rounded,
                           label: '${property.bedrooms} غرف نوم',
                         ),
                         _PropertyFact(
-                          icon: Icons.bathtub_outlined,
+                          icon: Icons.bathtub_rounded,
                           label: '${property.bathrooms} حمامات',
                         ),
                         _PropertyFact(
-                          icon: Icons.people_outline,
+                          icon: Icons.people_alt_rounded,
                           label: '${property.maxGuests} ضيوف',
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      '${NumberFormat('#,##0.##', 'en').format(property.basePricePerNight)} ج.م / ليلة',
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 4,
                       textDirection: ui.TextDirection.rtl,
-                      style: KonfrmTypography.sectionTitle.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      children: [
+                        KonfrmPriceText(
+                          amount: property.basePricePerNight,
+                          amountStyle: KonfrmTypography.sectionTitle.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          currencyStyle: KonfrmTypography.sectionTitle.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '/ ليلة',
+                          textDirection: ui.TextDirection.rtl,
+                          style: KonfrmTypography.supporting.copyWith(
+                            color: const Color(0xFF6B7280),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -379,7 +399,7 @@ class _PropertyFact extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Icon(icon, size: 18, color: KonfrmColors.primary),
+      Icon(icon, size: 18, color: const Color(0xFF4B5563)),
       const SizedBox(width: 4),
       Text(label, style: KonfrmTypography.supporting),
     ],
@@ -393,7 +413,7 @@ class _PropertyImagePlaceholder extends StatelessWidget {
   Widget build(BuildContext context) => const ColoredBox(
     color: Color(0xFFF1F5F9),
     child: Center(
-      child: Icon(Icons.image_outlined, size: 36, color: Color(0xFF64748B)),
+      child: Icon(Icons.image_rounded, size: 36, color: Color(0xFF64748B)),
     ),
   );
 }

@@ -12,13 +12,13 @@
 
 ## 1. Executive Context & Objective
 
-With the Founder's approval of the **Screen 03 Premium Personalized Header** and compact **Pill Search Trigger** on Samsung Galaxy A56 physical hardware, the top of the Explore feed is established.
+Following the Founder-selected **Screen 03 Premium Personalized Header** candidate and compact **Pill Search Trigger** on Samsung Galaxy A56 physical hardware, the visual direction for the top of the Explore feed is under active polish review.
 
-The pill search trigger (`ExploreSearchTrigger`) serves as the gateway into the search experience. Per Founder direction:
+The pill search trigger (`ExploreSearchTrigger`) serves as the entry gateway into the customer search experience. Per Founder direction:
 > *"Screen 04 (Search & Refine), the approved Region Multi-Select Bottom Sheet, and Screen 05 (Search Results) must be considered together as one coherent UX journey, but their full visual designs have not yet received Founder approval.*  
 > *Do not independently design, implement, or approve the complete filter interface... Preserve the existing approved multi-region selection rules. Do not silently equate the region selector with all advanced filters."*
 
-This document provides the authoritative design and architectural blueprint for the complete 3-step search journey, detailing the interaction models, visual hierarchy, business invariants, and technical realities before any Flutter authoring begins.
+This document provides the architectural blueprint and candidate proposals for the complete 3-step search journey, detailing the interaction models, visual hierarchy, business invariants, and technical realities before any Flutter authoring begins. All visual mockups, region metadata harvesting strategies, and post-selection transitions documented herein are **candidate proposals pending formal Founder review**.
 
 ---
 
@@ -220,31 +220,43 @@ mobile/apps/customer_app/lib/features/discovery/
 
 ---
 
-## 10. Finalized Founder Architectural Decisions
+## 10. Architectural Direction & Proposals Status Register
 
-The Founder has reviewed the proposal and established the canonical architectural direction for the Customer Search Journey:
+This section records the exact epistemic boundary between the approved interaction models (ADR-008) and the candidate visual/technical proposals awaiting formal Founder review:
 
-### 1. Screen 04 Surface Presentation:
-- **Decision:** **Full-Page Route (`FULL_PAGE_NESTED`)**.
-- **Rationale:** Screen 04 is a dedicated, focused page with top sticky navigation (`ArrowRight` back button to Screen 03), maximizing vertical space for the calendar, guest counter, unit types, and price slider without sheet detent constraints or modal nesting friction.
+| Dimension | Architectural Specification | Governing Status |
+| :--- | :--- | :--- |
+| **Screen 04 Surface Model** | **Full-Page Route (`FULL_PAGE_NESTED`)** with top sticky RTL back navigation to Screen 03. | **APPROVED INTERACTION ARCHITECTURE (ADR-008)** |
+| **Search Trigger Entry Model** | **Two-Tier Entry**: Pill body opens region selection; Tune button opens Screen 04 directly. | **APPROVED INTERACTION ARCHITECTURE (ADR-008)** |
+| **Active Filter Chips Interaction** | **Hybrid Model**: Chip body tap reopens specific filter; explicit (×) tap removes that filter. | **APPROVED INTERACTION ARCHITECTURE (ADR-008)** |
+| **Filter Control Visuals** | Stepper counter, price slider, date picker, unit type chips. | **PROPOSED CANDIDATE — PENDING FOUNDER VISUAL REVIEW** |
+| **Region Sheet Visual Layout** | Coastal hierarchy grouping, multi-select checkboxes, chip styling. | **PROPOSED CANDIDATE — PENDING FOUNDER VISUAL REVIEW** |
+| **Region Metadata Strategy** | Dynamic harvesting from published property feed (`resortName`/`region`). | **PROPOSED TECHNICAL CANDIDATE — PENDING BACKEND REVIEW** |
+| **Post-Selection Transition** | Animation curves and navigation transitions between sheets and screens. | **PROPOSED CANDIDATE — PENDING FOUNDER INTERACTION REVIEW** |
+| **Executable Flutter Implementation** | Code for Screens 04, 05, and Region Selection. | **STRICTLY UNIMPLEMENTED — PENDING TASK AUTHORIZATION** |
 
-### 2. Screen 03 Search Trigger Interaction:
-- **Decision:** **Two-Tier Entry**.
+### Detailed Interaction Specifications (Governing ADR-008 Models):
+
+#### 1. Screen 04 Surface Presentation:
+- **Model:** Full-Page Route (`FULL_PAGE_NESTED`).
+- **Rationale:** Maximizes vertical space for the calendar, guest counter, unit types, and price slider without sheet detent constraints or modal nesting friction.
+
+#### 2. Screen 03 Search Trigger Interaction:
+- **Model:** Two-Tier Entry.
 - **Behavior:**
-  - Tapping the **main pill body** (`إلى أين تريد الذهاب؟` / search icon) opens the **Region Multi-Select Bottom Sheet** directly (location-first focus).
-  - Tapping the **tune/filter icon** on the physical left opens **Screen 04 (Search & Refine)** directly with all advanced filters accessible immediately.
+  - Tapping the **main pill body** (`إلى أين تريد الذهاب؟` / search icon) targets region selection directly (location-first focus).
+  - Tapping the **tune/filter icon** on the physical left targets Screen 04 (Search & Refine) directly with all advanced filters accessible immediately.
 
-### 3. Screen 05 Active Filter Chips:
-- **Decision:** **Hybrid Interactive Filter Chip Model**.
-- **Exact Interaction Specification:**
+#### 3. Screen 05 Active Filter Chips:
+- **Model:** Hybrid Interactive Filter Chip Model.
+- **Behavior:**
   - Each active filter chip implements **two distinct, accessible touch targets**:
-    1. **Chip Label / Body Tap:** Tapping the body opens the specific filter editor with existing selections preserved (e.g. tapping `[شاليه]` opens the unit type selector; tapping `[15–18 يوليو]` opens the date picker).
+    1. **Chip Label / Body Tap:** Tapping the body opens the specific filter editor with existing selections preserved.
     2. **Explicit (×) Control Tap:** Tapping the dedicated, accessible close button removes *only that specific filter* and refreshes Screen 05 results in place.
-  - **Aggregated Multi-Region Chip:** When multiple regions are active (e.g. `مراسي + 1`), tapping the chip body opens the Region Multi-Select editor. Tapping the body must **never** silently clear all selected regions.
+  - **Aggregated Multi-Region Chip:** When multiple regions are active (e.g. `مراسي + 1`), tapping the chip body opens the region editor; it must **never** silently clear all selected regions.
   - **State Preservation:** Unrelated filters are strictly preserved when editing or removing a specific filter.
-  - **Cross-Screen Sync:** Filter state remains perfectly synchronized across Screen 03, Screen 04, and Screen 05.
+  - **Cross-Screen Sync:** Filter state remains synchronized across Screen 03, Screen 04, and Screen 05.
   - **Truthful State Handling:** Zero-match queries render an explicit, helpful empty-results view; the app must **never** silently fall back to all properties.
-  - **Accessible Styling:** Strict 44dp touch regions, accessible contrast, and consistent KONFRM rounded geometry.
 
 ---
 

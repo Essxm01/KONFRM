@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:konfrm_design_system/konfrm_design_system.dart';
 
+import 'avatar_candidates.dart';
+
 /// Premium, minimal, personalized header candidate for Customer Screen 03 (Explore).
 ///
 /// Follows Arabic RTL hierarchy:
@@ -21,11 +23,15 @@ class ExploreHeader extends StatelessWidget {
     this.onProfileTap,
     this.onNotificationTap,
     this.showNotification = false,
+    this.avatarStyle = AvatarCandidateStyle.silhouette,
   });
 
   /// Authenticated user name if available (read from canonical profile only).
   /// When null, operates strictly in truthful Guest mode.
   final String? userName;
+
+  /// Optional candidate avatar presentation style.
+  final AvatarCandidateStyle avatarStyle;
 
   /// Optional canonical avatar URL.
   final String? avatarUrl;
@@ -163,24 +169,35 @@ class ExploreHeader extends StatelessWidget {
               ),
             ),
 
-            // PHYSICAL LEFT: Optional notification affordance
+            // PHYSICAL LEFT: Optional notification affordance (harmonized circular style)
             if (showNotification) ...[
               const SizedBox(width: 8),
               Semantics(
                 button: true,
                 label: 'الإشعارات',
                 child: Material(
-                  color: Colors.transparent,
-                  shape: const CircleBorder(),
-                  child: IconButton(
-                    key: const Key('explore-notification-bell'),
-                    icon: const Icon(
-                      Icons.notifications_none_rounded,
-                      size: 24,
-                      color: Color(0xFF111827),
+                  color: Colors.white,
+                  shape: const CircleBorder(
+                    side: BorderSide(
+                      color: Color(0xFFE5E7EB),
+                      width: 1.0,
                     ),
-                    tooltip: 'الإشعارات',
-                    onPressed: onNotificationTap,
+                  ),
+                  child: InkWell(
+                    key: const Key('explore-notification-bell'),
+                    customBorder: const CircleBorder(),
+                    onTap: onNotificationTap,
+                    child: const SizedBox(
+                      width: 44,
+                      height: 44,
+                      child: Center(
+                        child: Icon(
+                          Icons.notifications_none_rounded,
+                          size: 20,
+                          color: Color(0xFF111827),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -202,6 +219,13 @@ class ExploreHeader extends StatelessWidget {
   }
 
   Widget _buildFallbackContent() {
+    if (avatarStyle != AvatarCandidateStyle.silhouette) {
+      return KonfrmAvatarIllustration(
+        style: avatarStyle,
+        size: 44.0,
+      );
+    }
+
     final initials = _initials;
     if (initials != null) {
       return Center(

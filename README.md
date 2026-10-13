@@ -2,6 +2,10 @@
 
 KONFRM is an Arabic-first vacation-rental product with separate Customer, Owner, and Admin applications. This repository also contains the TypeScript backend, Supabase migration history, and the central KONFRM design/product-experience system.
 
+## New ChatGPT account / Bridge continuation
+
+If your former ChatGPT conversation/account is unavailable, start with the **[LIVE KONFRM Bridge continuity handoff](./KONFRM_BRIDGE_LIVE_HANDOFF.md)**. It contains the latest dated task status, Founder decisions, operating contract, exact open PR stack, deferred work and a one-paragraph recovery message for new chats. Re-verify current GitHub state before executing anything. The account switch does not transfer ChatGPT private memory or connected-plugin permissions.
+
 ## Start here
 
 - [Repository knowledge index](./docs/INDEX.md)

@@ -334,10 +334,10 @@ class _PublicPropertyCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // Favorite Heart Action (Top-left in RTL)
+                    // Favorite Heart Action (48dp touch target, top-left in RTL)
                     PositionedDirectional(
-                      top: 10,
-                      end: 10,
+                      top: 4,
+                      end: 4,
                       child: _FavoriteHeartButton(
                         propertyId: property.id,
                         propertyTitle: property.title,
@@ -346,9 +346,9 @@ class _PublicPropertyCard extends StatelessWidget {
                   ],
                 ),
               ),
-              // Content Block
+              // Compact Content Block
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -360,14 +360,14 @@ class _PublicPropertyCard extends StatelessWidget {
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF111827),
-                        height: 1.3,
+                        height: 1.25,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     // Secondary Location Line
                     if (location.isNotEmpty) ...[
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 4),
                       Row(
                         children: [
                           const Icon(
@@ -384,7 +384,7 @@ class _PublicPropertyCard extends StatelessWidget {
                                 fontSize: 13,
                                 fontWeight: FontWeight.w400,
                                 color: Color(0xFF64748B),
-                                height: 1.25,
+                                height: 1.2,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -393,31 +393,33 @@ class _PublicPropertyCard extends StatelessWidget {
                         ],
                       ),
                     ],
-                    const SizedBox(height: 12),
-                    // Structured Grouped Fact Badges
+                    const SizedBox(height: 8),
+                    // Compact Unboxed Property Facts Row
                     Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
+                      spacing: 12,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        _PropertyFactBadge(
-                          icon: Icons.home_outlined,
-                          label: _unitTypeLabel(property.unitType),
-                        ),
-                        _PropertyFactBadge(
+                        if (_informativeUnitType(property.unitType, property.propertyType) != null)
+                          _PropertyFactItem(
+                            icon: Icons.home_outlined,
+                            label: _informativeUnitType(property.unitType, property.propertyType)!,
+                          ),
+                        _PropertyFactItem(
                           icon: Icons.bed_outlined,
                           label: '${property.bedrooms} غرف نوم',
                         ),
-                        _PropertyFactBadge(
+                        _PropertyFactItem(
                           icon: Icons.bathtub_outlined,
-                          label: '${property.bathrooms} حمامات',
+                          label: '${property.bathrooms} حمام',
                         ),
-                        _PropertyFactBadge(
+                        _PropertyFactItem(
                           icon: Icons.people_outline,
                           label: '${property.maxGuests} ضيوف',
                         ),
                       ],
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 10),
                     // Prominent Nightly Price Anchor
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
@@ -464,14 +466,43 @@ class _PublicPropertyCard extends StatelessWidget {
     );
   }
 
-  String _unitTypeLabel(String unitType) => switch (unitType.toUpperCase()) {
-    'CHALET' => 'شاليه',
-    'VILLA' => 'فيلا',
-    'APARTMENT' => 'شقة',
-    'STUDIO' => 'استوديو',
-    'CABIN' => 'كوخ',
-    _ => 'مكان للإقامة',
-  };
+  String? _informativeUnitType(String unitType, String? propertyType) {
+    final candidates = [unitType, propertyType ?? ''];
+    for (final raw in candidates) {
+      final normalized = raw.trim().toUpperCase();
+      if (normalized.isEmpty) continue;
+      switch (normalized) {
+        case 'CHALET':
+        case 'شاليه':
+          return 'شاليه';
+        case 'VILLA':
+        case 'فيلا':
+          return 'فيلا';
+        case 'APARTMENT':
+        case 'شقة':
+          return 'شقة';
+        case 'STUDIO':
+        case 'استوديو':
+          return 'استوديو';
+        case 'CABIN':
+        case 'كوخ':
+          return 'كوخ';
+        case 'TOWNHOUSE':
+        case 'تاون هاوس':
+          return 'تاون هاوس';
+        case 'PENTHOUSE':
+        case 'بنتهاوس':
+          return 'بنتهاوس';
+        case 'TWINHOUSE':
+        case 'توين هاوس':
+          return 'توين هاوس';
+        case 'DUPLEX':
+        case 'دوبلكس':
+          return 'دوبلكس';
+      }
+    }
+    return null;
+  }
 }
 
 class _FavoriteHeartButton extends StatefulWidget {
@@ -518,29 +549,35 @@ class _FavoriteHeartButtonState extends State<_FavoriteHeartButton> {
         key: Key('property-favorite-heart-${widget.propertyId}'),
         behavior: HitTestBehavior.opaque,
         onTap: _toggleFavorite,
-        child: Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: 0.92),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x1F000000),
-                blurRadius: 6,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
+        child: SizedBox(
+          width: 48,
+          height: 48,
           child: Center(
-            child: Icon(
-              _isFavorite
-                  ? Icons.favorite_rounded
-                  : Icons.favorite_border_rounded,
-              size: 20,
-              color: _isFavorite
-                  ? const Color(0xFFE34154)
-                  : const Color(0xFF1E293B),
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.92),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x1F000000),
+                    blurRadius: 6,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Icon(
+                  _isFavorite
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                  size: 20,
+                  color: _isFavorite
+                      ? const Color(0xFFE34154)
+                      : const Color(0xFF1E293B),
+                ),
+              ),
             ),
           ),
         ),
@@ -549,41 +586,31 @@ class _FavoriteHeartButtonState extends State<_FavoriteHeartButton> {
   }
 }
 
-class _PropertyFactBadge extends StatelessWidget {
-  const _PropertyFactBadge({required this.icon, required this.label});
+class _PropertyFactItem extends StatelessWidget {
+  const _PropertyFactItem({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: const Color(0xFFE2E8F0),
-          width: 0.8,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: const Color(0xFF475569)),
-          const SizedBox(width: 5),
-          Text(
-            label,
-            style: const TextStyle(
-              fontFamily: KonfrmTypography.fontFamily,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF334155),
-              height: 1.2,
-            ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(icon, size: 14, color: const Color(0xFF64748B)),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontFamily: KonfrmTypography.fontFamily,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF475569),
+            height: 1.2,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

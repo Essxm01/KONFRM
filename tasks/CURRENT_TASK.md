@@ -1,34 +1,34 @@
-# Active Task — CUSTOMER_SCREEN_03_FINALIZATION_EXECUTION
+# Active Task — CUSTOMER_SCREEN_03_PROPERTY_CARD_COMPACTNESS_REMEDIATION
 
-TASK_ID: CUSTOMER_SCREEN_03_FINALIZATION_EXECUTION
+TASK_ID: CUSTOMER_SCREEN_03_PROPERTY_CARD_COMPACTNESS_REMEDIATION
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: AWAITING_FOUNDER_FINAL_SCREEN03_APPROVAL
+STATUS: AWAITING_FOUNDER_COMPACT_CARD_VISUAL_APPROVAL
 PR: #120 (AWAITING FOUNDER FINAL REVIEW)
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: f6911eeecfa100cbbfec935e15769e66966ce835
 FEATURE_BASE_COMMIT_SHA: b7e991ab7ce99818db2f51f4963553fe1fc53a73
 BRANCH: feat/customer-screen03-explore-redesign
-SCOPE: Finalize Screen 03 (Explore) native Flutter Customer App visual and structural candidate for PR #120 per locked Founder decisions. Includes: (1) Locked Avatar Candidate 3 (branded monochrome luxury concierge) as the default fallback while keeping top precedence for real user photo; (2) Locked 12dp corner radius for immediate action buttons (search dependency sheet Primary CTA 'فهمت') and 26dp for search pill; (3) Locked unified modern outline icon family across search, filter, card facts, and navigation; (4) Refined Property Card design with real API photography, floating 36dp favorite heart button with outline/crimson toggle and truthful feedback SnackBar, refined title hierarchy, location pin row, grouped fact badges in container, and bold nightly price anchor; (5) Search & refine dependency boundary preserved with truthful explanation sheet; (6) Physical verification on Samsung Galaxy A56 5G with live Cloudflare Worker API.
+SCOPE: Remediate property card compactness on native Flutter Customer Screen 03 (Explore) per Founder directive: (1) Retain canonical 1.45:1 authentic property image aspect ratio initially; (2) Eliminate the four individually bordered fact pills (`_PropertyFactBadge`); (3) Implement compact, unboxed, RTL-friendly single-line property facts row with outline icons (`Icons.bed_outlined`, `Icons.bathtub_outlined`, `Icons.people_outline`) and concise Arabic labels; (4) Show real known unit type (`_informativeUnitType`) only when informative, eliminating generic 'مكان للإقامة' fallback entirely; (5) Streamline padding and vertical spacing between card elements, saving 70.8dp in card height; (6) Verify 48dp favorite touch target requirement with centered 36dp visual pill; (7) Eliminate 200% text scale RenderFlex overflow; (8) Capture BEFORE and AFTER physical Samsung Galaxy A56 5G evidence at 100%, scrolled, 130%, and 200% font scales.
 
 ## Boundaries & Invariants
-- Zero global design system migration or token mutations; 12dp button radius is strictly local to Screen 03 search sheet comparison.
+- Zero global design system migration or token mutations.
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
-- Zero fake user profiles, fake photo URLs, or fake location lookups.
-- Zero dead buttons: notification bell strictly omitted in guest mode where native inbox does not yet exist.
+- Zero fake property metadata, reviews, or synthetic badges.
 - Preserve 4-tab Customer navigation shell and real public search repository integration.
-- Preserve Screen 04/05 boundaries: compact search trigger acts as an entry point, currently displaying a temporary dependency notice bottom sheet to Screen 04. End-to-end search filtering remains unimplemented pending dedicated task authorization.
+- Preserve Screen 04/05 boundaries: compact search trigger acts as an entry point with truthful dependency bottom sheet.
 - Strictly no merge or deployment without explicit Founder authorization.
 
 ## Verification & Quality Gates
-- [x] Avatar Candidate 3 (branded monochrome luxury concierge) locked as default fallback in `ExploreView`; real user photo precedence preserved.
-- [x] Button corner radius locked: 12dp for immediate action buttons (search dependency sheet CTA 'فهمت'), 26dp for search trigger container.
-- [x] Icon family locked: unified modern rounded/outline icons across search, filter, facts, and navigation.
-- [x] Refined Property Card design finalized: real API photography, floating 36dp favorite heart button with outline/crimson toggle and truthful feedback SnackBar, refined title hierarchy, location pin row, grouped fact badges in container, and bold nightly price anchor.
-- [x] RTL physical coordinate geometry verified across Header, Search Pill, Property Card, and 4-Tab Navigation.
-- [x] Customer app automated test suite passes: 145/145 PASS across all 12 test suites.
+- [x] Four individually bordered fact badges removed; replaced with compact unboxed facts row (`_PropertyFactItem`).
+- [x] Generic fallback `مكان للإقامة` completely removed; real unit type shown only when informative.
+- [x] Favorite button touch target verified and expanded to 48×48dp (`SizedBox(width: 48, height: 48)`) with centered 36dp visual pill and in-session toggle.
+- [x] Card information section height reduced from 210.80dp to 140.00dp (-70.80dp / -33.6% reduction).
+- [x] Total card height reduced from 452.18dp to 381.38dp (-70.80dp / -15.7% reduction).
+- [x] 200% text scale RenderFlex overflow eliminated; price remains prominently visible above bottom nav.
+- [x] Customer app automated test suite passes: 151/151 PASS across all 13 test suites.
 - [x] Static analysis passes: 0 issues in `customer_app`.
-- [x] Physical Samsung Galaxy A56 5G (`SM_A566B`, Android 16 / One UI 8) verified with 4 fresh canonical RTL captures against live Cloudflare Worker API.
-- [x] Final review candidate submitted for Founder decision: status `AWAITING_FOUNDER_FINAL_SCREEN03_APPROVAL`.
+- [x] Physical Samsung Galaxy A56 5G verified with 4 BEFORE and 4 AFTER canonical captures.
+- [x] Status submitted for Founder review: `AWAITING_FOUNDER_COMPACT_CARD_VISUAL_APPROVAL`.
 
 ---
 

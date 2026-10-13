@@ -1,15 +1,15 @@
-# Active Task — CUSTOMER_SCREEN04_SEARCH_REFINE_AND_REGION_SELECTOR
+# Active Task — CUSTOMER_SCREEN05_SEARCH_RESULTS_DESIGN_IMPLEMENTATION
 
-TASK_ID: CUSTOMER_SCREEN04_SEARCH_REFINE_AND_REGION_SELECTOR
+TASK_ID: CUSTOMER_SCREEN05_SEARCH_RESULTS_DESIGN_IMPLEMENTATION
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
 STATUS: CANDIDATE_AWAITING_FOUNDER_REVIEW
-ISSUE: #123 (Linked to approved design issue #122)
-PR: #132 (DRAFT)
-BRANCH: feat/customer-screen04-search-refine
+ISSUE: #124
+PR: DRAFT_PENDING_PUBLICATION (STACKED ON PR #132)
+BRANCH: feat/customer-screen05-search-results
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: f6911eeecfa100cbbfec935e15769e66966ce835
-FEATURE_BASE_COMMIT_SHA: 093c141a736535fe8d165db7b7bafe6dbac4a29f
-SCOPE: Implement approved Screen 04 (Search & Refine) and Region Multi-Select Bottom Sheet in native Flutter Customer App (`mobile/apps/customer_app`): (1) Implement Region Multi-Select Bottom Sheet (`RegionMultiSelectSheet`) with authentic coastal Egyptian clusters, multi-selection chips/checkboxes, dynamic summary grammar, dynamic options harvesting, and 16px sheet top radius; (2) Implement Screen 04 Search & Refine (`SearchRefineView`) as a dedicated full-page nested route (`FULL_PAGE_NESTED`) with sticky top bar, destination trigger, stay dates intent picker (2-30 nights, local Cairo time, intent-only), guest stepper (44×44dp targets), unit types chips, budget slider (with unbounded upper tick), clear/reset affordance, and sticky black CTA «عرض النتائج» (54dp height, 12dp radius); (3) Wire Two-Tier Entry on Screen 03 `ExploreSearchTrigger` (pill body opens `RegionMultiSelectSheet`; circular tune button opens `SearchRefineView`); (4) Implement `SearchIntentController` and state models in Riverpod with draft vs applied semantics, clean reset, and validation; (5) Pass search intent parameters cleanly to Screen 05 / Screen 06; (6) Verify TalkBack accessibility, 48dp touch targets, Cairo font typography, RTL layout, and text scale up to 200%; (7) Physical Samsung Galaxy A56 5G runtime verification.
+FEATURE_BASE_COMMIT_SHA: b0ca18a415ba6bd94942479998d1753daa4894b3
+SCOPE: Implement approved Screen 05 (Search Results) in native Flutter Customer App (`mobile/apps/customer_app`): (1) Compact white header with Arabic title «نتائج البحث», RTL back button, and 1dp divider; (2) Compact Search Results Summary Bar (~52dp min-height) with destination and active parameter readout, plus edit trigger to reopen Screen 04; (3) Horizontally scrollable RTL active filter chips row (`ActiveFilterChipsRow`) with dual-zone tap semantics (tap content reopens editor; tap [×] independently removes that specific parameter); (4) Extraction and reuse of approved compact property card (`PublicPropertyCard`) with 1.45 photo ratio, unboxed facts, and RTL numeric price; (5) Resilient state delivery machine (results, calm skeleton loading, truthful empty state, and offline error state with retry); (6) Customer search dates intent-only invariant preserved (MR-11 & P5/C2); (7) Automated verification across 187/187 customer tests and physical Samsung Galaxy A56 5G runtime evidence.
 
 ## Boundaries & Invariants
 - Zero global design system migration or token mutations.
@@ -21,49 +21,30 @@ SCOPE: Implement approved Screen 04 (Search & Refine) and Region Multi-Select Bo
 - Strictly no merge or deployment without explicit Founder authorization.
 
 ## Verification & Quality Gates
-- [x] `RegionMultiSelectSheet` implemented with 16px top radius, search filter, coastal hierarchy, and selection summary.
-- [x] `SearchRefineView` implemented as dedicated full-page route with sticky top bar and sticky 12dp CTA.
-- [x] Two-Tier Entry wired from Screen 03 `ExploreSearchTrigger`.
-- [x] Riverpod `searchIntentControllerProvider` manages draft vs applied search intent state.
-- [x] Stay dates validated for 2-30 nights; dates treated strictly as customer intent (never sent to `/properties/search`).
-- [x] Guest stepper, unit types, and budget slider functional with accessible labels and live regions.
-- [x] Customer app automated test suite passes with 100% pass rate (173/173 tests PASS).
+- [x] Compact header implemented with Arabic title «نتائج البحث» and physical RTL back navigation.
+- [x] Search Results Summary Bar implemented (~52dp minHeight, adaptive vertical constraints, tap reopens Screen 04).
+- [x] Active filter chips row implemented with dual-zone interaction and explicit remove [×] mechanics.
+- [x] Public property card extracted (`PublicPropertyCard`) and shared cleanly between Screen 03 and Screen 05.
+- [x] Full state machine implemented: results, loading skeleton (`PropertyCardSkeleton`), truthful empty (`StateView`), and offline network error with retry.
+- [x] Search intent dates and guest count cleanly handed off to Screen 06 Property Details, automatically triggering server quote.
+- [x] Customer app automated test suite passes with 100% pass rate (187/187 tests PASS).
 - [x] Design system test suite passes: 21/21 PASS (`flutter test; flutter analyze` in `konfrm_design_system`).
 - [x] Static analysis passes: 0 issues across all packages (`flutter analyze`).
-- [x] Samsung Galaxy A56 5G physical runtime validation captured across viewports and font scales (100%, 130%, 200%).
-- [x] **Targeted Remediation Executed & Physical Evidence Captured:**
-  - [x] **Issue 1 (Destination Buttons Shrink-Wrapping):** Removed `alignment: Alignment.center` from `Container` in `RegionMultiSelectSheet._buildDestinationChip()`. Replaced with intrinsic `Center(widthFactor: 1.0, child: Text(...))` inside `BoxConstraints(minHeight: 44.0)` with 16dp horizontal padding. Chips shrink-wrap naturally around Arabic text and multiple destinations sit side-by-side in the same horizontal row with 8dp gaps.
-  - [x] **Issue 2 (Truthful Destination Inventory):** Removed fallback injecting 26 hardcoded names from `_allDestinations`. Destinations strictly derived from authentic published inventory (`widget.availableDestinations`). Wired explicit loading spinner, error message, and empty state.
-  - [x] **Issue 3 (Backend Query Completeness):** Audited `backend/server/src/services/dbRepository.ts` SQL query. Confirmed `GET /api/v1/customer/properties/search` has no `LIMIT`/`OFFSET`, returning 100% of published inventory. Documented deferred aggregation endpoint requirement under Issue #133.
-  - [x] Samsung Galaxy A56 5G physical hardware evidence artifacts:
-    - `01_screen04_a56_region_sheet_empty.png` (Before: full-width stacked buttons)
-    - `08_screen04_a56_region_sheet_unselected_shrinkwrapped.png` (After: unselected shrink-wrapped chips in same row)
-    - `09_screen04_a56_region_sheet_multiselected_row.png` (After: multi-selected chips in same row)
-    - `10_screen04_a56_destination_handoff.png` (Screen 04 destination summary with multi-selected chips)
-    - `11_screen03_a56_applied_results.png` (Screen 03 Explore feed with live filtered results)
-- [x] **Final Founder-Directed Remediation Executed & Physical Evidence Captured:**
-  - [x] Monochrome visual direction applied across Customer App (Black `#000000` for primary/selected, White for surfaces, Neutral greys `#F1F5F9` / `#E2E8F0` / `#94A3B8` for inactive/borders). Blue accents removed per Founder directive.
-  - [x] Region Multi-Select chips redesigned as 12dp rounded rectangles with 44dp touch targets; Selected: solid black (`#000000`) with white text; Unselected: white with `#E2E8F0` outline and `#1E293B` text.
-  - [x] Unit types chips converted to monochrome black selected chips with white text and 44dp touch target.
-  - [x] Budget section simplified: heading set to `أقصى سعر لليلة (اختياري)`; verbose explanatory copy removed; default readout `بدون حد أقصى`; selected readout `حتى X,XXX ج.م` without `/ ليلة`; slider track/thumb muted grey (`#94A3B8`) when unbounded, solid black (`#000000`) when active ceiling.
-  - [x] RTL calendar navigation calibrated across Screen 04 and Screen 06 Property Details:
-    - Older months on physical RIGHT; Future months on physical LEFT.
-    - Physical RIGHT arrow is `>` (`Icons.chevron_right_rounded` / `Icons.chevron_right`) and returns to previous month (`previousPage` / `onPreviousMonth`).
-    - Physical LEFT arrow is `<` (`Icons.chevron_left_rounded` / `Icons.chevron_left`) and advances to next month (`nextPage` / `onNextMonth`).
-    - Selected dates: Black solid endpoints (`#000000`), subtle neutral range fill (`#F1F5F9`).
-  - [x] Functional defects resolved:
-    - Multiple unit types serialized as `unitTypes=CHALET,VILLA` and single as `unitType=CHALET`.
-    - Draft vs applied search intent isolation preserved on cancellation/back.
-    - Filter metadata catalog options preserved across filtered loads (`catalogProperties`).
-    - Search dates and guest count handed off to Screen 06 Property Details, automatically triggering server quote calculation.
-  - [x] Samsung Galaxy A56 5G physical hardware evidence artifacts:
-    - `01_screen04_a56_region_sheet_empty.png` (Empty / default destination sheet with 12dp rectangular chips)
-    - `02_screen04_a56_region_sheet_multi_selected.png` (Multi-selected destinations in solid black with white text)
-    - `03_screen04_a56_budget_unbounded.png` (Budget unbounded `بدون حد أقصى` with muted grey slider)
-    - `04_screen04_a56_budget_numeric_ceiling.png` (Numeric ceiling `حتى 4,000 ج.م` with solid black slider)
-    - `05_screen04_a56_dates_picker_monochrome.png` (Horizontal date picker with black endpoints, neutral fill, and RTL arrows)
-    - `06_screen06_a56_calendar_arrows_monochrome.png` (Property details calendar with RTL arrows, handed-off dates, and auto quote)
-    - `07_screen03_a56_explore_harmonized.png` (Screen 03 feed with applied search intent, Candidate 3 avatar, and 381dp compact card)
+- [x] Samsung Galaxy A56 5G physical runtime validation captured across 6 scenarios:
+  - `01_screen05_a56_single_destination_results.png` (Single destination authentic results)
+  - `02_screen05_a56_multi_filters_active.png` (Multi-filters configured and active)
+  - `03_screen05_a56_filter_independently_removed.png` (Independent removal of dates filter via [×])
+  - `04_screen05_a56_truthful_empty_state.png` (Truthful empty state with refine CTA)
+  - `05_screen05_a56_offline_error_state.png` (Offline error state with retry CTA)
+  - `06_screen05_a56_handoff_to_screen06_details.png` (Handoff to Screen 06 with auto quote)
+
+---
+
+## Predecessor Milestone — CUSTOMER_SCREEN04_SEARCH_REFINE_AND_REGION_SELECTOR (AWAITING FOUNDER REVIEW)
+- TASK_ID: CUSTOMER_SCREEN04_SEARCH_REFINE_AND_REGION_SELECTOR
+- PR: #132 (DRAFT / UNMERGED)
+- HEAD: b0ca18a415ba6bd94942479998d1753daa4894b3
+- SCOPE: Screen 04 Search & Refine full page and Region Multi-Select Bottom Sheet.
 
 ---
 

@@ -1,17 +1,17 @@
-# Active Task — CUSTOMER_SCREEN_03_FOUNDER_VISUAL_POLISH_GATE
+# Active Task — CUSTOMER_SCREEN_03_FINAL_VISUAL_DECISION_PREPARATION
 
-TASK_ID: CUSTOMER_SCREEN_03_FOUNDER_VISUAL_POLISH_GATE
+TASK_ID: CUSTOMER_SCREEN_03_FINAL_VISUAL_DECISION_PREPARATION
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: AWAITING_FOUNDER_VISUAL_APPROVAL
+STATUS: AWAITING_FOUNDER_FINAL_VISUAL_DECISION
 PR: #120 (DRAFT)
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: f6911eeecfa100cbbfec935e15769e66966ce835
 FEATURE_BASE_COMMIT_SHA: b7e991ab7ce99818db2f51f4963553fe1fc53a73
 BRANCH: feat/customer-screen03-explore-redesign
-SCOPE: Complete controlled visual polish and exploration on native Customer Screen 03 (Explore) for PR #120 without altering global design system tokens or expanding into Screen 04/05. Includes: (1) Avatar candidates exploration with 3 original vector illustration styles (Minimalist, Soft 3D, Branded Monochrome) alongside neutral silhouette baseline, preserving canonical avatar URL priority; (2) Circular notification control matching the 44dp tune button geometry (omitted in guest mode); (3) Local button radius experiment comparing 6dp baseline, 12dp card-harmonized, and 16dp modern travel pill; (4) Icon family harmonization migrating sharp icons to Modern Rounded; (5) Copy & Price Truth replacing 'نتائج البحث' with 'أماكن الإقامة' and verifying strict physical RTL price ordering (amount on right, currency in center, suffix on left) with overflow resilience under 200% text scaling; (6) Physical verification on Samsung Galaxy A56 5G.
+SCOPE: Complete controlled visual polish and exploration on native Customer Screen 03 (Explore) for PR #120 without altering global design system tokens or expanding into Screen 04/05. Includes: (1) Root-cause RTL preview harness discrepancy and prove genuine production app has always been canonical RTL; (2) Refine Candidate 2 (Soft 3D) avatar with friendly, expressive facial definitions (smiling eyes, brows, nose, blush, smile, specular highlights) across 3 variants (Classic, Waves, Ambient) while preserving real photo precedence and baseline silhouette; (3) Circular notification control matching 44dp tune button geometry (omitted in guest mode); (4) Apply Founder-selected 12dp button corner radius to Screen 03 search dependency sheet Primary CTA without modifying global design system tokens or Screen 07; (5) Harmonize property card facts to consistent refined outline icons (home_outlined, bed_outlined, bathtub_outlined, people_outline); (6) Audit property card review gaps (favorite heart action & comparison row); (7) RTL coordinate regression tests across Header, Search Trigger, Card, and 4-Tab Navigation; (8) Capture fresh physical Samsung Galaxy A56 5G evidence.
 
 ## Boundaries & Invariants
-- Zero global design system migration or token mutations; 12dp/16dp button radii are strictly local candidates for Screen 03/Search comparison.
+- Zero global design system migration or token mutations; 12dp button radius is strictly local to Screen 03 search sheet comparison.
 - Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
 - Zero fake user profiles, fake photo URLs, or fake location lookups.
 - Zero dead buttons: notification bell strictly omitted in guest mode where native inbox does not yet exist.
@@ -19,17 +19,17 @@ SCOPE: Complete controlled visual polish and exploration on native Customer Scre
 - Preserve Screen 04/05 boundaries: compact search trigger acts as an entry point, currently displaying a temporary dependency notice bottom sheet to Screen 04. End-to-end search filtering remains unimplemented pending dedicated task authorization.
 
 ## Verification & Quality Gates
-- [x] Vector Avatar Candidates implemented via `KonfrmAvatarIllustration` (Minimalist, Soft 3D, Branded Monochrome, Silhouette) with real photo precedence.
-- [x] Notification button harmonized to 44×44dp circular bordered container (`CircleBorder(side: BorderSide(color: Color(0xFFE5E7EB), width: 1.0))`) and hidden in guest mode.
-- [x] Local button radius comparison (6dp vs 12dp vs 16dp) tested alongside 26dp pill and 12dp cards without modifying global tokens.
-- [x] Feed icons harmonized to Modern Rounded (`home_rounded`, `bed_rounded`, `bathtub_rounded`, `people_alt_rounded`, `image_rounded`).
-- [x] Feed heading updated from 'نتائج البحث' to 'أماكن الإقامة'.
-- [x] Price display standardized with `KonfrmPriceText` in responsive `Wrap`: physical RTL order verified via accessibility nodes (amount on right [871..993], currency in center [787..860], suffix on left [705..776]), 0 overflows at 200% text scale.
+- [x] RTL Discrepancy Root-Caused: Isolated to standalone test harness lacking Arabic locale; genuine production app (`KonfrmCustomerApp`) confirmed 100% canonical RTL.
+- [x] Avatar Candidate 2 (Soft 3D) refined with friendly, crisp facial definitions at 44dp across 3 neutral palettes (Classic, Waves, Ambient).
+- [x] Circular notification button harmonized to 44×44dp circular bordered container and hidden in guest mode.
+- [x] Founder-selected 12dp button radius applied to Screen 03 search dependency sheet CTA button without mutating global tokens.
+- [x] Property card fact icons harmonized to refined outlines (`home_outlined`, `bed_outlined`, `bathtub_outlined`, `people_outline`).
+- [x] Property card review gaps audited and documented (favorite heart action, comparison row hierarchy).
+- [x] RTL physical coordinate regression test added and passing for Header, Search Pill, Price, and 4-Tab Navigation.
 - [x] Customer app automated test suite passes: 144/144 PASS across all 12 test suites.
 - [x] Static analysis passes: 0 issues in `customer_app`.
-- [x] Physical Samsung Galaxy A56 5G (`SM_A566B`, Android 16 / One UI 8) verified with 5 comprehensive hardware capture sets.
-- [x] Screen 04 design review document updated with strict epistemic boundary between ADR-008 interaction architecture and candidate visual proposals.
-- [ ] Awaiting Founder visual review and approval before merging PR #120 or initiating Screens 04/05 implementation.
+- [x] Physical Samsung Galaxy A56 5G (`SM_A566B`, Android 16 / One UI 8) verified with 5 fresh canonical RTL captures.
+- [ ] Awaiting Founder final visual review and approval before merging PR #120 or initiating Screens 04/05 implementation.
 
 ---
 

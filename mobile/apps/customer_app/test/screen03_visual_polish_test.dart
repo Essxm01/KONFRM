@@ -10,6 +10,7 @@ import 'package:customer_app/features/booking_review/presentation/widgets/konfrm
 import 'package:customer_app/features/discovery/data/public_property_search_repository.dart';
 import 'package:customer_app/features/discovery/presentation/widgets/avatar_candidates.dart';
 import 'package:customer_app/features/discovery/presentation/widgets/explore_header.dart';
+import 'package:customer_app/features/discovery/presentation/widgets/explore_search_trigger.dart';
 
 Map<String, Object?> _sampleProperty() => {
       'id': 'prop-polish-1',
@@ -119,8 +120,8 @@ void main() {
     });
   });
 
-  group('Screen 03 Visual Polish — Feed Heading & Price Hierarchy Truth', () {
-    testWidgets('displays أماكن الإقامة as default feed heading and verifies KonfrmPriceText RTL physical order', (
+  group('Screen 03 Visual Polish — RTL Physical Coordinate Geometry & Layout Truth', () {
+    testWidgets('verifies strict RTL physical hierarchy across Header, Search Trigger, Card, and 4-Tab Navigation', (
       tester,
     ) async {
       final repository = PublicPropertySearchRepository(
@@ -138,11 +139,54 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Heading must be أماكن الإقامة, NOT نتائج البحث
+      // 1. Heading must be أماكن الإقامة, NOT نتائج البحث
       expect(find.text('أماكن الإقامة'), findsOneWidget);
       expect(find.text('نتائج البحث'), findsNothing);
 
-      // Card must render KonfrmPriceText
+      // 2. ExploreHeader RTL physical geometry:
+      // Avatar must be on the physical RIGHT
+      // Greeting/Subtitle must be immediately to its LEFT
+      final avatarFinder = find.byKey(const Key('explore-profile-avatar'));
+      final subtitleFinder = find.text('اكتشف وجهتك القادمة');
+      expect(avatarFinder, findsOneWidget);
+      expect(subtitleFinder, findsOneWidget);
+
+      final avatarDx = tester.getTopLeft(avatarFinder).dx;
+      final subtitleDx = tester.getTopLeft(subtitleFinder).dx;
+      expect(
+        avatarDx,
+        greaterThan(subtitleDx),
+        reason: 'Profile avatar must be physically on the RIGHT of the subtitle in RTL',
+      );
+
+      // 3. ExploreSearchTrigger RTL physical geometry:
+      // Search icon on physical RIGHT
+      // Destination text in center
+      // Filter/Tune circular button on physical LEFT
+      final searchIconFinder = find.byIcon(Icons.search_rounded);
+      final searchTextFinder = find.text('إلى أين؟');
+      final tuneIconFinder = find.byIcon(Icons.tune_rounded);
+
+      expect(searchIconFinder, findsOneWidget);
+      expect(searchTextFinder, findsOneWidget);
+      expect(tuneIconFinder, findsOneWidget);
+
+      final searchIconDx = tester.getTopLeft(searchIconFinder).dx;
+      final searchTextDx = tester.getTopLeft(searchTextFinder).dx;
+      final tuneIconDx = tester.getTopLeft(tuneIconFinder).dx;
+
+      expect(
+        searchIconDx,
+        greaterThan(searchTextDx),
+        reason: 'Search icon must be physically to the RIGHT of search text in RTL',
+      );
+      expect(
+        searchTextDx,
+        greaterThan(tuneIconDx),
+        reason: 'Search text must be physically to the RIGHT of tune/filter button in RTL',
+      );
+
+      // 4. Property Card Price RTL physical geometry:
       expect(find.byType(KonfrmPriceText), findsOneWidget);
       final amountFinder = find.text('12,500');
       final currencyFinder = find.text('ج.م');
@@ -152,10 +196,6 @@ void main() {
       expect(currencyFinder, findsOneWidget);
       expect(suffixFinder, findsOneWidget);
 
-      // In physical RTL on screen:
-      // Amount (12,500) is on the physical RIGHT
-      // Currency (ج.م) is to its LEFT
-      // Suffix (/ ليلة) is to the LEFT of currency
       final amountDx = tester.getTopRight(amountFinder).dx;
       final currencyDx = tester.getTopRight(currencyFinder).dx;
       final suffixDx = tester.getTopRight(suffixFinder).dx;
@@ -170,6 +210,41 @@ void main() {
         greaterThan(suffixDx),
         reason: 'Currency (ج.م) must be physically to the right of suffix (/ ليلة) in RTL',
       );
+
+      // 5. 4-Tab CustomerBottomNavigation RTL physical order:
+      // Tab 0 (استكشف) on physical RIGHT
+      // Tab 3 (الحساب) on physical LEFT
+      final exploreTabFinder = find.text('استكشف');
+      final accountTabFinder = find.text('الحساب');
+      expect(exploreTabFinder, findsOneWidget);
+      expect(accountTabFinder, findsOneWidget);
+
+      final exploreTabDx = tester.getTopLeft(exploreTabFinder).dx;
+      final accountTabDx = tester.getTopLeft(accountTabFinder).dx;
+      expect(
+        exploreTabDx,
+        greaterThan(accountTabDx),
+        reason: 'Tab 0 (استكشف) must be physically to the RIGHT of Tab 3 (الحساب) in RTL',
+      );
+
+      // 6. Search trigger tap opens dependency sheet with 12dp radius Primary CTA
+      await tester.tap(find.byType(ExploreSearchTrigger));
+      await tester.pumpAndSettle();
+
+      final dismissButtonFinder = find.byKey(const Key('search-sheet-dismiss-button'));
+      expect(dismissButtonFinder, findsOneWidget);
+      final elevatedButton = tester.widget<ElevatedButton>(dismissButtonFinder);
+      final shape = elevatedButton.style?.shape?.resolve({}) as RoundedRectangleBorder?;
+      expect(shape, isNotNull);
+      expect(
+        shape?.borderRadius,
+        BorderRadius.circular(12),
+        reason: 'Dependency sheet dismiss CTA must use Founder-selected 12dp corner radius candidate',
+      );
+
+      // Close sheet
+      await tester.tap(dismissButtonFinder);
+      await tester.pumpAndSettle();
     });
   });
 }

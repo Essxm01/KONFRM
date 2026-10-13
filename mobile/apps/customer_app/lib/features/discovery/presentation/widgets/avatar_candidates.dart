@@ -9,8 +9,14 @@ enum AvatarCandidateStyle {
   /// Candidate 1: Refined Minimalist Illustrated Avatar (Editorial line/flat).
   minimalist,
 
-  /// Candidate 2: Tasteful Soft 3D Illustrated Avatar (Dimensional soft clay/lighting).
+  /// Candidate 2: Refined Soft 3D Illustrated Avatar (Dimensional soft clay/lighting) — Primary Classic.
   soft3d,
+
+  /// Candidate 2 Variant B: Refined Soft 3D with Textured Dimensional Waves.
+  soft3dWaves,
+
+  /// Candidate 2 Variant C: Refined Soft 3D with Architectural Studio Lighting.
+  soft3dAmbient,
 
   /// Candidate 3: Premium Branded Avatar Illustration (Monochrome luxury concierge).
   branded,
@@ -24,7 +30,7 @@ enum AvatarCandidateStyle {
 class KonfrmAvatarIllustration extends StatelessWidget {
   const KonfrmAvatarIllustration({
     super.key,
-    this.style = AvatarCandidateStyle.minimalist,
+    this.style = AvatarCandidateStyle.soft3d,
     this.size = 44.0,
   });
 
@@ -42,7 +48,9 @@ class KonfrmAvatarIllustration extends StatelessWidget {
           painter: switch (style) {
             AvatarCandidateStyle.silhouette => _SilhouettePainter(),
             AvatarCandidateStyle.minimalist => _MinimalistPainter(),
-            AvatarCandidateStyle.soft3d => _Soft3DPainter(),
+            AvatarCandidateStyle.soft3d => const _Soft3DPainter(variant: 0),
+            AvatarCandidateStyle.soft3dWaves => const _Soft3DPainter(variant: 1),
+            AvatarCandidateStyle.soft3dAmbient => const _Soft3DPainter(variant: 2),
             AvatarCandidateStyle.branded => _BrandedPainter(),
           },
         ),
@@ -171,28 +179,57 @@ class _MinimalistPainter extends CustomPainter {
 }
 
 // =============================================================================
-// CANDIDATE 2: TASTEFUL SOFT 3D ILLUSTRATED AVATAR PAINTER
-// Smooth ambient occlusion, volumetric gradients, soft studio lighting.
+// CANDIDATE 2: REFINED SOFT 3D ILLUSTRATED AVATAR PAINTER
+// Smooth ambient occlusion, volumetric gradients, soft studio lighting,
+// expressive friendly facial features, and cohesive neutral variants.
 // =============================================================================
 class _Soft3DPainter extends CustomPainter {
+  const _Soft3DPainter({this.variant = 0});
+
+  final int variant;
+
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
     final center = Offset(w / 2, h / 2);
 
-    // 1. Background: Gentle silver-blue radial vignette
+    // 1. Palette sets tailored per variant
+    final (bgColors, torsoColors, skinColors, hairColors) = switch (variant) {
+      1 => (
+          // Variant 1: Soft Waves (warm amber studio)
+          const [Color(0xFFFDF8F0), Color(0xFFF1E6D5)],
+          const [Color(0xFF334155), Color(0xFF1E293B)],
+          const [Color(0xFFFFE8D6), Color(0xFFF7C8A9), Color(0xFFD49774)],
+          const [Color(0xFF5A4A42), Color(0xFF2E241E), Color(0xFF19130F)],
+        ),
+      2 => (
+          // Variant 2: Architectural Ambient (cool platinum studio)
+          const [Color(0xFFF8FAFC), Color(0xFFE2E8F0)],
+          const [Color(0xFF27272A), Color(0xFF09090B)],
+          const [Color(0xFFFFEDE1), Color(0xFFF5CFB6), Color(0xFFD6997B)],
+          const [Color(0xFF64748B), Color(0xFF334155), Color(0xFF0F172A)],
+        ),
+      _ => (
+          // Variant 0: Classic Soft 3D (warm porcelain luxury)
+          const [Color(0xFFF1F5F9), Color(0xFFE2E8F0)],
+          const [Color(0xFF3B485A), Color(0xFF1E293B)],
+          const [Color(0xFFFFE3D1), Color(0xFFF3C4A5), Color(0xFFD09673)],
+          const [Color(0xFF475569), Color(0xFF1E293B), Color(0xFF0F172A)],
+        ),
+    };
+
     final bgShader = RadialGradient(
       center: const Alignment(-0.2, -0.3),
       radius: 0.85,
-      colors: const [Color(0xFFF1F5F9), Color(0xFFE2E8F0)],
+      colors: bgColors,
     ).createShader(Rect.fromLTWH(0, 0, w, h));
     final bgPaint = Paint()..shader = bgShader;
     canvas.drawCircle(center, w / 2, bgPaint);
 
-    // 2. Soft shadow under torso
+    // 2. Torso drop shadow
     final shadowPaint = Paint()
-      ..color = const Color(0x1A0F172A)
+      ..color = const Color(0x180F172A)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
     canvas.drawOval(
       Rect.fromCenter(
@@ -203,11 +240,11 @@ class _Soft3DPainter extends CustomPainter {
       shadowPaint,
     );
 
-    // 3. Torso: Volumetric rounded shoulders with vertical lighting
+    // 3. Volumetric Torso / Shoulders with vertical studio gradient
     final torsoShader = LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: const [Color(0xFF3B485A), Color(0xFF1E293B)],
+      colors: torsoColors,
     ).createShader(Rect.fromLTWH(0, h * 0.6, w, h * 0.4));
     final torsoPaint = Paint()..shader = torsoShader;
 
@@ -220,19 +257,19 @@ class _Soft3DPainter extends CustomPainter {
 
     // Torso specular rim highlight
     final rimPaint = Paint()
-      ..color = const Color(0x33FFFFFF)
+      ..color = const Color(0x2EFFFFFF)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = w * 0.025;
+      ..strokeWidth = math.max(1.0, w * 0.025);
     final rimPath = Path()
       ..moveTo(w * 0.20, h * 0.76)
       ..cubicTo(w * 0.32, h * 0.65, w * 0.68, h * 0.65, w * 0.80, h * 0.76);
     canvas.drawPath(rimPath, rimPaint);
 
-    // 4. Volumetric Neck with soft ambient shadow
+    // 4. Volumetric Neck with warm depth
     final neckShader = LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: const [Color(0xFFD4A373), Color(0xFFB57D4F)],
+      colors: [skinColors[1], skinColors[2]],
     ).createShader(Rect.fromLTWH(w * 0.4, h * 0.5, w * 0.2, h * 0.2));
     final neckPaint = Paint()..shader = neckShader;
     canvas.drawRRect(
@@ -247,11 +284,7 @@ class _Soft3DPainter extends CustomPainter {
     final headShader = RadialGradient(
       center: const Alignment(-0.35, -0.40),
       radius: 0.85,
-      colors: const [
-        Color(0xFFFFE3D1), // Soft specular key highlight
-        Color(0xFFF3C4A5), // Base skin tone
-        Color(0xFFD09673), // Ambient shadow core
-      ],
+      colors: skinColors,
       stops: const [0.0, 0.55, 1.0],
     ).createShader(Rect.fromCircle(
       center: Offset(w * 0.50, h * 0.42),
@@ -260,29 +293,118 @@ class _Soft3DPainter extends CustomPainter {
     final headPaint = Paint()..shader = headShader;
     canvas.drawCircle(Offset(w * 0.50, h * 0.42), w * 0.20, headPaint);
 
-    // 6. Dimensional Coiffure / Hair with top specular highlight
+    // 6. Volumetric Coiffure / Hair with top specular highlight
     final hairShader = RadialGradient(
       center: const Alignment(-0.25, -0.6),
       radius: 0.9,
-      colors: const [
-        Color(0xFF475569), // Key hair highlight
-        Color(0xFF1E293B), // Core deep hair tone
-        Color(0xFF0F172A), // Shadow
-      ],
+      colors: hairColors,
     ).createShader(Rect.fromCircle(
       center: Offset(w * 0.50, h * 0.32),
       radius: w * 0.22,
     ));
     final hairPaint = Paint()..shader = hairShader;
-    final hairPath = Path()
-      ..moveTo(w * 0.30, h * 0.42)
-      ..cubicTo(w * 0.28, h * 0.18, w * 0.46, h * 0.14, w * 0.58, h * 0.16)
-      ..cubicTo(w * 0.74, h * 0.18, w * 0.72, h * 0.34, w * 0.70, h * 0.42)
-      ..cubicTo(w * 0.62, h * 0.28, w * 0.48, h * 0.26, w * 0.36, h * 0.34)
-      ..close();
-    canvas.drawPath(hairPath, hairPaint);
 
-    // 7. Outer polished border
+    if (variant == 1) {
+      // Variant 1: Textured dimensional wave volume
+      final wavePath = Path()
+        ..moveTo(w * 0.28, h * 0.43)
+        ..cubicTo(w * 0.24, h * 0.28, w * 0.35, h * 0.13, w * 0.50, h * 0.14)
+        ..cubicTo(w * 0.65, h * 0.13, w * 0.76, h * 0.28, w * 0.72, h * 0.43)
+        ..cubicTo(w * 0.66, h * 0.34, w * 0.58, h * 0.32, w * 0.50, h * 0.35)
+        ..cubicTo(w * 0.42, h * 0.32, w * 0.34, h * 0.34, w * 0.28, h * 0.43)
+        ..close();
+      canvas.drawPath(wavePath, hairPaint);
+
+      // Soft side volume curls
+      canvas.drawCircle(Offset(w * 0.30, h * 0.38), w * 0.05, hairPaint);
+      canvas.drawCircle(Offset(w * 0.70, h * 0.38), w * 0.05, hairPaint);
+    } else if (variant == 2) {
+      // Variant 2: Clean architectural sweep
+      final sweepPath = Path()
+        ..moveTo(w * 0.32, h * 0.41)
+        ..cubicTo(w * 0.30, h * 0.20, w * 0.46, h * 0.15, w * 0.56, h * 0.17)
+        ..cubicTo(w * 0.72, h * 0.19, w * 0.70, h * 0.33, w * 0.68, h * 0.41)
+        ..cubicTo(w * 0.60, h * 0.30, w * 0.48, h * 0.28, w * 0.38, h * 0.34)
+        ..close();
+      canvas.drawPath(sweepPath, hairPaint);
+    } else {
+      // Variant 0: Classic modern sweep
+      final hairPath = Path()
+        ..moveTo(w * 0.30, h * 0.42)
+        ..cubicTo(w * 0.28, h * 0.18, w * 0.46, h * 0.14, w * 0.58, h * 0.16)
+        ..cubicTo(w * 0.74, h * 0.18, w * 0.72, h * 0.34, w * 0.70, h * 0.42)
+        ..cubicTo(w * 0.62, h * 0.28, w * 0.48, h * 0.26, w * 0.36, h * 0.34)
+        ..close();
+      canvas.drawPath(hairPath, hairPaint);
+    }
+
+    // 7. Facial Definition (Sharp, friendly, and legible at 44dp)
+    // 7a. Delicate Eyebrows
+    final browPaint = Paint()
+      ..color = const Color(0xFF334155)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(1.0, w * 0.024)
+      ..strokeCap = StrokeCap.round;
+
+    final leftBrow = Path()
+      ..moveTo(w * 0.39, h * 0.38)
+      ..quadraticBezierTo(w * 0.435, h * 0.365, w * 0.47, h * 0.385);
+    final rightBrow = Path()
+      ..moveTo(w * 0.53, h * 0.385)
+      ..quadraticBezierTo(w * 0.565, h * 0.365, w * 0.61, h * 0.38);
+    canvas.drawPath(leftBrow, browPaint);
+    canvas.drawPath(rightBrow, browPaint);
+
+    // 7b. Friendly Smiling Eyes (curved arc with soft dark slate)
+    final eyePaint = Paint()
+      ..color = const Color(0xFF0F172A)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(1.3, w * 0.038)
+      ..strokeCap = StrokeCap.round;
+
+    final leftEye = Path()
+      ..moveTo(w * 0.395, h * 0.435)
+      ..quadraticBezierTo(w * 0.435, h * 0.412, w * 0.475, h * 0.435);
+    final rightEye = Path()
+      ..moveTo(w * 0.525, h * 0.435)
+      ..quadraticBezierTo(w * 0.565, h * 0.412, w * 0.605, h * 0.435);
+    canvas.drawPath(leftEye, eyePaint);
+    canvas.drawPath(rightEye, eyePaint);
+
+    // 7c. Soft Cheek Warmth (Blush / Ambient Depth)
+    final blushPaint = Paint()
+      ..color = const Color(0x26E07A5F)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.5);
+    canvas.drawCircle(Offset(w * 0.365, h * 0.47), w * 0.046, blushPaint);
+    canvas.drawCircle(Offset(w * 0.635, h * 0.47), w * 0.046, blushPaint);
+
+    // 7d. Subtle Nose Contour
+    final nosePaint = Paint()
+      ..color = const Color(0x3DB57D4F)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(0.9, w * 0.022)
+      ..strokeCap = StrokeCap.round;
+    final nosePath = Path()
+      ..moveTo(w * 0.485, h * 0.465)
+      ..quadraticBezierTo(w * 0.50, h * 0.474, w * 0.515, h * 0.465);
+    canvas.drawPath(nosePath, nosePaint);
+
+    // 7e. Warm Friendly Smile
+    final smilePaint = Paint()
+      ..color = const Color(0xFF1E293B)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(1.3, w * 0.034)
+      ..strokeCap = StrokeCap.round;
+    final smilePath = Path()
+      ..moveTo(w * 0.445, h * 0.512)
+      ..quadraticBezierTo(w * 0.50, h * 0.542, w * 0.555, h * 0.512);
+    canvas.drawPath(smilePath, smilePaint);
+
+    // 7f. Specular Forehead & Cheek Light Points (Soft Clay 3D feel)
+    final specPaint = Paint()..color = const Color(0x38FFFFFF);
+    canvas.drawCircle(Offset(w * 0.44, h * 0.35), w * 0.035, specPaint);
+
+    // 8. Outer polished perimeter ring
     final borderPaint = Paint()
       ..color = const Color(0xFFCBD5E1)
       ..style = PaintingStyle.stroke
@@ -291,7 +413,8 @@ class _Soft3DPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _Soft3DPainter oldDelegate) =>
+      oldDelegate.variant != variant;
 }
 
 // =============================================================================

@@ -23,7 +23,7 @@ class ExploreView extends ConsumerStatefulWidget {
     this.onAccountTap,
     this.onNotificationTap,
     this.showNotification = false,
-    this.avatarStyle = AvatarCandidateStyle.silhouette,
+    this.avatarStyle = AvatarCandidateStyle.soft3d,
   });
 
   final String? userName;
@@ -111,7 +111,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                     backgroundColor: const Color(0xFF000000),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
@@ -328,19 +328,19 @@ class _PublicPropertyCard extends StatelessWidget {
                       runSpacing: 6,
                       children: [
                         _PropertyFact(
-                          icon: Icons.home_rounded,
+                          icon: Icons.home_outlined,
                           label: _unitTypeLabel(property.unitType),
                         ),
                         _PropertyFact(
-                          icon: Icons.bed_rounded,
+                          icon: Icons.bed_outlined,
                           label: '${property.bedrooms} غرف نوم',
                         ),
                         _PropertyFact(
-                          icon: Icons.bathtub_rounded,
+                          icon: Icons.bathtub_outlined,
                           label: '${property.bathrooms} حمامات',
                         ),
                         _PropertyFact(
-                          icon: Icons.people_alt_rounded,
+                          icon: Icons.people_outline,
                           label: '${property.maxGuests} ضيوف',
                         ),
                       ],

@@ -161,9 +161,9 @@ class InlineAvailabilityCalendar extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Next Month Button
+                  // Next Month Button ("<" arrow on physical RIGHT side in RTL)
                   _CalNavButton(
-                    icon: Icons.chevron_right, // in RTL, right points to next
+                    icon: Icons.chevron_left,
                     label: 'الشهر التالي',
                     onPressed: onNextMonth,
                   ),
@@ -181,9 +181,9 @@ class InlineAvailabilityCalendar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Previous Month Button
+                  // Previous Month Button (">" arrow on physical LEFT side in RTL)
                   _CalNavButton(
-                    icon: Icons.chevron_left, // in RTL, left points to prev
+                    icon: Icons.chevron_right,
                     label: 'الشهر السابق',
                     onPressed: canGoBack ? onPreviousMonth : null,
                   ),
@@ -460,6 +460,7 @@ class _CalNavButton extends StatelessWidget {
               icon,
               size: 22,
               color: onPressed != null ? const Color(0xFF101723) : const Color(0xFFCBD5E1),
+              textDirection: TextDirection.ltr,
             ),
           ),
         ),

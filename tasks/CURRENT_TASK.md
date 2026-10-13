@@ -27,9 +27,23 @@ SCOPE: Implement approved Screen 04 (Search & Refine) and Region Multi-Select Bo
 - [x] Riverpod `searchIntentControllerProvider` manages draft vs applied search intent state.
 - [x] Stay dates validated for 2-30 nights; dates treated strictly as customer intent (never sent to `/properties/search`).
 - [x] Guest stepper, unit types, and budget slider functional with accessible labels and live regions.
-- [x] Customer app automated test suite passes with 100% pass rate (161/161 tests PASS).
-- [x] Static analysis passes: 0 issues in `customer_app` (`flutter analyze`).
+- [x] Customer app automated test suite passes with 100% pass rate (164/164 tests PASS).
+- [x] Design system test suite passes: 21/21 PASS (`flutter test; flutter analyze` in `konfrm_design_system`).
+- [x] Static analysis passes: 0 issues across all packages (`flutter analyze`).
 - [x] Samsung Galaxy A56 5G physical runtime validation captured across viewports and font scales (100%, 130%, 200%).
+- [x] **Founder Visual/UX Remediation Executed & Physical Evidence Captured:**
+  - [x] KONFRM Blue selection accents (`Color(0xFF276EF1)`) and soft light-blue range fill (`Color(0xFFEAF2FF)`) replace unapproved green/teal.
+  - [x] Compact horizontal wrapping pill chips with 20px radius and blue active state replace vertical checkboxes in `RegionMultiSelectSheet`.
+  - [x] Dynamic budget bounds rounded to multiples of 1,000 (`minBudget = floor(realMin/1000)*1000`, `maxBudget = ceil(realMax/1000)*1000`), scoped dynamically to selected destinations.
+  - [x] Updated budget copy and model: `الحد الأقصى لميزانية الليلة (اختياري)`, `اختر أقصى سعر لليلة لا تريد أن تتجاوزه، أو اتركه بدون حد لعرض جميع الأسعار.`, blue track and thumb.
+  - [x] Horizontal month paging calendar (`PageView`) with 2–30 nights validation, blue start/end dates, and light-blue range fill.
+  - [x] RTL calendar arrows strictly calibrated across Screen 04 and Screen 06 Property Details without auto-mirror distortion: `<` on physical RIGHT (advancing month in RTL) and `>` on physical LEFT (returning to previous month in RTL).
+  - [x] Samsung Galaxy A56 5G physical evidence artifacts:
+    - `01_screen04_a56_region_sheet_multi_selected.png`
+    - `02_screen04_a56_search_refine_full_page.png`
+    - `03_screen04_a56_budget_configured.png`
+    - `04_screen04_a56_horizontal_calendar_blue_range.png`
+    - `05_screen06_a56_property_details_calendar_arrows.png`
 
 ---
 

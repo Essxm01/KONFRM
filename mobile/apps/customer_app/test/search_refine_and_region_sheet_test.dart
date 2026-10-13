@@ -7,7 +7,9 @@ import 'package:customer_app/features/discovery/presentation/search_refine_view.
 import 'package:customer_app/features/discovery/presentation/widgets/guest_stepper_field.dart';
 import 'package:customer_app/features/discovery/presentation/widgets/price_ceiling_slider.dart';
 import 'package:customer_app/features/discovery/presentation/widgets/region_multiselect_sheet.dart';
+import 'package:customer_app/features/discovery/presentation/widgets/stay_dates_intent_picker.dart';
 import 'package:customer_app/features/discovery/presentation/widgets/unit_type_selector.dart';
+import 'package:customer_app/features/property_details/presentation/widgets/inline_availability_calendar.dart';
 
 PublicProperty _makeTestProperty({
   required String id,
@@ -199,13 +201,13 @@ void main() {
       // Check header and 16px radius container
       expect(find.text('تحديد الوجهات'), findsOneWidget);
       expect(find.byKey(const Key('region-search-input')), findsOneWidget);
-      expect(find.text('المحدد (1):'), findsOneWidget);
+      expect(find.text('المحدد (1)'), findsOneWidget);
 
       // Toggle 'هاسيندا وايت'
       await tester.tap(find.byKey(const Key('region-row-هاسيندا وايت')));
       await tester.pumpAndSettle();
 
-      expect(find.text('المحدد (2):'), findsOneWidget);
+      expect(find.text('المحدد (2)'), findsOneWidget);
 
       // Search filter typing
       await tester.enterText(
@@ -423,5 +425,137 @@ void main() {
         expect(appliedResult!.guestCount, 3);
       },
     );
+
+    testWidgets('PriceCeilingSlider renders title, helper copy, and dynamic bounds', (
+      tester,
+    ) async {
+      double? priceVal;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: StatefulBuilder(
+                builder: (context, setState) {
+                  return PriceCeilingSlider(
+                    maxPrice: priceVal,
+                    minBudget: 1000,
+                    maxBudget: 9000,
+                    onChanged: (val) => setState(() => priceVal = val),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Verify Title & Helper copy
+      expect(find.text('الحد الأقصى لميزانية الليلة (اختياري)'), findsOneWidget);
+      expect(
+        find.text('اختر أقصى سعر لليلة لا تريد أن تتجاوزه، أو اتركه بدون حد لعرض جميع الأسعار.'),
+        findsOneWidget,
+      );
+      expect(find.text('بدون حد أقصى'), findsNWidgets(2)); // Readout & boundary tick
+      expect(find.text('1,000 ج.م'), findsOneWidget);
+    });
+
+    testWidgets('HorizontalDateRangePickerSheet renders RTL arrows and blue accents', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (_) => const HorizontalDateRangePickerSheet(),
+                      );
+                    },
+                    child: const Text('افتح التقويم'),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('افتح التقويم'));
+      await tester.pumpAndSettle();
+
+      // Verify header and RTL arrow buttons
+      expect(find.text('تواريخ الإقامة'), findsOneWidget);
+      expect(find.byKey(const Key('calendar-next-month-button')), findsOneWidget);
+      expect(find.byKey(const Key('calendar-prev-month-button')), findsOneWidget);
+
+      // Verify arrow icons:
+      // "<" on physical RIGHT advances month
+      // ">" on physical LEFT returns to previous month
+      final nextIcon = tester.widget<Icon>(
+        find.descendant(
+          of: find.byKey(const Key('calendar-next-month-button')),
+          matching: find.byType(Icon),
+        ),
+      );
+      final prevIcon = tester.widget<Icon>(
+        find.descendant(
+          of: find.byKey(const Key('calendar-prev-month-button')),
+          matching: find.byType(Icon),
+        ),
+      );
+
+      expect(nextIcon.icon, Icons.chevron_left_rounded);
+      expect(prevIcon.icon, Icons.chevron_right_rounded);
+
+      // Tap next month button to verify horizontal navigation
+      await tester.tap(find.byKey(const Key('calendar-next-month-button')));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('InlineAvailabilityCalendar renders RTL arrows (< on right, > on left)', (
+      tester,
+    ) async {
+      var nextCalls = 0;
+      var prevCalls = 0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: InlineAvailabilityCalendar(
+                currentMonth: DateTime(2026, 10, 1),
+                availability: null,
+                isLoadingAvailability: false,
+                availabilityError: null,
+                selectedCheckIn: null,
+                selectedCheckOut: null,
+                calendarError: null,
+                onSelectDate: (_) {},
+                onNextMonth: () => nextCalls++,
+                onPreviousMonth: () => prevCalls++,
+                onRetryAvailability: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Find icons in calendar nav buttons
+      final iconWidgets = tester.widgetList<Icon>(find.byType(Icon)).toList();
+
+      // Physical right button has Icons.chevron_left ("<")
+      // Physical left button has Icons.chevron_right (">")
+      expect(iconWidgets.any((i) => i.icon == Icons.chevron_left), isTrue);
+      expect(iconWidgets.any((i) => i.icon == Icons.chevron_right), isTrue);
+    });
   });
 }

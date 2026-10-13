@@ -15,6 +15,16 @@ final filterMetadataProvider = Provider<FilterMetadata>((ref) {
   return FilterMetadata.fromProperties(discoveryState.properties);
 });
 
+/// Provider for dynamic filter metadata scoped to specific selected destinations.
+final scopedFilterMetadataProvider =
+    Provider.family<FilterMetadata, List<String>>((ref, destinations) {
+      final discoveryState = ref.watch(publicDiscoveryControllerProvider);
+      return FilterMetadata.fromProperties(
+        discoveryState.properties,
+        selectedDestinations: destinations,
+      );
+    });
+
 class SearchIntentController extends StateNotifier<SearchIntent> {
   SearchIntentController([SearchIntent? initial])
     : super(initial ?? SearchIntent.empty);

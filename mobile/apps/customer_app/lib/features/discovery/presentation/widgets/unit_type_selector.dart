@@ -81,7 +81,7 @@ class UnitTypeSelector extends StatelessWidget {
       selected: isSelected,
       label: 'نوع $label',
       child: Material(
-        color: isSelected ? const Color(0xFF000000) : const Color(0xFFF8FAFC),
+        color: isSelected ? const Color(0xFF276EF1) : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(8),
         child: InkWell(
           key: key,
@@ -94,7 +94,7 @@ class UnitTypeSelector extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: isSelected
-                    ? const Color(0xFF000000)
+                    ? const Color(0xFF276EF1)
                     : const Color(0xFFE2E8F0),
               ),
             ),

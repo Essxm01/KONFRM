@@ -181,20 +181,28 @@ class FilterMetadata {
   const FilterMetadata({
     this.availableDestinations = const [],
     this.availableUnitTypes = const [],
+    this.minInventoryPrice = 0,
     this.maxInventoryPrice = 0,
+    this.minBudget = 1000,
+    this.maxBudget = 50000,
     this.priceCeiling,
   });
 
   final List<String> availableDestinations;
   final List<String> availableUnitTypes;
+  final double minInventoryPrice;
   final double maxInventoryPrice;
+  final double minBudget;
+  final double maxBudget;
   final double? priceCeiling;
 
   /// Harvests filter metadata dynamically from authentic property listings.
-  factory FilterMetadata.fromProperties(List<PublicProperty> properties) {
+  factory FilterMetadata.fromProperties(
+    List<PublicProperty> properties, {
+    List<String>? selectedDestinations,
+  }) {
     final destinationSet = <String>{};
     final unitTypeSet = <String>{};
-    double maxPrice = 0;
 
     for (final p in properties) {
       if (p.resortName != null && p.resortName!.trim().isNotEmpty) {
@@ -206,25 +214,75 @@ class FilterMetadata {
       if (p.unitType.trim().isNotEmpty && p.unitType.toUpperCase() != 'ALL') {
         unitTypeSet.add(p.unitType.trim().toUpperCase());
       }
-      if (p.basePricePerNight > maxPrice) {
-        maxPrice = p.basePricePerNight;
-      }
     }
 
     final sortedDestinations = destinationSet.toList()
       ..sort((a, b) => a.compareTo(b));
     final sortedTypes = unitTypeSet.toList()..sort();
 
-    double? computedCeiling;
-    if (maxPrice > 0) {
-      computedCeiling = ((maxPrice / 1000).floor() + 1) * 1000;
+    // Determine relevant discovery scope for price bounds
+    var priceTargetProperties = properties;
+    if (selectedDestinations != null && selectedDestinations.isNotEmpty) {
+      final filtered = properties.where((p) {
+        final resort = p.resortName?.trim().toLowerCase() ?? '';
+        final reg = p.region?.trim().toLowerCase() ?? '';
+        return selectedDestinations.any((d) {
+          final target = d.trim().toLowerCase();
+          return resort.contains(target) ||
+              reg.contains(target) ||
+              target.contains(resort) ||
+              target.contains(reg);
+        });
+      }).toList();
+      if (filtered.isNotEmpty) {
+        priceTargetProperties = filtered;
+      }
+    }
+
+    double realMin = 0;
+    double realMax = 0;
+    bool hasPrice = false;
+
+    for (final p in priceTargetProperties) {
+      if (p.basePricePerNight > 0) {
+        if (!hasPrice) {
+          realMin = p.basePricePerNight;
+          realMax = p.basePricePerNight;
+          hasPrice = true;
+        } else {
+          if (p.basePricePerNight < realMin) realMin = p.basePricePerNight;
+          if (p.basePricePerNight > realMax) realMax = p.basePricePerNight;
+        }
+      }
+    }
+
+    // Rounding rule:
+    // minBudget = floor(realMinNightlyPrice / 1000) * 1000
+    // maxBudget = ceil(realMaxNightlyPrice / 1000) * 1000
+    double computedMinBudget;
+    double computedMaxBudget;
+
+    if (hasPrice) {
+      computedMinBudget = (realMin / 1000).floor() * 1000.0;
+      if (computedMinBudget < 1000) computedMinBudget = 1000;
+
+      computedMaxBudget = (realMax / 1000).ceil() * 1000.0;
+      if (computedMaxBudget <= computedMinBudget) {
+        computedMaxBudget = computedMinBudget + 1000;
+      }
+    } else {
+      computedMinBudget = 1000;
+      computedMaxBudget = 50000;
     }
 
     return FilterMetadata(
       availableDestinations: sortedDestinations,
       availableUnitTypes: sortedTypes,
-      maxInventoryPrice: maxPrice,
-      priceCeiling: computedCeiling,
+      minInventoryPrice: realMin,
+      maxInventoryPrice: realMax,
+      minBudget: computedMinBudget,
+      maxBudget: computedMaxBudget,
+      priceCeiling: computedMaxBudget,
     );
   }
 }

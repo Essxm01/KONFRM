@@ -226,95 +226,46 @@ class _RegionMultiSelectSheetState extends State<RegionMultiSelectSheet> {
               ),
             ),
 
-            // 4. Selected Summary Chips Track
-            if (_selected.isNotEmpty)
-              Container(
-                margin: const EdgeInsets.only(top: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                height: 38,
-                child: Row(
-                  children: [
-                    Text(
-                      'المحدد (${_selected.length}):',
-                      style: const TextStyle(
-                        fontFamily: KonfrmTypography.fontFamily,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF0F172A),
-                      ),
+            // 4. Compact Selected Summary Row
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    _selected.isEmpty ? 'المحدد (0)' : 'المحدد (${_selected.length})',
+                    style: const TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F172A),
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          for (final region in _selected)
-                            Container(
-                              margin: const EdgeInsetsDirectional.only(end: 6),
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                8,
-                                4,
-                                4,
-                                4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF1F5F9),
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(
-                                  color: const Color(0xFFCBD5E1),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    region,
-                                    style: const TextStyle(
-                                      fontFamily: KonfrmTypography.fontFamily,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF0F172A),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  GestureDetector(
-                                    onTap: () => _toggleRegion(region),
-                                    child: const Icon(
-                                      Icons.close_rounded,
-                                      size: 14,
-                                      color: Color(0xFF475569),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    TextButton(
+                  ),
+                  if (_selected.isNotEmpty)
+                    InkWell(
                       key: const Key('region-clear-all-button'),
-                      onPressed: _clearAll,
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
-                        minimumSize: const Size(40, 32),
-                      ),
-                      child: const Text(
-                        'مسح الكل',
-                        style: TextStyle(
-                          fontFamily: KonfrmTypography.fontFamily,
-                          fontSize: 12,
-                          color: Color(0xFFDC2626),
-                          fontWeight: FontWeight.w600,
+                      onTap: _clearAll,
+                      borderRadius: BorderRadius.circular(4),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        child: Text(
+                          'مسح الكل',
+                          style: TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 13,
+                            color: Color(0xFF64748B),
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                ],
               ),
+            ),
 
-            const Divider(height: 16, thickness: 1, color: Color(0xFFF1F5F9)),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F5F9)),
 
-            // 5. Categorized Destination List
+            // 5. Categorized Destination Flowing Chips (Wrap)
             Expanded(
               child: categorized.isEmpty
                   ? Center(
@@ -332,39 +283,32 @@ class _RegionMultiSelectSheetState extends State<RegionMultiSelectSheet> {
                         ),
                       ),
                     )
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: categorized.length,
-                      itemBuilder: (context, groupIndex) {
-                        final groupEntry = categorized.entries.elementAt(
-                          groupIndex,
-                        );
-                        final groupName = groupEntry.key;
-                        final resorts = groupEntry.value;
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 12,
-                                bottom: 6,
-                              ),
-                              child: Text(
-                                groupName,
-                                style: const TextStyle(
-                                  fontFamily: KonfrmTypography.fontFamily,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: Color(0xFF475569),
-                                ),
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                      children: [
+                        for (final groupEntry in categorized.entries) ...[
+                          Padding(
+                            padding: const EdgeInsets.only(top: 14, bottom: 8),
+                            child: Text(
+                              groupEntry.key,
+                              style: const TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF475569),
                               ),
                             ),
-                            for (final resort in resorts)
-                              _buildRegionRow(resort),
-                          ],
-                        );
-                      },
+                          ),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              for (final resort in groupEntry.value)
+                                _buildDestinationChip(resort),
+                            ],
+                          ),
+                        ],
+                      ],
                     ),
             ),
 
@@ -399,7 +343,7 @@ class _RegionMultiSelectSheetState extends State<RegionMultiSelectSheet> {
                     child: Text(
                       _selected.isEmpty
                           ? 'تأكيد الوجهات (الكل)'
-                          : 'تأكيد الوجهات (${_selected.length} محددة)',
+                          : 'تأكيد الوجهات (${_selected.length})',
                       style: const TextStyle(
                         fontFamily: KonfrmTypography.fontFamily,
                         fontSize: 15,
@@ -416,65 +360,45 @@ class _RegionMultiSelectSheetState extends State<RegionMultiSelectSheet> {
     );
   }
 
-  Widget _buildRegionRow(String resort) {
+  Widget _buildDestinationChip(String resort) {
     final isSelected = _selected.contains(resort);
 
     return Semantics(
       button: true,
       selected: isSelected,
       label: 'وجهة $resort',
-      child: InkWell(
-        key: Key('region-row-$resort'),
-        onTap: () => _toggleRegion(resort),
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 50),
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-          child: Row(
-            children: [
-              // Custom checkbox at physical right (RTL Start)
-              Container(
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? const Color(0xFF000000)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(
-                    color: isSelected
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFCBD5E1),
-                    width: 1.5,
-                  ),
-                ),
-                child: isSelected
-                    ? const Center(
-                        child: Icon(
-                          Icons.check_rounded,
-                          size: 16,
-                          color: Colors.white,
-                        ),
-                      )
-                    : null,
+      child: Material(
+        color: isSelected ? const Color(0xFF276EF1) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          key: Key('region-chip-$resort'),
+          onTap: () => _toggleRegion(resort),
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            key: Key('region-row-$resort'),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected
+                    ? const Color(0xFF276EF1)
+                    : const Color(0xFFE2E8F0),
+                width: 1.0,
               ),
-              const SizedBox(width: 14),
-              // Resort / Region name
-              Expanded(
-                child: Text(
-                  resort,
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 15,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: const Color(0xFF0F172A),
-                  ),
-                ),
+            ),
+            child: Text(
+              resort,
+              style: TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? Colors.white : const Color(0xFF1E293B),
               ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 }
+

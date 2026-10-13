@@ -81,7 +81,9 @@ class _SearchRefineViewState extends ConsumerState<SearchRefineView> {
 
   @override
   Widget build(BuildContext context) {
-    final metadata = ref.watch(filterMetadataProvider);
+    final metadata = ref.watch(
+      scopedFilterMetadataProvider(_draft.selectedRegions),
+    );
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -260,6 +262,8 @@ class _SearchRefineViewState extends ConsumerState<SearchRefineView> {
             // 5. Price Ceiling Slider Section
             PriceCeilingSlider(
               maxPrice: _draft.maxPricePerNight,
+              minBudget: metadata.minBudget,
+              maxBudget: metadata.maxBudget,
               maxInventoryPrice: metadata.priceCeiling,
               onChanged: (val) {
                 setState(() {

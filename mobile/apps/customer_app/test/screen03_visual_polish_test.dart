@@ -247,4 +247,51 @@ void main() {
       await tester.pumpAndSettle();
     });
   });
+
+  group('Screen 03 Visual Polish — Property Card Final Design & Favorite Heart Action', () {
+    testWidgets('renders favorite heart action on image and toggles in-session state with truthful feedback', (
+      tester,
+    ) async {
+      final repository = PublicPropertySearchRepository(
+        baseUrl: 'https://api.example.test',
+        client: MockClient((_) async => _mockResponse([_sampleProperty()])),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            publicPropertySearchRepositoryProvider.overrideWithValue(repository),
+          ],
+          child: const KonfrmCustomerApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final heartFinder = find.byKey(const Key('property-favorite-heart-prop-polish-1'));
+      expect(heartFinder, findsOneWidget);
+
+      // Initially un-favorited (outline heart)
+      expect(find.descendant(of: heartFinder, matching: find.byIcon(Icons.favorite_border_rounded)), findsOneWidget);
+      expect(find.descendant(of: heartFinder, matching: find.byIcon(Icons.favorite_rounded)), findsNothing);
+
+      // Tap heart to favorite
+      await tester.tap(heartFinder);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.descendant(of: heartFinder, matching: find.byIcon(Icons.favorite_rounded)), findsOneWidget);
+      expect(find.textContaining('تمت إضافة "فيلا تجريبية فاخرة" إلى المفضلة'), findsOneWidget);
+
+      // Advance past SnackBar duration
+      await tester.pumpAndSettle();
+
+      // Tap heart again to unfavorite
+      await tester.tap(heartFinder);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.descendant(of: heartFinder, matching: find.byIcon(Icons.favorite_border_rounded)), findsOneWidget);
+      expect(find.textContaining('تمت إزالة "فيلا تجريبية فاخرة" من المفضلة'), findsOneWidget);
+    });
+  });
 }

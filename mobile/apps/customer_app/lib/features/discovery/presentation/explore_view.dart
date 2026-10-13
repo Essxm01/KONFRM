@@ -23,7 +23,7 @@ class ExploreView extends ConsumerStatefulWidget {
     this.onAccountTap,
     this.onNotificationTap,
     this.showNotification = false,
-    this.avatarStyle = AvatarCandidateStyle.soft3d,
+    this.avatarStyle = AvatarCandidateStyle.branded,
   });
 
   final String? userName;
@@ -187,7 +187,7 @@ class _DiscoveryResults extends StatelessWidget {
           const SizedBox(height: 12),
           for (final property in state.properties) ...[
             _PublicPropertyCard(property: property),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
           ],
         ],
       );
@@ -275,6 +275,7 @@ class _PublicPropertyCard extends StatelessWidget {
         .where((part) => part.isNotEmpty)
         .toSet()
         .join('، ');
+
     return Semantics(
       container: true,
       explicitChildNodes: true,
@@ -296,75 +297,159 @@ class _PublicPropertyCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Hero Image + Vignette Scrim + Favorite Action
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(12),
                 ),
-                child: AspectRatio(
-                  aspectRatio: 1.4,
-                  child: property.images.isEmpty
-                      ? const _PropertyImagePlaceholder()
-                      : Image.network(
-                          property.images.first.toString(),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const _PropertyImagePlaceholder(),
+                child: Stack(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 1.45,
+                      child: property.images.isEmpty
+                          ? const _PropertyImagePlaceholder()
+                          : Image.network(
+                              property.images.first.toString(),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const _PropertyImagePlaceholder(),
+                            ),
+                    ),
+                    // Subtle vignette gradient for upper controls
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: 52,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.22),
+                              Colors.transparent,
+                            ],
+                          ),
                         ),
+                      ),
+                    ),
+                    // Favorite Heart Action (Top-left in RTL)
+                    PositionedDirectional(
+                      top: 10,
+                      end: 10,
+                      child: _FavoriteHeartButton(
+                        propertyId: property.id,
+                        propertyTitle: property.title,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              // Content Block
               Padding(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(property.title, style: KonfrmTypography.sectionTitle),
+                    // Property Name / Title
+                    Text(
+                      property.title,
+                      style: const TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF111827),
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    // Secondary Location Line
                     if (location.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(location, style: KonfrmTypography.supporting),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: Color(0xFF64748B),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              location,
+                              style: const TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF64748B),
+                                height: 1.25,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
+                    // Structured Grouped Fact Badges
                     Wrap(
-                      spacing: 14,
+                      spacing: 6,
                       runSpacing: 6,
                       children: [
-                        _PropertyFact(
+                        _PropertyFactBadge(
                           icon: Icons.home_outlined,
                           label: _unitTypeLabel(property.unitType),
                         ),
-                        _PropertyFact(
+                        _PropertyFactBadge(
                           icon: Icons.bed_outlined,
                           label: '${property.bedrooms} غرف نوم',
                         ),
-                        _PropertyFact(
+                        _PropertyFactBadge(
                           icon: Icons.bathtub_outlined,
                           label: '${property.bathrooms} حمامات',
                         ),
-                        _PropertyFact(
+                        _PropertyFactBadge(
                           icon: Icons.people_outline,
                           label: '${property.maxGuests} ضيوف',
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
+                    // Prominent Nightly Price Anchor
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: 4,
+                      spacing: 5,
                       textDirection: ui.TextDirection.rtl,
                       children: [
                         KonfrmPriceText(
                           amount: property.basePricePerNight,
-                          amountStyle: KonfrmTypography.sectionTitle.copyWith(
-                            fontWeight: FontWeight.bold,
+                          amountStyle: const TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF111827),
+                            height: 1.2,
                           ),
-                          currencyStyle: KonfrmTypography.sectionTitle.copyWith(
-                            fontWeight: FontWeight.bold,
+                          currencyStyle: const TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF111827),
+                            height: 1.2,
                           ),
                         ),
-                        Text(
+                        const Text(
                           '/ ليلة',
                           textDirection: ui.TextDirection.rtl,
-                          style: KonfrmTypography.supporting.copyWith(
-                            color: const Color(0xFF6B7280),
+                          style: TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF64748B),
+                            height: 1.2,
                           ),
                         ),
                       ],
@@ -389,21 +474,118 @@ class _PublicPropertyCard extends StatelessWidget {
   };
 }
 
-class _PropertyFact extends StatelessWidget {
-  const _PropertyFact({required this.icon, required this.label});
+class _FavoriteHeartButton extends StatefulWidget {
+  const _FavoriteHeartButton({
+    required this.propertyId,
+    required this.propertyTitle,
+  });
+
+  final String propertyId;
+  final String propertyTitle;
+
+  @override
+  State<_FavoriteHeartButton> createState() => _FavoriteHeartButtonState();
+}
+
+class _FavoriteHeartButtonState extends State<_FavoriteHeartButton> {
+  bool _isFavorite = false;
+
+  void _toggleFavorite() {
+    setState(() {
+      _isFavorite = !_isFavorite;
+    });
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _isFavorite
+              ? 'تمت إضافة "${widget.propertyTitle}" إلى المفضلة (جلسة حالية).'
+              : 'تمت إزالة "${widget.propertyTitle}" من المفضلة.',
+          textDirection: ui.TextDirection.rtl,
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: _isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة',
+      child: GestureDetector(
+        key: Key('property-favorite-heart-${widget.propertyId}'),
+        behavior: HitTestBehavior.opaque,
+        onTap: _toggleFavorite,
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white.withValues(alpha: 0.92),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x1F000000),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Icon(
+              _isFavorite
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border_rounded,
+              size: 20,
+              color: _isFavorite
+                  ? const Color(0xFFE34154)
+                  : const Color(0xFF1E293B),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PropertyFactBadge extends StatelessWidget {
+  const _PropertyFactBadge({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Icon(icon, size: 18, color: const Color(0xFF4B5563)),
-      const SizedBox(width: 4),
-      Text(label, style: KonfrmTypography.supporting),
-    ],
-  );
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+          width: 0.8,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: const Color(0xFF475569)),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: KonfrmTypography.fontFamily,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF334155),
+              height: 1.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _PropertyImagePlaceholder extends StatelessWidget {

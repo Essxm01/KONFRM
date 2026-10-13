@@ -1,14 +1,14 @@
-# Active Task — CUSTOMER_SCREEN_03_FINAL_VISUAL_DECISION_PREPARATION
+# Active Task — CUSTOMER_SCREEN_03_FINALIZATION_EXECUTION
 
-TASK_ID: CUSTOMER_SCREEN_03_FINAL_VISUAL_DECISION_PREPARATION
+TASK_ID: CUSTOMER_SCREEN_03_FINALIZATION_EXECUTION
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: READY_FOR_MERGE
-PR: #120 (READY FOR REVIEW)
+STATUS: AWAITING_FOUNDER_FINAL_SCREEN03_APPROVAL
+PR: #120 (AWAITING FOUNDER FINAL REVIEW)
 EXECUTION_STARTED: YES
 BASE_MAIN_SHA: f6911eeecfa100cbbfec935e15769e66966ce835
 FEATURE_BASE_COMMIT_SHA: b7e991ab7ce99818db2f51f4963553fe1fc53a73
 BRANCH: feat/customer-screen03-explore-redesign
-SCOPE: Complete controlled visual polish and exploration on native Customer Screen 03 (Explore) for PR #120 without altering global design system tokens or expanding into Screen 04/05. Includes: (1) Root-cause RTL preview harness discrepancy and prove genuine production app has always been canonical RTL; (2) Refine Candidate 2 (Soft 3D) avatar with friendly, expressive facial definitions (smiling eyes, brows, nose, blush, smile, specular highlights) across 3 variants (Classic, Waves, Ambient) while preserving real photo precedence and baseline silhouette; (3) Circular notification control matching 44dp tune button geometry (omitted in guest mode); (4) Apply Founder-selected 12dp button corner radius to Screen 03 search dependency sheet Primary CTA without modifying global design system tokens or Screen 07; (5) Harmonize property card facts to consistent refined outline icons (home_outlined, bed_outlined, bathtub_outlined, people_outline); (6) Audit property card review gaps (favorite heart action & comparison row); (7) RTL coordinate regression tests across Header, Search Trigger, Card, and 4-Tab Navigation; (8) Capture fresh physical Samsung Galaxy A56 5G evidence.
+SCOPE: Finalize Screen 03 (Explore) native Flutter Customer App visual and structural candidate for PR #120 per locked Founder decisions. Includes: (1) Locked Avatar Candidate 3 (branded monochrome luxury concierge) as the default fallback while keeping top precedence for real user photo; (2) Locked 12dp corner radius for immediate action buttons (search dependency sheet Primary CTA 'فهمت') and 26dp for search pill; (3) Locked unified modern outline icon family across search, filter, card facts, and navigation; (4) Refined Property Card design with real API photography, floating 36dp favorite heart button with outline/crimson toggle and truthful feedback SnackBar, refined title hierarchy, location pin row, grouped fact badges in container, and bold nightly price anchor; (5) Search & refine dependency boundary preserved with truthful explanation sheet; (6) Physical verification on Samsung Galaxy A56 5G with live Cloudflare Worker API.
 
 ## Boundaries & Invariants
 - Zero global design system migration or token mutations; 12dp button radius is strictly local to Screen 03 search sheet comparison.
@@ -17,19 +17,18 @@ SCOPE: Complete controlled visual polish and exploration on native Customer Scre
 - Zero dead buttons: notification bell strictly omitted in guest mode where native inbox does not yet exist.
 - Preserve 4-tab Customer navigation shell and real public search repository integration.
 - Preserve Screen 04/05 boundaries: compact search trigger acts as an entry point, currently displaying a temporary dependency notice bottom sheet to Screen 04. End-to-end search filtering remains unimplemented pending dedicated task authorization.
+- Strictly no merge or deployment without explicit Founder authorization.
 
 ## Verification & Quality Gates
-- [x] RTL Discrepancy Root-Caused: Isolated to standalone test harness lacking Arabic locale; genuine production app (`KonfrmCustomerApp`) confirmed 100% canonical RTL.
-- [x] Avatar Candidate 2 (Soft 3D) refined with friendly, crisp facial definitions at 44dp across 3 neutral palettes (Classic, Waves, Ambient).
-- [x] Circular notification button harmonized to 44×44dp circular bordered container and hidden in guest mode.
-- [x] Founder-selected 12dp button radius applied to Screen 03 search dependency sheet CTA button without mutating global tokens.
-- [x] Property card fact icons harmonized to refined outlines (`home_outlined`, `bed_outlined`, `bathtub_outlined`, `people_outline`).
-- [x] Property card review gaps audited and documented (favorite heart action, comparison row hierarchy).
-- [x] RTL physical coordinate regression test added and passing for Header, Search Pill, Price, and 4-Tab Navigation.
-- [x] Customer app automated test suite passes: 144/144 PASS across all 12 test suites.
+- [x] Avatar Candidate 3 (branded monochrome luxury concierge) locked as default fallback in `ExploreView`; real user photo precedence preserved.
+- [x] Button corner radius locked: 12dp for immediate action buttons (search dependency sheet CTA 'فهمت'), 26dp for search trigger container.
+- [x] Icon family locked: unified modern rounded/outline icons across search, filter, facts, and navigation.
+- [x] Refined Property Card design finalized: real API photography, floating 36dp favorite heart button with outline/crimson toggle and truthful feedback SnackBar, refined title hierarchy, location pin row, grouped fact badges in container, and bold nightly price anchor.
+- [x] RTL physical coordinate geometry verified across Header, Search Pill, Property Card, and 4-Tab Navigation.
+- [x] Customer app automated test suite passes: 145/145 PASS across all 12 test suites.
 - [x] Static analysis passes: 0 issues in `customer_app`.
-- [x] Physical Samsung Galaxy A56 5G (`SM_A566B`, Android 16 / One UI 8) verified with 5 fresh canonical RTL captures.
-- [x] Founder final visual review and approval granted via artifact verification policy. Ready for merge authorization.
+- [x] Physical Samsung Galaxy A56 5G (`SM_A566B`, Android 16 / One UI 8) verified with 4 fresh canonical RTL captures against live Cloudflare Worker API.
+- [x] Final review candidate submitted for Founder decision: status `AWAITING_FOUNDER_FINAL_SCREEN03_APPROVAL`.
 
 ---
 

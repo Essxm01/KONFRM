@@ -5,6 +5,23 @@
 
 > **START HERE IF YOU ARE THE NEW ASSISTANT:** Treat this file as the latest dated continuity snapshot. Recheck GitHub live PR heads, issue states and main before saying anything is current. Do not assume the prior ChatGPT account's memory, conversations, plugins or connected devices transfer automatically. You can recover documented knowledge and operating preferences, NOT the previous model's private latent memory, private chats, credentials or exact personal context.
 
+## BRIDGE 12 TO BRIDGE 13 — NEW PROMPT DELIVERY RULE (2026-10-14)
+
+Founder directive from Bridge 12, 2026-10-14. Supersedes earlier prompt delivery format, not product/business authority.
+
+- Starting with the next task AFTER the already-dispatched Screen 11 task, Bridge must commit the entire independently executable Antigravity instruction to a versioned Markdown file on a documentation-only GitHub branch BEFORE sending instructions to the Founder.
+- Bridge must read the committed file back, verify its full content, branch, path and actual commit SHA, and provide a commit-pinned file URL.
+- In ChatGPT, Founder receives ONLY one short copy-ready dispatch message asking Antigravity to read that entire verified GitHub file, verify current source reality, execute within scope, run tests, upload real privacy-safe Samsung A56 evidence, and return the report.
+- Never silently revise a dispatched prompt. Corrections require a separate version and separate approval. Do not interrupt the current Screen 11 task.
+- Never publish confidential material in this public repository, modify production code, merge a PR, or deploy merely to store the prompt.
+- Screen 11 Booking Request Sent prototype was already sent to Antigravity by Founder, result is pending verification. Screen 12 is next only after Screen 11 Founder design review. See Issue #128.
+- Current ChatGPT account has GitHub access; private Antigravity plugin connection remains on old account; Founder is manually exchanging short commands and reports until reconnection.
+- Bridge 13 must read this updated file, check Issue #128 and real branch/PR/screenshot state, and enforce this GitHub-first full-prompt plus short-chat-dispatch protocol.
+
+Bridge 13 recovery starter: Read this full handoff from the real GitHub branch and current Issue #128. Resume Bridge 12 without restarting already-dispatched Screen 11. For all future Antigravity tasks, commit the complete prompt to GitHub and verify its pinned URL; send Founder only a short command to open, read and run that file. Respect Founder authorization, role-specific UX and canonical booking/financial rules.
+
+---
+
 ## 0. One-minute recovery / current focus
 
 **Project:** [Essxm01/KONFRM](https://github.com/Essxm01/KONFRM), PUBLIC GitHub repository. Arabic-first marketplace for short holiday/accommodation stays in Egypt; current name **KONFRM | كونفرم** (legacy SOLA / Yalla Masyaf names may remain in identifiers and are NOT authorization for mass renames).

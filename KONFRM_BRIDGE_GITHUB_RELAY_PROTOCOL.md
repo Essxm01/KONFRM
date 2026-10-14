@@ -4,6 +4,18 @@
 **Classification:** Operating protocol; NOT project code, independent task authorization, proof of execution, approval to merge/deploy, or release signoff.  
 **Repository visibility:** PUBLIC. Never store credentials, tokens, private customer data, real account identifiers or private device captures.
 
+## FOUNDER OVERRIDE — NO GITHUB SCREENSHOT DELETION UNTIL COMPLETE FINAL APP (2026-10-15)
+
+**CURRENT MANDATORY POLICY — SUPERSEDES earlier cleanup instructions in this file and all historical screen prompts/Issue #128:** The Founder has explicitly ordered that **ALL GitHub-uploaded screenshots, UI screenshots, physical-device capture evidence and associated Flutter preview source/report/manifests/Base64 readable companions be PRESERVED**, including old rejected V1 and approved V2, until the **entire KONFRM app(s) is assembled and final application deliverable(s) exported**, with full visual-functional integration checks. **Even after final export there is NO automatic deletion: individual evidence branches/files may be cleaned ONLY after Founder specifically approves the named cleanup following a preservation/backup audit.**
+
+**New default:** `RETAIN_UNTIL_FINAL_APP_EXPORT_AND_EXPLICIT_FOUNDER_CLEANUP_APPROVAL`. Under this hold, DO NOT mark screens `TRASH_READY` or `PURGED`, move screenshots to tracked `trash/`, delete evidence files/branches, prune Base64 companions earlier, force-push Git history, or discard historical review iterations because a single screen is visually signed off. This applies to Customer, Owner, Admin and shared design screenshots. Preserve `REPORT.md`, `README.md`, `VISUAL_BRIDGE_README.md` and `review-source/*.dart` with them, so final Flutter assembly can reuse and verify sources.
+
+**Privacy exceptions:** no unsanitized real-customer or device-serial/public-credential evidence should ever be uploaded; harmful exposure must receive a separately governed incident response instead of blanket retention of unsafe public data. Continue pre-upload image optimization to avoid repo bloat. No production/financial/backend changes authorized.
+
+**Full persistent policy:** [KONFRM_EVIDENCE_RETENTION_FOUNDER_OVERRIDE_20261015.md](KONFRM_EVIDENCE_RETENTION_FOUNDER_OVERRIDE_20261015.md), [tracking Issue #155](https://github.com/Essxm01/KONFRM/issues/155). EVERY future GitHub Antigravity design prompt MUST name the hold and forbid post-visual-approval evidence cleanup. Existing dispatched Screen14 pinned prompt is immutable and not rewritten; apply this superseding Founder directive to any subsequent cleanup proposal.
+
+---
+
 ## 1. Intent and roles
 
 The Founder is a **human messenger of SHORT NOTIFICATIONS ONLY**, not a courier of large technical prompts, reports, screenshots or logs.
@@ -73,7 +85,10 @@ Founder can forward this exact short note with no large report or screenshots.
 4. Classify findings as VERIFIED, AGENT_CLAIM_ONLY, FAILED, NEEDS_FOUNDER_DECISION or DEFERRED, not a binary green CI verdict.
 5. Respond in clear Egyptian Arabic with what was actually verified, specific UI observations, relevant blockers and only the needed Founder decision/next action. **No request to paste the long report** if GitHub access works. If access fails, describe the exact blocker and request only the minimum link/permission correction.
 
-## 5. Temporary prompt and evidence lifecycle
+## 5. Historical temporary prompt and evidence lifecycle — SCREENSHOT DELETION POLICY SUPERSEDED BY 2026-10-15 FOUNDER HOLD
+
+> **OBSOLETE FOR SCREENSHOTS/EVIDENCE:** Any `TRASH_READY`, branch deletion or early Base64 cleanup text in this historical section is NOT ACTIVE. See the Founder override at the top of this protocol and Issue #155. Preserve all GitHub review screenshots + sources/reports until full final app assembly/export and separate explicit Founder cleanup approval.
+
 
 - Full task prompts and evidence/reports are temporary execution artifacts, NOT automatically permanent design Canon.
 - Keep intact during execution, while Antigravity may still read them, until Bridge's independent review, Founder visual approval and all outstanding corrections/evidence dependencies have been checked.

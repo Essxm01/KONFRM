@@ -5,7 +5,6 @@
 **Evidence Branch:** `evidence/customer-screen08-design-review`  
 **Base Commit:** `origin/main` (`f6911eeecfa100cbbfec935e15769e66966ce835`)  
 **Hardware Device:** Samsung Galaxy A56 5G (`SM-A566B`)  
-**Hardware Serial:** `RKCY901NGRD`  
 **Display Specification:** 1080 × 2340 px, 450 dpi, scale factor ~2.8125x (effective logical width: ~384 dp)  
 **OS:** Android 16 (API 36) / One UI  
 **Execution Mode:** Visual Design Candidate Verification (Zero production modifications; 100% isolated prototype)  

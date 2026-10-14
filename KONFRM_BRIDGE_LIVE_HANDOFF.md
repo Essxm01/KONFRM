@@ -22,6 +22,20 @@ Bridge 13 recovery starter: Read this full handoff from the real GitHub branch a
 
 ---
 
+### PROMPT AND DEVICE EVIDENCE RETENTION — TEMPORARY ARTIFACTS (FOUNDER UPDATE 2026-10-14)
+
+**Founder intent:** GitHub-hosted Antigravity prompts are short-lived EXECUTION INSTRUCTIONS, not permanent product canon. Make prompt storage easy to clean after its usefulness has demonstrably ended; treat large temporary device screenshot evidence similarly. This amends the GitHub-first rule above, not its read-before-run or evidence requirements.
+
+1. **Use a disposable, isolated, docs-only prompt branch per task** (e.g. `temp/antigravity-prompt/TASK_ID_V1`) and a uniquely named Markdown file. Never merge transient prompt text into main or other long-lived canonical docs merely for dispatch. The single short command to Founder must point to the verified immutable commit/ref and instruct Antigravity to read that exact complete version. No new default Git-tracked `trash/` directory.
+2. **Keep through actual execution and Founder review.** Receiving the prompt, starting execution, passing CI, or delivering an agent report does **not** alone make the prompt disposable. Retain while implementation is running, blocked, failing, under UX review, awaiting founder acceptance, or relied upon for outstanding remediation/tests/traceability. Do not change or remove the live file while Antigravity might still be using it.
+3. **Closure check before trash:** independently verify the result, exact code HEAD and scope, Founder UI decision, relevant real-device screenshots, tests, issue/PR references, and whether active corrective work, audit, regression, security or product decision may still depend on the instructions. Capture a minimal non-sensitive durable outcome record (Task ID, executed prompt commit SHA, result/decision, code/evidence links, deferred issues) without duplicating the full prompt.
+4. **TRASH_READY is a status, not a Git folder.** Once no dependency remains, mark the temporary prompt branch and associated disposable screenshots `TRASH_READY` in the task/evidence record and present the exact proposed cleanup targets. The Founder has requested prompt cleanup, but any irreversible deletion/branch pruning must first satisfy the documented safe-cleanup gate and specific authorization for the affected artifacts. Do not erase or repurpose an active/shared branch.
+5. **Actual cleanup:** prefer deleting an isolated temporary prompt branch or preview evidence branch after approval and after checking it contains no unique important work. If the Founder wants a trash/recycle holding location, use an explicitly approved NON-GIT local/archive holding area with a defined retention period; do not move files into a tracked `trash/` folder inside the public repository, since that leaves blobs in Git history and does not reclaim repository history/storage. Git deletion is not a guarantee of permanent erasure from commit history, mirrors or caches.
+6. **Screen 11 transition:** its full prompt was already sent manually before GitHub-first dispatch; no retroactive prompt branch, no interruption and no cleanup of current task. Apply this lifecycle to the NEXT NEW prompt. Existing evidence branches (Screen05/08/09/10 and future Screen11) remain until their outstanding review/QA dependencies are checked; respect Issue #142 and any stricter governing retention requirement.
+7. **Bridge 13+ mandatory recovery:** apply BOTH GitHub-first full prompt / chat-only short dispatch AND temporary-artifact cleanup protocol. A new conversation must recover this section before writing or purging prompts and must never treat an older 2026-10-13 snapshot as current.
+
+---
+
 ## 0. One-minute recovery / current focus
 
 **Project:** [Essxm01/KONFRM](https://github.com/Essxm01/KONFRM), PUBLIC GitHub repository. Arabic-first marketplace for short holiday/accommodation stays in Egypt; current name **KONFRM | كونفرم** (legacy SOLA / Yalla Masyaf names may remain in identifiers and are NOT authorization for mass renames).

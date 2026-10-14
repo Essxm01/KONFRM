@@ -99,3 +99,14 @@ Bridge 12 discovered an actual access limitation during Screen11 review: the con
 - The Base64 text images are **transient accessibility bridges** and may be cleaned sooner, after Bridge confirms it actually decoded/reviewed them and the Founder-approved evidence closure gate passes. They are not an excuse to drop the original screenshots or metadata.
 - This is a conditional tool-access workaround and does not grant permission for code edits, screenshot re-capture, merges, deployment, or changed product decisions.
 - Initial narrow proof task: `SCREEN11_EVIDENCE_BRIDGE_V1` on disposable documentation-only branch `temp/antigravity-prompt/SCREEN11_EVIDENCE_BRIDGE_V1`. It requests Screen11 `REPORT.md` plus visual JPEG Base64 companions while preserving original PNGs; do not equate preparing the prompt with its execution.
+
+
+## Additional mandatory screen-design review: `VISUAL_DENSITY_AND_SPACING_QA` (Founder 2026-10-14)
+
+Founder has identified cramped vertical rhythm in Screen11 V2's status+payment+next-step cluster and booking details table despite correctly fixed logo, RTL and first-fold CTA. Recorded [#147](https://github.com/Essxm01/KONFRM/issues/147). All future new UI prompts MUST require actual repo `konfrm-design` skill consultation, governed role-specific spacing-tier discipline, real screenshot sibling comparison, and a **dedicated `VISUAL_DENSITY_AND_SPACING_QA` subsection of Antigravity's GitHub REPORT.md**.
+
+The mandatory review is concrete: inspect relation of within-element micro gaps vs between independent groups, Arabic Cairo line height, readable row padding/divider frequency, long booking names/amounts, unequal top/bottom dead-space distribution, safe-area CTA reachability, real mobile narrow viewport and 200% text. Cross-check physical PNG/JPEG visual pixels rather than compiler output. Don't fake spaciousness with random extra blank space or new decorative card layers; keep the exact approved KONFRM role/family visual grammar.
+
+Spacing guidance from existing design skill `visual_system.md`: tier1 4/8 px, tier2 8/12 px, tier3 16/24 px, tier4 24/32 px as evaluated relational candidates, NOT new finalized global tokens; preserve token governance. Conformance means matching role-specific Customer/Owner/Admin density, not imposing identical spacing on different functional roles.
+
+This protocol addendum does NOT alter an already-dispatched, pinned Antigravity prompt (Screen12 V1 currently in flight). Bridge should assess its resulting screenshots independently using this lens and defer/authorize a future focused correction if genuinely necessary. Never interrupt active work just to retroactively satisfy a new checklist.

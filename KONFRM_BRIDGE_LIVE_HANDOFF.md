@@ -5,6 +5,20 @@
 
 > **START HERE IF YOU ARE THE NEW ASSISTANT:** Treat this file as the latest dated continuity snapshot. Recheck GitHub live PR heads, issue states and main before saying anything is current. Do not assume the prior ChatGPT account's memory, conversations, plugins or connected devices transfer automatically. You can recover documented knowledge and operating preferences, NOT the previous model's private latent memory, private chats, credentials or exact personal context.
 
+## GLOBAL FOUNDER NO-DELETE SCREEN EVIDENCE HOLD — 2026-10-15
+
+**LATEST DIRECT FOUNDER DECISION, superseding earlier evidence TRASH_READY and cleanup clauses:** KEEP EVERY GitHub-uploaded KONFRM UI screen screenshot and all companion Flutter review-source .dart, REPORT.md, README.md, VISUAL_BRIDGE_README.md, readable Base64 JPEG files, rejected V1/approved V2 iterations and evidence-only GitHub branches. Do not delete, rename to trash, mark TRASH_READY, prune branches or expire images simply because a screen was visually approved or Bridge completed QA.
+
+**Retention end gate:** preserve until all KONFRM application experiences (Customer, Owner, Admin, where applicable) are assembled as final production apps, final app deliverables are exported, complete real integration/UI pixel parity and deferred QA verified. THEN and ONLY THEN Bridge may *propose* a precise cleanup inventory and after it is backed up/approved Founder must EXPLICITLY approve the exact file/branch deletions. There is NO automatic deletion even then.
+
+**Critical linkage:** formal [Founder evidence preservation policy](KONFRM_EVIDENCE_RETENTION_FOUNDER_OVERRIDE_20261015.md); [Issue #155](https://github.com/Essxm01/KONFRM/issues/155); updated [GitHub Relay Protocol](KONFRM_BRIDGE_GITHUB_RELAY_PROTOCOL.md) supersedes old lifecycle `ACTIVE → REVIEWED → TRASH_READY → PURGED`. All future Antigravity prompts require `FOUNDER_EVIDENCE_RETENTION_HOLD` and must keep original real-device screenshot evidence, review-source and report accessible; don't delete old revision frames as 'temporary'. Owner/Admin roles covered. Keep actual screen source and approval manifest to support final Flutter production conversion.
+
+**Optimization/safety remains:** pre-optimize NEW screenshots before publishing to PUBLIC GitHub, keep private/raw/PII/secret/hardware-serial captures off public repo; documented focused privacy incident response takes precedence if accidental harmful exposure is found. Do NOT merge heavy screenshot branches into main or rewrite Git history. Current Screen14 pinned task prompt already delivered; do not interrupt/rewrite; apply HOLD to subsequent cleanup and review.
+
+**Current mode:** `EVIDENCE_RETENTION_HOLD_UNTIL_FINAL_KONFRM_APP_EXPORT_AND_FOUNDER_REVIEW`. This new Founder decision overrides older sections below; do not mistake historic handoff words for active cleanup authorization.
+
+---
+
 ## GITHUB BRAND IDENTITY INTEGRITY AUDIT — 2026-10-15 (BRIDGE12)
 
 **Founder asked for DIRECT AUDIT of whether KONFRM Brand Identity is truly preserved correctly in GitHub.** Bridge read LIVE `main` at `f6911eeecfa100cbbfec935e15769e66966ce835` plus docs+issues, tokens, logo SVG assets, Flutter `konfrm_theme.dart`, official roles/Cairo/RTL/spacing Design System and existing Founder overrides; wrote verified detailed [KONFRM_GITHUB_BRAND_IDENTITY_AUDIT_20261015.md](KONFRM_GITHUB_BRAND_IDENTITY_AUDIT_20261015.md), updated existing conflict [#148](https://github.com/Essxm01/KONFRM/issues/148). **No canonical tokens/theme/main, app, Owner/Admin, backend, payment, merge/deploy changes made.**

@@ -4,6 +4,18 @@
 **Classification:** Operating protocol; NOT project code, independent task authorization, proof of execution, approval to merge/deploy, or release signoff.  
 **Repository visibility:** PUBLIC. Never store credentials, tokens, private customer data, real account identifiers or private device captures.
 
+## FOUNDER SCREENSHOT RESTORATION ORDER — 2026-10-15
+
+**NEW Founder instruction extends the retention HOLD (#155):** Antigravity must AUDIT for previously lost/unavailable UI screenshots on all KONFRM screen design evidence branches and historical PR screenshots, then search Founder's local laptop KONFRM project/worktrees/backups for the original missing file; if truly absent, and an exact runnable isolated native Flutter preview exists, physically RE-CAPTURE the correct scenario from the archived source using the actual A56, not fabricate a picture. This task is approved and tracked at [Issue #156](https://github.com/Essxm01/KONFRM/issues/156).
+
+**Execution specification:** [Verified GitHub recovery prompt](https://github.com/Essxm01/KONFRM/blob/2f0f958b1c41f78b8a8688b34862968fae7b136d/prompt/KONFRM_SCREEN_EVIDENCE_AUDIT_LOCAL_RECOVERY_AND_RECAPTURE_V1.md). Status at authored handoff: `PROMPT_READY_FOR_FOUNDER_DISPATCH`, NOT executed. Preserve proper **role + ScreenNN + Vn + scenario** path and unambiguous filenames with screen ID; genuine originally recovered vs derived image vs newly physically recaptured must be labeled distinctly; recapture does NOT inherit visual approval without Bridge/Founder review.
+
+**Output protocol:** per-screen additive images/manifests and a central `SCREEN_EVIDENCE_INVENTORY.md`, report, gap list and real SHA-index; preserve all prior PNG/JPEG/WEBP, physical A56 Base64 companions, review-source Dart runner and REPORT/README. Do not delete images/branches, move to tracked trash, overwrite immutable evidence or merge to main. Search GitHub alternate links first, then bounded local sources, then runnable genuine A56 capture. Do not invent screenshots if original source missing. Public evidence must remain privacy-safe.
+
+**In-flight task safeguard:** Screen14 visual V1 could still be in execution; do not interrupt its device/worktree or evidence. Read-only inventory is safe; defer competing physical captures/pushes until collision-free. Keep old retention hold until final app export + separate Founder deletion approval.
+
+---
+
 ## FOUNDER OVERRIDE — NO GITHUB SCREENSHOT DELETION UNTIL COMPLETE FINAL APP (2026-10-15)
 
 **CURRENT MANDATORY POLICY — SUPERSEDES earlier cleanup instructions in this file and all historical screen prompts/Issue #128:** The Founder has explicitly ordered that **ALL GitHub-uploaded screenshots, UI screenshots, physical-device capture evidence and associated Flutter preview source/report/manifests/Base64 readable companions be PRESERVED**, including old rejected V1 and approved V2, until the **entire KONFRM app(s) is assembled and final application deliverable(s) exported**, with full visual-functional integration checks. **Even after final export there is NO automatic deletion: individual evidence branches/files may be cleaned ONLY after Founder specifically approves the named cleanup following a preservation/backup audit.**

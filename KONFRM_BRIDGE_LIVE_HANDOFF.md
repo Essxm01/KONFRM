@@ -5,6 +5,16 @@
 
 > **START HERE IF YOU ARE THE NEW ASSISTANT:** Treat this file as the latest dated continuity snapshot. Recheck GitHub live PR heads, issue states and main before saying anything is current. Do not assume the prior ChatGPT account's memory, conversations, plugins or connected devices transfer automatically. You can recover documented knowledge and operating preferences, NOT the previous model's private latent memory, private chats, credentials or exact personal context.
 
+### Screen12 V1 pinned prompt prepared for dispatch — 2026-10-14
+
+- Founder-authorized NEXT screen design prompt is now **committed and verified** on isolated disposable docs-only branch temp/antigravity-prompt/SCREEN12_MY_BOOKINGS_NATIVE_DESIGN_V1:
+  [SCREEN12_MY_BOOKINGS_NATIVE_DESIGN_V1.md — immutable commit b42488c3ff3cd3f3f9029ec691d5299048de2b87](https://github.com/Essxm01/KONFRM/blob/b42488c3ff3cd3f3f9029ec691d5299048de2b87/prompt/SCREEN12_MY_BOOKINGS_NATIVE_DESIGN_V1.md).
+- This is **prompt publication, NOT proof of Antigravity receiving, executing, testing or uploading Screen12**. Founder needs to forward short dispatch notice; next Bridge13 must recheck whether that happened.
+- Screen12 scope: isolated native Flutter visual candidate, real A56, mandatory konfrm-design+Flutter+Quality skills, RTL/Cairo/approved cross-screen brand grammar, root 4-tab shell, truthful guest/session/empty/loading/error/stale and booking lifecycle groups, full GitHub REPORT.md + original physical PNG + text-decodable JPEG Base64 companions co-located; zero production auth/booking/payment/DB/merge/deploy.
+- Existing privacy issue #145 still needs prompt focused remediation; not permission to rewrite public Git history. Release/a11y deferrals #144 remain OPEN. See latest TOP focus in #128.
+
+---
+
 ## LATEST BRIDGE12 FOUNDER SIGNOFF — SCREEN11 VISUAL APPROVED; SCREEN12 NOW (2026-10-14)
 
 **FOUNDER EXPLICIT DECISION (2026-10-14, Cairo):** Screen11 V2 **VISUAL DESIGN APPROVED** after Bridge independently reviewed six A56 images and the Screen10 comparator. Three corrections accepted: standalone centered symbol; proper left-pointing RTL chronological arrow; fully visible CTA. Do not reinterpret this as code production integration, real booking Auth/payment, merged code, complete a11y, E2E or deployment acceptance.

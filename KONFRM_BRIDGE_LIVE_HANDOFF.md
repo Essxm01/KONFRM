@@ -5,6 +5,18 @@
 
 > **START HERE IF YOU ARE THE NEW ASSISTANT:** Treat this file as the latest dated continuity snapshot. Recheck GitHub live PR heads, issue states and main before saying anything is current. Do not assume the prior ChatGPT account's memory, conversations, plugins or connected devices transfer automatically. You can recover documented knowledge and operating preferences, NOT the previous model's private latent memory, private chats, credentials or exact personal context.
 
+## SCREEN12 FOCUSED V2 FOUNDER-AUTHORIZED PROMPT READY — 2026-10-14
+
+**Founder explicitly approved one bounded Screen12 V2 isolated Flutter visual correction** after independent V1 failure and Issue #149. Bridge created disposable docs-only branch `temp/antigravity-prompt/SCREEN12_MY_BOOKINGS_FOCUSED_V2` and published full prompt at immutable commit [4a6086615801bf33ff7627226190222ebc3ee57c](https://github.com/Essxm01/KONFRM/blob/4a6086615801bf33ff7627226190222ebc3ee57c/prompt/SCREEN12_MY_BOOKINGS_FOCUSED_V2.md), **read back and verified all 26,572 characters**.
+
+- **Status at this checkpoint:** `SCREEN12_V2_PROMPT_READY_FOR_FOUNDER_DISPATCH`, not execution, test success, visual approval or evidence upload. Founder must forward SHORT dispatch message to Antigravity. No automatic communication/connector assumed.
+- Six focused corrections: A near-zero blue/monochrome Customer palette (#123/#148); B remove fake 24h deposit deadline/countdown and accurately report real code/pixels (MR-15); C first-night deposit fixture validation (#146); D remove unverified property `موثق` label; E include missing initial-loading and unknown-status safe states; F improve comfortable optical rhythm within same KONFRM brand (#147). Preserve V1 strengths and actual Flutter Customer native root nav grammar; global button radius #139 stays open.
+- MANDATORY actual design skills, same-family pixel comparison, COLOR_RESTRAINT_QA, VISUAL_DENSITY_AND_SPACING_QA, honest independent product/money scenario checks, genuine Samsung Galaxy A56 screenshots, real 200% text reflow checks and safe nonproduction isolated code.
+- Antigravity final report & actual A56 PNGs & plain UTF-8 Base64 JPEG companions & reproducible preview V2 source MUST be published together on `evidence/customer-screen12-design-review` under `review-evidence/customer-screen12/v2/`. V1 evidence preserved; don't merge/deploy or create real auth/payment routes. Founder forwards only SHORT completion notification. Bridge fetches and visually inspects images/source and reports independent decision; founder visual signoff remains pending.
+- GitHub Issue [#149](https://github.com/Essxm01/KONFRM/issues/149) and focus [#128](https://github.com/Essxm01/KONFRM/issues/128) updated to record Founder authorization and prompt-ready (not execution). Do NOT begin Screen13 until separate Founder action.
+
+---
+
 ## LIVE BRIDGE12 SCREEN12 V1 REVIEW — CORRECTION DECISION PENDING (2026-10-14)
 
 - Antigravity submitted Screen12 V1 visual-only task evidence commit [3243360c07d53784482a309956013afdde5d6a1d](https://github.com/Essxm01/KONFRM/commit/3243360c07d53784482a309956013afdde5d6a1d). Contains REPORT.md, preview Flutter source, eight A56 PNGs, eight UTF-8 Base64 JPEG companions, manifest. Agent claimed 127/127 + 21/21 tests and 0 analyze; Bridge did NOT independently rerun tests.

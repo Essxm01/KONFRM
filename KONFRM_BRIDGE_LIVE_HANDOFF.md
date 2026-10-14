@@ -5,6 +5,24 @@
 
 > **START HERE IF YOU ARE THE NEW ASSISTANT:** Treat this file as the latest dated continuity snapshot. Recheck GitHub live PR heads, issue states and main before saying anything is current. Do not assume the prior ChatGPT account's memory, conversations, plugins or connected devices transfer automatically. You can recover documented knowledge and operating preferences, NOT the previous model's private latent memory, private chats, credentials or exact personal context.
 
+## BRIDGE 12 → 13 — TWO-WAY GITHUB RELAY: PROMPT + REPORT + SCREENSHOTS (2026-10-14)
+
+**Latest Founder direction**: GitHub is the **two-way data relay** between Bridge (ChatGPT) and Antigravity. Founder manually forwards ONLY short notification/dispatch messages between them; he does NOT paste long technical prompts or completion reports or screenshot bundles into the chat. This supersedes one-way instructions in any older dated section.
+
+**MUST READ FULL CANONICAL PROCESS FILE:** [KONFRM_BRIDGE_GITHUB_RELAY_PROTOCOL.md](KONFRM_BRIDGE_GITHUB_RELAY_PROTOCOL.md) — stored on this same docs/cross-account-recovery-20261013 branch. Verified initial file commit [af80973d624da2f359920679ca0cd25aafd03162](https://github.com/Essxm01/KONFRM/commit/af80973d624da2f359920679ca0cd25aafd03162). A successor Bridge 13+ reads this process document as a mandatory companion after this handoff, before authoring any future Antigravity prompt or reviewing execution completion.
+
+**Forward (Bridge → GitHub → Antigravity):** Bridge writes the full versioned temporary GitHub prompt, verifies full read-back and immutable commit URL; Founder forwards a SHORT ready-to-copy command telling Antigravity to open the complete file, inspect current reality and work safely.
+
+**Return (Antigravity → GitHub → Bridge):** Antigravity **MUST publish the full detailed execution report as `REPORT.md` in the SAME task-specific evidence branch/directory as its real sanitized physical screenshots and a `README.md` evidence manifest**. The report includes actual task ID, original prompt pinned URL/SHA, code branch/HEAD, files changed, test results/errors, Design/RTL/Cross-Screen consistency and skill provenance, complete individual image links, scope boundaries, known blockers and Founder-pending decisions. It must read back/verify its GitHub upload. Antigravity sends Founder ONLY a short copy-ready completion message containing verified REPORT URL, evidence branch+commit, implementation branch+commit and actual status; Founder sends this message to Bridge.
+
+**Bridge independent gate:** On receiving the short completion notice, Bridge fetches full REPORT.md, README and actual images directly from GitHub, independently checks code and tests as needed, inspects real UI pixels, RTL/Bidi, Cairo, approved header/logo grammar, and verifies scope/product truth. Do not ask Founder to manually paste large reports or screenshots if GitHub is accessible. Green CI/agent report is not actual Founder visual acceptance.
+
+**Retention/security:** Keep both prompt and report + screenshots through verified review and residual QA. When safe, mark `TRASH_READY` and seek specific cleanup approval for disposable branches. Never auto-trash on first agent completion or use tracked Git `trash/`. Public repo must not host personal details/secrets. This is a notification-based manual relay, NOT automatic live messaging or a restored private Antigravity plugin.
+
+**Current Screen 11 ONE-TIME EXCEPTION:** Founder says Antigravity completed Screen 11 and returned a lengthy report in chat, **but NOT uploaded its full report to GitHub** because this rule had not been given to it yet. Founder plans to forward that report to Bridge manually once. Do not assert the Screen11 report/evidence have been independently reviewed or silently require mid-task retroactive execution. Next newly dispatched tasks use the full two-way protocol.
+
+---
+
 ## BRIDGE 12 TO BRIDGE 13 — NEW PROMPT DELIVERY RULE (2026-10-14)
 
 Founder directive from Bridge 12, 2026-10-14. Supersedes earlier prompt delivery format, not product/business authority.

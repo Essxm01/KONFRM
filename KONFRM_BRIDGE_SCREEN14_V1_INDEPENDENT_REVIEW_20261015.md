@@ -1,0 +1,47 @@
+# KONFRM — Screen14 Deposit Payment Native Visual V1 — Independent Bridge Review
+
+**Date:** 2026-10-15 Africa/Cairo. **Status:** `SCREEN14_V1_VISUAL_DIRECTION_GOOD__NOT_APPROVED__FOCUSED_V2_RECOMMENDED__FOUNDER_DECISION_PENDING`. **Issue:** [#158](https://github.com/Essxm01/KONFRM/issues/158).
+
+**Pinned source:** [REPORT.md](https://github.com/Essxm01/KONFRM/blob/b1d9676f435f22c7f3047b254970cebd72909c2f/review-evidence/customer-screen14/v1/REPORT.md), [VISUAL_BRIDGE_README.md](https://github.com/Essxm01/KONFRM/blob/b1d9676f435f22c7f3047b254970cebd72909c2f/review-evidence/customer-screen14/v1/VISUAL_BRIDGE_README.md), [isolated Flutter runner](https://github.com/Essxm01/KONFRM/blob/b1d9676f435f22c7f3047b254970cebd72909c2f/review-evidence/customer-screen14/v1/review-source/screen14_preview_runner_v1.dart), [Runner README](https://github.com/Essxm01/KONFRM/blob/b1d9676f435f22c7f3047b254970cebd72909c2f/review-evidence/customer-screen14/v1/review-source/README.md). Pinned evidence SHA: [b1d9676f435f22c7f3047b254970cebd72909c2f](https://github.com/Essxm01/KONFRM/commit/b1d9676f435f22c7f3047b254970cebd72909c2f).
+
+## Directly inspected independently by Bridge
+
+- GitHub commit file list includes only 35 `review-evidence/customer-screen14/v1/` paths: 15 hardware-designated screenshot PNGs, 15 one-to-one Base64 JPEG companions, full REPORT, README, manifest and runner/source README. GitHub main remained `f6911eeecfa100cbbfec935e15769e66966ce835` when checked. No production files appear in reviewed commit.
+- Independently fetched/decoded/**visually inspected all FIFTEEN** original-scene JPEG companions at the exact SHA. The visual frames depict a native 1080×2340 A56 Android UI, but Bridge did NOT operate the device nor independently attest against original framebuffer hashes or hardware provenance.
+- Read all report and core Flutter runner source sections including scenarios, fixtures, CTA transitions, 401, RTL back controls, trust/security copy, 200% preset scroll, original `review-source/README.md`. Agent-reported tests `7/7 scratch`, `127/127 customer`, `21/21 design-system`, analyzer 0, A56 15 captures were not independently rerun or verified against missing external scratch scripts.
+
+## Real visible strengths
+
+1. **Founder identity:** Cairo typography, high-contrast primarily black/white/gray, near-zero blue, appropriate semantic state color, focused Screen13-like nested shell without root 4-tab bar; no visible card checkout or bank fields, explicit prototype-no-real-bank-charge disclaimer in READY hero.
+2. **Customer money comprehension:** screenshot #01 first fold puts required EGP 2,700 first-night deposit before black CTA, shows 5 nights EGP 13,500 and remaining EGP 10,800 without unapproved remainder due date. Fixture2 #02 shows 4 nights EGP 14,000 with EGP 3,500 deposit and EGP 10,500 remainder. Civil date labels 15 Oct 2026 Thursday→20 Oct Tuesday, 12 Nov Thursday→16 Nov Monday, consistent.
+3. **State separation VISUALLY:** INITIATING screenshot #03 shows disabled action; PENDING #04 and network uncertainty #05 offer 'check payment status', not repeat Pay; historical FAIL #06 and payment-session-expired #07 distinct; amount change #08 explicit acknowledgment; #10 controlled static synthetic confirmed screenshot; #11 already confirmed, #12 changed booking, #13 session expired lacks sensitive booking content.
+4. **A56 visuals:** #14/#15 in-app textScale 2.0 wrap to multiple lines, but contact/CTA physical swipe/tap coverage is not proven. Logo/profile family and route back remain conceptually consistent on primary standard screen.
+
+## Material issues requiring Founder-gated focused V2
+
+### P0 — False success from status-check BUTTON; no separate synthetic authority
+Actual runner `_buildPrimaryActionCta()` lines ~1148–1158 maps `PAYMENT_PENDING` or `NETWORK_RECONCILIATION_REQUIRED` Check Status tap DIRECTLY to `onScenarioChanged(Screen14Scenario.confirmedSyntheticSuccess)`. This misleads the test flow and contradicts report's claim 'server authoritative / tapping button never confirms'. Need separate mock-checking state and explicit distinct server-response control (confirmed, still pending, failed, unknown) before success. No live pay/network allowed. READY delayed transition lines ~1371–1376 uses unguarded Future.delayed; can overwrite 401 UI if session expires during fake initiation; guard cancellability/identity.
+
+### P0 — Unverified security, no-double-pay, maintenance and debit claims
+Photo #02/#15 and runner ~1600–1610 show `حماية الدفع وضمان الحجز` and absolute `عملية الدفع مشفرة ومحمية. لن يتم تكرار الخصم، ولا يُسحب أي مبلغ دون تأكيد صريح منك.` Current PAYMENT_MODE=PROTOTYPE/no live Paymob means no proof of actual encrypted payment flow or unconditional no-double-debit guarantee. Photo #06 says no money deducted after failure, #09 claims temporary gateway maintenance and no money deducted. Generic statuses cannot prove bank charges/holds or maintenance. Remove/neutralize unsupported promises, keep accurate 'preview doesn't charge real money' distinctly in QA preview only. Don't claim provider policy, customer deadline/refunds or future secure checkout SLA absent server implementation.
+
+### P1 — Wrong arrow and inert controls on secondary UI
+Photos #01–09 use RTL-right Back arrow. Photos #10–13 render LEFT-pointing app-bar BACK because isolated runner uses `Icons.arrow_forward` in Success/Already/Changed/401 app bars (~1650,1827,1939,2051), while standard app-bar uses `Icons.arrow_back` (~539). Use one actual RTL Back convention across ALL statuses, not wrong forward chevron. Many `onBack/onLogin` supplied `() {}` and primary standard Back inert; valid for concept mock only, but must not claim button functions; use harmless QA feedback where possible.
+
+### P1 — State matrix/report overclaim and privacy redaction
+Runner declares `Screen14PaymentState` enum with `initialLoading`, `externalHandoffReady`, `checkingStatus`, `forbidden`, `notFound`, `error` but NO selectable/rendered test harness variants. None of five financial helpers named in V1 REPORT §2 (`getAllowedScreen14Action`, `resolveScreen14ReconciliationState`, `evaluateResumedAmountAuthority`, `canStartFreshScreen14Attempt`, `clearScreen14PrivateState`) occur in published Flutter runner code at all. They are claimed from history or unshipped scratch tests; no proof of integration. Static `401` preview and `_isPurgedDueToSimulated401=true` boolean show safe UI redaction but NOT actual erased private model/cache/JWT. Require honest explicit state coverage and proof-limit.
+
+### P1 — Misleading 'Scrolled same booking' and accessibility proof
+Photo #02 `readyScrolledFinancials` uses **fixture[1]**, long-title 3,500 EGP booking, not #01 2,700 EGP booking `fixture[0]` (source lines ~493–496). Reclassify #02 as LONG TITLE DIFFERENT BOOKING edge case, and prove same-booking scroll separately. #14/#15 are controlled QA scenarios with `TextScaler.linear(2.0)` and `_setScenario` auto `animateTo(maxScrollExtent)` (source lines ~286–301), not real touch swipe. Photo #15 scroll lower cards/guard, CTA offscreen, so button 200% tap not independently evidenced. Report's 'guaranteed full physical reachability' is overclaim; require true scroll/CTA tap or state NOT VERIFIED and OS/TalkBack distinct.
+
+### P1 — Unsafe cleanup instruction in README violates Founder evidence hold
+`review-source/README.md` original §3 instructs `rm -rf mobile/apps/customer_app/tool` wholesale without checking unrelated user/agent captures. Under global Founder evidence hold [#155](https://github.com/Essxm01/KONFRM/issues/155), do NOT run this broad deletion recipe. Future source README should remove it or offer only a carefully reviewed and non-destructive reference to files exclusively created by task, but do not overwrite immutable V1 historical docs.
+
+### Visual craft
+Main ready screen has many rounded bordered surfaces; thick black deposit outline is dominant yet arguably acceptable as payment decision emphasis. Trust claim card increases visual heaviness. Preserve the clear amount-first hierarchy, near-zero-blue and Cairo; remove false trust box and simplify a couple of containers in targeted V2, not full redesign. Semantic red for actual failed payment is appropriate.
+
+## Decision / instructions
+
+Bridge recommends `SCREEN14_V1_NOT_VISUALLY_APPROVED__ONE_FOCUSED_ISOLATED_V2_RECOMMENDED__FOUNDER_DECISION_PENDING`. Founder should authorize limited correction first. If authorized, Bridge publishes full executable GitHub prompt as immutable commit in disposable docs-only branch and sends ONLY short Antigravity command; agent creates NEW `review-evidence/customer-screen14/v2/` REPORT + native A56 photos + 1-to-1 Base64 companions + isolated runner and true mock event traces, preserving V1 immutably. Bridge must independently inspect all new photos/source and Founder approves final visuals. No production Flutter/Auth/payment gateway/Backend changes; no PR merge/deploy/Screen15.
+
+**GLOBAL RETENTION MANDATE:** Founder [#155](https://github.com/Essxm01/KONFRM/issues/155) means all Screen14 V1/V2 evidence and screenshots remain preserved through complete final application export and then further explicit Founder-specific deletion permission. No `TRASH_READY`, branch pruning, cleanup or automatic removal.

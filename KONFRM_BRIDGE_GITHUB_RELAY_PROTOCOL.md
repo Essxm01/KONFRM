@@ -88,3 +88,14 @@ Founder can forward this exact short note with no large report or screenshots.
 **Bridge 13+ MUST read this protocol after the current handoff**, and use it alongside the existing design-skill activation, Arabic RTL, Founder visual consistency, temporary prompt retention and business/safety constraints in `KONFRM_BRIDGE_LIVE_HANDOFF.md`.
 
 **LAST UPDATED:** 2026-10-14 — protocol adoption, not execution/result certification.
+
+
+## Visual Access Fallback for GitHub Text-Only Connectors (2026-10-14)
+
+Bridge 12 discovered an actual access limitation during Screen11 review: the connected GitHub reader could verify the committed PNG filenames/SHAs and read README Markdown but could NOT decode the binary PNG pixels (UTF-8-only connector). A file's existence or HEAD 200 is not pixel-level review. Avoid falsely claiming image pixels were visually inspected.
+
+**Fallback only when direct image viewing is unavailable:** Antigravity should include additional temporary UTF-8 Base64-encoded JPEG review companions derived from each already-sanitized physical screenshot (e.g. `01_visual_bridge.jpg.b64.txt` next to `01_screenXX_a56_*.png`), plus a small `VISUAL_BRIDGE_README.md` mapping companions to original PNG evidence. Each text companion must be valid pure Base64 of an ordinary JPEG with legible RTL text, ideally under ~220 KB encoded, decodable via standard tools, WITHOUT mock/re-created UI or personal data. The real original PNGs remain authoritative. Bridge fetches each UTF-8 text companion, decodes it for optical inspection and checks against source provenance. If Bridge's GitHub tools can actually render PNG images, skip companions entirely to avoid unnecessary duplication.
+
+- The Base64 text images are **transient accessibility bridges** and may be cleaned sooner, after Bridge confirms it actually decoded/reviewed them and the Founder-approved evidence closure gate passes. They are not an excuse to drop the original screenshots or metadata.
+- This is a conditional tool-access workaround and does not grant permission for code edits, screenshot re-capture, merges, deployment, or changed product decisions.
+- Initial narrow proof task: `SCREEN11_EVIDENCE_BRIDGE_V1` on disposable documentation-only branch `temp/antigravity-prompt/SCREEN11_EVIDENCE_BRIDGE_V1`. It requests Screen11 `REPORT.md` plus visual JPEG Base64 companions while preserving original PNGs; do not equate preparing the prompt with its execution.

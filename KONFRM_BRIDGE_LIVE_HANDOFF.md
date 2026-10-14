@@ -5,6 +5,15 @@
 
 > **START HERE IF YOU ARE THE NEW ASSISTANT:** Treat this file as the latest dated continuity snapshot. Recheck GitHub live PR heads, issue states and main before saying anything is current. Do not assume the prior ChatGPT account's memory, conversations, plugins or connected devices transfer automatically. You can recover documented knowledge and operating preferences, NOT the previous model's private latent memory, private chats, credentials or exact personal context.
 
+## SCREEN11 FINANCIAL PREVIEW FIXTURE INCONSISTENCY — 2026-10-14
+
+- Founder inspected actual [Screen11 V2 A56 image](https://github.com/Essxm01/KONFRM/blob/026845e6acbff9c4466942f64a2cbf0321bbcdc7/review-evidence/customer-screen11/v2/01_screen11_a56_main_success.png) and questioned deposit math. Bridge inspected **published Flutter source and backend Canon**, confirmed main fixture has 5 nights, total 13,500 EGP, deposit 3,375 EGP (25% of total). SECOND long-title fixture 5 nights, 28,400 EGP, deposit 7,100 EGP (also 25%). These are hardcoded fake preview values, not a proof of a real server error.
+- Current verified backend domain controller uses `totalBookingValue = basePricePerNight * nights`, `firstNightPrice = basePricePerNight`, and Financial Engine uses firstNightPrice directly as deposit. Under THIS flat rate scenario, main fixture must be **2,700 EGP deposit** and second **5,680 EGP deposit**, rather than current 3,375/7,100. Founder product Canon MR-13 is **deposit equals first night's rate**, NOT 25% of total. Never confuse internal 20%-of-deposit commission with deposit calculation or expose Owner economics in Customer UI.
+- **Open detailed issue [#146](https://github.com/Essxm01/KONFRM/issues/146)** captures full evidence/root cause/safe correction gates. Do not silently rewrite already-reviewed pinned Screen11 V2 images/runner; fix only in a future explicitly authorized version or production integration before financial QA. Screen11 V2 visual-layout signoff remains valid, but the fixture financial values are NOT certified.
+- **Screen12 V1 task was already sent to Antigravity**. Do NOT interrupt it or alter its pinned prompt; review any Screen12 synthetic price/deposit consistency when its report arrives. No observed production defect has been established; no backend, finance rules or DB modification authorized.
+
+---
+
 ### Screen12 V1 pinned prompt prepared for dispatch — 2026-10-14
 
 - Founder-authorized NEXT screen design prompt is now **committed and verified** on isolated disposable docs-only branch temp/antigravity-prompt/SCREEN12_MY_BOOKINGS_NATIVE_DESIGN_V1:

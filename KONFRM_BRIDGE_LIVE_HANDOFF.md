@@ -5,6 +5,20 @@
 
 > **START HERE IF YOU ARE THE NEW ASSISTANT:** Treat this file as the latest dated continuity snapshot. Recheck GitHub live PR heads, issue states and main before saying anything is current. Do not assume the prior ChatGPT account's memory, conversations, plugins or connected devices transfer automatically. You can recover documented knowledge and operating preferences, NOT the previous model's private latent memory, private chats, credentials or exact personal context.
 
+## CUSTOMER NEAR-ZERO-BLUE FOUNDER COLOR OVERRIDE — BRIDGE12 2026-10-14
+
+**Direct latest Founder instruction:** Near-zero blue in the CURRENT Customer app; calm premium strong monochrome black / white / muted neutrals. Do not let older UX docs reintroduce broad blue or use blue to make screens 'feel branded'. Blue, if any, is a **tiny carefully justified interaction-semantic exception** and not default selected state, large surface, CTA, status, or decoration. This is the latest Founder interpretation on top of the historic Oct13 removal of prominent blue in Issue #123.
+
+**MUST READ FULL COLOR DECISION / VERIFIED HISTORY:** [KONFRM_BRIDGE_CUSTOMER_MONOCHROME_COLOR_DIRECTION_20261014.md](KONFRM_BRIDGE_CUSTOMER_MONOCHROME_COLOR_DIRECTION_20261014.md). Read the actual old [Bridge11→12 handoff](https://github.com/Essxm01/KONFRM/blob/docs/bridge11-to-bridge12-handoff-20261013/KONFRM_BRIDGE_LIVE_HANDOFF.md), Founder override in [Issue #123](https://github.com/Essxm01/KONFRM/issues/123), [PR #132](https://github.com/Essxm01/KONFRM/pull/132) and primary current mobile Design System. Bridge did NOT access the entire literal former chat transcript; verified artifact history only.
+
+**SPECIFIC SOURCE CONFLICT:** `CUSTOMER_PHASE5_MASTER_UX.md` still references `#0059FF` active bottom nav and general blue while `MOBILE_DESIGN_FOUNDATION.md` and latest Founder explicitly demote it. Preserve UX behavior/navigation authority, but do NOT treat old blue as current default. Future governed documentation reconciliation tracked in [#148](https://github.com/Essxm01/KONFRM/issues/148); NO arbitrary cross-role token migrations or Owner/Admin recoloring.
+
+**EVERY new Customer screen task must include `COLOR_RESTRAINT_QA`:** inspect actual approved family screenshots; list every blue/non-neutral UI occurrence, its exact currently governed semantic necessity, and remove every unjustified prominent blue. Black primary actions/selected controls, white/light neutral backgrounds, muted grey content and Cairo/RTL remain default. Keep necessary error/destructive/favorite/accessible-focus color semantics. Founder approval after physical A56 optical review, not green CI alone.
+
+**Screen12 V1 already in flight:** Antigravity has its immutable pinned prompt. No interruptions or stealth patch. Bridge independently checks actual Screen12 screenshot for excessive blue, consistency, spacing and truthful data; a new corrective prompt requires separate Founder permission. Applies to new Screen13+ prompts and Bridge13 handoff.
+
+---
+
 ## FOUNDER OPTICAL COMFORT AND SPACING UNITY — 2026-10-14
 
 **New direct Founder feedback (Bridge12):** After reviewing Screen11 V2 A56 pixels, Founder explicitly identified uncomfortable CRAMPED fields and near-colliding groups. Optical reading comfort and proportional whitespace are now HIGH PRIORITY quality criteria for ALL FUTURE screens (Customer/Owner/Admin), **inside the existing KONFRM Design System**. A calm screen must not be a new one-off design or blindly stretched with random empty space. See recorded [#147](https://github.com/Essxm01/KONFRM/issues/147).

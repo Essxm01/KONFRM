@@ -10,6 +10,14 @@
 
 ---
 
+## Complete Design & Technical Delivery Report
+
+The full substantive design and technical delivery report is published alongside this manifest:
+- **Comprehensive Delivery Report:** [REPORT.md](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/REPORT.md) | [Raw Link](https://raw.githubusercontent.com/Essxm01/KONFRM/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/REPORT.md)
+- **Visual Bridge Inspection Manifest (UTF-8 Base64 Companions):** [VISUAL_BRIDGE_README.md](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/VISUAL_BRIDGE_README.md) | [Raw Link](https://raw.githubusercontent.com/Essxm01/KONFRM/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/VISUAL_BRIDGE_README.md)
+
+---
+
 ## Executive Summary & Product Soul
 
 This evidence bundle documents the native Flutter realization of **Screen 11 — Booking Request Sent (`تم إرسال طلب الحجز`)**, validating all core product invariants, Arabic RTL typographic hierarchy, and terminal post-submission UX on physical Samsung Galaxy A56 5G hardware.
@@ -50,6 +58,21 @@ This evidence bundle documents the native Flutter realization of **Screen 11 —
 | **04** | `04_screen11_a56_compact_viewport.png` | **Compact 360dp Responsive Viewport**. Constrained 360dp viewport layout verifying safe-area insets, container padding, line-breaking, and chip alignment on narrower hardware form-factors. | 1080 × 2340 | [Raw Link](https://raw.githubusercontent.com/Essxm01/KONFRM/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/04_screen11_a56_compact_viewport.png) | [View](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/04_screen11_a56_compact_viewport.png) |
 | **05** | `05_screen11_a56_a11y_200.png` | **200% Accessibility Font Scaling (a11y)**. `textScaler: TextScaler.linear(2.0)` stress test. Headings, chips, and payment reassurance boxes wrap cleanly with zero RenderFlex clipping or yellow-black tape overflows. | 1080 × 2340 | [Raw Link](https://raw.githubusercontent.com/Essxm01/KONFRM/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/05_screen11_a56_a11y_200.png) | [View](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/05_screen11_a56_a11y_200.png) |
 | **06** | `06_screen11_a56_safe_state_minimal.png` | **Minimal Data Fallback & Arabic Dual Forms**. Graceful rendering when optional property title and financial quote breakdown are omitted (`BK-741029`, `ليلتان · ضيفان`). Demonstrates robust fail-safe layout. | 1080 × 2340 | [Raw Link](https://raw.githubusercontent.com/Essxm01/KONFRM/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/06_screen11_a56_safe_state_minimal.png) | [View](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/06_screen11_a56_safe_state_minimal.png) |
+
+---
+
+## UTF-8 Visual Access Companions (for Bridge / Automated Tool Ingestion)
+
+For tool and LLM consumers that only ingest UTF-8 text via GitHub APIs (where raw binary PNG retrieval is unavailable), portable single-stream Base64 JPEG companions are provided:
+
+- `01_visual_bridge.jpg.b64.txt`: [Raw Text Link](https://raw.githubusercontent.com/Essxm01/KONFRM/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/01_visual_bridge.jpg.b64.txt) | [GitHub View](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/01_visual_bridge.jpg.b64.txt)
+- `02_visual_bridge.jpg.b64.txt`: [Raw Text Link](https://raw.githubusercontent.com/Essxm01/KONFRM/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/02_visual_bridge.jpg.b64.txt) | [GitHub View](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/02_visual_bridge.jpg.b64.txt)
+- `03_visual_bridge.jpg.b64.txt`: [Raw Text Link](https://raw.githubusercontent.com/Essxm01/KONFRM/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/03_visual_bridge.jpg.b64.txt) | [GitHub View](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/03_visual_bridge.jpg.b64.txt)
+- `04_visual_bridge.jpg.b64.txt`: [Raw Text Link](https://raw.githubusercontent.com/Essxm01/KONFRM/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/04_visual_bridge.jpg.b64.txt) | [GitHub View](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/04_visual_bridge.jpg.b64.txt)
+- `05_visual_bridge.jpg.b64.txt`: [Raw Text Link](https://raw.githubusercontent.com/Essxm01/KONFRM/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/05_visual_bridge.jpg.b64.txt) | [GitHub View](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/05_visual_bridge.jpg.b64.txt)
+- `06_visual_bridge.jpg.b64.txt`: [Raw Text Link](https://raw.githubusercontent.com/Essxm01/KONFRM/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/06_visual_bridge.jpg.b64.txt) | [GitHub View](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/06_visual_bridge.jpg.b64.txt)
+
+Refer to [VISUAL_BRIDGE_README.md](https://github.com/Essxm01/KONFRM/blob/evidence/customer-screen11-design-review/review-evidence/customer-screen11/v1/VISUAL_BRIDGE_README.md) for complete technical decoding instructions, exact SHA-256 hashes, and byte counts.
 
 ---
 

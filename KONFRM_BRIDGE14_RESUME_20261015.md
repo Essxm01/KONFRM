@@ -1,5 +1,20 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## LATEST SCREEN15 CONSISTENCY RESULT — BRIDGE VERIFIED (2026-10-15)
+
+**This supersedes any earlier Screen15 V2 visually approved note that preceded Founder's complaint about heart position and bottom nav.** Founder identified two visual errors (physical-right heart and non-canonical bottom nav) missed by Bridge. Antigravity's corrected evidence was published to [commit 5aabc3843ea3b86349b26c7f07f34edfbc787da8](https://github.com/Essxm01/KONFRM/commit/5aabc3843ea3b86349b26c7f07f34edfbc787da8).
+
+Bridge **opened all 6 genuine V2 consistency screenshots** and compared actual A56 baseline to the approved Screen12 V2 screenshot; inspected native Flutter source/tests and Git changes. Findings:
+- Card favorite heart is now **physical top-left** via `Positioned(left:10,top:10)`; unavailable badge physical top-right, no collision.
+- Bottom tab bar now reuses shared `CustomerBottomNavigation` from design system with Cairo neutral active indicator/icon treatments and same 4-item placement as Screen12; 200% labels fully visible in A56 screenshots.
+- Card placeholders are honest neutral gray and are not final genuine property photos (pre-release integration + actual-content visual gate #167).
+- **BRIDGE STATUS:** `SCREEN15_V2_CONSISTENCY_BRIDGE_PASS__FOUNDER_VISUAL_APPROVAL_PENDING__PRODUCTION_DEFERRED`. Do not tell Founder the screen is Founder approved; Founder decides if the visual is acceptable. Do not make Screen15 V3, redo all earlier states, or start Screen16 before Founder go-ahead.
+- **Evidence preservation finding:** Last commit overwrote the six previous V2 PNG+B64 filename contents and V2 documentation in-place, contrary to global #155. Previous versions survive pinned under [old V2 commit a2221fa61d694c015892333770f00f14d3035c4e](https://github.com/Essxm01/KONFRM/commit/a2221fa61d694c015892333770f00f14d3035c4e). Archive restoration is tracked under deferred issue [#167](https://github.com/Essxm01/KONFRM/issues/167), nonblocking for design work. Future evidence must be add-only.
+- New **Founder consistency rules** are pinned in [#166](https://github.com/Essxm01/KONFRM/issues/166): physical-left favorite heart + shared canonical CustomerBottomNavigation. Inspect a previously approved screen on every shared component review, so no repeated oversight.
+
+---
+
+
 ## LATEST SCREEN15 V2 — BRIDGE VISUAL PASS (2026-10-15)
 
 **This newest status OVERRIDES older V1 instruction below** to ask Antigravity for a V2 correction. Antigravity already completed the one allowed focused correction. V2 commit [a2221fa61d694c015892333770f00f14d3035c4e](https://github.com/Essxm01/KONFRM/commit/a2221fa61d694c015892333770f00f14d3035c4e) is published with six real A56 photos/companions, source/test copies and no production/lib/backend/DB changes. Bridge fetched source/diff and independently visually inspected all six changed captures.

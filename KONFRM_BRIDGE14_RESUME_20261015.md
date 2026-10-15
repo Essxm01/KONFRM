@@ -1,5 +1,20 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## LATEST SCREEN16 V1 — INDEPENDENT VISUAL REVIEW (2026-10-15)
+
+- Founder visually approved Screen15 Favorites **consistency-corrected V2** frozen at [`5aabc3843ea3b86349b26c7f07f34edfbc787da8`](https://github.com/Essxm01/KONFRM/commit/5aabc3843ea3b86349b26c7f07f34edfbc787da8). Recorded at [#165](https://github.com/Essxm01/KONFRM/issues/165), pending only integration/release and historical evidence archive #167. Founder explicitly authorized starting Screen16.
+- Antigravity delivered native Flutter Customer **Screen16 Notification Center** V1, authentic A56 evidence/14 PNG+Base64 pairs and isolated runner at [full SHA `309e2d321ffca335eee3ebbf2b68a81378754843`](https://github.com/Essxm01/KONFRM/commit/309e2d321ffca335eee3ebbf2b68a81378754843). Bridge independently **opened all 14 photographs** and read actual Flutter source/tests. Reported 15/15 tests are Antigravity results, not independently rerun by Bridge. No production lib/Backend/DB edits in commit.
+- Shared four-item `CustomerBottomNavigation` is **consistent**, with **Account selected index 3**; Cairo RTL monochrome, empty/loading/401/error/modal normal; at 200% bottom labels visible.
+- **BRIDGE STATUS:** `SCREEN16_V1_VISUAL_DIRECTION_GOOD__ONE_FOCUSED_VISUAL_AND_COPY_CORRECTION_REQUIRED__FOUNDER_APPROVAL_PENDING`. Do not approve Screen16 V1 outright, do not restart full work and do not begin Screen17. Three small visual/honest-copy fixes under [#168](https://github.com/Essxm01/KONFRM/issues/168):
+  1. Actual header back icon physically faces left although intended Arabic back is right; deposit inline action arrow physically faces right although RTL progression should face left. Validate actual screenshot pixels, not name/comment.
+  2. Unread cards use overly bold 1.5dp BLACK full outlines and strong type, particularly heavy at 200%; lighten to consistent accessible unread hierarchy resembling calm approved cards.
+  3. Default startup shows invented synthetic events/3 unread; fixtures assert unapproved cancellation intent/expiry deadline/security login and show a real phone model. Default customer scene must not impersonate live notifications; synthetic loaded state should remain QA-only and clearly separated, with corrected neutral sample copy, no fictitious backend approval.
+- Make **ONE targeted V2 visual correction**, preserve all V1 images under #155; recapture only relevant states and send Founder for visual approval. No extended tech audit cycle.
+- **DEFERRED, NONBLOCKING:** backend notification events/recipient read-state, push provider/permissions, deep links, OS privacy policy, pre-live QA and duplicate evidence 08/10 all tracked in [#169](https://github.com/Essxm01/KONFRM/issues/169). These remain mandatory release gates. No production or financial rule change.
+
+---
+
+
 ## FOUNDER APPROVAL: SCREEN 15 VISUAL FROZEN — ADVANCE TO SCREEN 16 (2026-10-15)
 
 **Founder explicit decision:** Customer Screen 15 (Favorites / المفضلة) V2 visual design is **EXPLICITLY APPROVED AND FROZEN**.

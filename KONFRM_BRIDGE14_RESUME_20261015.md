@@ -1,5 +1,18 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## LATEST SCREEN15 V2 — BRIDGE VISUAL PASS (2026-10-15)
+
+**This newest status OVERRIDES older V1 instruction below** to ask Antigravity for a V2 correction. Antigravity already completed the one allowed focused correction. V2 commit [a2221fa61d694c015892333770f00f14d3035c4e](https://github.com/Essxm01/KONFRM/commit/a2221fa61d694c015892333770f00f14d3035c4e) is published with six real A56 photos/companions, source/test copies and no production/lib/backend/DB changes. Bridge fetched source/diff and independently visually inspected all six changed captures.
+
+- Previous V1 concerns **resolved visually:** fake colorful architectural illustration replaced by truthful neutral property-image fallback; 200% bottom navigation captions visibly fit within safe area; unsupported 'owner unpublished it' statement replaced by neutral unavailable-for-booking text.
+- **BRIDGE STATUS:** `SCREEN15_V2_BRIDGE_VISUAL_PASS__FOUNDER_VISUAL_APPROVAL_PENDING__PRODUCTION_INTEGRATION_DEFERRED`. No Screen15 V3, do not restart tests/captures over non-visual QA. Founder still decides final visual approval, after which freeze V2. **Do not claim production acceptance or silently begin Screen16 without Founder authorization.**
+- **Known future gate:** Gray image blocks are honest placeholders, not final photos. Restore verified matched authorized listing photos and visually validate with genuine content before production release. Record in [#167](https://github.com/Essxm01/KONFRM/issues/167), nonblocking for design continuation. Other auth/back-end/stale/routing/CI remain deferred until integration.
+- [#165](https://github.com/Essxm01/KONFRM/issues/165) contains Bridge V2 review and visual decision; [#166](https://github.com/Essxm01/KONFRM/issues/166) remains highest-priority DESIGN-FIRST workflow; [#155](https://github.com/Essxm01/KONFRM/issues/155) prohibits deleting V1 or V2 evidence.
+- Reported Antigravity tests: 13/13; Bridge did **not** rerun Flutter, only inspected code/tests and screenshots.
+
+---
+
+
 ## LATEST SCREEN15 V1 DELIVERY — BRIDGE ACTUAL VISUAL REVIEW (2026-10-15)
 
 - Antigravity successfully recovered A56 connection and completed isolated Flutter Screen15 Favorites native preview. Published authentic 14 physical captures + 14 Base64 companions, report, source and tests on evidence branch commit [b86b25f8ee934e30d81b48db18510c98c5e3738d](https://github.com/Essxm01/KONFRM/commit/b86b25f8ee934e30d81b48db18510c98c5e3738d). **13/13 tests are reported by Antigravity, not independently rerun by Bridge**. No production lib/backend/DB modified in this evidence commit.

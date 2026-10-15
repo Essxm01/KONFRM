@@ -1,5 +1,20 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## LATEST FOUNDER SCREEN17 DESIGN OVERRIDE — EDITORIAL SIMPLICITY, NO SHORTCUT TILES (2026-10-15)
+
+Founder rejected Screen17 V2 premium's BIG enclosing identity card + THREE repeated shortcut tiles, even though the portrait and upcoming stay idea were positively received. Earlier Bridge recommendation to preserve the large card and tiles is superseded.
+
+**New Screen17 account visual target:** Quiet, editorial UNBOXED compact identity block (84–96dp portrait, prominent name, optional fixture @handle and one subtle edit action); avatar camera badge BLACK glyph on WHITE/OFF-WHITE circular surface, never white icon in black badge. No adjacent phone. Remove Bookings + Favorites shortcut tiles because global bottom nav already provides these. Remove Notifications shortcut from Account; Founder wants bell in Explore header. The approved global Account nav remains shared 4-tab and neutral white/gray, no forced 64dp/200% clipping. Keep 'إقامتك القادمة' as the one useful conditional context strip (confirmed upcoming only), with compact stay facts/CTA; if no relevant stay, hide cleanly. Below, one calm divider-based account-only list (profile, security/settings/linked identity, payments, proposed wallet, help, low-priority share and signout); no repeated boxed sub-sections or random counts.
+
+**Cross-screen governed conflict and resolution issue:** [#174](https://github.com/Essxm01/KONFRM/issues/174). Canonical DESIGN_SYSTEM/COMPONENTS/navigation.md currently explicitly has Zero Bell on Explore and Screen16 Account active exception MR-17. Founder now wants Explore top bell. Record as direction but first propose route return/active-tab governance correction and obtain scoped permission before changing approved Screen03/Screen16 or canonical rules. No quiet assumptions and no 5th bottom tab.
+
+Carry real screenshot findings that still matter (200% real readability, canonical nav, QR false encrypted-claim + guest leak, fake wallet refund amounts). Avoid fixing removed tiles. Keep avatar upload/crop/QR contract under #172, wallet #173, backend #171, history #155. Current Screen17 state: `FOUNDER_RECOMPOSITION_AUTHORIZED__UNBOXED_ACCOUNT_PLUS_CONTEXTUAL_STAY__VISUAL_APPROVAL_PENDING`. Latest authority in [#170](https://github.com/Essxm01/KONFRM/issues/170); previous V2 delivery SHA 117338307827d157a36e710f39629fde0d282760 remains immutable baseline, not approved.
+
+Next: Antigravity ONE isolated redesigned Screen17 refinement as additive evidence after assessing prior V2. No backend, live production, navigation-contract auto-mutation or Screen18 start. Focus on screenshot top/scrolled/200%, no-photo/guest, proposed QR/wallet truthful.
+
+---
+
+
 ## CURRENT SCREEN17 V2 PREMIUM — BRIDGE A56 REVIEW, VISUAL SIGNOFF ON HOLD (2026-10-15)
 
 Antigravity delivered native isolated Screen17 Personal Passport V2 at [SHA 117338307827d157a36e710f39629fde0d282760](https://github.com/Essxm01/KONFRM/commit/117338307827d157a36e710f39629fde0d282760), with 15 authentic Samsung A56 screenshot/B64 companion pairs; prior Screen17 V1 evidence byte-preserved. Bridge independently viewed ALL 15 screenshots plus inspected V1→V2 Git diff, Flutter tool runner/test sources. Antigravity reports 21/21 tests, but Bridge did NOT independently rerun Flutter.

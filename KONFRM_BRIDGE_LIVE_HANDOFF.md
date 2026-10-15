@@ -5,6 +5,24 @@
 
 > **START HERE IF YOU ARE THE NEW ASSISTANT:** Treat this file as the latest dated continuity snapshot. Recheck GitHub live PR heads, issue states and main before saying anything is current. Do not assume the prior ChatGPT account's memory, conversations, plugins or connected devices transfer automatically. You can recover documented knowledge and operating preferences, NOT the previous model's private latent memory, private chats, credentials or exact personal context.
 
+## LATEST FOUNDER SCREEN14 V3 AUTHORIZATION + VERIFIED EXECUTION PROMPT — 2026-10-15
+
+**MOST RECENT FOUNDER ACTION:** Founder said «موافق نبدأ بتصليح شاشة 14» then explicitly reported the conversation reached its message limit and requested a COMPLETE VERIFIED GitHub bridge handoff. This is EXPLICIT AUTHORIZATION to execute ONE bounded Screen14 V3 VISUAL correction, NOT Screen14 V2 visual signoff or any production integration, money, API, merge/deploy or Screen15. Do NOT ask founder for this same V3 approval again. This new directive supersedes all older statements of V3 authorization PENDING below.
+
+**FULL V3 ANTIGRAVITY PROMPT ALREADY PUBLISHED AND VERIFIED BY EXACT COMMIT:** [0b200cc05af8f97464b11cc9bae7f04a054fd42d](https://github.com/Essxm01/KONFRM/blob/0b200cc05af8f97464b11cc9bae7f04a054fd42d/prompt/CUSTOMER_SCREEN14_V3_FOCUSED_VISUAL_RESTORATION.md), task ID `CUSTOMER_SCREEN14_V3_FOCUSED_VISUAL_RESTORATION`, branch `docs/screen14-v3-optical-restoration-20261015`, prompt file `prompt/CUSTOMER_SCREEN14_V3_FOCUSED_VISUAL_RESTORATION.md`, 24,568 chars. STATUS: `SCREEN14_V3_PROMPT_READY_FOR_FOUNDER_DISPATCH`. No V3 implementation/images/tests have been submitted yet. NEXT CHAT should give Founder a SHORT forwardable pinned-link message to Antigravity, not ask for reapproval or write a duplicate technical prompt.
+
+**SHORT VERIFIED RESUME FILE (READ FIRST):** [KONFRM_BRIDGE13_SCREEN14_V3_RESUME_20261015.md](KONFRM_BRIDGE13_SCREEN14_V3_RESUME_20261015.md). New assistant should also read this long LIVE handoff, independent [21-photo V2 optical rejection](KONFRM_BRIDGE_SCREEN14_V2_INDEPENDENT_VISUAL_REJECTION_20261015.md), issues [#162](https://github.com/Essxm01/KONFRM/issues/162), [#158](https://github.com/Essxm01/KONFRM/issues/158), [#128](https://github.com/Essxm01/KONFRM/issues/128), retention [#155](https://github.com/Essxm01/KONFRM/issues/155), and recovery [#156](https://github.com/Essxm01/KONFRM/issues/156).
+
+**V3 VISIBLE CORRECTIONS:** remove V2 permanently visible QA disclaimer/scenario selector above app header and mock-server result buttons inside customer body; preserve these behind DEV ONLY tester controls. White amount hero, true BLACK #000000 primary CTA, reduce card soup and excess copy, clean native header, coherent Arabic civil dates and same-booking fixtures with approved Screen13 where VERIFIED. Actual native A56 first-fold and 200% touch scroll/tap verified in clean CUSTOMER MODE, not a programmatic-only scroll or clipped/mock developer view. Match approved Screen12/13 family, Cairo/RTL, near-zero blue.
+
+**V2 NON-NEGOTIABLE FUNCTIONS TO PRESERVE:** `PENDING→CHECKING_STATUS` only on user check; NEVER autoconfirm by status-check tap, mock final CONFIRMED separately selected in test-only inspector; stale 401 epoch protection and isolated nullable private fixture purge; no double pay attempt; 403/404/first-load/error states and correct first-night deposit not 25%; no unproven security/debit/refund/maintenance or MR15 timelines. No actual Paymob/API/DB/Auth.
+
+**PRESERVE ALL evidence and versions:** original V1 15 A56 image+Base64/source/report, V2 21 screenshots+companions/source/tests/report and upcoming V3 evidence on scoped review-only branch. FOUNDER RETENTION HOLD #155 forbids deletion, moving to trash, TRASH_READY, force push and broad rm -rf cleanup until full final app export plus NEW explicit Founder named-item cleanup approval. Separate recovery #156 is ongoing/possibly active; avoid device/worktree conflicts. V3 target NEW review-evidence/customer-screen14/v3/ only; actual SHA links re-fetched before completion, then Bridge independently reviews photos and code and asks Founder visual signoff.
+
+**STATE:** `SCREEN14_V3_FOUNDER_APPROVED__PROMPT_PINNED__AWAITING_FOUNDER_DISPATCH`, main SHA observed `f6911eeecfa100cbbfec935e15769e66966ce835`, recheck live.
+
+---
+
 ## SCREEN14 V2 FOUNDER VISUAL REJECTION — BRIDGE ALL 21 A56 PHOTOS V1/V2/12/13 COMPARISON (2026-10-15)
 
 **NEWER FOUNDER DECISION: Explicitly REJECT Screen14 Focused V2 visual design**, stating charcoal not intended pure black, too much wordiness/noise, awkward page segmentation, poor aesthetics vs before. This NEW decision supersedes older `SCREEN14_V2_AWAITING_FOUNDER_VISUAL_REVIEW` in agent report. It does NOT undo V2 corrected test-only payment-state machine or authorize V3 without approval.

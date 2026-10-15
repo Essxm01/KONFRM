@@ -2,7 +2,7 @@
 
 ## LATEST OVERRIDE — 2026-10-15 | BRIDGE14 DESIGN-FIRST / SCREEN15 FAVORITES NOW
 
-**READ [THE NEW BRIDGE14 FULL HANDOFF FIRST](https://github.com/Essxm01/KONFRM/blob/4ef27e8283d9c5976083cee3de746caff3b90314/KONFRM_BRIDGE14_RESUME_20261015.md)**. This addendum SUPERCEDES older stale “Screen14 V3 not executed”, “Screen14 approval pending”, and “No Screen15” historical statuses below. The old text is preserved as chronology, NOT current work authorization.
+**READ [THE NEW BRIDGE14 FULL HANDOFF FIRST](https://github.com/Essxm01/KONFRM/blob/c6f5458742bd07086680c4e153c12fcbed4058db/KONFRM_BRIDGE14_RESUME_20261015.md)**. This addendum SUPERCEDES older stale “Screen14 V3 not executed”, “Screen14 approval pending”, and “No Screen15” historical statuses below. The old text is preserved as chronology, NOT current work authorization.
 
 **Founder directive:** Stop endless visual screen review loops. The current mission is quality native Flutter UI/UX design; only fix defects materially impacting visible design, truthful customer copy, real tappability or faithful preview. Non-visual backend, payment/Auth/DB, incomplete release/security integration, regression/testing/evidence details are **recorded accurately in GitHub deferred issues and do not block designing the next screen**. **Do not** close release gates or hide actual financial/security risks; those are mandatory pre-integration/pre-live requirements. Full policy [#166](https://github.com/Essxm01/KONFRM/issues/166).
 

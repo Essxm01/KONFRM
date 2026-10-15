@@ -70,3 +70,16 @@ Upon next Antigravity Screen15 delivery: validate repo SHA/source & real images;
 `BRIDGE14_DESIGN_FIRST__SCREEN14_VISUALLY_FROZEN__SCREEN15_FAVORITES_IN_PROGRESS_WITH_ANTIGRAVITY__NONVISUAL_QA_DEFERRED_TO_GITHUB`.
 
 **Important accuracy:** “IN PROGRESS” means the Founder dispatched Screen15 instructions; no Screen15 design/real A56 evidence has been independently delivered or accepted in this handoff yet. This document does NOT assert Antigravity finished Screen15 or that any Flutter native Screen15 is Live.
+
+## 7. EXACT NEXT-TURN PLAYBOOK — NO REVIEW LOOP
+
+At the start of Bridge14, DO NOT send an unsolicited new Screen15 prompt. Founder has ALREADY dispatched Issue #165 to Antigravity. Continue from Antigravity's actual response and remote evidence when available; refreshing handoff docs is not a reason to restart work.
+
+On receiving Screen15 Favorites evidence, follow this bounded sequence:
+1. Verify exact GitHub commit, isolated native Flutter preview source, and only the sufficient real Samsung A56 customer-facing screenshots to assess saved/empty/guest and larger text. No fabricated captures, no green-CI-as-visual-approval.
+2. Give an explicit VISUAL PASS or ONE TARGETED VISUAL CORRECTION verdict on information hierarchy, truthful copy, Arabic RTL/Cairo, saved property cards, heart actions, bottom-tab state, touch/scroll and readability. Do NOT reopen a full integration audit.
+3. FIX NOW only if a defect materially affects rendered design, usability, honest user-facing meaning or an immediate privacy/security concern. Allow a bounded design-enabling technical adjustment without changing architecture or financial/business rules.
+4. DEFER non-visual Backend/Supabase/DB/Auth/payment, mock/revision and race safety, production navigation, integration/release E2E, broad QA, optional evidence completeness and report polish. Document in a GitHub issue: observed problem, pinned source/commit/reproduction, impact, required eventual fix, mandatory pre-integration/pre-live gate. Deferred does NOT mean waived or production-safe. Do NOT block progression to next visual screen solely for a deferred item.
+5. If design visually passes, Founder holds final visual approval. Upon approval freeze exact visual evidence, preserve all historical variants under #155 and progress only with the next Founder-authorized native screen. No unsolicited Screen14 redo, no duplicate Screen15 dispatch, no auto-release/merge/deploy.
+
+Founder priority in her/his own words: «نركز على التصميم، نصلح ما يؤثر عليه فعلًا، ونوثق أي شيء آخر في تأجيلات GitHub ونكمل بدل دوائر التصليح». This changes design work sequencing ONLY; production security/payment/financial/privacy gates remain mandatory.

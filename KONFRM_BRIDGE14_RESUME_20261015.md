@@ -1,5 +1,20 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## LATEST FOUNDER PREMIUM ACCOUNT REDESIGN — SCREEN17 V1 REJECTED (2026-10-15)
+
+Screen17 V1 delivery commit 1f1b5a043d82ff2cb6c5d72ce2bd10ede78b83ef is explicitly NOT Founder visual-approved. Founder rejects old Web-like account layout, initials-only avatar and prominent adjacent phone. The name/avatar also wraps poorly at 200%. DO NOT DELETE historical V1 evidence under #155, but replace rejected visual concept in a new additive Screen17 v2-premium design.
+
+New Founder flagship visual direction: KONFRM Personal Passport (premium quiet Cairo/RTL) with proper approved TEST portrait, camera/pencil edit badge on circle, name, optional proposed @handle (non-login), top QR entry with my-code + scanner concept; compact useful trips/activity/payment entry points, discreet share/referral at bottom, no empty card soup, phone not next to photo, no invented financial balances.
+
+Official Screen numbers remain 17 Account Home, 18 Edit Profile, 19 Settings, 20 Payment History. Screen18 UX concept covers photo crop/picker, name, optional DOB -> derived age, optional private gender and handle. Screen19 UX concept covers phone/email verification and linking Google/Apple. Wallet proposed separately (funding/refunds after admin-dispute acceptance), but is NOT an existing payment-ledger or approved financial product; no new native route silently implemented.
+
+Read active GitHub Issue #170, identity/QR backend-gate #172, wallet separate financial gate #173, approved reference Screens12/15/16. Full approved DESIGN-ONLY concept: https://github.com/Essxm01/KONFRM/blob/docs/cross-account-recovery-20261013/KONFRM_SCREEN17_PREMIUM_IDENTITY_WALLET_QR_DIRECTION_20261015.md
+
+NEXT: Give Antigravity one revised CONTINUATION prompt for ongoing Screen17 task. No restart or destructive file changes. Produce isolated v2-premium visual, genuine Samsung A56 normal+200% screenshots and source and concise review manifest. No production code, backend, Supabase, OAuth/provider SDK, financial logic, merge/deploy, or unauthorized Screen18 launch. Final visual acceptance remains Founder decision. Follow #166 design-first and #155 add-only evidence.
+
+---
+
+
 ## FOUNDER FLAGSHIP ACCOUNT / PROFILE DIRECTION — 2026-10-15
 
 **The Founder has substantially elevated Customer Account/Profile to a flagship premium UX priority**. Reject the old generic/blue web Account layout. They want a large beautiful personalized photo/name hero, editable identity, potential unique/unified @handle, optional private birthdate/derived age/gender, Google+Apple connected identities, secure secondary phone/email verification, paid payment history, an invite/referral flow and meaningful travel personalization, maintaining KONFRM Cairo RTL neutral design.

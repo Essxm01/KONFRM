@@ -1,5 +1,24 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## LATEST SCREEN17 V4 BRIDGE REVIEW — PURE BLACK VISUAL PASS / QR + 200% GATES (2026-10-16)
+
+Antigravity delivered Screen17 V4 at commit [`d1a8ab97442e35aa83a2866b476a0143be929528`](https://github.com/Essxm01/KONFRM/commit/d1a8ab97442e35aa83a2866b476a0143be929528). Bridge independently inspected **ALL 7 physical Samsung A56 V4 screenshot companions**, Flutter runner/tests/report, and V3→V4 Git diff. Previous V1/V2/V3 evidence unchanged; no production Flutter lib, Backend, Supabase/DB edits in diff. Antigravity reports 21/21 tests and clean analysis; Bridge did NOT rerun Flutter.
+
+**CLOSED successful visuals:** pure black `#000000` in active isolated Screen17 runner (all 48 prior `0xFF111827` removed), no dark charcoal wallet slab or fake 0.00 balance, compact unboxed RTL profile with avatar/camera black-on-white, single editorial list replacing three separate cards, next-stay full title/dates legible 200% at top, neutral shared bottom nav Account selected.
+
+**TWO genuine outstanding customer-visible issues:**
+1. A56 screenshot `07_screen17_v4_a56_accessibility_200_scrolled.png`: titles and subtitles of account rows visibly truncate (`الحسابا...`, `وسائل الدخول ...Apple` etc). Source `_buildNavigationRow` still `maxLines:1` ellipsis for both; proposed status pill shares same width. Correct local 200% responsive row, trailing dev tag reposition/remove, without clamping accessibility scaling.
+2. Guest screenshot `05_screen17_v4_a56_guest_unauthenticated.png` still shows QR icon despite no account; controller `openQrSheet()` has no auth/valid-profile guard (UI onTap only shows notice). QR screenshot `04...` still displays convincingly scannable pseudo-QR with enabled Share/Save actions and approved-identity claims, contradicted by design-only notice and absence of QR contract #172. Correct guest/401/loading/integrity gating in UI+controller and truthful clearly NONSCANNABLE design placeholder, no fake actions.
+
+**CURRENT VERDICT:** `SCREEN17_V4_PURE_BLACK_VISUAL_PASS__FOCUSED_200PCT_AND_QR_TRUTH_FIX_REQUIRED__FOUNDER_APPROVAL_PENDING`. DO NOT restart visual system or begin Screen18. One minimal additive closure with ONLY affected A56 200%-scrolled/guest-or-401/QR screenshots, focused tests and new evidence directory; Founder still controls final visual acceptance. Full detailed review in [#170](https://github.com/Essxm01/KONFRM/issues/170).
+
+**REPO-WIDE COLOR AUDIT:** Antigravity 563 text pattern matches documented under [V4 report](https://github.com/Essxm01/KONFRM/blob/d1a8ab97442e35aa83a2866b476a0143be929528/review-evidence/customer-screen17/v4-pure-black-refinement/COLOR_AUDIT_ISSUE_175.md), with independent limited assessment in [#175](https://github.com/Essxm01/KONFRM/issues/175). This is a READ-ONLY inventory, NOT 563 verified UI defects, NOT authorization to edit all apps. Stage migration carefully later.
+
+**DEFERRED:** actual portrait crop/save, identity username, Apple/Google auth, QR encoded schema/private permissions #172; wallet money #173; account integration #171; Explore bell vs Screen16 governance #174; production release tests & issue #155 evidence preservation. No global design system shared token updates/merge/deploy authorized.
+
+---
+
+
 ## FOUNDER STOP-SEND OVERRIDE — PURE #000000 NO CHARCOAL/NAVY (2026-10-15)
 
 Founder explicitly paused BEFORE sending prior Screen17 V3 correction prompt to object to charcoal/navy in Wallet; founder wants only REAL pure #000000 as black across KONFRM. Older Antigravity corrective prompt is SUPERSEDED; send ONE REVISED combined prompt. Source baseline Screen17 V3 SHA d7a382f34e4416d3e3b8aa5be53cc183777654ca.

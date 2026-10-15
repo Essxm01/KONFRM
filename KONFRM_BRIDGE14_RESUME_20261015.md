@@ -1,5 +1,18 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## LATEST FOUNDER APPROVAL — SCREEN16 FROZEN; SCREEN17 NOW (2026-10-15)
+
+**Founder explicit decision:** «موافق وانتقل للخطوة القادمة». Customer Screen16 Notification Center V2 is now **FOUNDER VISUALLY APPROVED (design only)** at exact evidence commit [`c2d966623d764ea301e0bf2246e775bdc5ee480a`](https://github.com/Essxm01/KONFRM/commit/c2d966623d764ea301e0bf2246e775bdc5ee480a). [#168](https://github.com/Essxm01/KONFRM/issues/168) has recorded Founder approval. Previous statements of pending Founder approval or needing Screen16 corrections below are superseded. V1/V2 evidence preserved under #155; do NOT request V3 or reopen visual QA. [#169](https://github.com/Essxm01/KONFRM/issues/169) remains the nonblocking DESIGN-phase yet mandatory pre-production notification Backend/push/read-state/security/QA deferral.
+
+**NOW ACTIVE AND FOUNDER-AUTHORIZED:** Customer **Screen17 Account Home / الحساب** — canonical current 26-screen inventory and [§17 Screen Contracts](https://github.com/Essxm01/KONFRM/blob/main/KONFRM_EXECUTION_TASKS_SCREEN_CONTRACTS_DRAFT.md). Task [#170](https://github.com/Essxm01/KONFRM/issues/170) is created and holds scope. Screen17 is the 4th primary Customer navigation tab Account (index3), **NOT Screen18 Profile Edit** nor settings Screen19; legacy numbering is superseded. Inspect `customer-app/src/components/CustomerAccountHomeScreen.tsx`, `customer-app/src/App.tsx`, backend renter Account DTO only as IA/data shape references. Native customer UI should use shared `CustomerBottomNavigation`, calm Cairo/RTL, masked verified identity, grouped account actions, authentic guest/error/401/incomplete-profile visual states. Avoid web legacy blue gradients, fabricated login identity or balances, Owner/Admin controls.
+
+**Founder prioritization:** DESIGN FIRST (#166). Fix immediate visual/meaning/consistency issues, defer nonvisual Auth/Backend/API/DB and integration test work with precise pre-live gates. Produce isolated preview + genuine Samsung A56 images under NEW additive `review-evidence/customer-screen17/v1/` with traceable source/test/commit. No production changes, merge/deploy, or next-screen auto-advancement. Screen17 visual approval remains pending Founder decision.
+
+**NEXT ACTION:** Founder can send Antigravity the short handoff linking Issue #170; no repeated prompt for Screen16 or broad QA.
+
+---
+
+
 ## LATEST SCREEN16 V2 — BRIDGE VISUAL PASS (2026-10-15)
 
 **This newest state SUPERSEDES earlier Screen16 V1 pending three targeted visual corrections and any instruction to request them again.** Antigravity delivered additive isolated V2 evidence at [full commit c2d966623d764ea301e0bf2246e775bdc5ee480a](https://github.com/Essxm01/KONFRM/commit/c2d966623d764ea301e0bf2246e775bdc5ee480a), A56 14 genuine screenshots + companion files under `review-evidence/customer-screen16/v2/`. Bridge independently opened ALL 14 actual photos, compared normal and 200%-text V1 vs V2, inspected original Flutter source and test definitions, and confirmed Git diff did not touch V1 history or production lib/backend/DB.

@@ -1,17 +1,22 @@
 # KONFRM — LIVE BRIDGE & CROSS-ACCOUNT CONTINUITY
 
-## LATEST OVERRIDE — 2026-10-15 | BRIDGE14 DESIGN-FIRST / SCREEN15 FAVORITES NOW
+## LATEST OVERRIDE — 2026-10-15 | SCREEN15 VISUALLY APPROVED & FROZEN — SCREEN 16 NOTIFICATION CENTER NOW
 
-**READ [THE NEW BRIDGE14 FULL HANDOFF FIRST](https://github.com/Essxm01/KONFRM/blob/6dc05d34f8c0a35a47c48ae5153c0a3f0da7513f/KONFRM_BRIDGE14_RESUME_20261015.md)**. This addendum SUPERCEDES older stale “Screen14 V3 not executed”, “Screen14 approval pending”, and “No Screen15” historical statuses below. The old text is preserved as chronology, NOT current work authorization.
+**READ [KONFRM_BRIDGE14_RESUME_20261015.md](KONFRM_BRIDGE14_RESUME_20261015.md) FIRST**. This addendum supersedes older "Screen 15 in progress" or "Screen 15 approval pending" notes.
 
-**Founder directive:** Stop endless visual screen review loops. The current mission is quality native Flutter UI/UX design; only fix defects materially impacting visible design, truthful customer copy, real tappability or faithful preview. Non-visual backend, payment/Auth/DB, incomplete release/security integration, regression/testing/evidence details are **recorded accurately in GitHub deferred issues and do not block designing the next screen**. **Do not** close release gates or hide actual financial/security risks; those are mandatory pre-integration/pre-live requirements. Full policy [#166](https://github.com/Essxm01/KONFRM/issues/166).
+**SCREEN 15 VISUAL FREEZE & FOUNDER APPROVAL:**
+- Founder has explicitly **APPROVED AND FROZEN** Customer Screen 15 (Favorites / المفضلة) V2 visual design at baseline commit [`5aabc3843ea3b86349b26c7f07f34edfbc787da8`](https://github.com/Essxm01/KONFRM/commit/5aabc3843ea3b86349b26c7f07f34edfbc787da8).
+- Status: `SCREEN15_V2_FOUNDER_VISUAL_APPROVED_ONLY__INTEGRATION_DEFERRED`.
+- Visual fixes verified: Favorite heart moved to physical LEFT (`Positioned(top: 10, left: 10)`), bottom navigation unified with Screen 12 canonical `CustomerBottomNavigation` (Cairo 12 bold, `#F3F4F6` soft grey indicator pill, Tab 1 active), calm neutral property fallback (`Icons.home_work_outlined`), truthful copy (*"غير متاحة للحجز حالياً"*).
+- All non-visual technical issues (backend, persistence, real property images, production QA, and pre-consistency archive restoration) remain deferred under [#167](https://github.com/Essxm01/KONFRM/issues/167).
 
-**SCREEN14 VISUAL FREEZE:** Founder has APPROVED V3-Final visual design ONLY: [frozen commit b5963d849023edfd0318b5d47da41595f131617d](https://github.com/Essxm01/KONFRM/commit/b5963d849023edfd0318b5d47da41595f131617d). All open non-visual issues are parked in [#163](https://github.com/Essxm01/KONFRM/issues/163); DO NOT request another Screen14 V4 round or allow production payment integration by implication.
-
-**SCREEN15 NOW:** [#165](https://github.com/Essxm01/KONFRM/issues/165) is **Favorites / المفضلة**, as established by current 26-screen Customer inventory + Screen15 contract (historical SOLA “Screen15 Confirmed Booking” numbering is obsolete). Founder HAS SENT Antigravity the Screen15 isolated native visual design request. Antigravity has NOT YET submitted its results for Bridge review in the recorded conversation. Existing React Web Favorites implementation is not evidence that native Flutter UI has already been designed/approved. Screen16 is Notification Center later. No extra Antigravity prompt needed now; receive results then inspect actual customer-visible A56 images and make a concise visual decision, deferring unrelated integration tasks.
-
-**Permanent protection:** [#155](https://github.com/Essxm01/KONFRM/issues/155) retains ALL V1/V2/V3/V3-corrective/V3-final image, source, and test evidence; no delete/overwrite. No production/Backend/DB/financial/business rule merge/deploy authority. Status:
-`BRIDGE14_DESIGN_FIRST__SCREEN14_VISUALLY_APPROVED_ONLY__SCREEN15_FAVORITES_DISPATCHED__RELEASE_QA_PARKED`.
+**ACTIVE SCREEN: SCREEN 16 (NOTIFICATION CENTER / مركز الإشعارات):**
+- Official identity: Customer Screen 16 — مركز الإشعارات.
+- Navigation: Opened from Account section; canonical `CustomerBottomNavigation` retained with **Account active: index 3**. Clear back action returns to Account.
+- Visuals: Native Flutter, Arabic RTL, Cairo typography, white/neutral surfaces, restrained black accents, zero generic blue. Zero RenderFlex overflow at 100% and 200% scaling.
+- States: Truthful empty state, shimmer loading, synthetic notification fixtures, read/unread distinction, network error with retry, session expired (401), missing/unauthorized notification target.
+- Execution: Isolated preview runner (`screen16_preview_runner.dart`), physical Samsung A56 screenshots, concise source-linked tests. No production code edits.
+- Status: `SCREEN16_V1_IN_PROGRESS`.
 
 ---
 

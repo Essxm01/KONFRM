@@ -1,5 +1,17 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## FOUNDER APPROVAL: SCREEN 15 VISUAL FROZEN — ADVANCE TO SCREEN 16 (2026-10-15)
+
+**Founder explicit decision:** Customer Screen 15 (Favorites / المفضلة) V2 visual design is **EXPLICITLY APPROVED AND FROZEN**.
+- **Approved Baseline Commit:** [`5aabc3843ea3b86349b26c7f07f34edfbc787da8`](https://github.com/Essxm01/KONFRM/commit/5aabc3843ea3b86349b26c7f07f34edfbc787da8)
+- **Status:** `SCREEN15_V2_FOUNDER_VISUAL_APPROVED_ONLY__INTEGRATION_DEFERRED`
+- **Visual Acceptance:** Favorite heart on physical top-left, bottom navigation unified with Screen 12 canonical `CustomerBottomNavigation` (Cairo 12 bold, `#F3F4F6` soft grey indicator pill, Tab 1 active), calm neutral property fallback (`Icons.home_work_outlined`), truthful copy (*"غير متاحة للحجز حالياً"*).
+- **Deferred Integration Items:** Real property photography, server-authoritative persistence, auth/session 401 cache isolation, optimistic rollback, and pre-consistency archive restoration are retained in GitHub Issue #167 (non-blocking for design).
+- **ACTIVE SCREEN:** **Customer Screen 16 — Notification Center (مركز الإشعارات)**.
+- **Screen 16 Rules:** Opened from Account section; canonical `CustomerBottomNavigation` retained with **Account active (index 3)**; Cairo Arabic RTL typography; white/neutral surfaces; zero generic blue; 100% and 200% text scaling verified.
+
+---
+
 ## LATEST SCREEN15 CONSISTENCY RESULT — BRIDGE VERIFIED (2026-10-15)
 
 **This supersedes any earlier Screen15 V2 visually approved note that preceded Founder's complaint about heart position and bottom nav.** Founder identified two visual errors (physical-right heart and non-canonical bottom nav) missed by Bridge. Antigravity's corrected evidence was published to [commit 5aabc3843ea3b86349b26c7f07f34edfbc787da8](https://github.com/Essxm01/KONFRM/commit/5aabc3843ea3b86349b26c7f07f34edfbc787da8).

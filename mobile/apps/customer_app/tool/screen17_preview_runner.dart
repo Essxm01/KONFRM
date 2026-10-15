@@ -235,7 +235,7 @@ class Screen17AccountController extends ChangeNotifier {
     _showQrSheet = false;
     _qrTab = 0;
     _showWalletSheet = false;
-    _isCompactHero = false;
+    _isCompactHero = true;
     _profile = CustomerProfileData(
       userId: 'usr_cst_001',
       fullName: 'أحمد مصطفى',
@@ -255,7 +255,7 @@ class Screen17AccountController extends ChangeNotifier {
     _showQrSheet = false;
     _showWalletSheet = false;
     _dialogNotice = null;
-    _isCompactHero = false;
+    _isCompactHero = true;
 
     switch (scenario) {
       case Screen17Scenario.authenticatedFlagshipTop:
@@ -799,14 +799,23 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Screen Title (Right in RTL)
-          const Expanded(
-            child: Text(
-              'حسابي',
-              style: TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF111827),
+          Expanded(
+            child: GestureDetector(
+              key: const Key('header_title_tap_area'),
+              behavior: HitTestBehavior.opaque,
+              onDoubleTap: () {
+                setState(() {
+                  _showDevTools = !_showDevTools;
+                });
+              },
+              child: const Text(
+                'حسابي',
+                style: TextStyle(
+                  fontFamily: KonfrmTypography.fontFamily,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF000000),
+                ),
               ),
             ),
           ),
@@ -841,7 +850,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                       child: Icon(
                         Icons.qr_code_2_rounded,
                         size: 22,
-                        color: Color(0xFF111827),
+                        color: Color(0xFF000000),
                       ),
                     ),
                   ),
@@ -860,15 +869,19 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
 
   Widget _buildAuthenticatedAccountSliver() {
     final profile = _controller.profile!;
+    final textScaler = MediaQuery.textScalerOf(context);
+    final isLargeText = _scenario.textScale >= 1.5 || textScaler.scale(1.0) >= 1.5;
+
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       sliver: SliverList(
         delegate: SliverChildListDelegate([
           // 1. Unboxed Identity Hero ("Personal Passport")
-          if (_controller.isCompactHero)
-            _buildCompactIdentityHero(profile)
+          // Compact Horizontal Hero is default; adapts gracefully to vertical hero at >=150% font scale
+          if (isLargeText || !_controller.isCompactHero)
+            _buildFlagshipIdentityHero(profile)
           else
-            _buildFlagshipIdentityHero(profile),
+            _buildCompactIdentityHero(profile),
           const SizedBox(height: 16),
 
           // 2. Incomplete Profile Prompt (when applicable)
@@ -886,16 +899,14 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
             const SizedBox(height: 18),
           ],
 
-          // 4. Grouped Navigation Sections (Anti-Card-Soup Structural System)
-          // Section: الحساب والملف الشخصي
-          _buildSectionHeader('الحساب والملف الشخصي'),
-          const SizedBox(height: 8),
+          // 4. Single Unified Editorial Navigation List (Replacing 3 separate boxes)
           _buildCardContainer([
+            _buildSectionHeader('الحساب والملف الشخصي'),
             _buildNavigationRow(
               key: const Key('nav_profile_edit'),
               icon: Icons.person_outline,
               title: 'الملف الشخصي',
-              subtitle: 'الاسم، المعرّف الشخصي، والبيانات الخاصة',
+              subtitle: 'تعديل البيانات والصورة والمعرّف',
               onTap: () => _controller.showNotice('معاينة: الانتقال إلى مواصفة تعديل الملف (شاشة 18)'),
             ),
             const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
@@ -903,30 +914,25 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
               key: const Key('nav_privacy_security'),
               icon: Icons.shield_outlined,
               title: 'الخصوصية والأمان',
-              subtitle: 'حماية الحساب، إدارة الجلسات، وتسجيل الدخول',
+              subtitle: 'إدارة الجلسات وكلمة المرور',
               onTap: () => _controller.showNotice('معاينة: الانتقال إلى إعدادات الأمان (شاشة 19)'),
             ),
             const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
             _buildNavigationRow(
               key: const Key('nav_linked_accounts'),
               icon: Icons.link_outlined,
-              title: 'الإعدادات والحسابات المرتبطة',
-              subtitle: 'Apple وGoogle ووسائل الدخول الثانوية',
-              trailingTag: 'مفهوم مقترح',
+              title: 'الحسابات المرتبطة',
+              subtitle: 'وسائل الدخول (Apple / Google)',
+              trailingTag: 'مقترح #172',
               onTap: () => _controller.showNotice('معاينة: مواصفة الحسابات المرتبطة الآمنة (مفهوم شاشة 19)'),
             ),
-          ]),
-          const SizedBox(height: 16),
-
-          // Section: المالية والمدفوعات
-          _buildSectionHeader('المالية والمدفوعات'),
-          const SizedBox(height: 8),
-          _buildCardContainer([
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
+            _buildSectionHeader('المالية والمدفوعات'),
             _buildNavigationRow(
               key: const Key('nav_payment_history'),
               icon: Icons.receipt_long_outlined,
               title: 'سجل المدفوعات',
-              subtitle: 'العربون، الإيصالات المعتمدة، وسجل المعاملات',
+              subtitle: 'العربون وسجل المعاملات',
               onTap: () => _controller.showNotice('معاينة: الانتقال إلى سجل المدفوعات (شاشة 20)'),
             ),
             const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
@@ -934,22 +940,17 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
               key: const Key('nav_wallet_concept'),
               icon: Icons.account_balance_wallet_outlined,
               title: 'محفظة كونفرم',
-              subtitle: 'الرصيد المتاح والاستردادات المعتمدة',
-              trailingTag: 'مفهوم مقترح #173',
+              subtitle: 'الرصيد والاستردادات المعتمدة',
+              trailingTag: 'مفهوم #173',
               onTap: () => _controller.openWalletSheet(),
             ),
-          ]),
-          const SizedBox(height: 16),
-
-          // Section: المساعدة والخدمات
-          _buildSectionHeader('المساعدة والخدمات'),
-          const SizedBox(height: 8),
-          _buildCardContainer([
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
+            _buildSectionHeader('المساعدة والخدمات'),
             _buildNavigationRow(
               key: const Key('nav_help_support'),
               icon: Icons.help_outline,
               title: 'المساعدة والدعم',
-              subtitle: 'الأسئلة الشائعة وإرشادات حجز الوحدات',
+              subtitle: 'الأسئلة الشائعة وإرشادات الحجز',
               onTap: () => _controller.showNotice('معاينة: الانتقال إلى الدعم والمساعدة (شاشة 21)'),
             ),
             const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
@@ -957,7 +958,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
               key: const Key('nav_share_konfrm'),
               icon: Icons.share_outlined,
               title: 'شارك كونفرم مع معارفك',
-              subtitle: 'ادعُ أصدقاءك لتجربة استئجار موثوقة ومباشرة',
+              subtitle: 'دعوة الأصدقاء لتجربة استئجار موثوقة',
               onTap: () => _controller.showNotice('معاينة: فتح قائمة مشاركة الرابط الرسمي لتطبيق كونفرم'),
             ),
           ]),
@@ -1013,7 +1014,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                               fit: BoxFit.cover,
                             )
                           : Container(
-                              color: const Color(0xFF111827),
+                              color: const Color(0xFF000000),
                               child: Center(
                                 child: Text(
                                   profile.initials,
@@ -1062,7 +1063,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                         child: const Icon(
                           Icons.camera_alt_outlined,
                           size: 18,
-                          color: Color(0xFF111827),
+                          color: Color(0xFF000000),
                         ),
                       ),
                     ),
@@ -1073,7 +1074,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
           ),
           const SizedBox(height: 14),
 
-          // Customer Display Name (Bold Cairo 22)
+          // Customer Display Name (Bold Cairo 22 - Pure Black)
           Text(
             profile.displayName,
             textAlign: TextAlign.center,
@@ -1081,7 +1082,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
               fontFamily: KonfrmTypography.fontFamily,
               fontSize: 22,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF111827),
+              color: Color(0xFF000000),
             ),
           ),
           const SizedBox(height: 4),
@@ -1139,7 +1140,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                   Icon(
                     Icons.edit_outlined,
                     size: 15,
-                    color: Color(0xFF111827),
+                    color: Color(0xFF000000),
                   ),
                   SizedBox(width: 6),
                   Flexible(
@@ -1151,7 +1152,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                         fontFamily: KonfrmTypography.fontFamily,
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF111827),
+                        color: Color(0xFF000000),
                       ),
                     ),
                   ),
@@ -1174,11 +1175,12 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Circular Avatar (76x76)
+          // Circular Avatar (76x76) on physical right in RTL
           Stack(
             clipBehavior: Clip.none,
             children: [
               GestureDetector(
+                key: const Key('avatar_tap_area'),
                 onTap: _showPhotoActionSheet,
                 child: Container(
                   width: 76,
@@ -1201,7 +1203,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                             fit: BoxFit.cover,
                           )
                         : Container(
-                            color: const Color(0xFF111827),
+                            color: const Color(0xFF000000),
                             child: Center(
                               child: Text(
                                 profile.initials,
@@ -1221,6 +1223,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 bottom: -4,
                 left: -4,
                 child: GestureDetector(
+                  key: const Key('camera_edit_badge'),
                   onTap: _showPhotoActionSheet,
                   child: Container(
                     width: 48,
@@ -1244,7 +1247,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                       child: const Icon(
                         Icons.camera_alt_outlined,
                         size: 16,
-                        color: Color(0xFF111827),
+                        color: Color(0xFF000000),
                       ),
                     ),
                   ),
@@ -1254,18 +1257,20 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
           ),
           const SizedBox(width: 16),
 
-          // Name & Handle
+          // Name & Handle in center/middle
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   profile.displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontFamily: KonfrmTypography.fontFamily,
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF111827),
+                    color: Color(0xFF000000),
                   ),
                 ),
                 if (profile.proposedUsername != null) ...[
@@ -1287,8 +1292,9 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
             ),
           ),
 
-          // Edit Action Button
+          // Edit Action Button on physical left in RTL
           GestureDetector(
+            key: const Key('hero_edit_profile_button'),
             onTap: () {
               _controller.showNotice('معاينة: الانتقال إلى تعديل الملف الشخصي (شاشة 18)');
             },
@@ -1305,7 +1311,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                   fontFamily: KonfrmTypography.fontFamily,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF111827),
+                  color: Color(0xFF000000),
                 ),
               ),
             ),
@@ -1387,7 +1393,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                       fontFamily: KonfrmTypography.fontFamily,
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF111827),
+                      color: Color(0xFF000000),
                     ),
                   ),
                 ),
@@ -1396,13 +1402,13 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
             const SizedBox(height: 10),
             Text(
               profile.upcomingStayTitle,
-              maxLines: 1,
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontFamily: KonfrmTypography.fontFamily,
                 fontSize: 15,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF111827),
+                color: Color(0xFF000000),
               ),
             ),
             const SizedBox(height: 4),
@@ -1411,7 +1417,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 Expanded(
                   child: Text(
                     '${profile.upcomingStayDates} (${profile.upcomingNights} ليالٍ)',
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontFamily: KonfrmTypography.fontFamily,
@@ -1465,7 +1471,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
               child: Icon(
                 Icons.info_outline,
                 size: 20,
-                color: Color(0xFF111827),
+                color: Color(0xFF000000),
               ),
             ),
           ),
@@ -1480,7 +1486,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                     fontFamily: KonfrmTypography.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF111827),
+                    color: Color(0xFF000000),
                   ),
                 ),
                 SizedBox(height: 2),
@@ -1504,7 +1510,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
               decoration: BoxDecoration(
-                color: const Color(0xFF111827),
+                color: const Color(0xFF000000),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Text(
@@ -1528,15 +1534,17 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
   // ===========================================================================
 
   Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+    return Container(
+      width: double.infinity,
+      color: const Color(0xFFF9FAFB),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
       child: Text(
         title,
         style: const TextStyle(
           fontFamily: KonfrmTypography.fontFamily,
-          fontSize: 14,
+          fontSize: 12,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF374151),
+          color: Color(0xFF4B5563),
         ),
       ),
     );
@@ -1544,9 +1552,10 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
 
   Widget _buildCardContainer(List<Widget> children) {
     return Container(
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
         boxShadow: const [
           BoxShadow(
@@ -1557,6 +1566,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: children,
       ),
     );
@@ -1573,9 +1583,8 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
     return InkWell(
       key: key,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
         child: Row(
           children: [
             Container(
@@ -1590,7 +1599,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 child: Icon(
                   icon,
                   size: 18,
-                  color: const Color(0xFF111827),
+                  color: const Color(0xFF000000),
                 ),
               ),
             ),
@@ -1599,18 +1608,47 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontFamily: KonfrmTypography.fontFamily,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF111827),
-                    ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF000000),
+                          ),
+                        ),
+                      ),
+                      if (trailingTag != null) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF3F4F6),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            trailingTag,
+                            style: const TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF4B5563),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontFamily: KonfrmTypography.fontFamily,
                       fontSize: 11,
@@ -1621,25 +1659,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 ],
               ),
             ),
-            if (trailingTag != null) ...[
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  trailingTag,
-                  style: const TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF4B5563),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-            ],
+            const SizedBox(width: 8),
             // Physical LEFT chevron pointing for RTL forward navigation
             const Directionality(
               textDirection: ui.TextDirection.ltr,
@@ -1723,12 +1743,12 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                       fontFamily: KonfrmTypography.fontFamily,
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF111827),
+                      color: Color(0xFF000000),
                     ),
                   ),
                   const SizedBox(height: 16),
                   ListTile(
-                    leading: const Icon(Icons.camera_alt_outlined, color: Color(0xFF111827)),
+                    leading: const Icon(Icons.camera_alt_outlined, color: Color(0xFF000000)),
                     title: const Text(
                       'التقاط صورة بالكاميرا',
                       style: TextStyle(
@@ -1743,7 +1763,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                     },
                   ),
                   ListTile(
-                    leading: const Icon(Icons.photo_library_outlined, color: Color(0xFF111827)),
+                    leading: const Icon(Icons.photo_library_outlined, color: Color(0xFF000000)),
                     title: const Text(
                       'اختيار من المعرض',
                       style: TextStyle(
@@ -1834,7 +1854,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                             fontFamily: KonfrmTypography.fontFamily,
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF111827),
+                            color: Color(0xFF000000),
                           ),
                         ),
                       ),
@@ -1852,7 +1872,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                           child: const Icon(
                             Icons.close,
                             size: 18,
-                            color: Color(0xFF111827),
+                            color: Color(0xFF000000),
                           ),
                         ),
                       ),
@@ -1895,7 +1915,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                                   fontFamily: KonfrmTypography.fontFamily,
                                   fontSize: 13,
                                   fontWeight: _controller.qrTab == 0 ? FontWeight.w800 : FontWeight.w600,
-                                  color: _controller.qrTab == 0 ? const Color(0xFF111827) : const Color(0xFF6B7280),
+                                  color: _controller.qrTab == 0 ? const Color(0xFF000000) : const Color(0xFF6B7280),
                                 ),
                               ),
                             ),
@@ -1927,7 +1947,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                                   fontFamily: KonfrmTypography.fontFamily,
                                   fontSize: 13,
                                   fontWeight: _controller.qrTab == 1 ? FontWeight.w800 : FontWeight.w600,
-                                  color: _controller.qrTab == 1 ? const Color(0xFF111827) : const Color(0xFF6B7280),
+                                  color: _controller.qrTab == 1 ? const Color(0xFF000000) : const Color(0xFF6B7280),
                                 ),
                               ),
                             ),
@@ -1940,6 +1960,26 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
 
                   // Tab 0: My Code View
                   if (_controller.qrTab == 0) ...[
+                    // Nonfunctional Prototype Disclaimer Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF3F4F6),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: const Color(0xFFE5E7EB)),
+                      ),
+                      child: const Text(
+                        'معاينة تصميمية غير مفعلة — قيد الاعتماد الفني #172',
+                        style: TextStyle(
+                          fontFamily: KonfrmTypography.fontFamily,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF4B5563),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
                     // QR Code Card Container
                     Container(
                       padding: const EdgeInsets.all(20),
@@ -1965,7 +2005,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                                 width: 36,
                                 height: 36,
                                 decoration: const BoxDecoration(
-                                  color: Color(0xFF111827),
+                                  color: Color(0xFF000000),
                                   shape: BoxShape.circle,
                                 ),
                                 child: ClipOval(
@@ -1997,7 +2037,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                                       fontFamily: KonfrmTypography.fontFamily,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w800,
-                                      color: Color(0xFF111827),
+                                      color: Color(0xFF000000),
                                     ),
                                   ),
                                   if (profile.proposedUsername != null)
@@ -2061,7 +2101,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF111827),
+                                color: const Color(0xFF000000),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Center(
@@ -2098,7 +2138,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                                     fontFamily: KonfrmTypography.fontFamily,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xFF111827),
+                                    color: Color(0xFF000000),
                                   ),
                                 ),
                               ),
@@ -2113,7 +2153,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                       width: double.infinity,
                       height: 240,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF111827),
+                        color: const Color(0xFF000000),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Stack(
@@ -2221,7 +2261,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                                 fontFamily: KonfrmTypography.fontFamily,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
-                                color: Color(0xFF111827),
+                                color: Color(0xFF000000),
                               ),
                             ),
                             SizedBox(width: 8),
@@ -2255,7 +2295,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                           child: const Icon(
                             Icons.close,
                             size: 18,
-                            color: Color(0xFF111827),
+                            color: Color(0xFF000000),
                           ),
                         ),
                       ),
@@ -2263,80 +2303,72 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Balance Card
+                  // Light Redesigned Wallet Concept (NO CHARCOAL SLAB, NO FAKE BALANCES)
                   Container(
+                    width: double.infinity,
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF111827),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x06000000),
+                          blurRadius: 8,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'الرصيد المتاح',
-                          style: TextStyle(
-                            fontFamily: KonfrmTypography.fontFamily,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white70,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.alphabetic,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              '0.00',
-                              style: TextStyle(
-                                fontFamily: KonfrmTypography.fontFamily,
-                                fontSize: 28,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
+                            const Expanded(
+                              child: Text(
+                                'رصيد المحفظة',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF000000),
+                                ),
                               ),
                             ),
-                            SizedBox(width: 6),
-                            Text(
-                              'ج.م',
-                              style: TextStyle(
-                                fontFamily: KonfrmTypography.fontFamily,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white70,
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF3F4F6),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: const Color(0xFFE5E7EB)),
+                              ),
+                              child: const Text(
+                                'المحفظة قيد التجهيز',
+                                style: TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF4B5563),
+                                ),
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: const Color(0x22FFFFFF),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Row(
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline,
-                                size: 14,
-                                color: Colors.white70,
-                              ),
-                              SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  'لا توجد عمليات سابقة أو مبالغ معلقة',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontFamily: KonfrmTypography.fontFamily,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                              ),
-                            ],
+                        const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'خدمة المحفظة الرقمية وإدارة الاستردادات قيد الدراسة التشريعية والمالية بموجب القضية #173. لن يتم عرض أو احتساب أي أرصدة مالية تجريبية حتى اعتماد نموذج المحفظة رسمياً.',
+                          style: TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF6B7280),
+                            height: 1.5,
                           ),
                         ),
                       ],
@@ -2365,14 +2397,14 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Close CTA
+                  // Close CTA (Pure Black #000000)
                   GestureDetector(
                     onTap: () => _controller.closeWalletSheet(),
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF111827),
+                        color: const Color(0xFF000000),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Center(
@@ -2444,7 +2476,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                   fontFamily: KonfrmTypography.fontFamily,
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF111827),
+                  color: Color(0xFF000000),
                 ),
               ),
               const SizedBox(height: 8),
@@ -2621,7 +2653,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 child: Icon(
                   Icons.lock_clock_outlined,
                   size: 28,
-                  color: Color(0xFF111827),
+                  color: Color(0xFF000000),
                 ),
               ),
             ),
@@ -2632,7 +2664,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 fontFamily: KonfrmTypography.fontFamily,
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF111827),
+                color: Color(0xFF000000),
               ),
             ),
             const SizedBox(height: 8),
@@ -2655,7 +2687,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF111827),
+                  color: const Color(0xFF000000),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text(
@@ -2697,7 +2729,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 child: Icon(
                   Icons.wifi_off_outlined,
                   size: 28,
-                  color: Color(0xFF111827),
+                  color: Color(0xFF000000),
                 ),
               ),
             ),
@@ -2708,7 +2740,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 fontFamily: KonfrmTypography.fontFamily,
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF111827),
+                color: Color(0xFF000000),
               ),
             ),
             const SizedBox(height: 8),
@@ -2731,7 +2763,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF111827),
+                  color: const Color(0xFF000000),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text(
@@ -2773,7 +2805,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 child: Icon(
                   Icons.person_outline,
                   size: 32,
-                  color: Color(0xFF111827),
+                  color: Color(0xFF000000),
                 ),
               ),
             ),
@@ -2784,7 +2816,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 fontFamily: KonfrmTypography.fontFamily,
                 fontSize: 19,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF111827),
+                color: Color(0xFF000000),
               ),
             ),
             const SizedBox(height: 8),
@@ -2843,7 +2875,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF111827),
+          color: const Color(0xFF000000),
           borderRadius: BorderRadius.circular(12),
           boxShadow: const [
             BoxShadow(
@@ -2919,7 +2951,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                       fontFamily: KonfrmTypography.fontFamily,
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF111827),
+                      color: Color(0xFF000000),
                     ),
                   ),
                   GestureDetector(
@@ -2942,7 +2974,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                       decoration: BoxDecoration(
-                        color: isSelected ? const Color(0xFF111827) : const Color(0xFFF3F4F6),
+                        color: isSelected ? const Color(0xFF000000) : const Color(0xFFF3F4F6),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -2974,7 +3006,7 @@ class SimulatedQrMatrixPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFF111827)
+      ..color = const Color(0xFF000000)
       ..style = PaintingStyle.fill;
 
     const int modules = 25;
@@ -3050,7 +3082,7 @@ class SimulatedQrMatrixPainter extends CustomPainter {
           fontFamily: KonfrmTypography.fontFamily,
           fontSize: 20,
           fontWeight: FontWeight.w900,
-          color: Color(0xFF111827),
+          color: Color(0xFF000000),
         ),
       ),
       textDirection: ui.TextDirection.ltr,

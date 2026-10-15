@@ -64,9 +64,10 @@ void main() {
       controller.dispose();
     });
 
-    test('default initialization loads authenticated flagship profile with portrait', () {
+    test('default initialization loads authenticated flagship profile with portrait and compact hero', () {
       expect(controller.isAuthenticated, isTrue);
       expect(controller.isLoading, isFalse);
+      expect(controller.isCompactHero, isTrue);
       expect(controller.profile, isNotNull);
       expect(controller.profile!.fullName, equals('أحمد مصطفى'));
       expect(controller.profile!.proposedUsername, equals('ahmed_mostafa'));
@@ -245,9 +246,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('محفظة كونفرم'), findsWidgets);
-      expect(find.text('0.00'), findsOneWidget);
+      expect(find.text('المحفظة قيد التجهيز'), findsOneWidget);
+      expect(find.text('0.00'), findsNothing);
       expect(find.textContaining('#173'), findsWidgets);
-      expect(find.text('لا توجد عمليات سابقة أو مبالغ معلقة'), findsOneWidget);
       expect(find.textContaining('1,200'), findsNothing);
 
       // Close wallet sheet

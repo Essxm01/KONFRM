@@ -1,35 +1,38 @@
-# Active Task — CUSTOMER_SCREEN15_V2_CONSISTENCY_CORRECTION
+# Active Task — CUSTOMER_SCREEN16_NOTIFICATION_CENTER_V1
 
-TASK_ID: CUSTOMER_SCREEN15_V2_CONSISTENCY_CORRECTION
+TASK_ID: CUSTOMER_SCREEN16_NOTIFICATION_CENTER_V1
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN15_V2_CONSISTENCY_FIX_AWAITING_BRIDGE_REVIEW
-BRANCH: evidence/customer-screen15-design-review
+STATUS: SCREEN16_V1_AWAITING_BRIDGE_AND_FOUNDER_VISUAL_REVIEW
+BRANCH: evidence/customer-screen16-design-review
 GOVERNING_ISSUES:
-  - Issue #165: Customer Screen 15 Canonical Contract & V2 Corrective Mandate
+  - Issue #168: Customer Screen 16 Canonical Contract & Scope
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
-  - Issue #167: Deferred Technical/Architecture Scope Tracking
+  - Issue #167: Deferred Technical/QA Backlog
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver the focused visual consistency corrections for Customer Screen 15 (Favorites / المفضلة) on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. Favorite heart position: Moved circular favorite heart button to the physical LEFT side of the property card (Positioned(top: 10, left: 10)), matching the Founder-approved customer card standard.
-  2. Bottom navigation unification: Replaced custom bottom nav with the canonical CustomerBottomNavigation component from package:konfrm_design_system/konfrm_design_system.dart using the exact Screen 12 styling (#F3F4F6 soft grey indicator pill, pure black active icon/label, #6B7280 inactive, Cairo 12 bold active) with Tab 1 (المفضلة) active.
-  3. Preserved canonical neutral property fallback placeholder and truthful copy ("غير متاحة للحجز حالياً").
+SCOPE: Deliver the isolated native Flutter visual design preview for Customer Screen 16 (Notification Center / مركز الإشعارات) on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. Navigation: Entered from Account section. Preserves canonical shared CustomerBottomNavigation with Account active (index 3). Clear back action returning to Account.
+  2. Visuals: Native Flutter Cairo Arabic RTL typography, clean white/neutral surfaces (#FFFFFF, #F9FAFB, #F3F4F6, #E5E7EB), restrained black emphasis (#000000), zero generic blue styling.
+  3. Notification states: Ready feed with synthetic fixtures, read/unread distinction, action-required deposit notice without claiming booking is confirmed, truthful empty state, loading shimmer, stale error banner, hard error with retry, session expired (401), and missing/unauthorized target dialog.
+  4. Accessibility: Verified under standard (100%) and 200% accessibility text scale with zero RenderFlex overflow.
+  5. Evidence: Deliver 14 genuine Samsung A56 screenshots, Base64 companions, mirrored review source, tests, and report in review-evidence/customer-screen16/v1/.
 
 ## Boundaries & Invariants
 - Zero changes to production code (`customer_app/lib/` untouched, backend untouched, database untouched).
-- All non-visual technical issues remain deferred under GitHub Issue #167.
-- Baseline V1 evidence preserved untouched in `review-evidence/customer-screen15/`.
-- Additive V2 evidence delivered in `review-evidence/customer-screen15/v2/`.
+- All non-visual technical issues (backend push delivery, server-authoritative unread state, persistence) deferred to pre-live integration.
+- Baseline V1 and V2 evidence for previous screens preserved untouched.
 - Physical device serial redacted in all logs and markdown (`[REDACTED_A56_ID]`).
 
 ## Verification & Quality Gates
-- [x] Favorite heart action button positioned on the physical LEFT (`top: 10, left: 10`) matching approved customer card standard.
-- [x] Canonical `CustomerBottomNavigation` integrated with Screen 12 theme (`#F3F4F6` indicator pill, Tab 1 active).
-- [x] Status badge for unavailable items positioned on physical RIGHT (`top: 14, right: 12`) without collision.
-- [x] 13/13 source-linked unit and widget tests pass (`flutter test test/screen15_source_linked_tests.dart`).
-- [x] Static analysis passes with 0 issues (`flutter analyze tool/screen15_preview_runner.dart test/screen15_source_linked_tests.dart`).
-- [x] 6 affected visual states re-captured on physical Samsung Galaxy A56 5G with PNG and Base64 companions.
-- [x] Complete cryptographic SHA-256 manifest and delivery report documented in `review-evidence/customer-screen15/v2/`.
+- [x] Screen 16 isolated Flutter preview runner implemented in `tool/screen16_preview_runner.dart`.
+- [x] Source-linked tests implemented in `test/screen16_source_linked_tests.dart`.
+- [x] Canonical `CustomerBottomNavigation` integrated with Account active (Tab 3).
+- [x] Clear return action to Account implemented.
+- [x] Zero generic blue styling; clean monochrome/neutral palette.
+- [x] 100% test pass rate (`flutter test test/screen16_source_linked_tests.dart` — 15/15 passed).
+- [x] Static analysis passes with 0 issues (`flutter analyze`).
+- [x] Representative genuine Samsung Galaxy A56 5G captures (14 scenarios) and Base64 companions generated.
+- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen16/v1/`.
 
 ---
 

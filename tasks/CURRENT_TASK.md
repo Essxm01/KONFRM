@@ -1,38 +1,40 @@
-# Active Task — CUSTOMER_SCREEN16_NOTIFICATION_CENTER_V1
+# Active Task — CUSTOMER_SCREEN16_NOTIFICATION_CENTER_V2
 
-TASK_ID: CUSTOMER_SCREEN16_NOTIFICATION_CENTER_V1
+TASK_ID: CUSTOMER_SCREEN16_NOTIFICATION_CENTER_V2
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN16_V1_AWAITING_BRIDGE_AND_FOUNDER_VISUAL_REVIEW
+STATUS: SCREEN16_V2_AWAITING_BRIDGE_AND_FOUNDER_VISUAL_REVIEW
 BRANCH: evidence/customer-screen16-design-review
 GOVERNING_ISSUES:
-  - Issue #168: Customer Screen 16 Canonical Contract & Scope
+  - Issue #168: Customer Screen 16 Canonical Contract & Corrections
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
-  - Issue #167: Deferred Technical/QA Backlog
+  - Issue #169: Deferred Technical/QA Backlog
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver the isolated native Flutter visual design preview for Customer Screen 16 (Notification Center / مركز الإشعارات) on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. Navigation: Entered from Account section. Preserves canonical shared CustomerBottomNavigation with Account active (index 3). Clear back action returning to Account.
-  2. Visuals: Native Flutter Cairo Arabic RTL typography, clean white/neutral surfaces (#FFFFFF, #F9FAFB, #F3F4F6, #E5E7EB), restrained black emphasis (#000000), zero generic blue styling.
-  3. Notification states: Ready feed with synthetic fixtures, read/unread distinction, action-required deposit notice without claiming booking is confirmed, truthful empty state, loading shimmer, stale error banner, hard error with retry, session expired (401), and missing/unauthorized target dialog.
+SCOPE: Deliver the isolated native Flutter visual design corrections for Customer Screen 16 (Notification Center / مركز الإشعارات) on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. RTL Navigation Arrows: Header back button points physically right (>), deposit CTA forward arrow points physically left (<-).
+  2. Unread Card Hierarchy: Calm #E5E7EB borders, quiet 7px unread black dot markers, bold title typography, removing aggressive black card outlines.
+  3. Truthful Content & Default State: App boots by default into truthful empty feed (0 unread count), populated fixtures segregated as explicit QA scenarios, scrubbed cancellation intent, scrubbed device logins, and scrubbed unapproved deadline claims.
   4. Accessibility: Verified under standard (100%) and 200% accessibility text scale with zero RenderFlex overflow.
-  5. Evidence: Deliver 14 genuine Samsung A56 screenshots, Base64 companions, mirrored review source, tests, and report in review-evidence/customer-screen16/v1/.
+  5. Evidence: Deliver 14 genuine Samsung A56 screenshots, Base64 companions, mirrored review source, tests, and report in review-evidence/customer-screen16/v2/.
 
 ## Boundaries & Invariants
 - Zero changes to production code (`customer_app/lib/` untouched, backend untouched, database untouched).
-- All non-visual technical issues (backend push delivery, server-authoritative unread state, persistence) deferred to pre-live integration.
-- Baseline V1 and V2 evidence for previous screens preserved untouched.
+- All non-visual technical issues (backend push delivery, server-authoritative unread state, persistence) deferred to pre-live integration under Issue #169.
+- Baseline V1 evidence preserved untouched in `review-evidence/customer-screen16/v1/`.
 - Physical device serial redacted in all logs and markdown (`[REDACTED_A56_ID]`).
 
 ## Verification & Quality Gates
-- [x] Screen 16 isolated Flutter preview runner implemented in `tool/screen16_preview_runner.dart`.
-- [x] Source-linked tests implemented in `test/screen16_source_linked_tests.dart`.
-- [x] Canonical `CustomerBottomNavigation` integrated with Account active (Tab 3).
-- [x] Clear return action to Account implemented.
-- [x] Zero generic blue styling; clean monochrome/neutral palette.
-- [x] 100% test pass rate (`flutter test test/screen16_source_linked_tests.dart` — 15/15 passed).
+- [x] Screen 16 isolated Flutter preview runner updated in `tool/screen16_preview_runner.dart`.
+- [x] Source-linked tests updated in `test/screen16_source_linked_tests.dart` (16/16 passed).
+- [x] Header back arrow points physically RIGHT (>) on Samsung A56 hardware pixels.
+- [x] Deposit CTA arrow points physically LEFT (<-) for forward progression in RTL Arabic.
+- [x] Aggressive black card borders replaced with calm #E5E7EB borders and 7px circular black unread dot markers.
+- [x] Truthful empty state defaults on initial launch with 0 unread count.
+- [x] Unsupported cancellation intent, device logins, and deadline claims scrubbed from fixtures.
+- [x] Canonical `CustomerBottomNavigation` preserved with Account active (Tab 3).
 - [x] Static analysis passes with 0 issues (`flutter analyze`).
 - [x] Representative genuine Samsung Galaxy A56 5G captures (14 scenarios) and Base64 companions generated.
-- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen16/v1/`.
+- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen16/v2/`.
 
 ---
 

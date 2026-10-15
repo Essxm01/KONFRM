@@ -49,21 +49,29 @@ void main() {
       controller.dispose();
     });
 
-    test('initial load initializes with synthetic fixtures and correct unread count', () {
-      expect(controller.items.length, equals(kSyntheticNotifications.length));
-      expect(controller.unreadCount, equals(3));
+    test('initial load initializes with truthful empty state and 0 unread count', () {
+      expect(controller.items.isEmpty, isTrue);
+      expect(controller.unreadCount, equals(0));
       expect(controller.isLoading, isFalse);
       expect(controller.is401Expired, isFalse);
     });
 
+    test('loading QA synthetic scenario populates fixtures and unread count', () {
+      controller.setScenario(Screen16Scenario.readyListTop);
+      expect(controller.items.length, equals(kSyntheticNotifications.length));
+      expect(controller.unreadCount, equals(2)); // notif_001 and notif_002
+    });
+
     test('markAsRead updates item state and decrements unread count', () {
+      controller.setScenario(Screen16Scenario.readyListTop);
       controller.markAsRead('notif_001');
       final item = controller.items.firstWhere((i) => i.notificationId == 'notif_001');
       expect(item.isRead, isTrue);
-      expect(controller.unreadCount, equals(2));
+      expect(controller.unreadCount, equals(1));
     });
 
     test('markAllAsRead marks all notifications as read', () {
+      controller.setScenario(Screen16Scenario.readyListTop);
       controller.markAllAsRead();
       expect(controller.unreadCount, equals(0));
       for (final item in controller.items) {
@@ -85,6 +93,7 @@ void main() {
     });
 
     test('missing target notification triggers truthful dialog notice', () {
+      controller.setScenario(Screen16Scenario.readyListTop);
       final missingItem = controller.items.firstWhere((i) => !i.isTargetAvailable);
       controller.selectNotification(missingItem);
       expect(controller.dialogNotice, isNotNull);
@@ -110,9 +119,13 @@ void main() {
       expect(find.byKey(const Key('customer-destination-3')), findsOneWidget);
     });
 
-    testWidgets('renders notification cards with unread badges and deposit action button', (tester) async {
+    testWidgets('renders notification cards with unread badges and deposit action button in QA scenario', (tester) async {
       await tester.binding.setSurfaceSize(const Size(412, 915));
       await tester.pumpWidget(const Screen16PreviewApp());
+      await tester.pumpAndSettle();
+
+      final state = tester.state<Screen16HarnessPageState>(find.byType(Screen16HarnessPage));
+      state.applyScenario(Screen16Scenario.readyListTop);
       await tester.pumpAndSettle();
 
       // Verify unread badge & action-required badge

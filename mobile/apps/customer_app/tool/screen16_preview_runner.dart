@@ -91,7 +91,7 @@ final List<CustomerNotificationItem> kSyntheticNotifications = [
     notificationId: 'notif_002',
     eventType: CustomerNotificationEventType.bookingRejected,
     title: 'لم يوافق المالك على طلب الحجز',
-    body: 'فيلا مستقلة مع مسبح خاص وحديقة واسعة · المواعيد المطلوبة غير متوفرة حالياً، افتح الحجز لمراجعة التفاصيل.',
+    body: 'فيلا مستقلة مع مسبح خاص وحديقة واسعة · المواعيد المطلوبة غير متوفرة حالياً لدى المالك.',
     propertyTitle: 'فيلا مستقلة مع مسبح خاص وحديقة واسعة',
     bookingId: 'bk_gouna_002',
     createdAtText: 'منذ ساعتين',
@@ -103,7 +103,7 @@ final List<CustomerNotificationItem> kSyntheticNotifications = [
     notificationId: 'notif_003',
     eventType: CustomerNotificationEventType.bookingCancelled,
     title: 'تم إلغاء طلب الحجز',
-    body: 'شقة عصرية راقية بالقرب من مجمع ووترواي · تم إلغاء الطلب بناءً على رغبتك.',
+    body: 'شقة عصرية راقية بالقرب من مجمع ووترواي · تم تحديث حالة طلب الحجز إلى ملغى.',
     propertyTitle: 'شقة عصرية راقية بالقرب من مجمع ووترواي',
     bookingId: 'bk_waterway_003',
     createdAtText: 'أمس، 04:30 م',
@@ -113,23 +113,13 @@ final List<CustomerNotificationItem> kSyntheticNotifications = [
   ),
   const CustomerNotificationItem(
     notificationId: 'notif_004',
-    eventType: CustomerNotificationEventType.securityAlert,
-    title: 'تسجيل دخول جديد لحسابك',
-    body: 'تم تسجيل الدخول إلى حسابك من جهاز Samsung Galaxy A56 بنجاح.',
-    createdAtText: '12 أكتوبر 2026، 11:20 ص',
-    isRead: true,
-    actionRequired: false,
-    isTargetAvailable: true,
-  ),
-  const CustomerNotificationItem(
-    notificationId: 'notif_005',
     eventType: CustomerNotificationEventType.bookingApprovedPendingPayment,
-    title: 'تحديث على حجز سابق',
-    body: 'إقامة هادئة في الساحل الشمالي · انتهت مهلة تأكيد الحجز وتمت إزالة الوجهة.',
+    title: 'تحديث على طلب الحجز',
+    body: 'إقامة هادئة في الساحل الشمالي · الوجهة المرتبطة بالطلب لم تعد متاحة.',
     propertyTitle: 'إقامة هادئة في الساحل الشمالي',
-    bookingId: 'bk_expired_005',
+    bookingId: 'bk_expired_004',
     createdAtText: 'منذ 3 أيام',
-    isRead: false,
+    isRead: true,
     actionRequired: false,
     isTargetAvailable: false, // Triggers missing target notice
   ),
@@ -239,7 +229,7 @@ class Screen16NotificationsController extends ChangeNotifier {
   int get unreadCount => _items.where((i) => !i.isRead).length;
 
   void _loadInitial() {
-    _items = List.from(kSyntheticNotifications);
+    _items = []; // Truthful default: empty feed on initial customer view
     _isLoading = false;
     _isStaleError = false;
     _isHardError = false;
@@ -330,7 +320,9 @@ class Screen16NotificationsController extends ChangeNotifier {
         _isStaleError = false;
         _isHardError = false;
         _is401Expired = false;
-        _focusedItem = _items.first;
+        _focusedItem = _items.firstWhere(
+          (i) => i.eventType == CustomerNotificationEventType.bookingCancelled,
+        );
         break;
 
       case Screen16Scenario.rejectionCardFocus:
@@ -464,7 +456,7 @@ class Screen16HarnessPageState extends State<Screen16HarnessPage> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _keyboardFocusNode = FocusNode();
 
-  Screen16Scenario _scenario = Screen16Scenario.readyListTop;
+  Screen16Scenario _scenario = Screen16Scenario.emptyNoNotifications;
   bool _showDevTools = false;
   int _bottomNavIndex = 3; // Account tab active by contract
 
@@ -728,10 +720,13 @@ class Screen16HarnessPageState extends State<Screen16HarnessPage> {
                       color: const Color(0xFFF3F4F6),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
-                      Icons.arrow_forward_ios,
-                      size: 18,
-                      color: Color(0xFF000000),
+                    child: Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Color(0xFF000000),
+                      ),
                     ),
                   ),
                 ),
@@ -898,14 +893,14 @@ class Screen16HarnessPageState extends State<Screen16HarnessPage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isUnread ? const Color(0xFF000000) : const Color(0xFFE5E7EB),
-                width: isUnread ? 1.5 : 1.0,
+                color: const Color(0xFFE5E7EB),
+                width: 1.0,
               ),
               boxShadow: isUnread
                   ? [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 8,
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
                     ]
@@ -914,7 +909,7 @@ class Screen16HarnessPageState extends State<Screen16HarnessPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header row: Icon + Title + Timestamp
+                // Header row: Icon + Title + Unread Indicator + Timestamp
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -922,19 +917,37 @@ class Screen16HarnessPageState extends State<Screen16HarnessPage> {
                     _buildEventIconContainer(item.eventType),
                     const SizedBox(width: 10),
 
-                    // Title
+                    // Title with Unread Dot Marker
                     Expanded(
-                      child: Text(
-                        item.title,
-                        style: TextStyle(
-                          fontFamily: KonfrmTypography.fontFamily,
-                          fontSize: 14,
-                          fontWeight: isUnread ? FontWeight.w800 : FontWeight.w600,
-                          color: const Color(0xFF000000),
-                          height: 1.25,
-                        ),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              item.title,
+                              style: TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 14,
+                                fontWeight: isUnread ? FontWeight.w700 : FontWeight.w600,
+                                color: isUnread ? const Color(0xFF111827) : const Color(0xFF4B5563),
+                                height: 1.25,
+                              ),
+                            ),
+                          ),
+                          if (isUnread) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              width: 7,
+                              height: 7,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF000000),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
+                    const SizedBox(width: 8),
 
                     // Timestamp
                     Text(
@@ -974,12 +987,6 @@ class Screen16HarnessPageState extends State<Screen16HarnessPage> {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.arrow_back,
-                          size: 14,
-                          color: Colors.white,
-                        ),
-                        SizedBox(width: 6),
                         Flexible(
                           child: Text(
                             'مطلوب إجراء: دفع العربون',
@@ -991,33 +998,17 @@ class Screen16HarnessPageState extends State<Screen16HarnessPage> {
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ],
-
-                // Unread indicator pill at bottom if unread
-                if (isUnread && !item.actionRequired) ...[
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF3F4F6),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Text(
-                          'جديد',
-                          style: TextStyle(
-                            fontFamily: KonfrmTypography.fontFamily,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF000000),
+                        SizedBox(width: 6),
+                        Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Icon(
+                            Icons.arrow_back,
+                            size: 14,
+                            color: Colors.white,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ],

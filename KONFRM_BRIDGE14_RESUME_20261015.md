@@ -1,5 +1,20 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## CURRENT SCREEN17 V3 INDEPENDENT BRIDGE REVIEW — 2026-10-15
+
+Antigravity delivered SCREEN17 V3 Simplified Premium at [commit d7a382f34e4416d3e3b8aa5be53cc183777654ca](https://github.com/Essxm01/KONFRM/commit/d7a382f34e4416d3e3b8aa5be53cc183777654ca) with all 15 original physical Samsung A56 screenshots/B64 counterparts in newly added review-evidence/customer-screen17/v3-simplified-premium/. V1 and V2 untouched. Bridge inspected ALL 15 images, source/test + V2->V3 diff; Antigravity reported 21/21 tests, not independently rerun.
+
+**CONFIRMED PROGRESS:** unboxed identity; black camera glyph on white ring; no adjacent phone; removed duplicate Bookings/Favorites/Notifications tiles; next stay preserved; shared 4-tab Account navigation now correct white/gray including 200% labels. QR/window tech/governance still mock and separate.
+
+**NOT FOUNDER VISUALLY APPROVED:** Founder specifically wanted softer no-cards account but V3 normal default hero is still much taller than necessary and THREE outlined group cards + section headers remain. Screen13 compact horizontal identity variant is already available, visually superior for baseline normal-scale first fold: recommend adopt it as default, with vertical adaptive at 200%. Use ONE continuous flat grouped list/separators (no outer 3 box cards). Main 200% evidence Screenshot14 upcoming stay full title/dates ellipsized and screenshot15 linked-accounts row text wraps to individual characters with 'مفهوم مقترح' badge. Flutter maxLines:1 and constrained row confirmed. Fix locally, do not clamp scaling.
+
+**TRUTH GATES:** Screenshot09 pseudo-QR is SimulatedQrMatrixPainter but active share/save and 'معرّف الحساب المعتمد' claims suggest functional code; header QR visible to guest/401 and modal contains hardcoded fallback Ahmed profile; controller openQrSheet() itself ungated. Auth/profile gate in UI and controller, non-scannable labeled demo and disabled actions until QR contract #172. Wallet screenshot11 hard-coded 0.00 EGP 'الرصيد المتاح' and no transactions, though wallet product unapproved; do not show synthetic zero as authoritative, replace with disabled concept text and no balances #173. Upcoming stay source has only hasUpcomingStay bool while UI says 'حجز مؤكد'; ensure explicit confirmed booking fixture state and future authoritative status before use.
+
+Bridge verdict `SCREEN17_V3_SIMPLIFICATION_PROGRESS_CONFIRMED__ONE_BOUNDED_DESIGN_AND_TRUTH_FIX_REQUIRED__FOUNDER_VISUAL_APPROVAL_PENDING`. Detailed verified review in [GitHub issue #170](https://github.com/Essxm01/KONFRM/issues/170). Next: ONE limited corrective pass preserving successful aesthetic, new add-only folder v3-simplified-corrective, only affected normal/200%, QR/wallet and guest screenshots. Do not demand redoing all 15 states; no production code/DB/backend/money/OAuth edits, no Screen18, no #174 navigation-contract edits. Protect old images #155. Screen17 still active until Founder approval.
+
+---
+
+
 ## LATEST FOUNDER SCREEN17 DESIGN OVERRIDE — EDITORIAL SIMPLICITY, NO SHORTCUT TILES (2026-10-15)
 
 Founder rejected Screen17 V2 premium's BIG enclosing identity card + THREE repeated shortcut tiles, even though the portrait and upcoming stay idea were positively received. Earlier Bridge recommendation to preserve the large card and tiles is superseded.

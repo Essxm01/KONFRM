@@ -1,40 +1,40 @@
-# Active Task — CUSTOMER_SCREEN16_NOTIFICATION_CENTER_V2
+# Active Task — CUSTOMER_SCREEN17_ACCOUNT_HOME_V1
 
-TASK_ID: CUSTOMER_SCREEN16_NOTIFICATION_CENTER_V2
+TASK_ID: CUSTOMER_SCREEN17_ACCOUNT_HOME_V1
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN16_V2_AWAITING_BRIDGE_AND_FOUNDER_VISUAL_REVIEW
-BRANCH: evidence/customer-screen16-design-review
+STATUS: SCREEN17_V1_AWAITING_BRIDGE_AND_FOUNDER_VISUAL_REVIEW
+BRANCH: evidence/customer-screen17-design-review
 GOVERNING_ISSUES:
-  - Issue #168: Customer Screen 16 Canonical Contract & Corrections
+  - Issue #170: Customer Screen 17 Account Home — native Flutter visual design
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
-  - Issue #169: Deferred Technical/QA Backlog
+  - Issue #171: Deferred Technical/QA Backlog for Screen 17
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver the isolated native Flutter visual design corrections for Customer Screen 16 (Notification Center / مركز الإشعارات) on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. RTL Navigation Arrows: Header back button points physically right (>), deposit CTA forward arrow points physically left (<-).
-  2. Unread Card Hierarchy: Calm #E5E7EB borders, quiet 7px unread black dot markers, bold title typography, removing aggressive black card outlines.
-  3. Truthful Content & Default State: App boots by default into truthful empty feed (0 unread count), populated fixtures segregated as explicit QA scenarios, scrubbed cancellation intent, scrubbed device logins, and scrubbed unapproved deadline claims.
-  4. Accessibility: Verified under standard (100%) and 200% accessibility text scale with zero RenderFlex overflow.
-  5. Evidence: Deliver 14 genuine Samsung A56 screenshots, Base64 companions, mirrored review source, tests, and report in review-evidence/customer-screen16/v2/.
+SCOPE: Deliver the isolated native Flutter visual design for Customer Screen 17 (Account Home / الحساب) on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. Main Account Hub: Personal summary card, avatar/initials fallback, masked verified phone/email (LTR-isolated `<bdi>`), edit profile CTA, incomplete-profile prompt.
+  2. Grouped Navigation: Grouped sections with calm neutral icons and text (رحلاتك: حجوزاتي, المفضلة; النشاط: الإشعارات with unread badge; المدفوعات; الحساب: البيانات الشخصية; المساعدة: المساعدة والدعم), sign-out action.
+  3. Shared Bottom Navigation: Canonical 4-tab `CustomerBottomNavigation` with Account (Tab index 3) active.
+  4. RTL & Typography: Full Arabic Cairo typography, monochrome neutral palette (#000000, #FFFFFF, #F9FAFB, #F3F4F6, #E5E7EB), zero generic blue tints, navigation row arrows pointing physically LEFT (<-) in RTL.
+  5. State Differentiation: Authenticated complete, authenticated incomplete profile, guest / unauthenticated, initial loading / skeleton, network error, session expired (401), identity integrity failure, and accessibility 200% text scale.
+  6. Evidence & Hygiene: Deliver 14 genuine Samsung A56 screenshots, Base64 companions, mirrored review runner, source-linked tests, and reports in review-evidence/customer-screen17/v1/.
 
 ## Boundaries & Invariants
 - Zero changes to production code (`customer_app/lib/` untouched, backend untouched, database untouched).
-- All non-visual technical issues (backend push delivery, server-authoritative unread state, persistence) deferred to pre-live integration under Issue #169.
-- Baseline V1 evidence preserved untouched in `review-evidence/customer-screen16/v1/`.
+- All non-visual technical issues (backend persistence, session revocation, real identity RPCs, push integration) deferred under Issue #171.
+- All historical evidence preserved untouched per Issue #155.
 - Physical device serial redacted in all logs and markdown (`[REDACTED_A56_ID]`).
 
 ## Verification & Quality Gates
-- [x] Screen 16 isolated Flutter preview runner updated in `tool/screen16_preview_runner.dart`.
-- [x] Source-linked tests updated in `test/screen16_source_linked_tests.dart` (16/16 passed).
-- [x] Header back arrow points physically RIGHT (>) on Samsung A56 hardware pixels.
-- [x] Deposit CTA arrow points physically LEFT (<-) for forward progression in RTL Arabic.
-- [x] Aggressive black card borders replaced with calm #E5E7EB borders and 7px circular black unread dot markers.
-- [x] Truthful empty state defaults on initial launch with 0 unread count.
-- [x] Unsupported cancellation intent, device logins, and deadline claims scrubbed from fixtures.
-- [x] Canonical `CustomerBottomNavigation` preserved with Account active (Tab 3).
+- [x] Screen 17 isolated Flutter preview runner created in `tool/screen17_preview_runner.dart`.
+- [x] Source-linked tests created in `test/screen17_source_linked_tests.dart` (20/20 passed).
+- [x] Canonical `CustomerBottomNavigation` retained with Account active (Tab 3).
+- [x] Row navigation chevrons point physically LEFT (<-) for forward progression in RTL Arabic.
+- [x] Masked phone / email formatted with LTR directionality isolation.
+- [x] Zero generic blue palette; strictly monochrome neutrals.
+- [x] Guest, authenticated, incomplete profile, 401, integrity failure, error, and loading states distinct.
 - [x] Static analysis passes with 0 issues (`flutter analyze`).
 - [x] Representative genuine Samsung Galaxy A56 5G captures (14 scenarios) and Base64 companions generated.
-- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen16/v2/`.
+- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen17/v1/`.
 
 ---
 

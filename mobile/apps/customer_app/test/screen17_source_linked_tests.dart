@@ -1,5 +1,5 @@
 // =============================================================================
-// KONFRM Customer Screen 17 — Account Home (الحساب)
+// KONFRM Customer Screen 17 V2 — "Personal Passport"
 // Source-Linked Unit and Behavioral Widget Tests
 // =============================================================================
 
@@ -9,7 +9,7 @@ import 'package:konfrm_design_system/konfrm_design_system.dart';
 import '../tool/screen17_preview_runner.dart';
 
 void main() {
-  group('Screen 17 Customer Account Home — Domain Helpers & Invariants', () {
+  group('Screen 17 V2 Passport — Domain Helpers & Invariants', () {
     test('maskDisplayPhone masks standard Egyptian mobile numbers safely', () {
       expect(maskDisplayPhone('+201012345678'), equals('+20 10••••5678'));
       expect(maskDisplayPhone('+201198765432'), equals('+20 11••••5432'));
@@ -29,30 +29,31 @@ void main() {
       expect(deriveUserInitials(null), equals('م'));
     });
 
-    test('CustomerProfileData accurately computes incomplete and display properties', () {
+    test('CustomerProfileData accurately computes display and portrait properties', () {
       const completeUser = CustomerProfileData(
         userId: 'u1',
         fullName: 'أحمد مصطفى',
+        proposedUsername: 'ahmed_mostafa',
         verifiedPhone: '+201012345678',
+        hasUpcomingStay: true,
       );
       expect(completeUser.isIncomplete, isFalse);
+      expect(completeUser.hasPortrait, isFalse);
       expect(completeUser.displayName, equals('أحمد مصطفى'));
       expect(completeUser.initials, equals('أ.م'));
-      expect(completeUser.displayIdentifier, equals('+20 10••••5678'));
+      expect(completeUser.hasUpcomingStay, isTrue);
 
       const incompleteUser = CustomerProfileData(
         userId: 'u2',
         fullName: null,
-        verifiedPhone: '+201098765432',
       );
       expect(incompleteUser.isIncomplete, isTrue);
       expect(incompleteUser.displayName, equals('مستأجر'));
       expect(incompleteUser.initials, equals('م'));
-      expect(incompleteUser.displayIdentifier, equals('+20 10••••5432'));
     });
   });
 
-  group('Screen 17 Customer Account Home — State Controller Lifecycle', () {
+  group('Screen 17 V2 Passport — State Controller Lifecycle', () {
     late Screen17AccountController controller;
 
     setUp(() {
@@ -63,57 +64,82 @@ void main() {
       controller.dispose();
     });
 
-    test('default initialization loads authenticated complete profile', () {
+    test('default initialization loads authenticated flagship profile with portrait', () {
       expect(controller.isAuthenticated, isTrue);
       expect(controller.isLoading, isFalse);
       expect(controller.profile, isNotNull);
       expect(controller.profile!.fullName, equals('أحمد مصطفى'));
+      expect(controller.profile!.proposedUsername, equals('ahmed_mostafa'));
+      expect(controller.profile!.hasPortrait, isTrue);
       expect(controller.unreadNotificationCount, equals(2));
+      expect(controller.savedFavoritesCount, equals(4));
+      expect(controller.activeBookingsCount, equals(1));
     });
 
-    test('setting guestUnauthenticated scenario purges profile and unreads', () {
+    test('setting guestUnauthenticated scenario purges profile securely', () {
       controller.setScenario(Screen17Scenario.guestUnauthenticated);
       expect(controller.isAuthenticated, isFalse);
       expect(controller.profile, isNull);
-      expect(controller.unreadNotificationCount, equals(0));
     });
 
-    test('setting sessionExpired401 scenario purges private profile securely', () {
+    test('setting sessionExpired401 scenario flags 401 and purges private profile', () {
       controller.setScenario(Screen17Scenario.sessionExpired401);
       expect(controller.is401Expired, isTrue);
-      expect(controller.profile, isNull); // Zero private info leak
+      expect(controller.isAuthenticated, isFalse);
+      expect(controller.profile, isNull);
     });
 
-    test('setting identityIntegrityFailure scenario flags integrity failure without verified identity', () {
-      controller.setScenario(Screen17Scenario.identityIntegrityFailure);
-      expect(controller.identityIntegrityFailed, isTrue);
-      expect(controller.profile!.verifiedPhone, isNull);
-      expect(controller.profile!.verifiedEmail, isNull);
+    test('setting qrModal scenarios manages sheet visibility and tab index', () {
+      controller.setScenario(Screen17Scenario.qrModalMyCode);
+      expect(controller.showQrSheet, isTrue);
+      expect(controller.qrTab, equals(0));
+
+      controller.setQrTab(1);
+      expect(controller.qrTab, equals(1));
+
+      controller.closeQrSheet();
+      expect(controller.showQrSheet, isFalse);
     });
 
-    test('triggering and dismissing logout confirmation dialog', () {
+    test('setting walletModalConcept opens wallet concept sheet', () {
+      controller.setScenario(Screen17Scenario.walletModalConcept);
+      expect(controller.showWalletSheet, isTrue);
+
+      controller.closeWalletSheet();
+      expect(controller.showWalletSheet, isFalse);
+    });
+
+    test('triggering, cancelling, and confirming logout', () {
       expect(controller.showLogoutDialog, isFalse);
-      controller.triggerLogoutDialog();
+      controller.requestLogout();
       expect(controller.showLogoutDialog, isTrue);
-      controller.dismissLogoutDialog();
+
+      controller.cancelLogout();
       expect(controller.showLogoutDialog, isFalse);
+
+      controller.requestLogout();
+      controller.confirmLogout();
+      expect(controller.showLogoutDialog, isFalse);
+      expect(controller.isAuthenticated, isFalse);
+      expect(controller.profile, isNull);
     });
 
-    test('showing and dismissing navigation notice', () {
+    test('showing and clearing feedback notice', () {
       expect(controller.dialogNotice, isNull);
-      controller.showNotice('معاينة: اختبار مسار');
-      expect(controller.dialogNotice, equals('معاينة: اختبار مسار'));
-      controller.dismissDialogNotice();
+      controller.showNotice('معاينة مسار تجريبي');
+      expect(controller.dialogNotice, equals('معاينة مسار تجريبي'));
+      controller.clearNotice();
       expect(controller.dialogNotice, isNull);
     });
   });
 
-  group('Screen 17 Customer Account Home — Source-Linked UI Widget Tests', () {
-    testWidgets('renders Arabic header "حسابي" and active Account tab in bottom nav', (tester) async {
+  group('Screen 17 V2 Passport — Source-Linked UI Widget Tests', () {
+    testWidgets('renders Arabic root header "حسابي", QR action button, and active Account bottom tab', (tester) async {
       await tester.pumpWidget(const Screen17PreviewApp());
       await tester.pumpAndSettle();
 
       expect(find.text('حسابي'), findsOneWidget);
+      expect(find.byKey(const Key('header_qr_button')), findsOneWidget);
       expect(find.byType(CustomerBottomNavigation), findsOneWidget);
 
       // Verify Account tab (index 3) is active
@@ -122,120 +148,134 @@ void main() {
       expect(navWidget.selectedIndex, equals(3));
     });
 
-    testWidgets('renders identity card with initials and LTR-isolated masked phone', (tester) async {
+    testWidgets('renders flagship identity hero with portrait, camera badge, and NO phone number in hero fold', (tester) async {
       await tester.pumpWidget(const Screen17PreviewApp());
       await tester.pumpAndSettle();
 
       expect(find.text('أحمد مصطفى'), findsOneWidget);
-      expect(find.text('أ.م'), findsOneWidget);
-      expect(find.text('+20 10••••5678'), findsOneWidget);
-      expect(find.text('تعديل'), findsOneWidget);
+      expect(find.text('@ahmed_mostafa'), findsOneWidget);
+      expect(find.byKey(const Key('avatar_tap_area')), findsOneWidget);
+      expect(find.byKey(const Key('camera_edit_badge')), findsOneWidget);
+      expect(find.byKey(const Key('hero_edit_profile_button')), findsOneWidget);
+
+      // Crucial Founder Invariant: Telephone number must NOT be displayed in the hero fold
+      expect(find.text('+20 10••••5678'), findsNothing);
     });
 
-    testWidgets('renders grouped navigation sections with calm neutral labels and badge', (tester) async {
-      await tester.binding.setSurfaceSize(const Size(412, 915));
+    testWidgets('renders quick action shortcuts for Bookings, Favorites, and Notifications', (tester) async {
       await tester.pumpWidget(const Screen17PreviewApp());
       await tester.pumpAndSettle();
 
-      expect(find.text('رحلاتك'), findsOneWidget);
-      expect(find.text('حجوزاتي'), findsWidgets); // Appears in row and bottom nav
-      expect(find.text('المفضلة'), findsWidgets); // Appears in row and bottom nav
-      expect(find.text('النشاط'), findsOneWidget);
-      expect(find.text('الإشعارات'), findsOneWidget);
-      expect(find.text('2'), findsOneWidget); // Unread badge
-      expect(find.text('المدفوعات'), findsWidgets);
-
-      // Scroll to view lower sections
-      final harnessState = tester.state<Screen17HarnessPageState>(find.byType(Screen17HarnessPage));
-      harnessState.applyScenario(Screen17Scenario.authenticatedCompleteScrolled);
-      await tester.pumpAndSettle();
-
-      expect(find.text('الحساب'), findsWidgets); // Appears in section header and bottom nav
-      expect(find.text('البيانات الشخصية'), findsOneWidget);
-      expect(find.text('المساعدة'), findsOneWidget);
-      expect(find.text('المساعدة والدعم'), findsOneWidget);
-      expect(find.text('تسجيل الخروج'), findsOneWidget);
+      expect(find.byKey(const Key('quick_action_bookings')), findsOneWidget);
+      expect(find.byKey(const Key('quick_action_favorites')), findsOneWidget);
+      expect(find.byKey(const Key('quick_action_notifications')), findsOneWidget);
+      expect(find.text('2 جديد'), findsOneWidget);
     });
 
-    testWidgets('navigation rows use chevrons pointing physically LEFT in RTL', (tester) async {
+    testWidgets('renders upcoming stay card when active reservation exists', (tester) async {
       await tester.pumpWidget(const Screen17PreviewApp());
       await tester.pumpAndSettle();
 
-      // Find chevrons inside directionality
+      expect(find.byKey(const Key('upcoming_stay_card')), findsOneWidget);
+      expect(find.text('إقامتك القادمة'), findsOneWidget);
+      expect(find.text('حجز مؤكد'), findsOneWidget);
+    });
+
+    testWidgets('renders grouped navigation sections with calm neutral labels and left-pointing chevrons', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(412, 1600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(const Screen17PreviewApp());
+      await tester.pumpAndSettle();
+
+      expect(find.text('الحساب والملف الشخصي'), findsOneWidget);
+      expect(find.byKey(const Key('nav_profile_edit')), findsOneWidget);
+      expect(find.byKey(const Key('nav_privacy_security')), findsOneWidget);
+      expect(find.byKey(const Key('nav_linked_accounts')), findsOneWidget);
+
+      expect(find.text('المالية والمدفوعات'), findsOneWidget);
+      expect(find.byKey(const Key('nav_payment_history')), findsOneWidget);
+      expect(find.byKey(const Key('nav_wallet_concept')), findsOneWidget);
+
+      // Verify physical LEFT chevrons for RTL navigation
       final chevronFinder = find.byIcon(Icons.chevron_left);
       expect(chevronFinder, findsWidgets);
     });
 
-    testWidgets('incomplete profile scenario renders gentle prompt and action button', (tester) async {
+    testWidgets('renders Share KONFRM card and reachable logout button', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(412, 2000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(const Screen17PreviewApp());
       await tester.pumpAndSettle();
 
-      final harnessState = tester.state<Screen17HarnessPageState>(find.byType(Screen17HarnessPage));
-      harnessState.applyScenario(Screen17Scenario.authenticatedIncompleteProfile);
-      await tester.pumpAndSettle();
-
-      expect(find.text('أكمل بيانات حسابك'), findsOneWidget);
-      expect(find.text('إكمال البيانات'), findsOneWidget);
-      expect(find.text('مستأجر'), findsOneWidget);
+      expect(find.text('شارك كونفرم مع معارفك'), findsOneWidget);
+      expect(find.byKey(const Key('account_logout_button')), findsOneWidget);
     });
 
-    testWidgets('guest scenario renders login card with black CTA and zero leaked profile data', (tester) async {
+    testWidgets('tapping QR header button opens Personal QR modal with My Code tab', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(412, 915));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(const Screen17PreviewApp());
       await tester.pumpAndSettle();
 
-      final harnessState = tester.state<Screen17HarnessPageState>(find.byType(Screen17HarnessPage));
-      harnessState.applyScenario(Screen17Scenario.guestUnauthenticated);
+      await tester.tap(find.byKey(const Key('header_qr_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('تسجيل الدخول أو إنشاء حساب'), findsOneWidget);
-      expect(find.text('دخول برقم الجوال'), findsOneWidget);
-      expect(find.text('أحمد مصطفى'), findsNothing);
+      expect(find.text('رمز التعريف الشخصي (QR)'), findsOneWidget);
+      expect(find.text('رمزي'), findsOneWidget);
+      expect(find.text('مسح رمز'), findsOneWidget);
+      expect(find.text('مشاركة الرمز'), findsOneWidget);
+
+      // Close QR sheet
+      await tester.tap(find.byKey(const Key('qr_close_button')));
+      await tester.pumpAndSettle();
+      expect(find.text('رمز التعريف الشخصي (QR)'), findsNothing);
     });
 
-    testWidgets('session expired 401 scenario renders secure card with zero private data', (tester) async {
+    testWidgets('tapping wallet navigation row opens proposed Wallet Concept modal (#173)', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(412, 1600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(const Screen17PreviewApp());
       await tester.pumpAndSettle();
 
-      final harnessState = tester.state<Screen17HarnessPageState>(find.byType(Screen17HarnessPage));
-      harnessState.applyScenario(Screen17Scenario.sessionExpired401);
+      await tester.tap(find.byKey(const Key('nav_wallet_concept')));
       await tester.pumpAndSettle();
 
-      expect(find.text('انتهت جلسة تسجيل الدخول'), findsOneWidget);
-      expect(find.text('تسجيل الدخول مجدداً'), findsOneWidget);
-      expect(find.text('أحمد مصطفى'), findsNothing);
-    });
+      expect(find.text('محفظة كونفرم'), findsWidgets);
+      expect(find.text('0.00'), findsOneWidget);
+      expect(find.textContaining('#173'), findsWidgets);
 
-    testWidgets('identity integrity failure scenario renders fail-closed notice', (tester) async {
-      await tester.pumpWidget(const Screen17PreviewApp());
+      // Close wallet sheet
+      await tester.tap(find.byKey(const Key('wallet_close_button')));
       await tester.pumpAndSettle();
-
-      final harnessState = tester.state<Screen17HarnessPageState>(find.byType(Screen17HarnessPage));
-      harnessState.applyScenario(Screen17Scenario.identityIntegrityFailure);
-      await tester.pumpAndSettle();
-
-      expect(find.text('لا يمكن التحقق من هوية الحساب'), findsOneWidget);
-      expect(find.text('تسجيل الدخول لإعادة التحقق'), findsOneWidget);
     });
 
     testWidgets('tapping logout button triggers confirmation dialog', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(412, 2000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(const Screen17PreviewApp());
       await tester.pumpAndSettle();
 
-      final harnessState = tester.state<Screen17HarnessPageState>(find.byType(Screen17HarnessPage));
-      harnessState.applyScenario(Screen17Scenario.logoutConfirmationDialog);
+      await tester.tap(find.byKey(const Key('account_logout_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('هل أنت متأكد من رغبتك في تسجيل الخروج من حسابك؟'), findsOneWidget);
-      expect(find.text('إلغاء'), findsOneWidget);
+      expect(find.text('تسجيل الخروج من الحساب'), findsOneWidget);
+      expect(find.byKey(const Key('dialog_cancel_logout')), findsOneWidget);
+      expect(find.byKey(const Key('dialog_confirm_logout')), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('dialog_cancel_logout')));
+      await tester.pumpAndSettle();
+      expect(find.text('تسجيل الخروج من الحساب'), findsNothing);
     });
 
     testWidgets('accessibility 200% text scale renders with zero RenderFlex overflow', (tester) async {
       await tester.binding.setSurfaceSize(const Size(412, 915));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(const Screen17PreviewApp());
       await tester.pumpAndSettle();
 
-      final harnessState = tester.state<Screen17HarnessPageState>(find.byType(Screen17HarnessPage));
-      harnessState.applyScenario(Screen17Scenario.accessibility200Top);
+      // Trigger accessibility scenario
+      final viewState = tester.state<Screen17PreviewViewState>(find.byType(Screen17PreviewView));
+      viewState.applyScenario(Screen17Scenario.accessibility200Top);
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);

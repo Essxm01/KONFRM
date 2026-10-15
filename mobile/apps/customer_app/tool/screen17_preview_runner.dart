@@ -1,18 +1,26 @@
 // =============================================================================
-// KONFRM Customer Screen 17 — Account Home (الحساب) Preview Runner
+// KONFRM Customer Screen 17 V2 — "Personal Passport" / مساحتي في كونفرم
 //
 // Target Hardware: Samsung Galaxy A56 5G (1080 x 2340, Android 16 API 36)
-// Design Authority: Cairo Typography, RTL First, Pure Monochrome Palette
+// Design Authority: Cairo Typography, RTL First, Pure Monochrome & Neutrals
 // Navigation Context: Account Root (CustomerBottomNavigation Tab 3 active)
-// Governing Issues: #170 (Design Contract), #166 (Design First), #171 (Deferred)
+// Governing Issues:
+//   - Issue #170 (Founder V2 Redesign Authorization & Flagship Identity Direction)
+//   - Issue #172 (Identity, Avatar, QR, Linked Account, Profile Contracts Deferred)
+//   - Issue #173 (Proposed Customer Wallet Financial Governance Deferred)
+//   - Issue #166 (Design-First, Anti-Blue, RTL Physical Left Chevrons)
+//   - Issue #155 (Historical Evidence Preservation - V1 Retained Unchanged)
+//   - Issue #145 (Device Serial Redaction)
 //
 // Scope: Isolated visual preview with synthetic scenarios. Zero production mutations.
 // =============================================================================
 
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:konfrm_design_system/konfrm_design_system.dart';
+import 'screen17_demo_portrait_bytes.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,14 +31,11 @@ void main() {
 // Domain Models & Synthetic Helpers
 // =============================================================================
 
-/// Egyptian standard phone masking helper.
-/// +201012345678 -> +20 10••••5678.
-/// Fails safely to masked representation.
+/// Egyptian standard phone masking helper (used in private profile/security).
 String maskDisplayPhone(String? phone) {
   if (phone == null || phone.trim().isEmpty) return '+•• •••• ••••';
   final clean = phone.trim().replaceAll(RegExp(r'\s+'), '');
 
-  // Egyptian standard: +20 followed by 10/11/12/15 and 8 digits
   final egMatch = RegExp(r'^\+20(1[0125])(\d{4})(\d{4})$').firstMatch(clean);
   if (egMatch != null) {
     final operator = egMatch.group(1);
@@ -38,7 +43,6 @@ String maskDisplayPhone(String? phone) {
     return '+20 $operator••••$last4';
   }
 
-  // Egyptian with leading 0 (010..., 011...)
   final egLocalMatch = RegExp(r'^0(1[0125])(\d{4})(\d{4})$').firstMatch(clean);
   if (egLocalMatch != null) {
     final operator = egLocalMatch.group(1);
@@ -46,7 +50,6 @@ String maskDisplayPhone(String? phone) {
     return '+20 $operator••••$last4';
   }
 
-  // Generic international
   final intlMatch = RegExp(r'^(\+\d{1,3})(\d{2,3})\d{3,}(\d{4})$').firstMatch(clean);
   if (intlMatch != null) {
     final country = intlMatch.group(1);
@@ -60,8 +63,6 @@ String maskDisplayPhone(String? phone) {
 
 /// Derives user initials in Arabic.
 /// 'أحمد مصطفى' -> 'أ.م'
-/// 'سارة' -> 'سا'
-/// null/empty -> 'م' (مستأجر)
 String deriveUserInitials(String? name) {
   if (name == null || name.trim().isEmpty) return 'م';
   final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
@@ -71,35 +72,36 @@ String deriveUserInitials(String? name) {
   return '${parts[0][0]}.${parts[1][0]}';
 }
 
-/// Represents a customer profile for Screen 17.
+/// Customer profile data model for Screen 17 V2 Passport.
 class CustomerProfileData {
   final String userId;
   final String? fullName;
-  final String? avatarUrl;
+  final String? proposedUsername;
+  final Uint8List? portraitBytes;
   final String? verifiedPhone;
   final String? verifiedEmail;
+  final bool hasUpcomingStay;
+  final int upcomingNights;
+  final String upcomingStayTitle;
+  final String upcomingStayDates;
 
   const CustomerProfileData({
     required this.userId,
     this.fullName,
-    this.avatarUrl,
+    this.proposedUsername,
+    this.portraitBytes,
     this.verifiedPhone,
     this.verifiedEmail,
+    this.hasUpcomingStay = false,
+    this.upcomingNights = 5,
+    this.upcomingStayTitle = 'فيلا فاخرة بإطلالة مباشرة على البحر — مراسي',
+    this.upcomingStayDates = '20 أكتوبر — 25 أكتوبر 2026',
   });
 
   bool get isIncomplete => fullName == null || fullName!.trim().isEmpty;
+  bool get hasPortrait => portraitBytes != null && portraitBytes!.isNotEmpty;
   String get displayName => fullName?.trim().isNotEmpty == true ? fullName!.trim() : 'مستأجر';
   String get initials => deriveUserInitials(fullName);
-
-  String? get displayIdentifier {
-    if (verifiedPhone != null && verifiedPhone!.isNotEmpty) {
-      return maskDisplayPhone(verifiedPhone);
-    }
-    if (verifiedEmail != null && verifiedEmail!.isNotEmpty) {
-      return verifiedEmail;
-    }
-    return null;
-  }
 }
 
 // =============================================================================
@@ -107,18 +109,19 @@ class CustomerProfileData {
 // =============================================================================
 
 enum Screen17Scenario {
-  authenticatedCompleteTop,
-  authenticatedCompleteScrolled,
+  authenticatedFlagshipTop,
+  authenticatedFlagshipScrolled,
+  authenticatedNoPhotoFallback,
   authenticatedIncompleteProfile,
   guestUnauthenticated,
   initialLoadingSkeleton,
   networkErrorInitial,
-  staleRefreshError,
   sessionExpired401,
-  identityIntegrityFailure,
+  qrModalMyCode,
+  qrModalScan,
+  walletModalConcept,
   logoutConfirmationDialog,
-  navigationInteractionFeedback,
-  verifiedEmailVariant,
+  compactHeroVariant,
   accessibility200Top,
   accessibility200Scrolled,
 }
@@ -126,42 +129,44 @@ enum Screen17Scenario {
 extension Screen17ScenarioMetadata on Screen17Scenario {
   String get title {
     switch (this) {
-      case Screen17Scenario.authenticatedCompleteTop:
-        return '01 Authenticated Complete (Top Fold)';
-      case Screen17Scenario.authenticatedCompleteScrolled:
-        return '02 Authenticated Complete (Scrolled)';
+      case Screen17Scenario.authenticatedFlagshipTop:
+        return '01 Flagship Hero (Top Fold)';
+      case Screen17Scenario.authenticatedFlagshipScrolled:
+        return '02 Flagship Hero (Scrolled)';
+      case Screen17Scenario.authenticatedNoPhotoFallback:
+        return '03 No-Photo Initials Fallback';
       case Screen17Scenario.authenticatedIncompleteProfile:
-        return '03 Incomplete Profile Prompt';
+        return '04 Incomplete Profile Prompt';
       case Screen17Scenario.guestUnauthenticated:
-        return '04 Guest / Unauthenticated';
+        return '05 Guest / Unauthenticated';
       case Screen17Scenario.initialLoadingSkeleton:
-        return '05 Initial Loading (Skeleton)';
+        return '06 Initial Loading (Skeleton)';
       case Screen17Scenario.networkErrorInitial:
-        return '06 Network Error (Honest Failure)';
-      case Screen17Scenario.staleRefreshError:
-        return '07 Stale Refresh Notice';
+        return '07 Network Error (Honest Failure)';
       case Screen17Scenario.sessionExpired401:
         return '08 Session Expired (401)';
-      case Screen17Scenario.identityIntegrityFailure:
-        return '09 Identity Integrity Failure';
+      case Screen17Scenario.qrModalMyCode:
+        return '09 Personal QR Code (رمزي)';
+      case Screen17Scenario.qrModalScan:
+        return '10 Personal QR Scanner (مسح رمز)';
+      case Screen17Scenario.walletModalConcept:
+        return '11 Wallet Modal Concept (#173)';
       case Screen17Scenario.logoutConfirmationDialog:
-        return '10 Logout Confirmation Dialog';
-      case Screen17Scenario.navigationInteractionFeedback:
-        return '11 Navigation Row Feedback';
-      case Screen17Scenario.verifiedEmailVariant:
-        return '12 Verified Email Identity';
+        return '12 Logout Confirmation Dialog';
+      case Screen17Scenario.compactHeroVariant:
+        return '13 Compact Hero Composition';
       case Screen17Scenario.accessibility200Top:
-        return '13 Accessibility 200% (Top Fold)';
+        return '14 Accessibility 200% (Top Fold)';
       case Screen17Scenario.accessibility200Scrolled:
-        return '14 Accessibility 200% (Scrolled)';
+        return '15 Accessibility 200% (Scrolled)';
     }
   }
 
   double get scrollOffset {
     switch (this) {
-      case Screen17Scenario.authenticatedCompleteScrolled:
+      case Screen17Scenario.authenticatedFlagshipScrolled:
       case Screen17Scenario.accessibility200Scrolled:
-        return 420.0;
+        return 480.0;
       default:
         return 0.0;
     }
@@ -185,236 +190,312 @@ extension Screen17ScenarioMetadata on Screen17Scenario {
 class Screen17AccountController extends ChangeNotifier {
   bool _isAuthenticated = true;
   bool _isLoading = false;
-  bool _isStaleError = false;
   bool _isHardError = false;
   bool _is401Expired = false;
-  bool _identityIntegrityFailed = false;
   int _unreadNotificationCount = 2;
+  int _savedFavoritesCount = 4;
+  int _activeBookingsCount = 1;
   CustomerProfileData? _profile;
   String? _dialogNotice;
   bool _showLogoutDialog = false;
+  bool _showQrSheet = false;
+  int _qrTab = 0; // 0: My QR, 1: Scan QR
+  bool _showWalletSheet = false;
+  bool _isCompactHero = false;
 
   bool get isAuthenticated => _isAuthenticated;
   bool get isLoading => _isLoading;
-  bool get isStaleError => _isStaleError;
   bool get isHardError => _isHardError;
   bool get is401Expired => _is401Expired;
-  bool get identityIntegrityFailed => _identityIntegrityFailed;
   int get unreadNotificationCount => _unreadNotificationCount;
+  int get savedFavoritesCount => _savedFavoritesCount;
+  int get activeBookingsCount => _activeBookingsCount;
   CustomerProfileData? get profile => _profile;
   String? get dialogNotice => _dialogNotice;
   bool get showLogoutDialog => _showLogoutDialog;
+  bool get showQrSheet => _showQrSheet;
+  int get qrTab => _qrTab;
+  bool get showWalletSheet => _showWalletSheet;
+  bool get isCompactHero => _isCompactHero;
 
   Screen17AccountController() {
-    _loadDefaultState();
+    _loadDefaultFlagshipState();
   }
 
-  void _loadDefaultState() {
+  void _loadDefaultFlagshipState() {
     _isAuthenticated = true;
     _isLoading = false;
-    _isStaleError = false;
     _isHardError = false;
     _is401Expired = false;
-    _identityIntegrityFailed = false;
     _unreadNotificationCount = 2;
+    _savedFavoritesCount = 4;
+    _activeBookingsCount = 1;
     _dialogNotice = null;
     _showLogoutDialog = false;
-    _profile = const CustomerProfileData(
+    _showQrSheet = false;
+    _qrTab = 0;
+    _showWalletSheet = false;
+    _isCompactHero = false;
+    _profile = CustomerProfileData(
       userId: 'usr_cst_001',
       fullName: 'أحمد مصطفى',
+      proposedUsername: 'ahmed_mostafa',
+      portraitBytes: kScreen17DemoPortraitBytes,
       verifiedPhone: '+201012345678',
       verifiedEmail: 'ahmed.mostafa@example.com',
+      hasUpcomingStay: true,
+      upcomingNights: 5,
+      upcomingStayTitle: 'فيلا فاخرة بإطلالة مباشرة على البحر — مراسي',
+      upcomingStayDates: '20 أكتوبر — 25 أكتوبر 2026',
     );
   }
 
   void setScenario(Screen17Scenario scenario) {
     _showLogoutDialog = false;
+    _showQrSheet = false;
+    _showWalletSheet = false;
     _dialogNotice = null;
+    _isCompactHero = false;
 
     switch (scenario) {
-      case Screen17Scenario.authenticatedCompleteTop:
-      case Screen17Scenario.authenticatedCompleteScrolled:
+      case Screen17Scenario.authenticatedFlagshipTop:
+      case Screen17Scenario.authenticatedFlagshipScrolled:
       case Screen17Scenario.accessibility200Top:
       case Screen17Scenario.accessibility200Scrolled:
         _isAuthenticated = true;
         _isLoading = false;
-        _isStaleError = false;
         _isHardError = false;
         _is401Expired = false;
-        _identityIntegrityFailed = false;
         _unreadNotificationCount = 2;
+        _savedFavoritesCount = 4;
+        _activeBookingsCount = 1;
+        _profile = CustomerProfileData(
+          userId: 'usr_cst_001',
+          fullName: 'أحمد مصطفى',
+          proposedUsername: 'ahmed_mostafa',
+          portraitBytes: kScreen17DemoPortraitBytes,
+          verifiedPhone: '+201012345678',
+          verifiedEmail: 'ahmed.mostafa@example.com',
+          hasUpcomingStay: true,
+        );
+        break;
+
+      case Screen17Scenario.authenticatedNoPhotoFallback:
+        _isAuthenticated = true;
+        _isLoading = false;
+        _isHardError = false;
+        _is401Expired = false;
+        _unreadNotificationCount = 2;
+        _savedFavoritesCount = 4;
+        _activeBookingsCount = 1;
         _profile = const CustomerProfileData(
           userId: 'usr_cst_001',
           fullName: 'أحمد مصطفى',
+          proposedUsername: 'ahmed_mostafa',
+          portraitBytes: null, // Initials fallback
           verifiedPhone: '+201012345678',
           verifiedEmail: 'ahmed.mostafa@example.com',
+          hasUpcomingStay: true,
         );
         break;
 
       case Screen17Scenario.authenticatedIncompleteProfile:
         _isAuthenticated = true;
         _isLoading = false;
-        _isStaleError = false;
         _isHardError = false;
         _is401Expired = false;
-        _identityIntegrityFailed = false;
-        _unreadNotificationCount = 1;
+        _unreadNotificationCount = 0;
+        _savedFavoritesCount = 0;
+        _activeBookingsCount = 0;
         _profile = const CustomerProfileData(
           userId: 'usr_cst_002',
-          fullName: null, // Incomplete fullName
-          verifiedPhone: '+201098765432',
+          fullName: null, // Incomplete
+          proposedUsername: null,
+          portraitBytes: null,
+          verifiedPhone: '+201012345678',
+          verifiedEmail: null,
+          hasUpcomingStay: false,
         );
         break;
 
       case Screen17Scenario.guestUnauthenticated:
         _isAuthenticated = false;
         _isLoading = false;
-        _isStaleError = false;
         _isHardError = false;
         _is401Expired = false;
-        _identityIntegrityFailed = false;
-        _unreadNotificationCount = 0;
         _profile = null;
         break;
 
       case Screen17Scenario.initialLoadingSkeleton:
         _isAuthenticated = true;
         _isLoading = true;
-        _isStaleError = false;
         _isHardError = false;
         _is401Expired = false;
-        _identityIntegrityFailed = false;
-        _unreadNotificationCount = 0;
         _profile = null;
         break;
 
       case Screen17Scenario.networkErrorInitial:
         _isAuthenticated = true;
         _isLoading = false;
-        _isStaleError = false;
         _isHardError = true;
         _is401Expired = false;
-        _identityIntegrityFailed = false;
-        _unreadNotificationCount = 0;
         _profile = null;
         break;
 
-      case Screen17Scenario.staleRefreshError:
+      case Screen17Scenario.sessionExpired401:
+        _isAuthenticated = false;
+        _isLoading = false;
+        _isHardError = false;
+        _is401Expired = true;
+        _profile = null;
+        break;
+
+      case Screen17Scenario.qrModalMyCode:
         _isAuthenticated = true;
         _isLoading = false;
-        _isStaleError = true;
         _isHardError = false;
         _is401Expired = false;
-        _identityIntegrityFailed = false;
-        _unreadNotificationCount = 2;
-        _profile = const CustomerProfileData(
+        _showQrSheet = true;
+        _qrTab = 0;
+        _profile = CustomerProfileData(
           userId: 'usr_cst_001',
           fullName: 'أحمد مصطفى',
+          proposedUsername: 'ahmed_mostafa',
+          portraitBytes: kScreen17DemoPortraitBytes,
           verifiedPhone: '+201012345678',
+          verifiedEmail: 'ahmed.mostafa@example.com',
+          hasUpcomingStay: true,
         );
         break;
 
-      case Screen17Scenario.sessionExpired401:
+      case Screen17Scenario.qrModalScan:
         _isAuthenticated = true;
         _isLoading = false;
-        _isStaleError = false;
-        _isHardError = false;
-        _is401Expired = true;
-        _identityIntegrityFailed = false;
-        _unreadNotificationCount = 0;
-        _profile = null; // Private profile purged on 401
-        break;
-
-      case Screen17Scenario.identityIntegrityFailure:
-        _isAuthenticated = true;
-        _isLoading = false;
-        _isStaleError = false;
         _isHardError = false;
         _is401Expired = false;
-        _identityIntegrityFailed = true;
-        _unreadNotificationCount = 0;
-        _profile = const CustomerProfileData(
-          userId: 'usr_cst_unverified',
-          fullName: 'مستخدم غير موثق',
-          verifiedPhone: null,
-          verifiedEmail: null,
+        _showQrSheet = true;
+        _qrTab = 1;
+        _profile = CustomerProfileData(
+          userId: 'usr_cst_001',
+          fullName: 'أحمد مصطفى',
+          proposedUsername: 'ahmed_mostafa',
+          portraitBytes: kScreen17DemoPortraitBytes,
+          verifiedPhone: '+201012345678',
+          verifiedEmail: 'ahmed.mostafa@example.com',
+          hasUpcomingStay: true,
+        );
+        break;
+
+      case Screen17Scenario.walletModalConcept:
+        _isAuthenticated = true;
+        _isLoading = false;
+        _isHardError = false;
+        _is401Expired = false;
+        _showWalletSheet = true;
+        _profile = CustomerProfileData(
+          userId: 'usr_cst_001',
+          fullName: 'أحمد مصطفى',
+          proposedUsername: 'ahmed_mostafa',
+          portraitBytes: kScreen17DemoPortraitBytes,
+          verifiedPhone: '+201012345678',
+          verifiedEmail: 'ahmed.mostafa@example.com',
+          hasUpcomingStay: true,
         );
         break;
 
       case Screen17Scenario.logoutConfirmationDialog:
         _isAuthenticated = true;
         _isLoading = false;
-        _isStaleError = false;
         _isHardError = false;
         _is401Expired = false;
-        _identityIntegrityFailed = false;
-        _unreadNotificationCount = 2;
         _showLogoutDialog = true;
-        _profile = const CustomerProfileData(
+        _profile = CustomerProfileData(
           userId: 'usr_cst_001',
           fullName: 'أحمد مصطفى',
+          proposedUsername: 'ahmed_mostafa',
+          portraitBytes: kScreen17DemoPortraitBytes,
           verifiedPhone: '+201012345678',
+          verifiedEmail: 'ahmed.mostafa@example.com',
+          hasUpcomingStay: true,
         );
         break;
 
-      case Screen17Scenario.navigationInteractionFeedback:
+      case Screen17Scenario.compactHeroVariant:
         _isAuthenticated = true;
         _isLoading = false;
-        _isStaleError = false;
         _isHardError = false;
         _is401Expired = false;
-        _identityIntegrityFailed = false;
-        _unreadNotificationCount = 2;
-        _dialogNotice = 'معاينة المسار: تم اختيار قسم المدفوعات (شاشة 20)';
-        _profile = const CustomerProfileData(
+        _isCompactHero = true;
+        _profile = CustomerProfileData(
           userId: 'usr_cst_001',
           fullName: 'أحمد مصطفى',
+          proposedUsername: 'ahmed_mostafa',
+          portraitBytes: kScreen17DemoPortraitBytes,
           verifiedPhone: '+201012345678',
-        );
-        break;
-
-      case Screen17Scenario.verifiedEmailVariant:
-        _isAuthenticated = true;
-        _isLoading = false;
-        _isStaleError = false;
-        _isHardError = false;
-        _is401Expired = false;
-        _identityIntegrityFailed = false;
-        _unreadNotificationCount = 0;
-        _profile = const CustomerProfileData(
-          userId: 'usr_cst_003',
-          fullName: 'سارة عبد الرحمن',
-          verifiedPhone: null,
-          verifiedEmail: 'sara.abdelrahman@example.com',
+          verifiedEmail: 'ahmed.mostafa@example.com',
+          hasUpcomingStay: true,
         );
         break;
     }
     notifyListeners();
   }
 
-  void triggerLogoutDialog() {
+  void openQrSheet({int tab = 0}) {
+    _showQrSheet = true;
+    _qrTab = tab;
+    notifyListeners();
+  }
+
+  void closeQrSheet() {
+    _showQrSheet = false;
+    notifyListeners();
+  }
+
+  void setQrTab(int tab) {
+    _qrTab = tab;
+    notifyListeners();
+  }
+
+  void openWalletSheet() {
+    _showWalletSheet = true;
+    notifyListeners();
+  }
+
+  void closeWalletSheet() {
+    _showWalletSheet = false;
+    notifyListeners();
+  }
+
+  void requestLogout() {
     _showLogoutDialog = true;
     notifyListeners();
   }
 
-  void dismissLogoutDialog() {
+  void cancelLogout() {
     _showLogoutDialog = false;
     notifyListeners();
   }
 
-  void dismissDialogNotice() {
-    _dialogNotice = null;
+  void confirmLogout() {
+    _showLogoutDialog = false;
+    _isAuthenticated = false;
+    _profile = null;
     notifyListeners();
   }
 
-  void showNotice(String notice) {
-    _dialogNotice = notice;
+  void showNotice(String msg) {
+    _dialogNotice = msg;
+    notifyListeners();
+  }
+
+  void clearNotice() {
+    _dialogNotice = null;
     notifyListeners();
   }
 }
 
 // =============================================================================
-// Preview App Harness
+// Preview App Shell
 // =============================================================================
 
 class Screen17PreviewApp extends StatelessWidget {
@@ -422,82 +503,46 @@ class Screen17PreviewApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final baseTheme = ThemeData(
-      useMaterial3: true,
-      fontFamily: KonfrmTypography.fontFamily,
-      scaffoldBackgroundColor: const Color(0xFFF9FAFB),
-    );
-
-    final previewTheme = baseTheme.copyWith(
-      colorScheme: baseTheme.colorScheme.copyWith(
-        primary: const Color(0xFF000000),
-        onPrimary: const Color(0xFFFFFFFF),
-        surface: const Color(0xFFFFFFFF),
-        onSurface: const Color(0xFF111827),
-      ),
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: const Color(0xFFFFFFFF),
-        indicatorColor: const Color(0xFFE5E7EB),
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        height: 64,
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return const TextStyle(
-              fontFamily: KonfrmTypography.fontFamily,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF000000),
-            );
-          }
-          return const TextStyle(
-            fontFamily: KonfrmTypography.fontFamily,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF6B7280),
-          );
-        }),
-      ),
-    );
-
     return MaterialApp(
+      title: 'KONFRM Customer Screen 17 V2 Passport',
       debugShowCheckedModeBanner: false,
-      title: 'KONFRM Screen 17 Account Home Preview',
-      theme: previewTheme,
-      builder: (context, child) {
-        return Directionality(
-          textDirection: ui.TextDirection.rtl,
-          child: child ?? const SizedBox.shrink(),
-        );
-      },
-      home: const Screen17HarnessPage(),
+      theme: ThemeData(
+        useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFFF9FAFB),
+        fontFamily: KonfrmTypography.fontFamily,
+      ),
+      home: const Directionality(
+        textDirection: ui.TextDirection.rtl,
+        child: Screen17PreviewView(),
+      ),
     );
   }
 }
 
 // =============================================================================
-// Harness Page with Keyboard Shortcuts & Scenario Switching
+// Preview View (Main Widget)
 // =============================================================================
 
-class Screen17HarnessPage extends StatefulWidget {
-  const Screen17HarnessPage({super.key});
+class Screen17PreviewView extends StatefulWidget {
+  const Screen17PreviewView({super.key});
 
   @override
-  State<Screen17HarnessPage> createState() => Screen17HarnessPageState();
+  State<Screen17PreviewView> createState() => Screen17PreviewViewState();
 }
 
-class Screen17HarnessPageState extends State<Screen17HarnessPage> {
-  final Screen17AccountController _controller = Screen17AccountController();
-  final ScrollController _scrollController = ScrollController();
-  final FocusNode _keyboardFocusNode = FocusNode();
-
-  Screen17Scenario _scenario = Screen17Scenario.authenticatedCompleteTop;
+class Screen17PreviewViewState extends State<Screen17PreviewView> {
+  late final Screen17AccountController _controller;
+  late final ScrollController _scrollController;
+  late final FocusNode _keyboardFocusNode;
+  Screen17Scenario _scenario = Screen17Scenario.authenticatedFlagshipTop;
   bool _showDevTools = false;
-  int _bottomNavIndex = 3; // Account tab active by contract
 
   @override
   void initState() {
     super.initState();
+    _controller = Screen17AccountController();
+    _scrollController = ScrollController();
+    _keyboardFocusNode = FocusNode();
     _controller.addListener(_onControllerUpdate);
   }
 
@@ -544,45 +589,48 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
     if (event is KeyDownEvent) {
       final key = event.logicalKey;
       if (key == LogicalKeyboardKey.digit1) {
-        applyScenario(Screen17Scenario.authenticatedCompleteTop);
+        applyScenario(Screen17Scenario.authenticatedFlagshipTop);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit2) {
-        applyScenario(Screen17Scenario.authenticatedCompleteScrolled);
+        applyScenario(Screen17Scenario.authenticatedFlagshipScrolled);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit3) {
-        applyScenario(Screen17Scenario.authenticatedIncompleteProfile);
+        applyScenario(Screen17Scenario.authenticatedNoPhotoFallback);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit4) {
-        applyScenario(Screen17Scenario.guestUnauthenticated);
+        applyScenario(Screen17Scenario.authenticatedIncompleteProfile);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit5) {
-        applyScenario(Screen17Scenario.initialLoadingSkeleton);
+        applyScenario(Screen17Scenario.guestUnauthenticated);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit6) {
-        applyScenario(Screen17Scenario.networkErrorInitial);
+        applyScenario(Screen17Scenario.initialLoadingSkeleton);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit7) {
-        applyScenario(Screen17Scenario.staleRefreshError);
+        applyScenario(Screen17Scenario.networkErrorInitial);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit8) {
         applyScenario(Screen17Scenario.sessionExpired401);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit9) {
-        applyScenario(Screen17Scenario.identityIntegrityFailure);
+        applyScenario(Screen17Scenario.qrModalMyCode);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.keyA) {
-        applyScenario(Screen17Scenario.logoutConfirmationDialog);
+        applyScenario(Screen17Scenario.qrModalScan);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.keyB) {
-        applyScenario(Screen17Scenario.navigationInteractionFeedback);
+        applyScenario(Screen17Scenario.walletModalConcept);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.keyC) {
-        applyScenario(Screen17Scenario.verifiedEmailVariant);
+        applyScenario(Screen17Scenario.logoutConfirmationDialog);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.keyD) {
-        applyScenario(Screen17Scenario.accessibility200Top);
+        applyScenario(Screen17Scenario.compactHeroVariant);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.keyE) {
+        applyScenario(Screen17Scenario.accessibility200Top);
+        return KeyEventResult.handled;
+      } else if (key == LogicalKeyboardKey.keyF) {
         applyScenario(Screen17Scenario.accessibility200Scrolled);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.keyO) {
@@ -617,7 +665,7 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
                     height: MediaQuery.of(context).padding.top,
                   ),
 
-                  // Header Bar (Account Root Hub)
+                  // Header Bar (Account Root Hub + QR Action)
                   _buildHeaderBar(),
 
                   // Main Scrollable Area
@@ -632,13 +680,6 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
                         controller: _scrollController,
                         physics: const AlwaysScrollableScrollPhysics(),
                         slivers: [
-                          // Stale Error Banner
-                          if (_controller.isStaleError)
-                            SliverToBoxAdapter(
-                              child: _buildStaleErrorBanner(),
-                            ),
-
-                          // Main Content depending on state
                           if (_controller.isLoading)
                             SliverToBoxAdapter(
                               child: _buildLoadingSkeleton(),
@@ -648,72 +689,43 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
                               hasScrollBody: false,
                               child: _buildSessionExpiredView(),
                             )
-                          else if (_controller.identityIntegrityFailed)
-                            SliverFillRemaining(
-                              hasScrollBody: false,
-                              child: _buildIdentityIntegrityView(),
-                            )
                           else if (_controller.isHardError)
                             SliverFillRemaining(
                               hasScrollBody: false,
                               child: _buildNetworkErrorView(),
                             )
                           else if (!_controller.isAuthenticated)
-                            SliverToBoxAdapter(
-                              child: _buildGuestView(),
+                            SliverFillRemaining(
+                              hasScrollBody: false,
+                              child: _buildGuestAccountView(),
                             )
                           else
                             _buildAuthenticatedAccountSliver(),
-
-                          // Bottom clearance padding for bottom navigation
-                          const SliverToBoxAdapter(
-                            child: SizedBox(height: 100),
-                          ),
                         ],
                       ),
                     ),
                   ),
+
+                  // Canonical Shared Customer Bottom Navigation
+                  _buildBottomNavigationBar(),
                 ],
               ),
 
-              // Logout Confirmation Modal Dialog
-              if (_controller.showLogoutDialog)
-                _buildLogoutConfirmationDialog(),
+              // QR Code Bottom Sheet Modal
+              if (_controller.showQrSheet) _buildQrModalSheet(),
 
-              // Navigation Notice Dialog
-              if (_controller.dialogNotice != null)
-                _buildNoticeDialog(_controller.dialogNotice!),
+              // Wallet Concept Bottom Sheet Modal
+              if (_controller.showWalletSheet) _buildWalletModalSheet(),
 
-              // QA Dev Tools Overlay
-              if (_showDevTools)
-                _buildQaDevOverlay(),
+              // Logout Confirmation Dialog
+              if (_controller.showLogoutDialog) _buildLogoutDialog(),
+
+              // Dev QA Overlay Panel
+              if (_showDevTools) _buildDevToolsPanel(),
+
+              // SnackBar/Feedback Overlay
+              if (_controller.dialogNotice != null) _buildNoticeSnackbar(),
             ],
-          ),
-          // Canonical Shared Customer Bottom Navigation (Tab 3: Account active)
-          bottomNavigationBar: CustomerBottomNavigation(
-            selectedIndex: _bottomNavIndex,
-            onSelected: (index) {
-              setState(() {
-                _bottomNavIndex = index;
-              });
-              if (index == 3) {
-                applyScenario(Screen17Scenario.authenticatedCompleteTop);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'معاينة: الانتقال إلى الوجهة (${customerDestinations[index]})',
-                      style: const TextStyle(
-                        fontFamily: KonfrmTypography.fontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    duration: const Duration(milliseconds: 700),
-                  ),
-                );
-              }
-            },
           ),
         ),
       ),
@@ -721,7 +733,7 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
   }
 
   // ===========================================================================
-  // Header Bar (Account Root)
+  // Header Bar (Account Root Hub + QR Action)
   // ===========================================================================
 
   Widget _buildHeaderBar() {
@@ -735,101 +747,56 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
           ),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Screen Title (Right in RTL)
           const Expanded(
             child: Text(
               'حسابي',
               style: TextStyle(
                 fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFF111827),
               ),
             ),
           ),
           const SizedBox(width: 8),
-          // Subtle Dev QA Toggle Icon
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _showDevTools = !_showDevTools;
-              });
-            },
-            child: MediaQuery.withNoTextScaling(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
-                ),
-                child: const Text(
-                  'سيناريوهات QA',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF4B5563),
+
+          // Header Actions (Left in RTL): Personal QR Entry + Subtle QA Icon
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Personal QR Entry Button
+              Semantics(
+                button: true,
+                label: 'رمز التعريف الشخصي QR',
+                child: GestureDetector(
+                  key: const Key('header_qr_button'),
+                  onTap: () {
+                    _controller.openQrSheet();
+                  },
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F4F6),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.qr_code_2_rounded,
+                        size: 22,
+                        color: Color(0xFF111827),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // Stale Error Notice Banner
-  // ===========================================================================
-
-  Widget _buildStaleErrorBanner() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.info_outline,
-            size: 16,
-            color: Color(0xFF4B5563),
-          ),
-          const SizedBox(width: 8),
-          const Expanded(
-            child: Text(
-              'تعذر تحديث بيانات الحساب. يتم عرض أحدث بيانات محفوظة.',
-              style: TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF374151),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: () {
-              _controller.setScenario(Screen17Scenario.authenticatedCompleteTop);
-            },
-            child: const Text(
-              'تحديث',
-              style: TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF111827),
-                decoration: TextDecoration.underline,
-              ),
-            ),
+            ],
           ),
         ],
       ),
@@ -846,56 +813,573 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       sliver: SliverList(
         delegate: SliverChildListDelegate([
-          // 1. Identity Summary Card
-          _buildIdentityCard(profile),
-          const SizedBox(height: 14),
+          // 1. Identity Hero ("Personal Passport")
+          if (_controller.isCompactHero)
+            _buildCompactIdentityHero(profile)
+          else
+            _buildFlagshipIdentityHero(profile),
+          const SizedBox(height: 16),
 
           // 2. Incomplete Profile Prompt (when applicable)
           if (profile.isIncomplete) ...[
             _buildIncompleteProfilePrompt(),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
           ],
 
-          // 3. Grouped Navigation Sections
-          // Section: رحلاتك
-          _buildSectionHeader('رحلاتك'),
+          // 3. Fast Quick Actions Strip (حجوزاتي, المفضلة, الإشعارات)
+          _buildQuickActionsStrip(),
+          const SizedBox(height: 20),
+
+          // 4. Contextual Upcoming Stay Strip (0/1)
+          if (profile.hasUpcomingStay) ...[
+            _buildUpcomingStayCard(profile),
+            const SizedBox(height: 20),
+          ],
+
+          // 5. Grouped Navigation Sections (Anti-Card-Soup Structural System)
+          // Section: الحساب والملف الشخصي
+          _buildSectionHeader('الحساب والملف الشخصي'),
           const SizedBox(height: 8),
           _buildCardContainer([
             _buildNavigationRow(
-              icon: Icons.calendar_today_outlined,
-              title: 'حجوزاتي',
-              subtitle: 'تابع حجوزاتك الحالية والسابقة',
-              onTap: () => _controller.showNotice('معاينة: الانتقال إلى حجوزاتي (شاشة 12)'),
+              key: const Key('nav_profile_edit'),
+              icon: Icons.person_outline,
+              title: 'الملف الشخصي',
+              subtitle: 'الاسم، المعرّف الشخصي، والبيانات الخاصة',
+              onTap: () => _controller.showNotice('معاينة: الانتقال إلى مواصفة تعديل الملف (شاشة 18)'),
             ),
             const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
             _buildNavigationRow(
-              icon: Icons.favorite_border,
-              title: 'المفضلة',
-              subtitle: 'الوحدات التي حفظتها للرجوع إليها',
-              onTap: () => _controller.showNotice('معاينة: الانتقال إلى المفضلة (شاشة 15)'),
+              key: const Key('nav_privacy_security'),
+              icon: Icons.shield_outlined,
+              title: 'الخصوصية والأمان',
+              subtitle: 'حماية الحساب، إدارة الجلسات، وتسجيل الدخول',
+              onTap: () => _controller.showNotice('معاينة: الانتقال إلى إعدادات الأمان (شاشة 19)'),
+            ),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
+            _buildNavigationRow(
+              key: const Key('nav_linked_accounts'),
+              icon: Icons.link_outlined,
+              title: 'الحسابات المرتبطة',
+              subtitle: 'Apple وGoogle ووسائل الدخول الثانوية',
+              trailingTag: 'مفهوم مقترح',
+              onTap: () => _controller.showNotice('معاينة: مواصفة الحسابات المرتبطة الآمنة (مفهوم شاشة 19)'),
             ),
           ]),
           const SizedBox(height: 20),
 
-          // Section: النشاط
-          _buildSectionHeader('النشاط'),
+          // Section: المالية والمدفوعات
+          _buildSectionHeader('المالية والمدفوعات'),
           const SizedBox(height: 8),
           _buildCardContainer([
             _buildNavigationRow(
-              icon: Icons.notifications_none_outlined,
-              title: 'الإشعارات',
-              subtitle: 'تحديثات مهمة على طلباتك وحجوزاتك',
-              badge: _controller.unreadNotificationCount > 0
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+              key: const Key('nav_payment_history'),
+              icon: Icons.receipt_long_outlined,
+              title: 'سجل المدفوعات',
+              subtitle: 'العربون، الإيصالات المعتمدة، وسجل المعاملات',
+              onTap: () => _controller.showNotice('معاينة: الانتقال إلى سجل المدفوعات (شاشة 20)'),
+            ),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
+            _buildNavigationRow(
+              key: const Key('nav_wallet_concept'),
+              icon: Icons.account_balance_wallet_outlined,
+              title: 'محفظة كونفرم',
+              subtitle: 'الرصيد المتاح والاستردادات المعتمدة',
+              trailingTag: 'مفهوم مالي #173',
+              onTap: () => _controller.openWalletSheet(),
+            ),
+          ]),
+          const SizedBox(height: 20),
+
+          // Section: المساعدة والإعدادات
+          _buildSectionHeader('المساعدة والدعم'),
+          const SizedBox(height: 8),
+          _buildCardContainer([
+            _buildNavigationRow(
+              key: const Key('nav_help_support'),
+              icon: Icons.help_outline,
+              title: 'المساعدة والدعم',
+              subtitle: 'الأسئلة الشائعة وإرشادات حجز الوحدات',
+              onTap: () => _controller.showNotice('معاينة: الانتقال إلى الدعم والمساعدة (شاشة 21)'),
+            ),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
+            _buildNavigationRow(
+              key: const Key('nav_general_settings'),
+              icon: Icons.settings_outlined,
+              title: 'الإعدادات العامة',
+              subtitle: 'لغة التطبيق، الإشعارات، والعملة (EGP)',
+              onTap: () => _controller.showNotice('معاينة: الانتقال إلى الإعدادات العامة (شاشة 19)'),
+            ),
+          ]),
+          const SizedBox(height: 20),
+
+          // Section: شارك كونفرم (Tasteful Invite Strip)
+          _buildShareKonfrmCard(),
+          const SizedBox(height: 24),
+
+          // 6. Sign Out Action Button
+          _buildLogoutButton(),
+          const SizedBox(height: 16),
+        ]),
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Flagship Identity Hero ("Portrait First" / Personal Passport)
+  // ===========================================================================
+
+  Widget _buildFlagshipIdentityHero(CustomerProfileData profile) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x06000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Circular Avatar (104x104) with Overlapping Camera Affordance
+          Center(
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Main Avatar Circle
+                GestureDetector(
+                  key: const Key('avatar_tap_area'),
+                  onTap: () {
+                    _showPhotoActionSheet();
+                  },
+                  child: Container(
+                    width: 104,
+                    height: 104,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 3.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x12000000),
+                          blurRadius: 12,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ClipOval(
+                      child: profile.hasPortrait
+                          ? Image.memory(
+                              profile.portraitBytes!,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              color: const Color(0xFF111827),
+                              child: Center(
+                                child: Text(
+                                  profile.initials,
+                                  style: const TextStyle(
+                                    fontFamily: KonfrmTypography.fontFamily,
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+
+                // Overlapping Camera / Edit Affordance (Lower Edge)
+                Positioned(
+                  bottom: -2,
+                  left: -2,
+                  child: GestureDetector(
+                    key: const Key('camera_edit_badge'),
+                    onTap: () {
+                      _showPhotoActionSheet();
+                    },
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      alignment: Alignment.center,
+                      child: Container(
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF000000),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2.0),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0x24000000),
+                              blurRadius: 6,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt_outlined,
+                          size: 17,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // Customer Display Name (Bold Cairo 22)
+          Text(
+            profile.displayName,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: KonfrmTypography.fontFamily,
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF111827),
+            ),
+          ),
+          const SizedBox(height: 4),
+
+          // Proposed @username (Developer Fixture Only — LTR Isolated)
+          if (profile.proposedUsername != null) ...[
+            Directionality(
+              textDirection: ui.TextDirection.ltr,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  '@${profile.proposedUsername}',
+                  style: const TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF4B5563),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+
+          // Notice: Phone number is explicitly NOT shown here in the hero fold per directive!
+
+          // Single Compact Edit Profile CTA Button
+          GestureDetector(
+            key: const Key('hero_edit_profile_button'),
+            onTap: () {
+              _controller.showNotice('معاينة: الانتقال إلى تعديل الملف الشخصي (شاشة 18)');
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x06000000),
+                    blurRadius: 4,
+                    offset: Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.edit_outlined,
+                    size: 15,
+                    color: Color(0xFF111827),
+                  ),
+                  SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      'تعديل الملف',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF111827),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Alternative Compact Editorial Hero Composition
+  // ===========================================================================
+
+  Widget _buildCompactIdentityHero(CustomerProfileData profile) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x06000000),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Circular Avatar (76x76)
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 76,
+                height: 76,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2.0),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x0F000000),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ClipOval(
+                  child: profile.hasPortrait
+                      ? Image.memory(
+                          profile.portraitBytes!,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          color: const Color(0xFF111827),
+                          child: Center(
+                            child: Text(
+                              profile.initials,
+                              style: const TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+              ),
+              Positioned(
+                bottom: -2,
+                left: -2,
+                child: Container(
+                  width: 26,
+                  height: 26,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.5),
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt_outlined,
+                    size: 13,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 16),
+
+          // Name & Handle
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  profile.displayName,
+                  style: const TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                if (profile.proposedUsername != null) ...[
+                  const SizedBox(height: 2),
+                  Directionality(
+                    textDirection: ui.TextDirection.ltr,
+                    child: Text(
+                      '@${profile.proposedUsername}',
+                      style: const TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF6B7280),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          // Edit Action Button
+          GestureDetector(
+            onTap: () {
+              _controller.showNotice('معاينة: الانتقال إلى تعديل الملف الشخصي (شاشة 18)');
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3F4F6),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFE5E7EB)),
+              ),
+              child: const Text(
+                'تعديل',
+                style: TextStyle(
+                  fontFamily: KonfrmTypography.fontFamily,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF111827),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Fast Quick Actions Strip (3 Columns)
+  // ===========================================================================
+
+  Widget _buildQuickActionsStrip() {
+    return Row(
+      children: [
+        // 1. My Bookings Shortcut
+        Expanded(
+          child: _buildQuickActionItem(
+            key: const Key('quick_action_bookings'),
+            icon: Icons.calendar_today_outlined,
+            title: 'حجوزاتي',
+            countLabel: '${_controller.activeBookingsCount} حجز نشط',
+            onTap: () => _controller.showNotice('معاينة: الانتقال إلى حجوزاتي (شاشة 12)'),
+          ),
+        ),
+        const SizedBox(width: 10),
+
+        // 2. Favorites Shortcut
+        Expanded(
+          child: _buildQuickActionItem(
+            key: const Key('quick_action_favorites'),
+            icon: Icons.favorite_border,
+            title: 'المفضلة',
+            countLabel: '${_controller.savedFavoritesCount} وحدات',
+            onTap: () => _controller.showNotice('معاينة: الانتقال إلى المفضلة (شاشة 15)'),
+          ),
+        ),
+        const SizedBox(width: 10),
+
+        // 3. Notifications Shortcut
+        Expanded(
+          child: _buildQuickActionItem(
+            key: const Key('quick_action_notifications'),
+            icon: Icons.notifications_none_outlined,
+            title: 'الإشعارات',
+            countLabel: _controller.unreadNotificationCount > 0
+                ? '${_controller.unreadNotificationCount} جديد'
+                : 'لا جديد',
+            badgeCount: _controller.unreadNotificationCount,
+            onTap: () => _controller.showNotice('معاينة: الانتقال إلى الإشعارات (شاشة 16)'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActionItem({
+    Key? key,
+    required IconData icon,
+    required String title,
+    required String countLabel,
+    int badgeCount = 0,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      key: key,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x04000000),
+              blurRadius: 4,
+              offset: Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF9FAFB),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      icon,
+                      size: 20,
+                      color: const Color(0xFF111827),
+                    ),
+                  ),
+                ),
+                if (badgeCount > 0)
+                  Positioned(
+                    top: -2,
+                    left: -2,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF000000),
+                        color: Colors.black,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        _controller.unreadNotificationCount > 9
-                            ? '9+'
-                            : '${_controller.unreadNotificationCount}',
+                        '$badgeCount',
                         style: const TextStyle(
                           fontFamily: KonfrmTypography.fontFamily,
                           fontSize: 10,
@@ -903,172 +1387,158 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
                           color: Colors.white,
                         ),
                       ),
-                    )
-                  : null,
-              onTap: () => _controller.showNotice('معاينة: الانتقال إلى مركز الإشعارات (شاشة 16)'),
+                    ),
+                  ),
+              ],
             ),
-          ]),
-          const SizedBox(height: 20),
-
-          // Section: المدفوعات
-          _buildSectionHeader('المدفوعات'),
-          const SizedBox(height: 8),
-          _buildCardContainer([
-            _buildNavigationRow(
-              icon: Icons.credit_card_outlined,
-              title: 'المدفوعات',
-              subtitle: 'العربون والمدفوعات والمبالغ المتعلقة بحجوزاتك',
-              onTap: () => _controller.showNotice('معاينة: الانتقال إلى سجل المدفوعات (شاشة 20)'),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF111827),
+              ),
             ),
-          ]),
-          const SizedBox(height: 20),
-
-          // Section: الحساب
-          _buildSectionHeader('الحساب'),
-          const SizedBox(height: 8),
-          _buildCardContainer([
-            _buildNavigationRow(
-              icon: Icons.person_outline,
-              title: 'البيانات الشخصية',
-              subtitle: 'تعديل الاسم وتحديث بيانات الحساب',
-              onTap: () => _controller.showNotice('معاينة: الانتقال إلى تعديل البيانات (شاشة 18)'),
+            const SizedBox(height: 2),
+            Text(
+              countLabel,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF6B7280),
+              ),
             ),
-          ]),
-          const SizedBox(height: 20),
-
-          // Section: المساعدة
-          _buildSectionHeader('المساعدة'),
-          const SizedBox(height: 8),
-          _buildCardContainer([
-            _buildNavigationRow(
-              icon: Icons.help_outline,
-              title: 'المساعدة والدعم',
-              subtitle: 'الأسئلة الشائعة وإرشادات الحجز',
-              onTap: () => _controller.showNotice('معاينة: الانتقال إلى المساعدة والدعم (شاشة 21)'),
-            ),
-          ]),
-          const SizedBox(height: 24),
-
-          // 4. Logout Action Button
-          _buildLogoutButton(),
-        ]),
+          ],
+        ),
       ),
     );
   }
 
   // ===========================================================================
-  // Identity Summary Card
+  // Contextual Strip: Upcoming Stay (0/1)
   // ===========================================================================
 
-  Widget _buildIdentityCard(CustomerProfileData profile) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x08000000),
-            blurRadius: 4,
-            offset: Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              // Avatar Circle (56x56)
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF111827),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
-                ),
-                child: Center(
-                  child: Text(
-                    profile.initials,
-                    style: const TextStyle(
-                      fontFamily: KonfrmTypography.fontFamily,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-
-              // Name & Identifier
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      profile.displayName,
-                      style: const TextStyle(
-                        fontFamily: KonfrmTypography.fontFamily,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF111827),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    // Masked Identifier with explicit LTR isolation
-                    if (profile.displayIdentifier != null)
-                      Directionality(
-                        textDirection: ui.TextDirection.ltr,
-                        child: Text(
-                          profile.displayIdentifier!,
-                          style: const TextStyle(
-                            fontFamily: KonfrmTypography.fontFamily,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF6B7280),
-                          ),
+  Widget _buildUpcomingStayCard(CustomerProfileData profile) {
+    return GestureDetector(
+      key: const Key('upcoming_stay_card'),
+      onTap: () {
+        _controller.showNotice('معاينة: الانتقال إلى تفاصيل الحجز ومركز الإقامة (شاشة 13)');
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x06000000),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF16A34A),
+                          shape: BoxShape.circle,
                         ),
                       ),
-                  ],
-                ),
-              ),
-
-              // Edit Action CTA ("تعديل")
-              GestureDetector(
-                onTap: () {
-                  _controller.showNotice('معاينة: الانتقال إلى تعديل البيانات الشخصية (شاشة 18)');
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.edit_outlined, size: 14, color: Color(0xFF374151)),
-                      SizedBox(width: 5),
-                      Text(
-                        'تعديل',
-                        style: TextStyle(
-                          fontFamily: KonfrmTypography.fontFamily,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF111827),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'إقامتك القادمة',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF4B5563),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F4F6),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                  child: const Text(
+                    'حجز مؤكد',
+                    style: TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF111827),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              profile.upcomingStayTitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF111827),
               ),
-            ],
-          ),
-        ],
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${profile.upcomingStayDates} (${profile.upcomingNights} ليالٍ)',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF6B7280),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Physical LEFT Arrow for RTL forward progression
+                const Directionality(
+                  textDirection: ui.TextDirection.ltr,
+                  child: Icon(
+                    Icons.chevron_left,
+                    size: 18,
+                    color: Color(0xFF9CA3AF),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1079,24 +1549,31 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
 
   Widget _buildIncompleteProfilePrompt() {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
-            decoration: const BoxDecoration(
-              color: Color(0xFFE5E7EB),
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF9FAFB),
               shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFE5E7EB)),
             ),
-            child: const Icon(Icons.info_outline, size: 16, color: Color(0xFF111827)),
+            child: const Center(
+              child: Icon(
+                Icons.info_outline,
+                size: 20,
+                color: Color(0xFF111827),
+              ),
+            ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1105,42 +1582,133 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
                   'أكمل بيانات حسابك',
                   style: TextStyle(
                     fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF111827),
                   ),
                 ),
                 SizedBox(height: 2),
                 Text(
-                  'أضف اسمك الكامل لتسهيل التواصل وإتمام طلبات الحجز.',
+                  'إضافة الاسم والصورة لتسهيل التواصل مع الملاك',
                   style: TextStyle(
                     fontFamily: KonfrmTypography.fontFamily,
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF4B5563),
+                    color: Color(0xFF6B7280),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           GestureDetector(
             onTap: () {
-              _controller.showNotice('معاينة: إكمال البيانات الشخصية (شاشة 18)');
+              _controller.showNotice('معاينة: الانتقال إلى إكمال البيانات (شاشة 18)');
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
               decoration: BoxDecoration(
-                color: const Color(0xFF000000),
-                borderRadius: BorderRadius.circular(6),
+                color: const Color(0xFF111827),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: const Text(
-                'إكمال البيانات',
+                'إكمال',
                 style: TextStyle(
                   fontFamily: KonfrmTypography.fontFamily,
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Share KONFRM Card (Tasteful Official Invite)
+  // ===========================================================================
+
+  Widget _buildShareKonfrmCard() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x04000000),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF3F4F6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.share_outlined,
+                size: 22,
+                color: Color(0xFF111827),
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'شارك كونفرم مع معارفك',
+                  style: TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'ادعُ أصدقاءك لتجربة استئجار موثوقة ومباشرة',
+                  style: TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF6B7280),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () {
+              _controller.showNotice('معاينة: فتح قائمة مشاركة الرابط الرسمي لتطبيق كونفرم');
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF9FAFB),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFE5E7EB)),
+              ),
+              child: const Text(
+                'مشاركة',
+                style: TextStyle(
+                  fontFamily: KonfrmTypography.fontFamily,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF111827),
                 ),
               ),
             ),
@@ -1161,9 +1729,9 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
         title,
         style: const TextStyle(
           fontFamily: KonfrmTypography.fontFamily,
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF6B7280),
+          color: Color(0xFF374151),
         ),
       ),
     );
@@ -1177,13 +1745,12 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
         border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x06000000),
-            blurRadius: 3,
+            color: Color(0x04000000),
+            blurRadius: 4,
             offset: Offset(0, 1),
           ),
         ],
       ),
-      clipBehavior: Clip.antiAlias,
       child: Column(
         children: children,
       ),
@@ -1191,32 +1758,38 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
   }
 
   Widget _buildNavigationRow({
+    Key? key,
     required IconData icon,
     required String title,
     required String subtitle,
+    String? trailingTag,
     required VoidCallback onTap,
-    Widget? badge,
   }) {
     return InkWell(
+      key: key,
       onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            // Icon Container (Neutral 40x40)
             Container(
-              width: 40,
-              height: 40,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F6),
+                color: const Color(0xFFF9FAFB),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFE5E7EB), width: 0.5),
+                border: Border.all(color: const Color(0xFFF3F4F6)),
               ),
-              child: Icon(icon, size: 18, color: const Color(0xFF111827)),
+              child: Center(
+                child: Icon(
+                  icon,
+                  size: 18,
+                  color: const Color(0xFF111827),
+                ),
+              ),
             ),
             const SizedBox(width: 14),
-
-            // Title & Subtitle
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1243,18 +1816,29 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
                 ],
               ),
             ),
-
-            // Optional Badge
-            if (badge != null) ...[
-              badge,
+            if (trailingTag != null) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  trailingTag,
+                  style: const TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF4B5563),
+                  ),
+                ),
+              ),
               const SizedBox(width: 8),
             ],
-
-            // Navigation Chevron — In RTL Arabic, navigating deeper goes to the LEFT!
-            // Enclosing in explicit LTR directionality guarantees it physically points LEFT (<-).
-            Directionality(
+            // Physical LEFT chevron pointing for RTL forward navigation
+            const Directionality(
               textDirection: ui.TextDirection.ltr,
-              child: const Icon(
+              child: Icon(
                 Icons.chevron_left,
                 size: 20,
                 color: Color(0xFF9CA3AF),
@@ -1272,8 +1856,9 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
 
   Widget _buildLogoutButton() {
     return GestureDetector(
+      key: const Key('account_logout_button'),
       onTap: () {
-        _controller.triggerLogoutDialog();
+        _controller.requestLogout();
       },
       child: Container(
         width: double.infinity,
@@ -1283,511 +1868,711 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
         ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.logout, size: 16, color: Color(0xFF4B5563)),
-            SizedBox(width: 8),
-            Text(
-              'تسجيل الخروج',
-              style: TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF374151),
-              ),
+        child: const Center(
+          child: Text(
+            'تسجيل الخروج',
+            style: TextStyle(
+              fontFamily: KonfrmTypography.fontFamily,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFFDC2626),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
   // ===========================================================================
-  // Guest / Unauthenticated State View
+  // Photo Selection Action Sheet (Screen 18 Preview Vision)
   // ===========================================================================
 
-  Widget _buildGuestView() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x08000000),
-                  blurRadius: 4,
-                  offset: Offset(0, 1),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                // Neutral User Icon Container
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF3F4F6),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.person_outline,
-                    size: 32,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                const Text(
-                  'تسجيل الدخول أو إنشاء حساب',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                const Text(
-                  'سجّل الدخول لتتمكن من تقديم طلبات الحجز ومتابعة تأكيد المالكين وحفظ شاليهاتك المفضلة.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF6B7280),
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Primary Black CTA Button (6px radius per design system)
-                GestureDetector(
-                  onTap: () {
-                    _controller.showNotice('معاينة: الانتقال إلى تسجيل الدخول (شاشة 08)');
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+  void _showPhotoActionSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Directionality(
+          textDirection: ui.TextDirection.rtl,
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 36,
+                    height: 4,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF000000),
-                      borderRadius: BorderRadius.circular(6),
+                      color: const Color(0xFFD1D5DB),
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                    child: const Text(
-                      'دخول برقم الجوال',
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'تعديل صورة الحساب',
+                    style: TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF111827),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ListTile(
+                    leading: const Icon(Icons.camera_alt_outlined, color: Color(0xFF111827)),
+                    title: const Text(
+                      'التقاط صورة بالكاميرا',
+                      style: TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _controller.showNotice('معاينة: فتح الكاميرا واقتصاص الصورة 1:1 (مواصفة شاشة 18)');
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.photo_library_outlined, color: Color(0xFF111827)),
+                    title: const Text(
+                      'اختيار من المعرض',
+                      style: TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _controller.showNotice('معاينة: فتح معرض الصور بنظام Android Scoped Picker');
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.delete_outline, color: Color(0xFFDC2626)),
+                    title: const Text(
+                      'إزالة الصورة الحالية',
+                      style: TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFDC2626),
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _controller.setScenario(Screen17Scenario.authenticatedNoPhotoFallback);
+                      _controller.showNotice('تمت استعادة الصورة الرمزية بالحروف الأولى');
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // Personal QR Modal Bottom Sheet
+  // ===========================================================================
+
+  Widget _buildQrModalSheet() {
+    final profile = _controller.profile ??
+        const CustomerProfileData(
+          userId: 'usr_cst_001',
+          fullName: 'أحمد مصطفى',
+          proposedUsername: 'ahmed_mostafa',
+        );
+
+    return Container(
+      color: const Color(0x66000000),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Drag Handle
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD1D5DB),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Header with Close Button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'رمز التعريف الشخصي (QR)',
+                          style: TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF111827),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        key: const Key('qr_close_button'),
+                        onTap: () => _controller.closeQrSheet(),
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFF3F4F6),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            size: 18,
+                            color: Color(0xFF111827),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Tab Selector: [رمزي] / [مسح رمز]
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F4F6),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            key: const Key('qr_tab_my_code'),
+                            onTap: () => _controller.setQrTab(0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: _controller.qrTab == 0 ? Colors.white : Colors.transparent,
+                                borderRadius: BorderRadius.circular(9),
+                                boxShadow: _controller.qrTab == 0
+                                    ? const [
+                                        BoxShadow(
+                                          color: Color(0x0C000000),
+                                          blurRadius: 4,
+                                          offset: Offset(0, 1),
+                                        ),
+                                      ]
+                                    : null,
+                              ),
+                              child: Text(
+                                'رمزي',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 13,
+                                  fontWeight: _controller.qrTab == 0 ? FontWeight.w800 : FontWeight.w600,
+                                  color: _controller.qrTab == 0 ? const Color(0xFF111827) : const Color(0xFF6B7280),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            key: const Key('qr_tab_scan'),
+                            onTap: () => _controller.setQrTab(1),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: _controller.qrTab == 1 ? Colors.white : Colors.transparent,
+                                borderRadius: BorderRadius.circular(9),
+                                boxShadow: _controller.qrTab == 1
+                                    ? const [
+                                        BoxShadow(
+                                          color: Color(0x0C000000),
+                                          blurRadius: 4,
+                                          offset: Offset(0, 1),
+                                        ),
+                                      ]
+                                    : null,
+                              ),
+                              child: Text(
+                                'مسح رمز',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 13,
+                                  fontWeight: _controller.qrTab == 1 ? FontWeight.w800 : FontWeight.w600,
+                                  color: _controller.qrTab == 1 ? const Color(0xFF111827) : const Color(0xFF6B7280),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Tab 0: My Code View
+                  if (_controller.qrTab == 0) ...[
+                    // QR Code Card Container
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFE5E7EB)),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x08000000),
+                            blurRadius: 10,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          // User Header in QR Card
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 36,
+                                height: 36,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF111827),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: ClipOval(
+                                  child: profile.hasPortrait
+                                      ? Image.memory(
+                                          profile.portraitBytes!,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Center(
+                                          child: Text(
+                                            profile.initials,
+                                            style: const TextStyle(
+                                              fontFamily: KonfrmTypography.fontFamily,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    profile.displayName,
+                                    style: const TextStyle(
+                                      fontFamily: KonfrmTypography.fontFamily,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF111827),
+                                    ),
+                                  ),
+                                  if (profile.proposedUsername != null)
+                                    Directionality(
+                                      textDirection: ui.TextDirection.ltr,
+                                      child: Text(
+                                        '@${profile.proposedUsername}',
+                                        style: const TextStyle(
+                                          fontFamily: KonfrmTypography.fontFamily,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF6B7280),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // QR Code Matrix Simulation
+                          Container(
+                            width: 180,
+                            height: 180,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: const Color(0xFFE5E7EB)),
+                            ),
+                            child: CustomPaint(
+                              painter: SimulatedQrMatrixPainter(),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+
+                          // Privacy & Security Disclosure
+                          const Text(
+                            'رمز تعريفي آمن مشفر — لا يشارك أرقام الهواتف أو وسائل الدفع',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF6B7280),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Actions
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              _controller.showNotice('معاينة: مشاركة بطاقة الرمز الرقمية الآمنة');
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF111827),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'مشاركة الرمز',
+                                  style: TextStyle(
+                                    fontFamily: KonfrmTypography.fontFamily,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              _controller.showNotice('معاينة: حفظ بطاقة الرمز في ألبوم الصور');
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF3F4F6),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFE5E7EB)),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'حفظ الصورة',
+                                  style: TextStyle(
+                                    fontFamily: KonfrmTypography.fontFamily,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF111827),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ] else ...[
+                    // Tab 1: Scanner View Simulation
+                    Container(
+                      width: double.infinity,
+                      height: 240,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF111827),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Scanner Frame
+                          Container(
+                            width: 160,
+                            height: 160,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.white, width: 2.0),
+                            ),
+                          ),
+                          const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.crop_free,
+                                size: 48,
+                                color: Colors.white70,
+                              ),
+                              SizedBox(height: 12),
+                              Text(
+                                'وجّه الكاميرا نحو رمز QR في كونفرم',
+                                style: TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    const Text(
+                      'يتم استخدام الماسح للتعرف على الروابط والوحدات المعتمدة داخل كونفرم فقط',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: KonfrmTypography.fontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF6B7280),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Proposed Wallet Modal Bottom Sheet (Issue #173 Concept)
+  // ===========================================================================
+
+  Widget _buildWalletModalSheet() {
+    return Container(
+      color: const Color(0x66000000),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Drag Handle
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD1D5DB),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
+                  const SizedBox(height: 14),
 
-          // Guest Help Link
-          _buildSectionHeader('المساعدة'),
-          const SizedBox(height: 8),
-          _buildCardContainer([
-            _buildNavigationRow(
-              icon: Icons.help_outline,
-              title: 'المساعدة والدعم',
-              subtitle: 'الأسئلة الشائعة وإرشادات الحجز',
-              onTap: () => _controller.showNotice('معاينة: الانتقال إلى المساعدة والدعم (شاشة 21)'),
-            ),
-          ]),
-        ],
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // Loading Skeleton View
-  // ===========================================================================
-
-  Widget _buildLoadingSkeleton() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header Card Skeleton
-          Container(
-            height: 90,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Section Skeletons
-          Container(
-            width: 80,
-            height: 16,
-            decoration: BoxDecoration(
-              color: const Color(0xFFE5E7EB),
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 130,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          Container(
-            width: 70,
-            height: 16,
-            decoration: BoxDecoration(
-              color: const Color(0xFFE5E7EB),
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 70,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // Network Error View
-  // ===========================================================================
-
-  Widget _buildNetworkErrorView() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF3F4F6),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.wifi_off_outlined,
-                  size: 28,
-                  color: Color(0xFF111827),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'تعذر تحميل بيانات الحساب',
-                style: TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF111827),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'تحقق من اتصال الإنترنت وحاول مجدداً للوصول إلى تفاصيل حسابك.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF6B7280),
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () {
-                  _controller.setScenario(Screen17Scenario.authenticatedCompleteTop);
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF000000),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Text(
-                    'إعادة المحاولة',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: KonfrmTypography.fontFamily,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // Session Expired (401) View
-  // ===========================================================================
-
-  Widget _buildSessionExpiredView() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF3F4F6),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.lock_outline,
-                  size: 28,
-                  color: Color(0xFF111827),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'انتهت جلسة تسجيل الدخول',
-                style: TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF111827),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'لحماية بياناتك، يرجى تسجيل الدخول مجدداً للوصول إلى تفاصيل الحساب.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF6B7280),
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () {
-                  _controller.showNotice('معاينة: الانتقال إلى تسجيل الدخول مجدداً (شاشة 08)');
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF000000),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Text(
-                    'تسجيل الدخول مجدداً',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: KonfrmTypography.fontFamily,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // Identity Integrity Failure View
-  // ===========================================================================
-
-  Widget _buildIdentityIntegrityView() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF3F4F6),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.shield_outlined,
-                  size: 28,
-                  color: Color(0xFF111827),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'لا يمكن التحقق من هوية الحساب',
-                style: TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF111827),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'لم نتمكن من التحقق من المعرفات الموثقة لهذا الحساب. يرجى تسجيل الدخول مجدداً لإعادة التحقق.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF6B7280),
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () {
-                  _controller.showNotice('معاينة: إعادة التحقق من الهوية (شاشة 08)');
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF000000),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Text(
-                    'تسجيل الدخول لإعادة التحقق',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: KonfrmTypography.fontFamily,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // Logout Confirmation Modal Dialog
-  // ===========================================================================
-
-  Widget _buildLogoutConfirmationDialog() {
-    return Container(
-      color: const Color(0x80000000),
-      child: Center(
-        child: Container(
-          margin: const EdgeInsets.all(24),
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'تسجيل الخروج',
-                style: TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF111827),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'هل أنت متأكد من رغبتك في تسجيل الخروج من حسابك؟',
-                style: TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF6B7280),
-                  height: 1.4,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        _controller.dismissLogoutDialog();
-                        _controller.setScenario(Screen17Scenario.guestUnauthenticated);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF000000),
-                          borderRadius: BorderRadius.circular(6),
+                  // Header with Close
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Expanded(
+                        child: Row(
+                          children: [
+                            Text(
+                              'محفظة كونفرم',
+                              style: TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF111827),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                '(مفهوم مقترح #173)',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF6B7280),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        child: const Text(
-                          'تسجيل الخروج',
-                          textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        key: const Key('wallet_close_button'),
+                        onTap: () => _controller.closeWalletSheet(),
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFF3F4F6),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            size: 18,
+                            color: Color(0xFF111827),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Balance Card
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF111827),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'الرصيد المتاح',
+                          style: TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text(
+                              '0.00',
+                              style: TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              'ج.م',
+                              style: TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0x33FFFFFF),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.hourglass_top_outlined,
+                                size: 14,
+                                color: Colors.white70,
+                              ),
+                              SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  'مبالغ قيد التسوية: 1,200 ج.م (طلب استرداد معتمد)',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontFamily: KonfrmTypography.fontFamily,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Financial Governance Notice
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF9FAFB),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: const Text(
+                      'تنبيه الحوكمة المالية: المحفظة والاسترداد المالي قيد الدراسة التشريعية والمالية بموجب القضية #173. لا توجد أي تسوية بنكية أو شحن رصيد فعلي في هذا الإصدار التجريبي.',
+                      style: TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF4B5563),
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Close CTA
+                  GestureDetector(
+                    onTap: () => _controller.closeWalletSheet(),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF111827),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'إغلاق المعاينة',
                           style: TextStyle(
                             fontFamily: KonfrmTypography.fontFamily,
                             fontSize: 13,
@@ -1798,27 +2583,125 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Logout Confirmation Dialog
+  // ===========================================================================
+
+  Widget _buildLogoutDialog() {
+    return Container(
+      color: const Color(0x66000000),
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x1F000000),
+                blurRadius: 16,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFEF2F2),
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.logout,
+                    size: 24,
+                    color: Color(0xFFDC2626),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'تسجيل الخروج من الحساب',
+                style: TextStyle(
+                  fontFamily: KonfrmTypography.fontFamily,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF111827),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'هل أنت متأكد من رغبتك في تسجيل الخروج؟ ستتم مطالبتك بتسجيل الدخول مجدداً للوصول إلى حجوزاتك ومحفظتك.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: KonfrmTypography.fontFamily,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF4B5563),
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        _controller.dismissLogoutDialog();
-                      },
+                      key: const Key('dialog_cancel_logout'),
+                      onTap: () => _controller.cancelLogout(),
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF3F4F6),
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: const Color(0xFFE5E7EB)),
                         ),
-                        child: const Text(
-                          'إلغاء',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: KonfrmTypography.fontFamily,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF374151),
+                        child: const Center(
+                          child: Text(
+                            'إلغاء',
+                            style: TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF374151),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: GestureDetector(
+                      key: const Key('dialog_confirm_logout'),
+                      onTap: () => _controller.confirmLogout(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFDC2626),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'تسجيل الخروج',
+                            style: TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -1834,63 +2717,481 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
   }
 
   // ===========================================================================
-  // Navigation Notice Dialog
+  // Loading Skeleton State
   // ===========================================================================
 
-  Widget _buildNoticeDialog(String notice) {
-    return Container(
-      color: const Color(0x66000000),
-      child: Center(
-        child: Container(
-          margin: const EdgeInsets.all(24),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
+  Widget _buildLoadingSkeleton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Column(
+        children: [
+          // Skeleton Hero
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: 96,
+                  height: 96,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE5E7EB),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  width: 140,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E7EB),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: 90,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F4F6),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
+            ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.touch_app_outlined,
-                size: 28,
-                color: Color(0xFF111827),
+          const SizedBox(height: 20),
+
+          // Skeleton Shortcuts
+          Row(
+            children: List.generate(
+              3,
+              (index) => Expanded(
+                child: Container(
+                  margin: EdgeInsets.only(left: index < 2 ? 10 : 0),
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                ),
               ),
-              const SizedBox(height: 12),
-              Text(
-                notice,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Session Expired (401) State
+  // ===========================================================================
+
+  Widget _buildSessionExpiredView() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF3F4F6),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.lock_clock_outlined,
+                  size: 28,
                   color: Color(0xFF111827),
                 ),
               ),
-              const SizedBox(height: 18),
-              GestureDetector(
-                onTap: () {
-                  _controller.dismissDialogNotice();
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF000000),
-                    borderRadius: BorderRadius.circular(6),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'انتهت صلاحية الجلسة',
+              style: TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF111827),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'لحماية بيانات حسابك، يرجى إعادة تسجيل الدخول للوصول إلى معلوماتك وتفاصيل حجوزاتك.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF4B5563),
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
+            GestureDetector(
+              onTap: () {
+                _controller.setScenario(Screen17Scenario.authenticatedFlagshipTop);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF111827),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'تسجيل الدخول مجدداً',
+                  style: TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
                   ),
-                  child: const Text(
-                    'حسناً',
-                    textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Network Error State
+  // ===========================================================================
+
+  Widget _buildNetworkErrorView() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF3F4F6),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.wifi_off_outlined,
+                  size: 28,
+                  color: Color(0xFF111827),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'تعذر تحميل بيانات الحساب',
+              style: TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF111827),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'حدث خطأ في الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF4B5563),
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
+            GestureDetector(
+              onTap: () {
+                _controller.setScenario(Screen17Scenario.authenticatedFlagshipTop);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF111827),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'إعادة المحاولة',
+                  style: TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Guest Account State
+  // ===========================================================================
+
+  Widget _buildGuestAccountView() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF3F4F6),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.person_outline,
+                  size: 32,
+                  color: Color(0xFF111827),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            const Text(
+              'تسجيل الدخول إلى كونفرم',
+              style: TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 19,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF111827),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'سجّل دخولك للوصول إلى تفاصيل حجوزاتك، حفظ وحداتك المفضلة، وإدارة إعدادات حسابك بأمان.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF4B5563),
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
+            GestureDetector(
+              onTap: () {
+                _controller.setScenario(Screen17Scenario.authenticatedFlagshipTop);
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF000000),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(
+                  child: Text(
+                    'تسجيل الدخول / إنشاء حساب',
                     style: TextStyle(
                       fontFamily: KonfrmTypography.fontFamily,
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
                   ),
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Bottom Navigation Bar (Canonical Customer Shared Navigation)
+  // ===========================================================================
+
+  Widget _buildBottomNavigationBar() {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(
+            color: Color(0xFFE5E7EB),
+            width: 1.0,
+          ),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 64,
+          child: CustomerBottomNavigation(
+            selectedIndex: 3, // Account tab active!
+            onSelected: (index) {
+              final customerDestinations = ['استكشف', 'المفضلة', 'حجوزاتي', 'الحساب'];
+              if (index == 3) {
+                applyScenario(Screen17Scenario.authenticatedFlagshipTop);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'معاينة: الانتقال إلى الوجهة (${customerDestinations[index]})',
+                      style: const TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    duration: const Duration(milliseconds: 700),
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Notice Snackbar Overlay
+  // ===========================================================================
+
+  Widget _buildNoticeSnackbar() {
+    return Positioned(
+      bottom: 74,
+      left: 16,
+      right: 16,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF111827),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x33000000),
+              blurRadius: 10,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.info_outline,
+              size: 18,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                _controller.dialogNotice!,
+                style: const TextStyle(
+                  fontFamily: KonfrmTypography.fontFamily,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () => _controller.clearNotice(),
+              child: const Icon(
+                Icons.close,
+                size: 16,
+                color: Colors.white70,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // Dev Tools Scenario Selector Panel
+  // ===========================================================================
+
+  Widget _buildDevToolsPanel() {
+    return Positioned(
+      top: 60,
+      right: 12,
+      left: 12,
+      child: Material(
+        elevation: 8,
+        borderRadius: BorderRadius.circular(14),
+        color: Colors.white,
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFE5E7EB)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'لوحة سيناريوهات فحص الشاشة 17 (V2)',
+                    style: TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF111827),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => setState(() => _showDevTools = false),
+                    child: const Icon(Icons.close, size: 18),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: Screen17Scenario.values.map((sc) {
+                  final isSelected = sc == _scenario;
+                  return GestureDetector(
+                    onTap: () {
+                      applyScenario(sc);
+                      setState(() => _showDevTools = false);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: isSelected ? const Color(0xFF111827) : const Color(0xFFF3F4F6),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        sc.title,
+                        style: TextStyle(
+                          fontFamily: KonfrmTypography.fontFamily,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: isSelected ? Colors.white : const Color(0xFF374151),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
             ],
           ),
@@ -1898,86 +3199,107 @@ class Screen17HarnessPageState extends State<Screen17HarnessPage> {
       ),
     );
   }
+}
 
-  // ===========================================================================
-  // QA Dev Tools Overlay
-  // ===========================================================================
+// =============================================================================
+// Simulated QR Matrix Painter (Opaque Clean Procedural Code)
+// =============================================================================
 
-  Widget _buildQaDevOverlay() {
-    return Positioned(
-      bottom: 70,
-      left: 12,
-      right: 12,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: const Color(0xF2111827),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white24),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black38,
-              blurRadius: 10,
-              offset: Offset(0, 4),
-            ),
-          ],
+class SimulatedQrMatrixPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF111827)
+      ..style = PaintingStyle.fill;
+
+    const int modules = 25;
+    final double moduleSize = size.width / modules;
+
+    // Fixed corner position detection patterns
+    void drawFinderPattern(double startX, double startY) {
+      // 7x7 outer square
+      canvas.drawRect(
+        Rect.fromLTWH(startX, startY, moduleSize * 7, moduleSize * 7),
+        paint,
+      );
+      // 5x5 inner white
+      canvas.drawRect(
+        Rect.fromLTWH(startX + moduleSize, startY + moduleSize, moduleSize * 5, moduleSize * 5),
+        Paint()..color = Colors.white,
+      );
+      // 3x3 inner dark
+      canvas.drawRect(
+        Rect.fromLTWH(startX + moduleSize * 2, startY + moduleSize * 2, moduleSize * 3, moduleSize * 3),
+        paint,
+      );
+    }
+
+    drawFinderPattern(0, 0); // Top-left
+    drawFinderPattern(size.width - moduleSize * 7, 0); // Top-right
+    drawFinderPattern(0, size.height - moduleSize * 7); // Bottom-left
+
+    // Deterministic pseudo-random matrix data for the remaining area
+    final rnd = math.Random(42);
+    for (int r = 0; r < modules; r++) {
+      for (int c = 0; c < modules; c++) {
+        // Skip corner detection patterns
+        if (r < 8 && c < 8) continue;
+        if (r < 8 && c >= modules - 8) continue;
+        if (r >= modules - 8 && c < 8) continue;
+
+        // Skip center logo square (9x9)
+        if (r >= 8 && r <= 16 && c >= 8 && c <= 16) continue;
+
+        if (rnd.nextBool()) {
+          canvas.drawRect(
+            Rect.fromLTWH(c * moduleSize, r * moduleSize, moduleSize * 0.92, moduleSize * 0.92),
+            paint,
+          );
+        }
+      }
+    }
+
+    // Center KONFRM Logo Badge
+    final centerRect = Rect.fromCenter(
+      center: Offset(size.width / 2, size.height / 2),
+      width: moduleSize * 7,
+      height: moduleSize * 7,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(centerRect, const Radius.circular(6)),
+      Paint()..color = Colors.white,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(centerRect, const Radius.circular(6)),
+      Paint()
+        ..color = const Color(0xFFE5E7EB)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0,
+    );
+
+    // K Glyph Center
+    final textPainter = TextPainter(
+      text: const TextSpan(
+        text: 'K',
+        style: TextStyle(
+          fontFamily: KonfrmTypography.fontFamily,
+          fontSize: 20,
+          fontWeight: FontWeight.w900,
+          color: Color(0xFF111827),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'لوحة سيناريوهات QA (Screen 17)',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _showDevTools = false;
-                    });
-                  },
-                  child: const Icon(Icons.close, size: 18, color: Colors.white70),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: Screen17Scenario.values.map((sc) {
-                final isSelected = _scenario == sc;
-                return GestureDetector(
-                  onTap: () => applyScenario(sc),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.white : Colors.white12,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      sc.title,
-                      style: TextStyle(
-                        fontFamily: KonfrmTypography.fontFamily,
-                        fontSize: 10,
-                        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                        color: isSelected ? Colors.black : Colors.white,
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+      ),
+      textDirection: ui.TextDirection.ltr,
+    )..layout();
+
+    textPainter.paint(
+      canvas,
+      Offset(
+        size.width / 2 - textPainter.width / 2,
+        size.height / 2 - textPainter.height / 2,
       ),
     );
   }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

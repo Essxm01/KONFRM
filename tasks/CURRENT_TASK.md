@@ -1,42 +1,49 @@
-# Active Task — CUSTOMER_SCREEN17_ACCOUNT_HOME_V1
+# Active Task — CUSTOMER_SCREEN17_V2_PREMIUM
 
-TASK_ID: CUSTOMER_SCREEN17_ACCOUNT_HOME_V1
+TASK_ID: CUSTOMER_SCREEN17_V2_PREMIUM
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN17_V1_AWAITING_BRIDGE_AND_FOUNDER_VISUAL_REVIEW
+STATUS: SCREEN17_V2_PREMIUM_AWAITING_BRIDGE_AND_FOUNDER_VISUAL_REVIEW
 BRANCH: evidence/customer-screen17-design-review
 GOVERNING_ISSUES:
-  - Issue #170: Customer Screen 17 Account Home — native Flutter visual design
+  - Issue #170: Customer Screen 17 Account Home — Founder Visual Reset & Direction
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
+  - Issue #172: Identity, Avatar, QR & Connected Profiles
+  - Issue #173: Proposed Customer Wallet & Financial Boundaries
   - Issue #171: Deferred Technical/QA Backlog for Screen 17
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver the isolated native Flutter visual design for Customer Screen 17 (Account Home / الحساب) on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. Main Account Hub: Personal summary card, avatar/initials fallback, masked verified phone/email (LTR-isolated `<bdi>`), edit profile CTA, incomplete-profile prompt.
-  2. Grouped Navigation: Grouped sections with calm neutral icons and text (رحلاتك: حجوزاتي, المفضلة; النشاط: الإشعارات with unread badge; المدفوعات; الحساب: البيانات الشخصية; المساعدة: المساعدة والدعم), sign-out action.
-  3. Shared Bottom Navigation: Canonical 4-tab `CustomerBottomNavigation` with Account (Tab index 3) active.
-  4. RTL & Typography: Full Arabic Cairo typography, monochrome neutral palette (#000000, #FFFFFF, #F9FAFB, #F3F4F6, #E5E7EB), zero generic blue tints, navigation row arrows pointing physically LEFT (<-) in RTL.
-  5. State Differentiation: Authenticated complete, authenticated incomplete profile, guest / unauthenticated, initial loading / skeleton, network error, session expired (401), identity integrity failure, and accessibility 200% text scale.
-  6. Evidence & Hygiene: Deliver 14 genuine Samsung A56 screenshots, Base64 companions, mirrored review runner, source-linked tests, and reports in review-evidence/customer-screen17/v1/.
+SCOPE: Deliver the isolated native Flutter visual design for Customer Screen 17 V2 (Personal Passport / «مساحتي في كونفرم») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. Flagship Identity Hero: 104dp circular portrait hero with genuine studio portrait fixture (Ahmed), overlapping true-black camera affordance badge, bold Cairo display name, handle, edit profile CTA.
+  2. Strict Founder Privacy Invariant: Phone number and email are EXPLICITLY NOT exposed in the hero fold.
+  3. Header & Navigation: Clean root title "حسابي" on physical right, discrete Personal QR button on physical left (44x44dp touch target). Zero developer controls in customer captures.
+  4. Quick Shortcuts & Upcoming Stay: 3-column shortcuts (حجوزاتي, المفضلة, الإشعارات with badge), contextual upcoming stay card with status badge and left-pointing chevron.
+  5. Grouped Navigation: Grouped sections with calm neutral icons, left-pointing chevrons (`<`), share strip, and reachable logout action with confirmation modal.
+  6. Personal QR Experience: High-contrast modal bottom sheet with dual tabs (`رمزي` / `مسح رمز`), procedural QR code painter, and privacy assurance notice.
+  7. Wallet Concept Separation: Proposed wallet concept modal with explicit governance disclosure stating regulatory study status under Issue #173; zero live financial transactions.
+  8. Canonical Bottom Navigation: Shared 4-tab `CustomerBottomNavigation` with Account (Tab index 3) active.
+  9. RTL & Typography: Full Arabic Cairo typography, strict monochrome neutral palette (#000000, #FFFFFF, #F9FAFB, #F3F4F6, #E5E7EB), zero generic blue tints.
+  10. Accessibility & Robustness: 200% text scale validated with zero RenderFlex overflows.
+  11. Evidence & Hygiene: Deliver 15 genuine Samsung A56 screenshots, Base64 companions, mirrored review runner, source-linked tests, and reports in review-evidence/customer-screen17/v2-premium/.
 
 ## Boundaries & Invariants
 - Zero changes to production code (`customer_app/lib/` untouched, backend untouched, database untouched).
 - All non-visual technical issues (backend persistence, session revocation, real identity RPCs, push integration) deferred under Issue #171.
-- All historical evidence preserved untouched per Issue #155.
+- All historical evidence preserved untouched per Issue #155 (Screen 17 V1 preserved in `review-evidence/customer-screen17/v1/`).
 - Physical device serial redacted in all logs and markdown (`[REDACTED_A56_ID]`).
 
 ## Verification & Quality Gates
-- [x] Screen 17 isolated Flutter preview runner created in `tool/screen17_preview_runner.dart`.
-- [x] Source-linked tests created in `test/screen17_source_linked_tests.dart` (20/20 passed).
+- [x] Screen 17 isolated Flutter preview runner updated in `tool/screen17_preview_runner.dart`.
+- [x] Source-linked tests updated in `test/screen17_source_linked_tests.dart` (21/21 passed).
 - [x] Canonical `CustomerBottomNavigation` retained with Account active (Tab 3).
-- [x] Row navigation chevrons point physically LEFT (<-) for forward progression in RTL Arabic.
-- [x] Masked phone / email formatted with LTR directionality isolation.
+- [x] Row navigation chevrons point physically LEFT (`<`) for forward progression in RTL Arabic.
 - [x] Zero generic blue palette; strictly monochrome neutrals.
-- [x] Guest, authenticated, incomplete profile, 401, integrity failure, error, and loading states distinct.
+- [x] Authenticated flagship, no photo fallback, incomplete profile, guest, loading, network error, 401, QR modal, wallet modal, logout dialog, compact hero, and 200% text scale scenarios verified.
 - [x] Static analysis passes with 0 issues (`flutter analyze`).
-- [x] Representative genuine Samsung Galaxy A56 5G captures (14 scenarios) and Base64 companions generated.
-- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen17/v1/`.
+- [x] Representative genuine Samsung Galaxy A56 5G captures (15 scenarios) and Base64 companions generated.
+- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen17/v2-premium/`.
 
 ---
+
 
 ## Historical Task — CUSTOMER_SCREEN_06_PROPERTY_DETAILS_V3 (MERGED)
 - PR: #116 (MERGED INTO MAIN)

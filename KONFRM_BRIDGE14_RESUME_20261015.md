@@ -1,5 +1,20 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## FOUNDER STOP-SEND OVERRIDE — PURE #000000 NO CHARCOAL/NAVY (2026-10-15)
+
+Founder explicitly paused BEFORE sending prior Screen17 V3 correction prompt to object to charcoal/navy in Wallet; founder wants only REAL pure #000000 as black across KONFRM. Older Antigravity corrective prompt is SUPERSEDED; send ONE REVISED combined prompt. Source baseline Screen17 V3 SHA d7a382f34e4416d3e3b8aa5be53cc183777654ca.
+
+Bridge GitHub search default branch + pinned Flutter runners verified existing canonical #000000 (KonfrmColors.primary and DESIGN_SYSTEM Action System pilot), explicitly excluded #111827 and #0F172A as primary black, but drift persists: Screen17 isolated runner currently has 48 0xFF111827 hits and 3 0xFF000000; Screen15 and Screen16 approved runner snapshots include near-blacks; customer production account view and shared ValidationReferenceOnly.text hold 0xFF111827; web Customer/Owner/Admin retain bg-slate-900, text-slate-900 and navy rgba. THIS IS A PARTIAL GitHub search/sampling, NOT proof of exhaustive local audit.
+
+**NOW for Screen17 ONLY:** apply #000000 for brand black text/icons/filled CTA, remove 111827 and other charcoal near-black substitutes FROM BRAND BLACK roles; specifically make proposed wallet LIGHT WHITE/NEUTRAL with black #000000 text/icons, NO dark slab and NO fake 0.00/credit. Preserve purposeful muted grays, status semantics, transparencies, photographs; do not substitute all gray tones. Combine with existing first-fold horizontal compact hero, flat editorial list instead of 3 group cards, 200% wrapping, guest QR safe demo, real claimed upcoming booking state. Screenshots physically verify black pixel fill + nav consistency. New additive evidence folder. No backend/financial/DB/shared theme or production edits.
+
+**REPO-WIDE:** [#175](https://github.com/Essxm01/KONFRM/issues/175) now authorizes detailed READ-ONLY full repository search/inventory and scoped future migration PR proposals across Customer/Owner/Admin, not immediate indiscriminate changes. DO NOT modify historic screenshots, vendor sources, generated files or DESIGN_SYSTEM token source without impact/rule approval. Product finance/booking rules immutable. [#170](https://github.com/Essxm01/KONFRM/issues/170) records latest Founder correction. #155 retained evidence.
+
+Founder visual approval Screen17 remains pending. Previous instruction to preserve charcoal wallet is replaced by user pure-black override. No Screen18 automatically.
+
+---
+
+
 ## CURRENT SCREEN17 V3 INDEPENDENT BRIDGE REVIEW — 2026-10-15
 
 Antigravity delivered SCREEN17 V3 Simplified Premium at [commit d7a382f34e4416d3e3b8aa5be53cc183777654ca](https://github.com/Essxm01/KONFRM/commit/d7a382f34e4416d3e3b8aa5be53cc183777654ca) with all 15 original physical Samsung A56 screenshots/B64 counterparts in newly added review-evidence/customer-screen17/v3-simplified-premium/. V1 and V2 untouched. Bridge inspected ALL 15 images, source/test + V2->V3 diff; Antigravity reported 21/21 tests, not independently rerun.

@@ -162,14 +162,13 @@ void main() {
       expect(find.text('+20 10••••5678'), findsNothing);
     });
 
-    testWidgets('renders quick action shortcuts for Bookings, Favorites, and Notifications', (tester) async {
+    testWidgets('verifies removal of the 3 shortcut tiles per Founder UX Recomposition', (tester) async {
       await tester.pumpWidget(const Screen17PreviewApp());
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('quick_action_bookings')), findsOneWidget);
-      expect(find.byKey(const Key('quick_action_favorites')), findsOneWidget);
-      expect(find.byKey(const Key('quick_action_notifications')), findsOneWidget);
-      expect(find.text('2 جديد'), findsOneWidget);
+      expect(find.byKey(const Key('quick_action_bookings')), findsNothing);
+      expect(find.byKey(const Key('quick_action_favorites')), findsNothing);
+      expect(find.byKey(const Key('quick_action_notifications')), findsNothing);
     });
 
     testWidgets('renders upcoming stay card when active reservation exists', (tester) async {
@@ -196,17 +195,22 @@ void main() {
       expect(find.byKey(const Key('nav_payment_history')), findsOneWidget);
       expect(find.byKey(const Key('nav_wallet_concept')), findsOneWidget);
 
+      expect(find.text('المساعدة والخدمات'), findsOneWidget);
+      expect(find.byKey(const Key('nav_help_support')), findsOneWidget);
+      expect(find.byKey(const Key('nav_share_konfrm')), findsOneWidget);
+
       // Verify physical LEFT chevrons for RTL navigation
       final chevronFinder = find.byIcon(Icons.chevron_left);
       expect(chevronFinder, findsWidgets);
     });
 
-    testWidgets('renders Share KONFRM card and reachable logout button', (tester) async {
+    testWidgets('renders Share KONFRM integrated row and reachable logout button', (tester) async {
       await tester.binding.setSurfaceSize(const Size(412, 2000));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(const Screen17PreviewApp());
       await tester.pumpAndSettle();
 
+      expect(find.byKey(const Key('nav_share_konfrm')), findsOneWidget);
       expect(find.text('شارك كونفرم مع معارفك'), findsOneWidget);
       expect(find.byKey(const Key('account_logout_button')), findsOneWidget);
     });
@@ -220,7 +224,7 @@ void main() {
       await tester.tap(find.byKey(const Key('header_qr_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('رمز التعريف الشخصي (QR)'), findsOneWidget);
+      expect(find.text('بطاقة الحساب الشخصية (QR)'), findsOneWidget);
       expect(find.text('رمزي'), findsOneWidget);
       expect(find.text('مسح رمز'), findsOneWidget);
       expect(find.text('مشاركة الرمز'), findsOneWidget);
@@ -228,10 +232,10 @@ void main() {
       // Close QR sheet
       await tester.tap(find.byKey(const Key('qr_close_button')));
       await tester.pumpAndSettle();
-      expect(find.text('رمز التعريف الشخصي (QR)'), findsNothing);
+      expect(find.text('بطاقة الحساب الشخصية (QR)'), findsNothing);
     });
 
-    testWidgets('tapping wallet navigation row opens proposed Wallet Concept modal (#173)', (tester) async {
+    testWidgets('tapping wallet navigation row opens proposed Wallet Concept modal (#173) with truthful zero claim', (tester) async {
       await tester.binding.setSurfaceSize(const Size(412, 1600));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(const Screen17PreviewApp());
@@ -243,6 +247,8 @@ void main() {
       expect(find.text('محفظة كونفرم'), findsWidgets);
       expect(find.text('0.00'), findsOneWidget);
       expect(find.textContaining('#173'), findsWidgets);
+      expect(find.text('لا توجد عمليات سابقة أو مبالغ معلقة'), findsOneWidget);
+      expect(find.textContaining('1,200'), findsNothing);
 
       // Close wallet sheet
       await tester.tap(find.byKey(const Key('wallet_close_button')));

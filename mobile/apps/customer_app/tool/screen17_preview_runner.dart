@@ -504,12 +504,39 @@ class Screen17PreviewApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'KONFRM Customer Screen 17 V2 Passport',
+      title: 'KONFRM Customer Screen 17 Simplified Premium',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: const Color(0xFFF9FAFB),
         fontFamily: KonfrmTypography.fontFamily,
+        navigationBarTheme: NavigationBarThemeData(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          indicatorColor: const Color(0xFFF3F4F6), // Neutral soft grey indicator pill
+          iconTheme: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const IconThemeData(color: Color(0xFF000000));
+            }
+            return const IconThemeData(color: Color(0xFF6B7280));
+          }),
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF000000),
+              );
+            }
+            return const TextStyle(
+              fontFamily: KonfrmTypography.fontFamily,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF6B7280),
+            );
+          }),
+        ),
       ),
       home: const Directionality(
         textDirection: ui.TextDirection.rtl,
@@ -655,6 +682,29 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
         ),
         child: Scaffold(
           backgroundColor: const Color(0xFFF9FAFB),
+          bottomNavigationBar: CustomerBottomNavigation(
+            selectedIndex: 3, // Account tab active!
+            onSelected: (index) {
+              final customerDestinations = ['استكشف', 'المفضلة', 'حجوزاتي', 'الحساب'];
+              if (index == 3) {
+                applyScenario(Screen17Scenario.authenticatedFlagshipTop);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'معاينة: الانتقال إلى الوجهة (${customerDestinations[index]})',
+                      style: const TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    duration: const Duration(milliseconds: 700),
+                  ),
+                );
+              }
+            },
+          ),
           body: Stack(
             children: [
               Column(
@@ -705,9 +755,6 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                       ),
                     ),
                   ),
-
-                  // Canonical Shared Customer Bottom Navigation
-                  _buildBottomNavigationBar(),
                 ],
               ),
 
@@ -776,7 +823,11 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 child: GestureDetector(
                   key: const Key('header_qr_button'),
                   onTap: () {
-                    _controller.openQrSheet();
+                    if (_controller.isAuthenticated) {
+                      _controller.openQrSheet();
+                    } else {
+                      _controller.showNotice('يرجى تسجيل الدخول أولاً لعرض رمز حسابك الشخصي');
+                    }
                   },
                   child: Container(
                     width: 42,
@@ -810,10 +861,10 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
   Widget _buildAuthenticatedAccountSliver() {
     final profile = _controller.profile!;
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       sliver: SliverList(
         delegate: SliverChildListDelegate([
-          // 1. Identity Hero ("Personal Passport")
+          // 1. Unboxed Identity Hero ("Personal Passport")
           if (_controller.isCompactHero)
             _buildCompactIdentityHero(profile)
           else
@@ -826,17 +877,16 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
             const SizedBox(height: 16),
           ],
 
-          // 3. Fast Quick Actions Strip (حجوزاتي, المفضلة, الإشعارات)
-          _buildQuickActionsStrip(),
-          const SizedBox(height: 20),
+          // Note: Shortcut tiles for Bookings, Favorites, and Notifications
+          // have been COMPLETELY REMOVED per Founder UX Decision (Issue #170 / #174).
 
-          // 4. Contextual Upcoming Stay Strip (0/1)
+          // 3. Contextual Upcoming Stay Strip (0/1 - Restrained single summary)
           if (profile.hasUpcomingStay) ...[
             _buildUpcomingStayCard(profile),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
           ],
 
-          // 5. Grouped Navigation Sections (Anti-Card-Soup Structural System)
+          // 4. Grouped Navigation Sections (Anti-Card-Soup Structural System)
           // Section: الحساب والملف الشخصي
           _buildSectionHeader('الحساب والملف الشخصي'),
           const SizedBox(height: 8),
@@ -860,13 +910,13 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
             _buildNavigationRow(
               key: const Key('nav_linked_accounts'),
               icon: Icons.link_outlined,
-              title: 'الحسابات المرتبطة',
+              title: 'الإعدادات والحسابات المرتبطة',
               subtitle: 'Apple وGoogle ووسائل الدخول الثانوية',
               trailingTag: 'مفهوم مقترح',
               onTap: () => _controller.showNotice('معاينة: مواصفة الحسابات المرتبطة الآمنة (مفهوم شاشة 19)'),
             ),
           ]),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
           // Section: المالية والمدفوعات
           _buildSectionHeader('المالية والمدفوعات'),
@@ -885,14 +935,14 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
               icon: Icons.account_balance_wallet_outlined,
               title: 'محفظة كونفرم',
               subtitle: 'الرصيد المتاح والاستردادات المعتمدة',
-              trailingTag: 'مفهوم مالي #173',
+              trailingTag: 'مفهوم مقترح #173',
               onTap: () => _controller.openWalletSheet(),
             ),
           ]),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
-          // Section: المساعدة والإعدادات
-          _buildSectionHeader('المساعدة والدعم'),
+          // Section: المساعدة والخدمات
+          _buildSectionHeader('المساعدة والخدمات'),
           const SizedBox(height: 8),
           _buildCardContainer([
             _buildNavigationRow(
@@ -904,20 +954,16 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
             ),
             const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
             _buildNavigationRow(
-              key: const Key('nav_general_settings'),
-              icon: Icons.settings_outlined,
-              title: 'الإعدادات العامة',
-              subtitle: 'لغة التطبيق، الإشعارات، والعملة (EGP)',
-              onTap: () => _controller.showNotice('معاينة: الانتقال إلى الإعدادات العامة (شاشة 19)'),
+              key: const Key('nav_share_konfrm'),
+              icon: Icons.share_outlined,
+              title: 'شارك كونفرم مع معارفك',
+              subtitle: 'ادعُ أصدقاءك لتجربة استئجار موثوقة ومباشرة',
+              onTap: () => _controller.showNotice('معاينة: فتح قائمة مشاركة الرابط الرسمي لتطبيق كونفرم'),
             ),
           ]),
           const SizedBox(height: 20),
 
-          // Section: شارك كونفرم (Tasteful Invite Strip)
-          _buildShareKonfrmCard(),
-          const SizedBox(height: 24),
-
-          // 6. Sign Out Action Button
+          // 5. Sign Out Action Button
           _buildLogoutButton(),
           const SizedBox(height: 16),
         ]),
@@ -926,24 +972,12 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
   }
 
   // ===========================================================================
-  // Flagship Identity Hero ("Portrait First" / Personal Passport)
+  // Flagship Identity Hero ("Portrait First" / Unboxed Personal Passport)
   // ===========================================================================
 
   Widget _buildFlagshipIdentityHero(CustomerProfileData profile) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x06000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -997,6 +1031,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 ),
 
                 // Overlapping Camera / Edit Affordance (Lower Edge)
+                // Founder Directive: BLACK icon inside WHITE circular surface, subtle border, 48dp target.
                 Positioned(
                   bottom: -2,
                   left: -2,
@@ -1010,15 +1045,15 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                       height: 48,
                       alignment: Alignment.center,
                       child: Container(
-                        width: 34,
-                        height: 34,
+                        width: 36,
+                        height: 36,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF000000),
+                          color: Colors.white,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2.0),
+                          border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
                           boxShadow: const [
                             BoxShadow(
-                              color: Color(0x24000000),
+                              color: Color(0x1A000000),
                               blurRadius: 6,
                               offset: Offset(0, 2),
                             ),
@@ -1026,8 +1061,8 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                         ),
                         child: const Icon(
                           Icons.camera_alt_outlined,
-                          size: 17,
-                          color: Colors.white,
+                          size: 18,
+                          color: Color(0xFF111827),
                         ),
                       ),
                     ),
@@ -1056,7 +1091,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
             Directionality(
               textDirection: ui.TextDirection.ltr,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF3F4F6),
                   borderRadius: BorderRadius.circular(6),
@@ -1134,20 +1169,8 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
   // ===========================================================================
 
   Widget _buildCompactIdentityHero(CustomerProfileData profile) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x06000000),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -1155,57 +1178,75 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
-                width: 76,
-                height: 76,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2.0),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x0F000000),
-                      blurRadius: 8,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: profile.hasPortrait
-                      ? Image.memory(
-                          profile.portraitBytes!,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          color: const Color(0xFF111827),
-                          child: Center(
-                            child: Text(
-                              profile.initials,
-                              style: const TextStyle(
-                                fontFamily: KonfrmTypography.fontFamily,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
+              GestureDetector(
+                onTap: _showPhotoActionSheet,
+                child: Container(
+                  width: 76,
+                  height: 76,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2.5),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x0F000000),
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: profile.hasPortrait
+                        ? Image.memory(
+                            profile.portraitBytes!,
+                            fit: BoxFit.cover,
+                          )
+                        : Container(
+                            color: const Color(0xFF111827),
+                            child: Center(
+                              child: Text(
+                                profile.initials,
+                                style: const TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                  ),
                 ),
               ),
               Positioned(
-                bottom: -2,
-                left: -2,
-                child: Container(
-                  width: 26,
-                  height: 26,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 1.5),
-                  ),
-                  child: const Icon(
-                    Icons.camera_alt_outlined,
-                    size: 13,
-                    color: Colors.white,
+                bottom: -4,
+                left: -4,
+                child: GestureDetector(
+                  onTap: _showPhotoActionSheet,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x14000000),
+                            blurRadius: 4,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.camera_alt_outlined,
+                        size: 16,
+                        color: Color(0xFF111827),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -1252,9 +1293,9 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
               _controller.showNotice('معاينة: الانتقال إلى تعديل الملف الشخصي (شاشة 18)');
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F6),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: const Color(0xFFE5E7EB)),
               ),
@@ -1270,151 +1311,6 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // Fast Quick Actions Strip (3 Columns)
-  // ===========================================================================
-
-  Widget _buildQuickActionsStrip() {
-    return Row(
-      children: [
-        // 1. My Bookings Shortcut
-        Expanded(
-          child: _buildQuickActionItem(
-            key: const Key('quick_action_bookings'),
-            icon: Icons.calendar_today_outlined,
-            title: 'حجوزاتي',
-            countLabel: '${_controller.activeBookingsCount} حجز نشط',
-            onTap: () => _controller.showNotice('معاينة: الانتقال إلى حجوزاتي (شاشة 12)'),
-          ),
-        ),
-        const SizedBox(width: 10),
-
-        // 2. Favorites Shortcut
-        Expanded(
-          child: _buildQuickActionItem(
-            key: const Key('quick_action_favorites'),
-            icon: Icons.favorite_border,
-            title: 'المفضلة',
-            countLabel: '${_controller.savedFavoritesCount} وحدات',
-            onTap: () => _controller.showNotice('معاينة: الانتقال إلى المفضلة (شاشة 15)'),
-          ),
-        ),
-        const SizedBox(width: 10),
-
-        // 3. Notifications Shortcut
-        Expanded(
-          child: _buildQuickActionItem(
-            key: const Key('quick_action_notifications'),
-            icon: Icons.notifications_none_outlined,
-            title: 'الإشعارات',
-            countLabel: _controller.unreadNotificationCount > 0
-                ? '${_controller.unreadNotificationCount} جديد'
-                : 'لا جديد',
-            badgeCount: _controller.unreadNotificationCount,
-            onTap: () => _controller.showNotice('معاينة: الانتقال إلى الإشعارات (شاشة 16)'),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildQuickActionItem({
-    Key? key,
-    required IconData icon,
-    required String title,
-    required String countLabel,
-    int badgeCount = 0,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      key: key,
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x04000000),
-              blurRadius: 4,
-              offset: Offset(0, 1),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF9FAFB),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      icon,
-                      size: 20,
-                      color: const Color(0xFF111827),
-                    ),
-                  ),
-                ),
-                if (badgeCount > 0)
-                  Positioned(
-                    top: -2,
-                    left: -2,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '$badgeCount',
-                        style: const TextStyle(
-                          fontFamily: KonfrmTypography.fontFamily,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF111827),
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              countLabel,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF6B7280),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -1618,97 +1514,6 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // Share KONFRM Card (Tasteful Official Invite)
-  // ===========================================================================
-
-  Widget _buildShareKonfrmCard() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x04000000),
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.share_outlined,
-                size: 22,
-                color: Color(0xFF111827),
-              ),
-            ),
-          ),
-          const SizedBox(width: 14),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'شارك كونفرم مع معارفك',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  'ادعُ أصدقاءك لتجربة استئجار موثوقة ومباشرة',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF6B7280),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: () {
-              _controller.showNotice('معاينة: فتح قائمة مشاركة الرابط الرسمي لتطبيق كونفرم');
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF9FAFB),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFE5E7EB)),
-              ),
-              child: const Text(
-                'مشاركة',
-                style: TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF111827),
                 ),
               ),
             ),
@@ -2024,7 +1829,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                     children: [
                       const Expanded(
                         child: Text(
-                          'رمز التعريف الشخصي (QR)',
+                          'بطاقة الحساب الشخصية (QR)',
                           style: TextStyle(
                             fontFamily: KonfrmTypography.fontFamily,
                             fontSize: 18,
@@ -2231,7 +2036,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
 
                           // Privacy & Security Disclosure
                           const Text(
-                            'رمز تعريفي آمن مشفر — لا يشارك أرقام الهواتف أو وسائل الدفع',
+                            'رمز تعريفي رقمي لمشاركة معرّف الحساب المعتمد — لا يشارك أرقام الهواتف أو وسائل الدفع',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontFamily: KonfrmTypography.fontFamily,
@@ -2507,27 +2312,27 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: const Color(0x33FFFFFF),
+                            color: const Color(0x22FFFFFF),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Row(
                             children: [
                               Icon(
-                                Icons.hourglass_top_outlined,
+                                Icons.check_circle_outline,
                                 size: 14,
                                 color: Colors.white70,
                               ),
                               SizedBox(width: 6),
                               Expanded(
                                 child: Text(
-                                  'مبالغ قيد التسوية: 1,200 ج.م (طلب استرداد معتمد)',
+                                  'لا توجد عمليات سابقة أو مبالغ معلقة',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontFamily: KonfrmTypography.fontFamily,
                                     fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white70,
                                   ),
                                 ),
                               ),
@@ -2722,22 +2527,16 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
 
   Widget _buildLoadingSkeleton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       child: Column(
         children: [
-          // Skeleton Hero
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
+          // Unboxed Skeleton Hero
+          Center(
             child: Column(
               children: [
                 Container(
-                  width: 96,
-                  height: 96,
+                  width: 104,
+                  height: 104,
                   decoration: const BoxDecoration(
                     color: Color(0xFFE5E7EB),
                     shape: BoxShape.circle,
@@ -2746,7 +2545,7 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                 const SizedBox(height: 14),
                 Container(
                   width: 140,
-                  height: 20,
+                  height: 22,
                   decoration: BoxDecoration(
                     color: const Color(0xFFE5E7EB),
                     borderRadius: BorderRadius.circular(6),
@@ -2761,26 +2560,38 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
+                const SizedBox(height: 12),
+                Container(
+                  width: 100,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E7EB),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
-          // Skeleton Shortcuts
-          Row(
-            children: List.generate(
-              3,
-              (index) => Expanded(
-                child: Container(
-                  margin: EdgeInsets.only(left: index < 2 ? 10 : 0),
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
-                  ),
-                ),
-              ),
+          // Skeleton Stay Card
+          Container(
+            height: 90,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+          ),
+          const SizedBox(height: 18),
+
+          // Skeleton Grouped Card Rows
+          Container(
+            height: 160,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
             ),
           ),
         ],
@@ -3019,52 +2830,6 @@ class Screen17PreviewViewState extends State<Screen17PreviewView> {
     );
   }
 
-  // ===========================================================================
-  // Bottom Navigation Bar (Canonical Customer Shared Navigation)
-  // ===========================================================================
-
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: Color(0xFFE5E7EB),
-            width: 1.0,
-          ),
-        ),
-      ),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: 64,
-          child: CustomerBottomNavigation(
-            selectedIndex: 3, // Account tab active!
-            onSelected: (index) {
-              final customerDestinations = ['استكشف', 'المفضلة', 'حجوزاتي', 'الحساب'];
-              if (index == 3) {
-                applyScenario(Screen17Scenario.authenticatedFlagshipTop);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'معاينة: الانتقال إلى الوجهة (${customerDestinations[index]})',
-                      style: const TextStyle(
-                        fontFamily: KonfrmTypography.fontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    duration: const Duration(milliseconds: 700),
-                  ),
-                );
-              }
-            },
-          ),
-        ),
-      ),
-    );
-  }
 
   // ===========================================================================
   // Notice Snackbar Overlay

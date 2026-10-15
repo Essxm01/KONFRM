@@ -1,46 +1,47 @@
-# Active Task — CUSTOMER_SCREEN17_V2_PREMIUM
+# Active Task — CUSTOMER_SCREEN17_SIMPLIFIED_PREMIUM
 
-TASK_ID: CUSTOMER_SCREEN17_V2_PREMIUM
+TASK_ID: CUSTOMER_SCREEN17_SIMPLIFIED_PREMIUM
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN17_V2_PREMIUM_AWAITING_BRIDGE_AND_FOUNDER_VISUAL_REVIEW
+STATUS: SCREEN17_SIMPLIFIED_PREMIUM_AWAITING_BRIDGE_FOUNDER_REVIEW
 BRANCH: evidence/customer-screen17-design-review
 GOVERNING_ISSUES:
-  - Issue #170: Customer Screen 17 Account Home — Founder Visual Reset & Direction
+  - Issue #170: Customer Screen 17 Account Home — Founder UX Recomposition & Directives
+  - Issue #174: Notification Bell in Explore Header vs Navigation Contract Reconciliation
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
   - Issue #172: Identity, Avatar, QR & Connected Profiles
   - Issue #173: Proposed Customer Wallet & Financial Boundaries
   - Issue #171: Deferred Technical/QA Backlog for Screen 17
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver the isolated native Flutter visual design for Customer Screen 17 V2 (Personal Passport / «مساحتي في كونفرم») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. Flagship Identity Hero: 104dp circular portrait hero with genuine studio portrait fixture (Ahmed), overlapping true-black camera affordance badge, bold Cairo display name, handle, edit profile CTA.
-  2. Strict Founder Privacy Invariant: Phone number and email are EXPLICITLY NOT exposed in the hero fold.
-  3. Header & Navigation: Clean root title "حسابي" on physical right, discrete Personal QR button on physical left (44x44dp touch target). Zero developer controls in customer captures.
-  4. Quick Shortcuts & Upcoming Stay: 3-column shortcuts (حجوزاتي, المفضلة, الإشعارات with badge), contextual upcoming stay card with status badge and left-pointing chevron.
-  5. Grouped Navigation: Grouped sections with calm neutral icons, left-pointing chevrons (`<`), share strip, and reachable logout action with confirmation modal.
-  6. Personal QR Experience: High-contrast modal bottom sheet with dual tabs (`رمزي` / `مسح رمز`), procedural QR code painter, and privacy assurance notice.
-  7. Wallet Concept Separation: Proposed wallet concept modal with explicit governance disclosure stating regulatory study status under Issue #173; zero live financial transactions.
-  8. Canonical Bottom Navigation: Shared 4-tab `CustomerBottomNavigation` with Account (Tab index 3) active.
-  9. RTL & Typography: Full Arabic Cairo typography, strict monochrome neutral palette (#000000, #FFFFFF, #F9FAFB, #F3F4F6, #E5E7EB), zero generic blue tints.
-  10. Accessibility & Robustness: 200% text scale validated with zero RenderFlex overflows.
-  11. Evidence & Hygiene: Deliver 15 genuine Samsung A56 screenshots, Base64 companions, mirrored review runner, source-linked tests, and reports in review-evidence/customer-screen17/v2-premium/.
+SCOPE: Deliver the Founder-directed UX Recomposition for Customer Screen 17 (Account Home / Simplified Premium — «حسابي — مساحتي في كونفرم») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. Unboxed Personal Home: Transition from boxed dashboard to soft, minimal, editorial Personal Home. Outer rectangular card container removed; identity breathes naturally on canvas.
+  2. Camera Badge Redesign: Black camera icon (`#111827`) centered inside a white circular surface (`#FFFFFF` with `#E5E7EB` border) with full 48dp touch target (eliminating white-on-black treatment).
+  3. Deletion of 3 Shortcut Tiles: Completely removed shortcut tiles for Bookings, Favorites, and Notifications per Founder UX decision and Issue #174.
+  4. Issue #174 Contract Reconciliation: Formalized architectural proposal regarding notification bell in Explore header vs Account child without touching Explore or Screen 16 code.
+  5. Restrained Upcoming Stay Summary: Single compact summary card featuring live green dot (`#16A34A`), status `حجز مؤكد`, stay details, and physical left chevron (`<`).
+  6. Anti-Card-Soup Calm Navigation: Grouped into calm white cards with 1px internal dividers (الحساب والملف الشخصي, المالية والمدفوعات, المساعدة والخدمات) with physical left chevrons (`<`).
+  7. Shared Bottom Navigation: Shared `CustomerBottomNavigation` with Account (Index 3) active; styled via `ThemeData.navigationBarTheme` with `#F3F4F6` indicator pill, `#000000` selected items, matching Screens 15/16.
+  8. Truthful QR & Wallet Concepts: Digital identifier card for QR without exaggerated encryption claims or guest fallback; Wallet modal with `0.00 ج.م` balance, zero fake refund claims, and legal governance disclaimer under Issue #173.
+  9. Accessibility & Robustness: 200% font scale validated with zero RenderFlex overflow.
+  10. Evidence & Delivery: 15 physical Samsung A56 screenshots, Base64 companions, mirrored review runner, source-linked tests, and reports published in `review-evidence/customer-screen17/v3-simplified-premium/`.
 
 ## Boundaries & Invariants
 - Zero changes to production code (`customer_app/lib/` untouched, backend untouched, database untouched).
 - All non-visual technical issues (backend persistence, session revocation, real identity RPCs, push integration) deferred under Issue #171.
-- All historical evidence preserved untouched per Issue #155 (Screen 17 V1 preserved in `review-evidence/customer-screen17/v1/`).
+- All historical evidence preserved untouched per Issue #155 (Screen 17 V1 preserved in `review-evidence/customer-screen17/v1/`, V2 preserved in `review-evidence/customer-screen17/v2-premium/`).
 - Physical device serial redacted in all logs and markdown (`[REDACTED_A56_ID]`).
 
 ## Verification & Quality Gates
 - [x] Screen 17 isolated Flutter preview runner updated in `tool/screen17_preview_runner.dart`.
 - [x] Source-linked tests updated in `test/screen17_source_linked_tests.dart` (21/21 passed).
-- [x] Canonical `CustomerBottomNavigation` retained with Account active (Tab 3).
-- [x] Row navigation chevrons point physically LEFT (`<`) for forward progression in RTL Arabic.
-- [x] Zero generic blue palette; strictly monochrome neutrals.
-- [x] Authenticated flagship, no photo fallback, incomplete profile, guest, loading, network error, 401, QR modal, wallet modal, logout dialog, compact hero, and 200% text scale scenarios verified.
 - [x] Static analysis passes with 0 issues (`flutter analyze`).
-- [x] Representative genuine Samsung Galaxy A56 5G captures (15 scenarios) and Base64 companions generated.
-- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen17/v2-premium/`.
+- [x] Canonical `CustomerBottomNavigation` retained with Account active (Index 3) matching Screens 15/16.
+- [x] Unboxed identity hero, black-on-white 48dp camera badge, and zero phone number in hero fold verified.
+- [x] 3 shortcut tiles removed; upcoming stay restrained card verified.
+- [x] Row navigation chevrons point physically LEFT (`<`) for forward progression in RTL Arabic.
+- [x] Truthful QR modal and zero-claim wallet modal verified.
+- [x] 15 genuine Samsung Galaxy A56 5G captures and Base64 companions generated.
+- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen17/v3-simplified-premium/`.
 
 ---
 

@@ -507,7 +507,7 @@ class DirectionalPriceText extends StatelessWidget {
 }
 
 // =============================================================================
-// Architectural Custom Vector Thumbnail (Offline Safe & High Polish)
+// Canonical Neutral Property Fallback Thumbnail (Screen 03/06 Consistent)
 // =============================================================================
 
 class ArchitecturalPropertyThumbnail extends StatelessWidget {
@@ -529,14 +529,19 @@ class ArchitecturalPropertyThumbnail extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: isAvailable ? const Color(0xFFF1F5F9) : const Color(0xFFE2E8F0),
+        border: Border.all(
+          color: isAvailable ? const Color(0xFFE2E8F0) : const Color(0xFFCBD5E1),
+          width: 1.0,
+        ),
       ),
       child: Stack(
         fit: StackFit.expand,
         children: [
-          CustomPaint(
-            painter: _ArchitecturalIllustrationPainter(
-              accentColor: isAvailable ? themeColor : const Color(0xFF94A3B8),
-              isAvailable: isAvailable,
+          Center(
+            child: Icon(
+              Icons.home_work_outlined,
+              size: 44,
+              color: isAvailable ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
             ),
           ),
           PositionedDirectional(
@@ -545,7 +550,7 @@ class ArchitecturalPropertyThumbnail extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.65),
+                color: Colors.black.withValues(alpha: 0.70),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
@@ -563,115 +568,6 @@ class ArchitecturalPropertyThumbnail extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ArchitecturalIllustrationPainter extends CustomPainter {
-  _ArchitecturalIllustrationPainter({
-    required this.accentColor,
-    required this.isAvailable,
-  });
-
-  final Color accentColor;
-  final bool isAvailable;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Horizon & sky gradient
-    final skyPaint = Paint()
-      ..shader = ui.Gradient.linear(
-        Offset.zero,
-        Offset(0, size.height * 0.7),
-        [
-          accentColor.withValues(alpha: 0.20),
-          accentColor.withValues(alpha: 0.05),
-        ],
-      );
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), skyPaint);
-
-    // Water or garden base
-    final basePaint = Paint()
-      ..shader = ui.Gradient.linear(
-        Offset(0, size.height * 0.65),
-        Offset(0, size.height),
-        [
-          accentColor.withValues(alpha: 0.35),
-          accentColor.withValues(alpha: 0.55),
-        ],
-      );
-    canvas.drawRect(
-      Rect.fromLTWH(0, size.height * 0.68, size.width, size.height * 0.32),
-      basePaint,
-    );
-
-    // Architectural building silhouette
-    final bldgPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.90)
-      ..style = PaintingStyle.fill;
-
-    final wallPaint = Paint()
-      ..color = const Color(0xFFE2E8F0)
-      ..style = PaintingStyle.fill;
-
-    final w = size.width;
-    final h = size.height;
-
-    // Main modern villa block
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(w * 0.22, h * 0.28, w * 0.56, h * 0.44),
-        const Radius.circular(4),
-      ),
-      bldgPaint,
-    );
-
-    // Upper terrace / cantilever
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(w * 0.16, h * 0.36, w * 0.44, h * 0.24),
-        const Radius.circular(3),
-      ),
-      wallPaint,
-    );
-
-    // Pergola / architectural louvers
-    final pergolaPaint = Paint()
-      ..color = accentColor.withValues(alpha: 0.6)
-      ..strokeWidth = 2.0;
-    for (double x = w * 0.20; x <= w * 0.54; x += 12) {
-      canvas.drawLine(Offset(x, h * 0.28), Offset(x + 8, h * 0.24), pergolaPaint);
-    }
-
-    // Glass windows with soft tint
-    final glassPaint = Paint()
-      ..color = accentColor.withValues(alpha: 0.25)
-      ..style = PaintingStyle.fill;
-    canvas.drawRect(
-      Rect.fromLTWH(w * 0.38, h * 0.45, w * 0.16, h * 0.20),
-      glassPaint,
-    );
-    canvas.drawRect(
-      Rect.fromLTWH(w * 0.58, h * 0.36, w * 0.12, h * 0.14),
-      glassPaint,
-    );
-
-    // Swimming pool reflection line
-    final reflectionPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.35)
-      ..strokeWidth = 1.5;
-    canvas.drawLine(
-      Offset(w * 0.15, h * 0.80),
-      Offset(w * 0.85, h * 0.80),
-      reflectionPaint,
-    );
-    canvas.drawLine(
-      Offset(w * 0.25, h * 0.86),
-      Offset(w * 0.75, h * 0.86),
-      reflectionPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // =============================================================================
@@ -1276,10 +1172,10 @@ class Screen15HarnessPageState extends State<Screen15HarnessPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Price
+                        // Price / Status explanation
                         if (isUnavailable)
                           Text(
-                            'أوقف المالك النشر مؤقتاً',
+                            'غير متاحة للحجز حالياً',
                             style: KonfrmTypography.supporting.copyWith(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -1892,7 +1788,7 @@ class Screen15HarnessPageState extends State<Screen15HarnessPage> {
 
   Widget _buildCustomerBottomNav() {
     return Container(
-      height: 62,
+      constraints: const BoxConstraints(minHeight: 62),
       decoration: const BoxDecoration(
         color: Color(0xFFFFFFFF),
         border: Border(
@@ -1902,13 +1798,20 @@ class Screen15HarnessPageState extends State<Screen15HarnessPage> {
           ),
         ),
       ),
-      child: Row(
-        children: [
-          _buildNavItem(0, Icons.explore_outlined, Icons.explore, 'استكشف'),
-          _buildNavItem(1, Icons.favorite_border, Icons.favorite, 'المفضلة'),
-          _buildNavItem(2, Icons.confirmation_number_outlined, Icons.confirmation_number, 'حجوزاتي'),
-          _buildNavItem(3, Icons.person_outline, Icons.person, 'الحساب'),
-        ],
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildNavItem(0, Icons.explore_outlined, Icons.explore, 'استكشف'),
+              _buildNavItem(1, Icons.favorite_border, Icons.favorite, 'المفضلة'),
+              _buildNavItem(2, Icons.confirmation_number_outlined, Icons.confirmation_number, 'حجوزاتي'),
+              _buildNavItem(3, Icons.person_outline, Icons.person, 'الحساب'),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1944,6 +1847,7 @@ class Screen15HarnessPageState extends State<Screen15HarnessPage> {
             }
           },
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
@@ -1954,9 +1858,13 @@ class Screen15HarnessPageState extends State<Screen15HarnessPage> {
               const SizedBox(height: 3),
               Text(
                 label,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.visible,
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 11,
+                  height: 1.2,
                   fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
                   color: color,
                 ),

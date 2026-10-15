@@ -235,7 +235,7 @@ void main() {
       await tester.scrollUntilVisible(find.text('غير متوفرة حالياً'), 250);
 
       expect(find.text('غير متوفرة حالياً'), findsOneWidget);
-      expect(find.text('أوقف المالك النشر مؤقتاً'), findsOneWidget);
+      expect(find.text('غير متاحة للحجز حالياً'), findsOneWidget);
       expect(find.text('إزالة'), findsOneWidget);
     });
 

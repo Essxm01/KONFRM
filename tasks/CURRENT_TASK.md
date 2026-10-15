@@ -1,40 +1,35 @@
-# Active Task — CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2
+# Active Task — CUSTOMER_SCREEN15_V2_FOCUSED_VISUAL_CORRECTION
 
-TASK_ID: CUSTOMER_SCREEN_07_BOOKING_REVIEW_V2
+TASK_ID: CUSTOMER_SCREEN15_V2_FOCUSED_VISUAL_CORRECTION
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: READY_FOR_BRIDGE_REVIEW
-PR: #118 (DRAFT)
-EXECUTION_STARTED: YES
-BASE_MAIN_SHA: 3fef468b5dcb2fc08da2ef8ab12bd51707c8b806
-BRANCH: feat/customer-screen07-booking-review-v2
-SCOPE: Implement the Founder-approved Screen 07 Booking Request Review Concept A V2 in native Customer Flutter. Full-screen, Arabic-first RTL review screen, RTL back button to Screen 06, compact property summary, stay details with Arabic pluralization, price breakdown with prominent total and directionality-isolated currency formatting (13,500 ج.م), financial disclosure, sticky black CTA, clear confirmation disclosure, full UI state machine (REVIEW_READY, REVALIDATING, PRICE_CHANGED, DATE_CONFLICT, NETWORK_ERROR, AUTH_REQUIRED, SUBMITTING, REQUEST_SENT). Connect Screen 06 _onReviewBooking to Screen 07 when context is valid. Truthful unauthenticated handling without fake auth.
+STATUS: SCREEN15_V2_AWAITING_FOUNDER_VISUAL_REVIEW
+BRANCH: evidence/customer-screen15-design-review
+GOVERNING_ISSUES:
+  - Issue #165: Customer Screen 15 Canonical Contract & V2 Corrective Mandate
+  - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
+  - Issue #167: Deferred Technical/Architecture Scope Tracking
+  - Issue #155: Historical Evidence Directory Immutability & Preservation
+  - Issue #145: Device Serial Number Redaction Protocol
+SCOPE: Deliver the additive V2 focused visual corrections for Customer Screen 15 (Favorites / المفضلة) on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. Replace geometric vector illustrations in ArchitecturalPropertyThumbnail with canonical Screen 03/06 calm, honest neutral fallback placeholder (Icons.home_work_outlined).
+  2. Implement adaptive bottom navigation layout without label clipping under 200% accessibility scaling.
+  3. Replace unsupported unavailable property claim with truthful neutral wording ("غير متاحة للحجز حالياً").
 
 ## Boundaries & Invariants
-- Zero backend business logic, database migrations, Supabase schema, Cloudflare Workers, or API contract mutations.
-- Zero business, booking, availability, pricing, commission, or financial rule changes.
-- Server-authoritative quote only (POST /api/v1/customer/bookings/calculate); no local price math or fake availability.
-- Protected request contract: POST /api/v1/customer/bookings with propertyId, checkIn, checkOut, guests, reviewedQuoteFingerprint, requestId.
-- Number-first currency visual format: '13,500 ج.م' guaranteed under all RTL environments.
-- Guest review permitted; authentication intercepted only on protected submission attempt.
-- Truthful auth gate: if native Auth is unavailable, report BLOCKED_BY_NATIVE_AUTH without inventing fake sessions or bypassing server auth.
-- No root Bottom Navigation on Screen 07 (focused transactional review).
-- Stay length constraints: 2-30 nights strictly enforced.
+- Zero changes to production code (`customer_app/lib/` untouched, backend untouched, database untouched).
+- All non-visual technical issues remain deferred under GitHub Issue #167.
+- Baseline V1 evidence preserved untouched in `review-evidence/customer-screen15/`.
+- Additive V2 evidence delivered in `review-evidence/customer-screen15/v2/`.
+- Physical device serial redacted in all logs and markdown (`[REDACTED_A56_ID]`).
 
 ## Verification & Quality Gates
-- [x] Directionality-isolated currency rendering (`KonfrmPriceText`) guarantees `13,500 ج.م` number-first across all RTL layouts.
-- [x] Screen 06 to Screen 07 wiring preserves full booking review context and returns cleanly on `تعديل`.
-- [x] Complete 8-state UI machine implemented and tested (`reviewReady`, `revalidating`, `priceChanged`, `dateConflict`, `networkError`, `authRequired`, `submitting`, `requestSent`).
-- [x] Strict state machine submission guard: zero protected POST requests dispatched from any non-`reviewReady` state (`priceChanged`, `dateConflict`, `networkError`, `authRequired`, `revalidating`, `submitting`, `requestSent`).
-- [x] Sequential separation of price acceptance (`قبول السعر الجديد ومتابعة المراجعة`) and booking submission (`إرسال طلب الحجز للمالك`).
-- [x] Revalidation lifecycle monotonic epoch counter (`_revalidationEpoch`) protects against out-of-order delayed responses.
-- [x] Differentiated retry: quote revalidation failure retries quote calculation; submission failure retries submission preserving exact `requestId` and fingerprint.
-- [x] Truthful auth gate: zero unsupported claims of local persistence; strictly reports `BLOCKED_BY_NATIVE_AUTH`.
-- [x] Server response status validation: non-empty status strictly matching `PENDING_OWNER_APPROVAL` and expected `propertyId`.
-- [x] Visual fidelity: removed intro header `راجع طلبك قبل الإرسال`, removed misleading single night row, sticky CTA `#000000` 54px with 6px radius.
-- [x] Multi-viewport layout (360dp, 390dp, 430dp) and 200% text scaling verified with 0 layout overflows.
-- [x] Physical Samsung Galaxy A56 (`SM-A566B`, Android 16) verified with 6 screenshot captures across all functional states.
-- [x] Full customer app test suite passes: 124/124 PASS.
-- [x] Static analysis passes: 0 issues in `customer_app` and `konfrm_design_system`.
+- [x] Canonical neutral property thumbnail placeholder implemented (zero blue/teal vector paintings).
+- [x] Bottom navigation bar adaptive at 200% text scale (all 4 labels fully visible, unclipped, 0 overflow).
+- [x] Truthful neutral copy applied for unavailable accommodations ("غير متاحة للحجز حالياً").
+- [x] 13/13 source-linked unit and widget tests pass (`flutter test test/screen15_source_linked_tests.dart`).
+- [x] Static analysis passes with 0 issues (`flutter analyze tool/screen15_preview_runner.dart test/screen15_source_linked_tests.dart`).
+- [x] 6 affected visual states captured on physical Samsung Galaxy A56 5G with PNG and Base64 companions.
+- [x] Complete cryptographic SHA-256 manifest and delivery report documented in `review-evidence/customer-screen15/v2/`.
 
 ---
 

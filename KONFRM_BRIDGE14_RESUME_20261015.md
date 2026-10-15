@@ -1,5 +1,20 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## CURRENT SCREEN17 V2 PREMIUM — BRIDGE A56 REVIEW, VISUAL SIGNOFF ON HOLD (2026-10-15)
+
+Antigravity delivered native isolated Screen17 Personal Passport V2 at [SHA 117338307827d157a36e710f39629fde0d282760](https://github.com/Essxm01/KONFRM/commit/117338307827d157a36e710f39629fde0d282760), with 15 authentic Samsung A56 screenshot/B64 companion pairs; prior Screen17 V1 evidence byte-preserved. Bridge independently viewed ALL 15 screenshots plus inspected V1→V2 Git diff, Flutter tool runner/test sources. Antigravity reports 21/21 tests, but Bridge did NOT independently rerun Flutter.
+
+V2 direction has vastly improved (104dp genuine-looking TEST portrait, edge camera edit affordance, no adjacent phone, prominent name/fixture handle, QR header, useful account shortcuts, next stay, quiet nav groups). **NOT YET FOUNDER VISUALLY APPROVED**.
+
+STATUS: `SCREEN17_V2_PREMIUM_DIRECTION_PASS__FOCUSED_CONSISTENCY_AND_TRUTH_FIX_REQUIRED__FOUNDER_VISUAL_APPROVAL_PENDING`. Issue #170 contains EXACT independent Bridge review. Four bounded actual customer-visual defects discovered: (1) shared CustomerBottomNavigation appears LAVENDER and 200%-scale labels spill below bar into system gesture area, because preview uses no approved navigationBarTheme and forces height 64; restore exact approved Screens15/16 neutral design while retaining Account selected, (2) 200% shortcut labels splinter into syllables and trip title/date ellipsize unreadably; adaptive layout locally without disabling scaling, (3) fake custom QR matrix advertised as encrypted/scannable/shareable and shown even for guest; gate on authenticated profile and mark demo accurately, (4) wallet sheet displays authoritative-looking `0.00` balance and `1,200 ج.م طلب استرداد معتمد` with no approved financial policy, so do not show real-money claims in customer preview.
+
+**ONE TARGETED ADDITIVE VISUAL CORRECTION** in `review-evidence/customer-screen17/v2-premium-corrective/`, with only affected normal/200%/guest QR/wallet true A56 images, code and tests. Do not overwrite V2. Do not restart design, regress identity hero or re-open full backend and screen18 task. Cross-app OAuth/verified identifiers/real photo storage/crop/QR tokens #172, wallet policy #173, account backend #171 remain postponed nonblocking for DESIGN but pre-live mandatory.
+
+All previous statements of V2 READY_FOR_FOUNDER are DELIVERY statuses only, not Bridge visual acceptance. After one focused revision, Bridge rechecks affected screenshots, presents Founder visual result. No Screen18 start without explicit Founder decision.
+
+---
+
+
 ## LATEST FOUNDER PREMIUM ACCOUNT REDESIGN — SCREEN17 V1 REJECTED (2026-10-15)
 
 Screen17 V1 delivery commit 1f1b5a043d82ff2cb6c5d72ce2bd10ede78b83ef is explicitly NOT Founder visual-approved. Founder rejects old Web-like account layout, initials-only avatar and prominent adjacent phone. The name/avatar also wraps poorly at 200%. DO NOT DELETE historical V1 evidence under #155, but replace rejected visual concept in a new additive Screen17 v2-premium design.

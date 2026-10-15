@@ -1,4 +1,20 @@
 # KONFRM — LIVE BRIDGE & CROSS-ACCOUNT CONTINUITY
+
+## LATEST OVERRIDE — 2026-10-15 | BRIDGE14 DESIGN-FIRST / SCREEN15 FAVORITES NOW
+
+**READ [THE NEW BRIDGE14 FULL HANDOFF FIRST](https://github.com/Essxm01/KONFRM/blob/4ef27e8283d9c5976083cee3de746caff3b90314/KONFRM_BRIDGE14_RESUME_20261015.md)**. This addendum SUPERCEDES older stale “Screen14 V3 not executed”, “Screen14 approval pending”, and “No Screen15” historical statuses below. The old text is preserved as chronology, NOT current work authorization.
+
+**Founder directive:** Stop endless visual screen review loops. The current mission is quality native Flutter UI/UX design; only fix defects materially impacting visible design, truthful customer copy, real tappability or faithful preview. Non-visual backend, payment/Auth/DB, incomplete release/security integration, regression/testing/evidence details are **recorded accurately in GitHub deferred issues and do not block designing the next screen**. **Do not** close release gates or hide actual financial/security risks; those are mandatory pre-integration/pre-live requirements. Full policy [#166](https://github.com/Essxm01/KONFRM/issues/166).
+
+**SCREEN14 VISUAL FREEZE:** Founder has APPROVED V3-Final visual design ONLY: [frozen commit b5963d849023edfd0318b5d47da41595f131617d](https://github.com/Essxm01/KONFRM/commit/b5963d849023edfd0318b5d47da41595f131617d). All open non-visual issues are parked in [#163](https://github.com/Essxm01/KONFRM/issues/163); DO NOT request another Screen14 V4 round or allow production payment integration by implication.
+
+**SCREEN15 NOW:** [#165](https://github.com/Essxm01/KONFRM/issues/165) is **Favorites / المفضلة**, as established by current 26-screen Customer inventory + Screen15 contract (historical SOLA “Screen15 Confirmed Booking” numbering is obsolete). Founder HAS SENT Antigravity the Screen15 isolated native visual design request. Antigravity has NOT YET submitted its results for Bridge review in the recorded conversation. Existing React Web Favorites implementation is not evidence that native Flutter UI has already been designed/approved. Screen16 is Notification Center later. No extra Antigravity prompt needed now; receive results then inspect actual customer-visible A56 images and make a concise visual decision, deferring unrelated integration tasks.
+
+**Permanent protection:** [#155](https://github.com/Essxm01/KONFRM/issues/155) retains ALL V1/V2/V3/V3-corrective/V3-final image, source, and test evidence; no delete/overwrite. No production/Backend/DB/financial/business rule merge/deploy authority. Status:
+`BRIDGE14_DESIGN_FIRST__SCREEN14_VISUALLY_APPROVED_ONLY__SCREEN15_FAVORITES_DISPATCHED__RELEASE_QA_PARKED`.
+
+---
+
 **Recovery edition:** 2026-10-13 (Egypt +03)  
 **Applies to:** ANY future ChatGPT account, new project, new conversation, Bridge successor, Codex or Antigravity collaborator. **NOT** limited to Bridge 11 → 12.  
 **Classification:** Public-safe continuity / operating state; **NOT** code authority, final founder design acceptance, merge/deploy authorization, live deployment attestation, or a substitute for the project's canonical contracts.

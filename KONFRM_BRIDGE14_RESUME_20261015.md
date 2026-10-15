@@ -1,5 +1,21 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## LATEST SCREEN16 V2 — BRIDGE VISUAL PASS (2026-10-15)
+
+**This newest state SUPERSEDES earlier Screen16 V1 pending three targeted visual corrections and any instruction to request them again.** Antigravity delivered additive isolated V2 evidence at [full commit c2d966623d764ea301e0bf2246e775bdc5ee480a](https://github.com/Essxm01/KONFRM/commit/c2d966623d764ea301e0bf2246e775bdc5ee480a), A56 14 genuine screenshots + companion files under `review-evidence/customer-screen16/v2/`. Bridge independently opened ALL 14 actual photos, compared normal and 200%-text V1 vs V2, inspected original Flutter source and test definitions, and confirmed Git diff did not touch V1 history or production lib/backend/DB.
+
+- Header right-side Arabic back chevron physically RIGHT; deposit CTA arrow physically LEFT. Normal/large text A56 screenshots confirm.
+- Unread feed cards now light-gray 1dp borders, small black dot and semantic label + moderate title weight; navigation still shared `CustomerBottomNavigation` with Account selected index 3.
+- Isolated preview default shows honest empty state, 0 unread. Synthetic loaded feed is available through segregated developer QA scenarios only; owner-response/deposit content is NOT authoritative real backend data; canceled/request/payment-time-limit/device-log-in claims were scrubbed. Scenario08 & Scenario10 screenshots are now distinct.
+- No visually significant cropping of headings/actions/bottom tabs at 200%; no new design revision required.
+- **AUTHORITATIVE BRIDGE REVIEW STATE:** `SCREEN16_V2_BRIDGE_VISUAL_PASS__FOUNDER_VISUAL_APPROVAL_PENDING__PRODUCTION_INTEGRATION_DEFERRED`. This is **not** founder approval; Founder decides to freeze/advance. Do not independently begin Screen17.
+- Antigravity reports 16/16 Flutter tests and clean analysis, but Bridge did not locally rerun; never equate green tests with live integrations.
+- [#168](https://github.com/Essxm01/KONFRM/issues/168) contains V2 Bridge review. [#169](https://github.com/Essxm01/KONFRM/issues/169) contains nonblocking design-phase, mandatory pre-live event/auth/read-sync/push/deep-link/privacy/release QA. [#155](https://github.com/Essxm01/KONFRM/issues/155) preserves V1/V2 evidence untouched. [#166](https://github.com/Essxm01/KONFRM/issues/166) design-first consistency policy.
+- **NEXT:** Present Founder with concise visual PASS summary and ask only whether to approve Screen16 visually and move to next canonical screen. NO new Antigravity correction prompt unless Founder explicitly flags a true visual inconsistency.
+
+---
+
+
 ## LATEST SCREEN16 V1 — INDEPENDENT VISUAL REVIEW (2026-10-15)
 
 - Founder visually approved Screen15 Favorites **consistency-corrected V2** frozen at [`5aabc3843ea3b86349b26c7f07f34edfbc787da8`](https://github.com/Essxm01/KONFRM/commit/5aabc3843ea3b86349b26c7f07f34edfbc787da8). Recorded at [#165](https://github.com/Essxm01/KONFRM/issues/165), pending only integration/release and historical evidence archive #167. Founder explicitly authorized starting Screen16.

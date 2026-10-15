@@ -1,5 +1,20 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## FOUNDER FLAGSHIP ACCOUNT / PROFILE DIRECTION — 2026-10-15
+
+**The Founder has substantially elevated Customer Account/Profile to a flagship premium UX priority**. Reject the old generic/blue web Account layout. They want a large beautiful personalized photo/name hero, editable identity, potential unique/unified @handle, optional private birthdate/derived age/gender, Google+Apple connected identities, secure secondary phone/email verification, paid payment history, an invite/referral flow and meaningful travel personalization, maintaining KONFRM Cairo RTL neutral design.
+
+**New source-of-truth for DESIGN discussion and Antigravity:** [Full comprehensive Founder premium UX research/design brief](https://github.com/Essxm01/KONFRM/blob/5e325744071cc6c79a46e2ff73a5fcc4f48da26d/KONFRM_CUSTOMER_ACCOUNT_PROFILE_PREMIUM_UX_RESEARCH_20261015.md), which includes sources from Airbnb/Uber/Apple/Android and a product feature contract reality check. [Screen17 task #170](https://github.com/Essxm01/KONFRM/issues/170) has been UPDATED with this premium direction; ongoing Antigravity work should be RECOVERED & ENRICHED, NOT restarted/destroyed. Separate [deferred product/integration issue #172](https://github.com/Essxm01/KONFRM/issues/172) protects future avatar upload, shared unique username, DOB/gender data/privacy, Google/Apple identity linking, verified email/phone challenge, real payment records and referral rewards. Nonvisual gates are deferred, NOT waived.
+
+**Canonical IA still applies:** Screen17 Account Home (hub with premium editable-profile entry, grouped actions, payment history teaser and share concept); Screen18 Profile/Edit Profile is the FULL editing and identity details screen; Screen19 Settings; Screen20 Payment History. Do NOT combine these into a new giant Screen17, do not start Screen18 production/Flutter execution until separately authorized. The main Account bottom tab remains shared `CustomerBottomNavigation`, Account index3, previously approved Screens12/15/16 as visual consistency source.
+
+**Current technical truth:** profile DTO has fullName/avatarUrl/verifiedIdentifiers phone+email; Web Screen18 only PATCHes fullName and explicitly avoids photo upload/adding email. Unified Owner/Customer account identity architecture remains an open product decision. Founder may approve these as future features but NOT production by merely requesting design concepts. Never display false confirmed OAuth status, fake payments/phone/email verification, real referral URLs, bonuses or age/gender data. Any photo-picker/account-link screens in preview must be distinctly labelled synthetic/PROPOSED in dev-only review.
+
+**NEXT:** When Antigravity reports Screen17 visual design, Bridge must evaluate emotional premium quality, personal usefulness, clean first fold, portrait/verified name/handle truth, strict cross-screen nav consistency, account privacy, recent payments truth and 200% accessibility. One focused correction only if material. Preserve all artifacts per #155. Final Founder visual acceptance pending. Do not reopen accepted Screen16 or drift into backend audits.
+
+---
+
+
 ## LATEST FOUNDER APPROVAL — SCREEN16 FROZEN; SCREEN17 NOW (2026-10-15)
 
 **Founder explicit decision:** «موافق وانتقل للخطوة القادمة». Customer Screen16 Notification Center V2 is now **FOUNDER VISUALLY APPROVED (design only)** at exact evidence commit [`c2d966623d764ea301e0bf2246e775bdc5ee480a`](https://github.com/Essxm01/KONFRM/commit/c2d966623d764ea301e0bf2246e775bdc5ee480a). [#168](https://github.com/Essxm01/KONFRM/issues/168) has recorded Founder approval. Previous statements of pending Founder approval or needing Screen16 corrections below are superseded. V1/V2 evidence preserved under #155; do NOT request V3 or reopen visual QA. [#169](https://github.com/Essxm01/KONFRM/issues/169) remains the nonblocking DESIGN-phase yet mandatory pre-production notification Backend/push/read-state/security/QA deferral.

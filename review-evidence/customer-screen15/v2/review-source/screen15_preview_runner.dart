@@ -581,10 +581,40 @@ class Screen15PreviewApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final previewTheme = konfrmLightTheme().copyWith(
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        indicatorColor: const Color(0xFFF3F4F6), // Neutral soft grey indicator pill
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: Color(0xFF000000));
+          }
+          return const IconThemeData(color: Color(0xFF6B7280));
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              fontFamily: KonfrmTypography.fontFamily,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF000000),
+            );
+          }
+          return const TextStyle(
+            fontFamily: KonfrmTypography.fontFamily,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF6B7280),
+          );
+        }),
+      ),
+    );
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'KONFRM Screen 15 Preview',
-      theme: konfrmLightTheme(),
+      theme: previewTheme,
       builder: (context, child) {
         return Directionality(
           textDirection: ui.TextDirection.rtl,
@@ -804,7 +834,27 @@ class Screen15HarnessPageState extends State<Screen15HarnessPage> {
               ],
             ),
           ),
-          bottomNavigationBar: _buildCustomerBottomNav(),
+          // Canonical Root Bottom Navigation (Index 1 = Favorites)
+          bottomNavigationBar: CustomerBottomNavigation(
+            selectedIndex: _bottomNavIndex,
+            onSelected: (index) {
+              setState(() {
+                _bottomNavIndex = index;
+              });
+              if (index == 1) {
+                applyScenario(Screen15Scenario.readyListTop);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'معاينة: الانتقال إلى الوجهة (${customerDestinations[index]})',
+                    ),
+                    duration: const Duration(milliseconds: 700),
+                  ),
+                );
+              }
+            },
+          ),
         ),
       ),
     );
@@ -1021,10 +1071,10 @@ class Screen15HarnessPageState extends State<Screen15HarnessPage> {
                     ),
                   ),
 
-                  // Favorite Heart Action Button (>= 48dp Touch Target, Physical Left / RTL Top-Start)
-                  PositionedDirectional(
+                  // Favorite Heart Action Button (>= 48dp Touch Target, Physical Left)
+                  Positioned(
                     top: 10,
-                    start: 10,
+                    left: 10,
                     child: Semantics(
                       button: true,
                       label: 'إزالة من المفضلة',
@@ -1066,11 +1116,11 @@ class Screen15HarnessPageState extends State<Screen15HarnessPage> {
                     ),
                   ),
 
-                  // Status Badge for Unavailable / Unlisted Property
+                  // Status Badge for Unavailable / Unlisted Property (Physical Right, opposite to heart)
                   if (isUnavailable)
-                    PositionedDirectional(
+                    Positioned(
                       top: 14,
-                      end: 12,
+                      right: 12,
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
@@ -1717,7 +1767,7 @@ class Screen15HarnessPageState extends State<Screen15HarnessPage> {
 
   Widget _buildFloatingUndoToast(FavoriteRemovalNotice notice) {
     return PositionedDirectional(
-      bottom: 72, // Clears the 60dp bottom nav + margin
+      bottom: 96, // Clears the 80dp canonical CustomerBottomNavigation + margin
       start: 16,
       end: 16,
       child: Material(
@@ -1783,106 +1833,12 @@ class Screen15HarnessPageState extends State<Screen15HarnessPage> {
   }
 
   // ===========================================================================
-  // Customer Bottom Navigation Bar (4 Destinations, Tab 1 Active)
-  // ===========================================================================
-
-  Widget _buildCustomerBottomNav() {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 62),
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFFFFF),
-        border: Border(
-          top: BorderSide(
-            color: Color(0xFFE5E7EB),
-            width: 1.0,
-          ),
-        ),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildNavItem(0, Icons.explore_outlined, Icons.explore, 'استكشف'),
-              _buildNavItem(1, Icons.favorite_border, Icons.favorite, 'المفضلة'),
-              _buildNavItem(2, Icons.confirmation_number_outlined, Icons.confirmation_number, 'حجوزاتي'),
-              _buildNavItem(3, Icons.person_outline, Icons.person, 'الحساب'),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(
-    int index,
-    IconData outlineIcon,
-    IconData filledIcon,
-    String label,
-  ) {
-    final isActive = _bottomNavIndex == index;
-    final color = isActive ? const Color(0xFF000000) : const Color(0xFF71717A);
-
-    return Expanded(
-      child: Semantics(
-        selected: isActive,
-        button: true,
-        label: label,
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              _bottomNavIndex = index;
-            });
-            if (index == 1) {
-              _applyScenario(Screen15Scenario.readyListTop);
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('التبويب المحدد: $label'),
-                  duration: const Duration(milliseconds: 600),
-                ),
-              );
-            }
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                isActive ? filledIcon : outlineIcon,
-                size: 23,
-                color: color,
-              ),
-              const SizedBox(height: 3),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.visible,
-                style: TextStyle(
-                  fontFamily: 'Cairo',
-                  fontSize: 11,
-                  height: 1.2,
-                  fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
-                  color: color,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ===========================================================================
   // QA Dev Tools Overlay
   // ===========================================================================
 
   Widget _buildQaDevOverlay() {
     return Positioned(
-      bottom: 64,
+      bottom: 84,
       left: 12,
       right: 12,
       child: Material(

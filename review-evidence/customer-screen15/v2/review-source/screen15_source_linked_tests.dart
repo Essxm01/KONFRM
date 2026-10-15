@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:konfrm_design_system/konfrm_design_system.dart';
 import '../tool/screen15_preview_runner.dart';
 
 void main() {
@@ -110,12 +111,9 @@ void main() {
       expect(find.text('حجوزاتي'), findsOneWidget);
       expect(find.text('الحساب'), findsOneWidget);
 
-      // Verify Tab 1 (المفضلة) is selected in bottom nav
-      final favNavFinder = find.ancestor(
-        of: find.text('المفضلة').last,
-        matching: find.byType(InkWell),
-      );
-      expect(favNavFinder, findsOneWidget);
+      // Verify canonical CustomerBottomNavigation is present with Tab 1 (المفضلة)
+      expect(find.byType(CustomerBottomNavigation), findsOneWidget);
+      expect(find.byKey(const Key('customer-destination-1')), findsOneWidget);
     });
 
     testWidgets('renders property cards with directionally isolated price text', (
@@ -143,6 +141,10 @@ void main() {
       // Find the first favorite button
       final heartIconFinder = find.byIcon(Icons.favorite).first;
       expect(heartIconFinder, findsOneWidget);
+
+      // Verify heart is positioned on the physical LEFT side of the card (dx < 100 on 800-wide test screen)
+      final heartOffset = tester.getTopLeft(heartIconFinder);
+      expect(heartOffset.dx, lessThan(100.0));
 
       final hitTargetFinder = find.ancestor(
         of: heartIconFinder,

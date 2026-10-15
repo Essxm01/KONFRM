@@ -1,8 +1,8 @@
-# Active Task — CUSTOMER_SCREEN15_V2_FOCUSED_VISUAL_CORRECTION
+# Active Task — CUSTOMER_SCREEN15_V2_CONSISTENCY_CORRECTION
 
-TASK_ID: CUSTOMER_SCREEN15_V2_FOCUSED_VISUAL_CORRECTION
+TASK_ID: CUSTOMER_SCREEN15_V2_CONSISTENCY_CORRECTION
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN15_V2_AWAITING_FOUNDER_VISUAL_REVIEW
+STATUS: SCREEN15_V2_CONSISTENCY_FIX_AWAITING_BRIDGE_REVIEW
 BRANCH: evidence/customer-screen15-design-review
 GOVERNING_ISSUES:
   - Issue #165: Customer Screen 15 Canonical Contract & V2 Corrective Mandate
@@ -10,10 +10,10 @@ GOVERNING_ISSUES:
   - Issue #167: Deferred Technical/Architecture Scope Tracking
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver the additive V2 focused visual corrections for Customer Screen 15 (Favorites / المفضلة) on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. Replace geometric vector illustrations in ArchitecturalPropertyThumbnail with canonical Screen 03/06 calm, honest neutral fallback placeholder (Icons.home_work_outlined).
-  2. Implement adaptive bottom navigation layout without label clipping under 200% accessibility scaling.
-  3. Replace unsupported unavailable property claim with truthful neutral wording ("غير متاحة للحجز حالياً").
+SCOPE: Deliver the focused visual consistency corrections for Customer Screen 15 (Favorites / المفضلة) on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. Favorite heart position: Moved circular favorite heart button to the physical LEFT side of the property card (Positioned(top: 10, left: 10)), matching the Founder-approved customer card standard.
+  2. Bottom navigation unification: Replaced custom bottom nav with the canonical CustomerBottomNavigation component from package:konfrm_design_system/konfrm_design_system.dart using the exact Screen 12 styling (#F3F4F6 soft grey indicator pill, pure black active icon/label, #6B7280 inactive, Cairo 12 bold active) with Tab 1 (المفضلة) active.
+  3. Preserved canonical neutral property fallback placeholder and truthful copy ("غير متاحة للحجز حالياً").
 
 ## Boundaries & Invariants
 - Zero changes to production code (`customer_app/lib/` untouched, backend untouched, database untouched).
@@ -23,12 +23,12 @@ SCOPE: Deliver the additive V2 focused visual corrections for Customer Screen 15
 - Physical device serial redacted in all logs and markdown (`[REDACTED_A56_ID]`).
 
 ## Verification & Quality Gates
-- [x] Canonical neutral property thumbnail placeholder implemented (zero blue/teal vector paintings).
-- [x] Bottom navigation bar adaptive at 200% text scale (all 4 labels fully visible, unclipped, 0 overflow).
-- [x] Truthful neutral copy applied for unavailable accommodations ("غير متاحة للحجز حالياً").
+- [x] Favorite heart action button positioned on the physical LEFT (`top: 10, left: 10`) matching approved customer card standard.
+- [x] Canonical `CustomerBottomNavigation` integrated with Screen 12 theme (`#F3F4F6` indicator pill, Tab 1 active).
+- [x] Status badge for unavailable items positioned on physical RIGHT (`top: 14, right: 12`) without collision.
 - [x] 13/13 source-linked unit and widget tests pass (`flutter test test/screen15_source_linked_tests.dart`).
 - [x] Static analysis passes with 0 issues (`flutter analyze tool/screen15_preview_runner.dart test/screen15_source_linked_tests.dart`).
-- [x] 6 affected visual states captured on physical Samsung Galaxy A56 5G with PNG and Base64 companions.
+- [x] 6 affected visual states re-captured on physical Samsung Galaxy A56 5G with PNG and Base64 companions.
 - [x] Complete cryptographic SHA-256 manifest and delivery report documented in `review-evidence/customer-screen15/v2/`.
 
 ---

@@ -1,6 +1,6 @@
-# KONFRM Customer Screen 15 V2 — Focused Visual Corrections Delivery Report
+# KONFRM Customer Screen 15 V2 — Focused Visual Corrections & Consistency Delivery Report
 
-**Task Identifier:** `CUSTOMER_SCREEN15_V2_FOCUSED_VISUAL_CORRECTION`  
+**Task Identifier:** `CUSTOMER_SCREEN15_V2_CONSISTENCY_CORRECTION`  
 **Target Screen:** Customer Screen 15 — Favorites / المفضلة  
 **Git Branch:** `evidence/customer-screen15-design-review`  
 **Governing Mandates:**
@@ -14,25 +14,30 @@
 
 ## 1. Executive Summary
 
-Following Bridge independent review of the published Screen 15 baseline commit `b86b25f8ee934e30d81b48db18510c98c5e3738d`, this V2 delivery addresses ONLY the three verified visual defects documented under [GitHub Issue #165](https://github.com/Essxm01/KONFRM/issues/165).
+Following Bridge/Founder independent review of the published Screen 15 evidence, this delivery resolves the two blocking visual consistency defects:
+1. **Favorite Heart Action Button Placement:** Moved from the right side to the **physical LEFT side** of the property card (`Positioned(top: 10, left: 10)`), strictly adhering to the Founder-approved customer accommodation card standard.
+2. **Bottom Navigation Unification:** Replaced custom navigation implementation with the canonical `CustomerBottomNavigation` component from `konfrm_design_system` using the exact styling from Screen 12 (`#F3F4F6` soft grey indicator pill, pure black active icon/label, `#6B7280` inactive, Cairo 12 bold active, and Tab 1 `المفضلة` active).
 
-The general visual architecture, card geometry, Cairo typography, and state-machine transitions were previously approved and remain intact. All historical V1 evidence under `review-evidence/customer-screen15/` remains preserved in place per [GitHub Issue #155](https://github.com/Essxm01/KONFRM/issues/155).
+The canonical neutral property fallback placeholder and truthful unavailable copy (`"غير متاحة للحجز حالياً"`) remain fully intact. All historical V1 baseline evidence under `review-evidence/customer-screen15/` remains preserved in place per [GitHub Issue #155](https://github.com/Essxm01/KONFRM/issues/155).
 
 ---
 
-## 2. Precise Remediation of the Three Authorized Issues
+## 2. Precise Consistency Remediation
 
-### Issue 1: Property Imagery Fallback
-- **Pre-Fix Condition:** The `ArchitecturalPropertyThumbnail` widget utilized a custom painter (`_ArchitecturalIllustrationPainter`) rendering blue/teal vector sky, swimming pool reflections, and villa silhouettes. These were misleading geometric illustrations that dominated cards rather than representing actual accommodations.
-- **V2 Remediation:** Completely removed the geometric illustration painter. Implemented the canonical Screen 03/06 calm, honest, neutral fallback placeholder (`Color(0xFFF1F5F9)` / `Color(0xFFE2E8F0)` with centered architectural icon `Icons.home_work_outlined` 44dp). Preserved the 1.4:1 card aspect ratio, price hierarchy, black region badge pill, and 48dp circular heart action button.
+### 1. Favorite Heart Button Placement
+- **Defect:** Heart button was placed on the right side of the card, violating the established customer card standard.
+- **Remediation:** In `tool/screen15_preview_runner.dart`, updated heart position to explicit `Positioned(top: 10, left: 10)`. Verified that in RTL mode, the button stays locked to the physical top-left of the card image container. The circular container (48dp touch target, white background, black heart icon, elevation shadow) remains unchanged. The unavailable status badge was updated to `Positioned(top: 14, right: 12)` on the physical top-right to ensure zero collision.
+- **Test Coverage:** Added source-linked test assertion verifying `expect(heartOffset.dx, lessThan(100.0))` on the physical card.
 
-### Issue 2: Bottom Navigation at 200% Accessibility Scaling
-- **Pre-Fix Condition:** A hardcoded `height: 62` on the bottom navigation bar container caused vertical clipping of tab labels (`استكشف`, `المفضلة`, `حجوزاتي`, `الحساب`) when the system accessibility font scale was set to 200%.
-- **V2 Remediation:** Updated `_buildCustomerBottomNav()` to an adaptive layout (`constraints: BoxConstraints(minHeight: 62)`, `SafeArea(top: false)`, vertical padding, and `Column(mainAxisSize: MainAxisSize.min)` with `maxLines: 1, overflow: TextOverflow.visible, height: 1.2`). At 200% text scaling, the bar naturally expands without clipping or RenderFlex overflow. All 4 labels remain completely visible, legible, and comfortably tappable.
-
-### Issue 3: Truthful Unavailable-Property Copy
-- **Pre-Fix Condition:** The card displayed *"أوقف المالك النشر مؤقتاً"*, which made an unsupported claim attributing unavailability specifically to the owner's personal intervention.
-- **V2 Remediation:** Updated to truthful, neutral wording: *"غير متاحة للحجز حالياً"* (Currently not available for booking). Reflects only the known unavailable state without inventing owner actions. Updated source-linked tests and expectations accordingly.
+### 2. Bottom Navigation Bar Unification
+- **Defect:** Custom bottom nav diverged visually from approved customer screens (Screen 12).
+- **Remediation:** Removed manual `_buildCustomerBottomNav` and replaced it with `CustomerBottomNavigation(selectedIndex: _bottomNavIndex, onSelected: ...)` from `package:konfrm_design_system/konfrm_design_system.dart`. Applied `navigationBarTheme` matching Screen 12:
+  - `backgroundColor: Colors.white`
+  - `elevation: 0`
+  - `indicatorColor: Color(0xFFF3F4F6)` (neutral soft grey pill)
+  - `iconTheme`: `#000000` when selected, `#6B7280` when unselected
+  - `labelTextStyle`: Cairo 12 bold `#000000` when selected, Cairo 12 medium `#6B7280` when unselected
+  - Raised floating undo toast clearance to `bottom: 96` to safely clear the 80dp canonical bar.
 
 ---
 
@@ -50,12 +55,12 @@ The general visual architecture, card geometry, Cairo typography, and state-mach
 
 | Scenario ID | Name & Description | Physical File | PNG SHA-256 | Base64 SHA-256 |
 |---|---|---|---|---|
-| **01** | **Ready List (Top Fold)**<br>Initial view showing canonical neutral property fallback, Cairo bold header, region badge pill, and active bottom navigation tab. | `01_screen15_v2_a56_ready_list_top.png` | `4E032ED33DF70FAFCBD8EC26A0D0CE3E3DBCD416EEAB6BDF3C60AFDB46ED0B15` | `CA6D4DF87AE23D532968A8F3D662921E83C0E5457D0EF587639AFDBF0DC9FEA1` |
-| **02** | **Ready List (Scrolled)**<br>Scrolled state demonstrating calm neutral thumbnail continuity across multiple cards without visual fatigue. | `02_screen15_v2_a56_ready_list_scrolled.png` | `6128214B54AAACA9898CC0521E48D29C5901829F0A1601ECF066F2FAEDA59DB7` | `EED222EE3146757F84B611F8CDD47F3634D9A60A8AB17897DDD85F4E0291C4D7` |
-| **10** | **Unavailable Item**<br>Scrolled focus showing inactive/unlisted accommodation with neutral badge (*"غير متوفرة حالياً"*), truthful copy (*"غير متاحة للحجز حالياً"*), and remove affordance. | `10_screen15_v2_a56_unavailable_item.png` | `C0DEE711F80048826D9ECCE743A70113FE7254A421491128DB421C98681B99B3` | `ED659E4685DFD8736F982A95E11A5F46E79AD41C010B01AAFA4F90912A68B2FC` |
-| **11** | **Single Card Focus**<br>Isolated inspection of property card geometry, 1.4:1 aspect ratio, specs pills, circular 48dp heart action button, and directional Arabic price. | `11_screen15_v2_a56_single_card_focus.png` | `0C8B991AB0B6B53EAAFCDC1F9D29756F9F6875B5C426C8AD53372B3B708C9EC7` | `7A6AB9A83402251C8BE86D2396832D0A9DBA346F69F9FCD19208EB77430C91FE` |
-| **12** | **Accessibility 200% (Top Fold)**<br>200% Text Scaling on physical hardware: bottom navigation expands gracefully, all 4 labels completely visible and unclipped, 0 overflow. | `12_screen15_v2_a56_accessibility_200_top.png` | `AB6A381AA0BE546C235B70D2C498927C7AEFEC8ED9285281ADB8ACFCE79660CB` | `BA1BA3CC9868BC03555011227CB5968A7FDC7D1D8C0D54DC3B1C9517E5BD0414` |
-| **13** | **Accessibility 200% (Scrolled)**<br>200% Text Scaling scrolled state: cards and specifications wrap gracefully without text clipping or layout overflow. | `13_screen15_v2_a56_accessibility_200_scrolled.png` | `B6654F2AFE4572DB661964AA6B85DE5C45B35D12763E31C2C74A150B89A1D48D` | `DBF441F67EFE8F61BCFF7D3CD319936AC819F1288CEF36793A879117EB778E51` |
+| **01** | **Ready List (Top Fold)**<br>Initial view showing canonical neutral property fallback, heart button on physical LEFT, and unified Screen 12 bottom navigation. | `01_screen15_v2_a56_ready_list_top.png` | `741CDC8385F3D3B56A0108DB6F382C0E8740FC2E03DA9DD9F3643EFC95EDD778` | `E3C39F0444022C1EBBA9FCDE86A00A43EA3AD026FC2C6A6EC753AEFBD999DF62` |
+| **02** | **Ready List (Scrolled)**<br>Scrolled state demonstrating left-aligned heart buttons across multiple cards and unified bottom nav. | `02_screen15_v2_a56_ready_list_scrolled.png` | `8E86F8824EF9573C074DF1EA7F2A7730D209BF2E20BC2DFAEF1C3ED35490043C` | `83BAE7D45FAA7C1EAE063759B1426F5F1F6D792517704E914901B18D3E75EF72` |
+| **10** | **Unavailable Item**<br>Unavailable card showing left-side heart, right-side neutral badge (*"غير متوفرة حالياً"*), truthful copy (*"غير متاحة للحجز حالياً"*), and unified nav. | `10_screen15_v2_a56_unavailable_item.png` | `7499F0AE9495F4AA9C83A8467E1150DFD97AB214C7E0AA9D41A2E0A8BA29A72C` | `7C633262656EED6CA56A9D4735E6DE1D05243EEDA9B809B46F8A163592D33087` |
+| **11** | **Single Card Focus**<br>Isolated inspection verifying heart button positioned on physical LEFT, 1.4:1 aspect ratio, Cairo typography, and directional Arabic price. | `11_screen15_v2_a56_single_card_focus.png` | `C0E97FBC6DB2319C229BE78106A56E539739158FA8762DBD120DC242D86248D3` | `85F108552463592F9E16785A6A5CF9C32A3111A649C61EB5D9FC1AF264C3904F` |
+| **12** | **Accessibility 200% (Top Fold)**<br>200% Text Scaling on physical hardware: canonical bottom navigation and cards scale gracefully, 0 overflow, heart remains on left. | `12_screen15_v2_a56_accessibility_200_top.png` | `043FFB256D464827E1C4CAFBE7FDFC92C52E175AD71813242F45F2944F9806DD` | `8210D3B26F93E4D3BC67E8A5768C47CF3C41C748D5A340216CE8FEECCD14E500` |
+| **13** | **Accessibility 200% (Scrolled)**<br>200% Text Scaling scrolled state: cards and specifications wrap gracefully without text clipping or layout overflow. | `13_screen15_v2_a56_accessibility_200_scrolled.png` | `D67C61E155AB4072F0251864D69B21BDA32F2B2DE0E397702BF938482BCC3B85` | `F21F77AC9FE342492FDF268BCE5782918BFD75A3CBD7C00E995B26F87743ACA7` |
 
 ---
 
@@ -88,8 +93,16 @@ Executed command: `flutter analyze tool/screen15_preview_runner.dart test/screen
 
 ---
 
-## 6. Scope Boundaries & Continuity
+## 6. Review Source Copies
+
+Exact runner and test source copies are archived in `review-source/`:
+- `review-source/screen15_preview_runner.dart` (SHA-256: `BEA9DF7A59620381E90FD97140C52EFDB567191FAA7E3E8534E850491867C58D`)
+- `review-source/screen15_source_linked_tests.dart` (SHA-256: `7804AA76EE5B205A9132939C8C31C788BBB2C80CB1AC6D4A8435517A9A4809D0`)
+
+---
+
+## 7. Scope Boundaries & Continuity
 
 - **Zero Production Mutations:** `customer_app/lib/`, backend endpoints, migrations, and database schemas remain 100% untouched.
 - **Deferred Issues Preserved:** Technical deferred items remain documented in [GitHub Issue #167](https://github.com/Essxm01/KONFRM/issues/167).
-- **Handoff Status:** `SCREEN15_V2_AWAITING_FOUNDER_VISUAL_REVIEW`.
+- **Handoff Status:** `SCREEN15_V2_CONSISTENCY_FIX_AWAITING_BRIDGE_REVIEW`.

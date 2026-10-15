@@ -1,5 +1,18 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## LATEST SCREEN15 V1 DELIVERY — BRIDGE ACTUAL VISUAL REVIEW (2026-10-15)
+
+- Antigravity successfully recovered A56 connection and completed isolated Flutter Screen15 Favorites native preview. Published authentic 14 physical captures + 14 Base64 companions, report, source and tests on evidence branch commit [b86b25f8ee934e30d81b48db18510c98c5e3738d](https://github.com/Essxm01/KONFRM/commit/b86b25f8ee934e30d81b48db18510c98c5e3738d). **13/13 tests are reported by Antigravity, not independently rerun by Bridge**. No production lib/backend/DB modified in this evidence commit.
+- Bridge fetched the commit/source and **actually visually reviewed ALL 14 A56 screenshots**, so do not restart the task or demand a full 14-state recapture. Header/empty/guest/401/loading/error/undo are a strong native design direction.
+- Visual decision: `SCREEN15_V1_VISUAL_DIRECTION_PROMISING__ONE_FOCUSED_VISUAL_CORRECTION_REQUIRED__FOUNDER_APPROVAL_PENDING`. The three tightly related, user-visible issues are: (1) dominant fake teal/blue architectural illustrations instead of truthful local photo/mock image handling; (2) 200% bottom navigation labels physically clipped under fixed 62dp layout (even though RenderFlex may report no overflow); (3) unsupported reason `أوقف المالك النشر مؤقتاً` inferred from boolean `isAvailable=false`.
+- **Action ONLY:** ONE focused preview-only visual correction recorded precisely in [#165](https://github.com/Essxm01/KONFRM/issues/165). Preserve old screenshot/code baseline under #155; recapture only affected states on genuine A56 with honest sources. Founder has not accepted the visual yet; do not launch Screen16 by implication.
+- **Deferred/nonblocking engineering for integration** in [#167](https://github.com/Essxm01/KONFRM/issues/167): real auth/favorites persistence/data, server mutation/undo, deep linking, production navigation, real prices/images and expanded release QA. Pre-live gates still mandatory, but do NOT block design over those items.
+- Current Founder policy [#166](https://github.com/Essxm01/KONFRM/issues/166): Fix what changes real UI/UX, defer unrelated back-end and technical QA, never run endless visual version cycles.
+- **Next step for successor Bridge:** give Founder concise visual summary and EXACT ONE focused corrective Antigravity message; after the correction inspect just affected captures/code and present Founder approval decision. Do not repeat V1's 14-image exhaustive review.
+
+---
+
+
 **Effective Founder decision:** 2026-10-15, Africa/Cairo.  
 **Audience:** The successor ChatGPT conversation named **«محادثة الجسر 14»** and Antigravity coordinators.  
 **Read in order:** (1) THIS file; (2) [KONFRM_BRIDGE_LIVE_HANDOFF.md](KONFRM_BRIDGE_LIVE_HANDOFF.md), reading its **LATEST** dated addendum first; (3) CURRENT GitHub Issues [#166](https://github.com/Essxm01/KONFRM/issues/166), [#165](https://github.com/Essxm01/KONFRM/issues/165), [#163](https://github.com/Essxm01/KONFRM/issues/163), [#155](https://github.com/Essxm01/KONFRM/issues/155) and queue [#128](https://github.com/Essxm01/KONFRM/issues/128); (4) latest actual GitHub branch/commit heads. Older text below the newest dated addenda is HISTORY and cannot override the new Founder decisions.

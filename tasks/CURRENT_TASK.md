@@ -2,7 +2,7 @@
 
 TASK_ID: CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_V1
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN21_V1_DESIGN_DELIVERED__AWAITING_BRIDGE_AND_FOUNDER_REVIEW
+STATUS: SCREEN21_V1_CORRECTION_DELIVERED__AWAITING_BRIDGE_AND_FOUNDER_REVIEW
 BRANCH: evidence/customer-screen21-design-review
 BASELINE_COMMIT: bf1aeeb0ef2c8c8e6e6418ca036050d22e4dd6c3
 GOVERNING_ISSUES:
@@ -17,12 +17,12 @@ GOVERNING_ISSUES:
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Comprehensive delivery of Customer Screen 21 — Help & Support («المساعدة والدعم») Native Flutter Design V1:
-  1. Product Model & Sourced FAQs: 5 authoritative FAQ items grounded strictly in confirmed Master Rules (MR-12, MR-13, Booking Canon). Zero invented check-in times or unapproved penalty policies.
-  2. Contextual Intake & Opt-In Booking Consent (Amendment 3): Sanitized booking number #183223 with dedicated opt-in consent checkbox default strictly to OFF (false). Generic inquiries remain fully supported without forced metadata disclosure.
-  3. Strict Privacy & Zero Phantom Claims: Proposed intake UX with draft preservation on validation errors and timeout/uncertain states; zero fake ticket IDs, fake SLA promises, or phantom success toasts. Real case APIs deferred to PRELIVE Issue #186.
-  4. Design Court & Issue #183 Governance: Genuine consultation of konfrm-design, konfrm-product, konfrm-flutter, and konfrm-quality. Structured single-agent panel deliberation with honest open gates (iOS HIG NOT_TESTED, support backend DEFERRED_TO_PRELIVE_186).
-  5. 12 Decision-Grade Physical Captures on Samsung Galaxy A56 5G (Android 16 API 36, [REDACTED_A56_ID]) across Help Center top fold, search filtering, empty state, booking consent default OFF / ON, inline validation error, timeout/uncertain recovery, unauthenticated guest barrier, and 200% accessibility font scale reflow.
+SCOPE: Bounded Founder-Truth & Accessibility Correction for Customer Screen 21:
+  1. FAQ Truth (MR-15 & Context §24.3): Purged unconfirmed cancellation claims; replaced with confirmed booking truth explaining pending status meaning («ماذا تعني حالة الطلب «قيد الانتظار»؟») per MR-12/MR-13.
+  2. 200% Accessibility & Topic Selector: Replaced rigid DropdownButton with content-responsive InkWell selector (minHeight: 48, multiline wrapping) opening a scroll-controlled bottom sheet modal; wrapped form header in Expanded. Zero text clipping at 200% font scale.
+  3. Zero Development Copy: Purged all developer testing/benchmark strings from customer UI; replaced with realistic customer inquiry copy.
+  4. Corrected Uncertain Submission UX: Eliminated dual-button collision; single «مراجعة الاستفسار» draft review action returning safely to idle state without duplicate case risk.
+  5. Additive Evidence Package: Published 12 fresh decision-grade captures on Samsung Galaxy A56 5G (Android 16 API 36, [REDACTED_A56_ID]) to review-evidence/customer-screen21/v1-founder-truth-a11y-correction/.
 VERIFICATION: 25/25 automated unit/widget tests PASS (100%), 0 static analyzer issues, Samsung Galaxy A56 physical QA PASS.
 
 ## Boundaries & Invariants

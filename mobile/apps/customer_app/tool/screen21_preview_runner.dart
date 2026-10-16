@@ -127,12 +127,12 @@ final List<HelpFaqItem> kSourceBackedHelpFaqs = [
     canonicalRuleAnchor: 'Screen 17 & 19 Account and Settings Contract',
   ),
   const HelpFaqItem(
-    id: 'faq_cancel_pending_request',
-    questionArabic: 'هل يمكنني إلغاء طلب حجز قيد الانتظار؟',
+    id: 'faq_pending_status_meaning',
+    questionArabic: 'ماذا تعني حالة الطلب «قيد الانتظار»؟',
     answerArabic:
-        'نعم، يمكنك إلغاء طلب الحجز مجاناً طالما كان في حالة قيد الانتظار وقبل صدور موافقة المالك.',
+        'تعني أن طلب الحجز بانتظار مراجعة وقبول المالك للتواريخ والتفاصيل المطلوبة قبل الانتقال لمرحلة سداد العربون.',
     category: HelpCategory.bookings,
-    canonicalRuleAnchor: 'Booking Lifecycle Canon: Free cancellation before owner approval',
+    canonicalRuleAnchor: 'Master Rule MR-12 & MR-13: Pending booking review state before approval and deposit payment',
   ),
 ];
 
@@ -411,7 +411,7 @@ class CustomerHelpSupportController extends ChangeNotifier {
         _expandedFaqId = null;
         _entryContext = SupportEntryContext.bookingOrigin;
         _inquiryTopic = SupportInquiryTopic.bookingAssistance;
-        _descriptionText = 'استفسار تجريبي لمراجعة تدفق النصوص وعناصر التحكم بحجم 200%.';
+        _descriptionText = 'أود الاستفسار عن تفاصيل الحجز وموعد تزويدي ببيانات الوصول بعد سداد العربون.';
         _bookingConsentAttached = true;
         _isGuest = false;
         _showContactFormInline = true;
@@ -491,11 +491,13 @@ class CustomerHelpSupportController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void retrySubmission() {
+  void reviewDraftAfterUncertain() {
     _formStatus = SupportFormStatus.idle;
     _formValidationError = null;
     notifyListeners();
   }
+
+  void retrySubmission() => reviewDraftAfterUncertain();
 }
 
 // =============================================================================
@@ -1303,13 +1305,15 @@ class _Screen21PreviewViewState extends State<Screen21PreviewView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'إرسال استفسار للدعم',
-                style: TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF000000),
+              const Expanded(
+                child: Text(
+                  'إرسال استفسار للدعم',
+                  style: TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF000000),
+                  ),
                 ),
               ),
               IconButton(
@@ -1377,33 +1381,60 @@ class _Screen21PreviewViewState extends State<Screen21PreviewView> {
 
           const SizedBox(height: 18),
 
-          // Submit Action Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              key: const Key('submit_inquiry_button'),
-              onPressed: () {
-                controller.submitContactForm();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF000000), // Pure Black #000000
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6), // Governed 6px radius
+          // Action Button Area: Either Review Draft (Uncertain) or Submit Action
+          if (controller.formStatus == SupportFormStatus.timeoutUncertain)
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                key: const Key('review_inquiry_button'),
+                onPressed: () {
+                  controller.reviewDraftAfterUncertain();
+                },
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFF000000), width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6), // Governed 6px radius
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 13),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 13),
+                child: const Text(
+                  'مراجعة الاستفسار',
+                  style: TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF000000),
+                  ),
+                ),
               ),
-              child: const Text(
-                'إرسال الاستفسار',
-                style: TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+            )
+          else
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                key: const Key('submit_inquiry_button'),
+                onPressed: () {
+                  controller.submitContactForm();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF000000), // Pure Black #000000
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6), // Governed 6px radius
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                ),
+                child: const Text(
+                  'إرسال الاستفسار',
+                  style: TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -1507,43 +1538,118 @@ class _Screen21PreviewViewState extends State<Screen21PreviewView> {
   // ===========================================================================
 
   Widget _buildTopicSelector() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<SupportInquiryTopic>(
-          key: const Key('topic_dropdown_selector'),
-          value: controller.inquiryTopic,
-          isExpanded: true,
-          icon: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Icon(Icons.arrow_drop_down, color: Color(0xFF000000)),
-          ),
-          items: SupportInquiryTopic.values.map((topic) {
-            return DropdownMenuItem<SupportInquiryTopic>(
-              value: topic,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  topic.labelArabic,
-                  style: const TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF000000),
-                  ),
+    return InkWell(
+      key: const Key('topic_dropdown_selector'),
+      onTap: () => _showTopicPickerSheet(context),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 48),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                controller.inquiryTopic.labelArabic,
+                key: const Key('selected_topic_label'),
+                softWrap: true,
+                style: const TextStyle(
+                  fontFamily: KonfrmTypography.fontFamily,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF000000),
+                  height: 1.4,
                 ),
               ),
-            );
-          }).toList(),
-          onChanged: (val) {
-            if (val != null) controller.setInquiryTopic(val);
-          },
+            ),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: Color(0xFF000000),
+              size: 22,
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  void _showTopicPickerSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(ctx).size.height * 0.85,
+            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    child: Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            'اختيار موضوع الاستفسار',
+                            style: TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF000000),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded, size: 20),
+                          onPressed: () => Navigator.pop(ctx),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 1, color: Color(0xFFE5E7EB)),
+                  ...SupportInquiryTopic.values.map((topic) {
+                    final isSelected = controller.inquiryTopic == topic;
+                    return ListTile(
+                      key: Key('topic_option_${topic.name}'),
+                      title: Text(
+                        topic.labelArabic,
+                        softWrap: true,
+                        style: TextStyle(
+                          fontFamily: KonfrmTypography.fontFamily,
+                          fontSize: 13,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                          color: isSelected ? const Color(0xFF000000) : const Color(0xFF374151),
+                        ),
+                      ),
+                      trailing: isSelected
+                          ? const Icon(Icons.check_rounded, color: Color(0xFF000000), size: 18)
+                          : null,
+                      onTap: () {
+                        controller.setInquiryTopic(topic);
+                        Navigator.pop(ctx);
+                      },
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1623,10 +1729,10 @@ class _Screen21PreviewViewState extends State<Screen21PreviewView> {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: const Color(0xFFD1D5DB), width: 1),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.info_outline_rounded, size: 16, color: Color(0xFF374151)),
               SizedBox(width: 6),
@@ -1641,37 +1747,15 @@ class _Screen21PreviewViewState extends State<Screen21PreviewView> {
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          const Text(
-            'تم حفظ مسودتك لمنع فقدان البيانات. يرجى التحقق من اتصالك وإعادة المحاولة دون إرسال مكرر.',
+          SizedBox(height: 6),
+          Text(
+            'تم الإبقاء على نص استفسارك لتجنب فقدانه. يرجى التحقق من اتصالك بالإنترنت قبل إرسال طلب جديد لمنع تكرار الرسائل.',
             style: TextStyle(
               fontFamily: KonfrmTypography.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
               color: Color(0xFF4B5563),
               height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 8),
-          TextButton(
-            key: const Key('retry_inquiry_button'),
-            onPressed: () {
-              controller.retrySubmission();
-            },
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              minimumSize: const Size(50, 24),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              foregroundColor: const Color(0xFF000000),
-            ),
-            child: const Text(
-              'إعادة المحاولة',
-              style: TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                decoration: TextDecoration.underline,
-              ),
             ),
           ),
         ],

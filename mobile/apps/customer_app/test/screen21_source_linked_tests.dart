@@ -45,6 +45,18 @@ void main() {
       expect(durationFaq.questionArabic, contains('مدة الإقامة'));
       expect(durationFaq.answerArabic, contains('ليلتين كحد أدنى وحتى 30 ليلة'));
       expect(durationFaq.canonicalRuleAnchor, contains('MR-12'));
+
+      final pendingFaq = kSourceBackedHelpFaqs.firstWhere((f) => f.id == 'faq_pending_status_meaning');
+      expect(pendingFaq.questionArabic, contains('قيد الانتظار'));
+      expect(pendingFaq.answerArabic, contains('مراجعة وقبول المالك'));
+      expect(pendingFaq.canonicalRuleAnchor, contains('MR-12'));
+      expect(pendingFaq.canonicalRuleAnchor, contains('MR-13'));
+
+      // Invariant: zero unconfirmed cancellation claims in FAQs
+      for (final faq in kSourceBackedHelpFaqs) {
+        expect(faq.id, isNot(equals('faq_cancel_pending_request')));
+        expect(faq.answerArabic.contains('مجاناً دون رسوم إلغاء'), isFalse);
+      }
     });
 
     test('filteredFaqs filters correctly by category', () {
@@ -150,14 +162,14 @@ void main() {
       expect(controller.formStatus, isNot(equals(SupportFormStatus.serverConfirmedMock)));
     });
 
-    test('Submission timeout / uncertain state preserves draft and enables retry', () {
+    test('Submission timeout / uncertain state preserves draft and enables review without re-sending', () {
       final controller = CustomerHelpSupportController();
       controller.setScenario(Screen21Scenario.submissionTimeoutUncertain);
 
       expect(controller.formStatus, equals(SupportFormStatus.timeoutUncertain));
       expect(controller.descriptionText, isNotEmpty); // Draft preserved
 
-      controller.retrySubmission();
+      controller.reviewDraftAfterUncertain();
       expect(controller.formStatus, equals(SupportFormStatus.idle));
       expect(controller.descriptionText, isNotEmpty); // Draft still preserved
     });
@@ -180,6 +192,7 @@ void main() {
       expect(content.contains('"BK-'), isFalse);
       expect(content.contains("'PRELIVE #186'"), isFalse);
       expect(content.contains('"PRELIVE #186"'), isFalse);
+      expect(content.contains('استفسار تجريبي لمراجعة'), isFalse);
     });
 
     test('Runner source contains ZERO unapproved contact channels (fake phone/WhatsApp/email)', () {
@@ -354,7 +367,7 @@ void main() {
       expect(find.text('يرجى كتابة 10 أحرف على الأقل لشرح استفسارك'), findsOneWidget);
     });
 
-    testWidgets('Timeout uncertain notice renders retry button and preserves draft', (tester) async {
+    testWidgets('Timeout uncertain notice renders review draft button, hides submit CTA, and preserves draft', (tester) async {
       final controller = CustomerHelpSupportController();
       controller.setScenario(Screen21Scenario.submissionTimeoutUncertain);
 
@@ -373,14 +386,22 @@ void main() {
       expect(notice, findsOneWidget);
       expect(find.text('تعذر تأكيد استلام الطلب حالياً'), findsOneWidget);
 
-      final retryBtn = find.byKey(const Key('retry_inquiry_button'));
-      await tester.ensureVisible(retryBtn);
-      expect(retryBtn, findsOneWidget);
+      // Verify submit CTA is hidden to prevent accidental duplicate submission
+      expect(find.byKey(const Key('submit_inquiry_button')), findsNothing);
 
-      await tester.tap(retryBtn);
+      // Verify sole action is review draft
+      final reviewBtn = find.byKey(const Key('review_inquiry_button'));
+      await tester.ensureVisible(reviewBtn);
+      expect(reviewBtn, findsOneWidget);
+      expect(find.text('مراجعة الاستفسار'), findsOneWidget);
+
+      await tester.tap(reviewBtn);
       await tester.pumpAndSettle();
 
+      // After review, notice disappears and submit button returns
       expect(find.byKey(const Key('timeout_uncertain_notice')), findsNothing);
+      expect(find.byKey(const Key('submit_inquiry_button')), findsOneWidget);
+      expect(controller.descriptionText, isNotEmpty);
     });
 
     testWidgets('Unauthenticated guest state shields contact form with login barrier', (tester) async {
@@ -407,7 +428,7 @@ void main() {
       expect(find.byKey(const Key('contact_form_card')), findsNothing);
     });
 
-    testWidgets('Accessibility 200% font scale reflows without overflow exceptions', (tester) async {
+    testWidgets('Accessibility 200% font scale reflows without overflow exceptions and topic selector is readable', (tester) async {
       final controller = CustomerHelpSupportController();
       controller.setScenario(Screen21Scenario.accessibility200Form);
 
@@ -427,6 +448,32 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.byKey(const Key('contact_form_card')), findsOneWidget);
       expect(find.byKey(const Key('submit_inquiry_button')), findsOneWidget);
+
+      // Verify topic selector is present, has minHeight constraint, and displays selected topic without clipping
+      final selectorFinder = find.byKey(const Key('topic_dropdown_selector'));
+      await tester.ensureVisible(selectorFinder);
+      expect(selectorFinder, findsOneWidget);
+
+      final labelFinder = find.byKey(const Key('selected_topic_label'));
+      expect(labelFinder, findsOneWidget);
+      expect(find.text('استفسار عن حجز حالي أو سابق'), findsOneWidget);
+
+      // Tap topic selector to open bottom sheet modal at 200% text scale
+      await tester.tap(selectorFinder);
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('اختيار موضوع الاستفسار'), findsOneWidget);
+      expect(find.text('استفسار عام عن الحساب'), findsOneWidget);
+
+      // Scroll to and tap on an option to select and close
+      final optionFinder = find.text('استفسار عام عن الحساب');
+      await tester.ensureVisible(optionFinder);
+      await tester.tap(optionFinder, warnIfMissed: false);
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('استفسار عام عن الحساب'), findsOneWidget);
     });
   });
 }

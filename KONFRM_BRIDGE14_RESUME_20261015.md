@@ -1,3 +1,71 @@
+# KONFRM — BRIDGE CURRENT RESUME | 2026-10-16 | SCREEN18 FINAL VISUAL DECISION
+
+> **HIGHEST-PRIORITY NEW-CHAT HANDOFF — READ THIS SECTION FIRST.**  
+> Recorded 2026-10-16 | 17:26 Africa/Cairo. This addendum is **newer than and supersedes the old "Screen18 now start" and "Screen17 fixes block design progression" headings lower in this historical file**. Keep all older material for chronological evidence; it is not the present instruction. Reverify branch heads/Issue status in GitHub on resumption. The previous ChatGPT conversation's private state is not transferred automatically.
+
+## 0. Founder communication and execution contract
+
+- Work in Egyptian Arabic with concise, clear explanations. Founder is not a developer. ChatGPT is the **Bridge / product-and-technical architect and independent reviewer**; Antigravity is the **executor** responsible for code, Flutter, tests, screenshots, GitHub, Supabase, Cloudflare and deploy.
+- **Reality → root-cause inspection → one precise scoped Antigravity task → independently review actual screenshots/source, then test/retetst → Founder decision**. Green CI/build/analyzer and agent self-report alone never prove UX correctness.
+- Preserve decisions and boundaries; no unapproved production app, Backend, DB, Auth, owner/admin, business or financial changes. Never auto-authorize broad redesign, merge, deploy, migrations, or cleanup.
+- **Founder design-first rule:** avoid endless correction cycles. Fix bounded problems that materially affect visual quality/current prototype interaction; record separate deferred PRELIVE gates rather than blocking progress with unrelated integration work. Deferred ≠ safe to release.
+- For Customer designs: clean premium white/light, Cairo Arabic RTL, neutral 4-tab CustomerBottomNavigation; the selected exact brand black is **#000000** (no substituting #111827 or charcoal/navy for black). Keep important labels legible at 200% text scale. No card soup, fake credentials, fake real-money balances or fabricated server truth.
+- Evidence preservation HOLD [#155](https://github.com/Essxm01/KONFRM/issues/155): NEVER delete, rewrite, relocate, force-push away, or clean historical screenshots/versions without separate Founder approval. Add new evidence only.
+
+## 1. CURRENT AUTHORITATIVE STATUS — Customer Screen18 Profile / Edit Profile
+
+**Screen18 V1 + two bounded corrective passes DELIVERED, independent Bridge review carried out, FINAL FOUNDER VISUAL DECISION STILL PENDING.** The last Antigravity status is not itself a Founder approval.
+
+- **Final pinned implementation/evidence commit:** [70278470f9d4158196423a82567c4cd23e8a3114](https://github.com/Essxm01/KONFRM/commit/70278470f9d4158196423a82567c4cd23e8a3114)
+- **Execution/evidence branch:** [evidence/customer-screen18-design-review](https://github.com/Essxm01/KONFRM/tree/evidence/customer-screen18-design-review); observed HEAD exactly 70278470f9d4158196423a82567c4cd23e8a3114 on 2026-10-16.
+- **Governing issue:** [#176](https://github.com/Essxm01/KONFRM/issues/176); Antigravity final closure comment [#issuecomment-6217585927](https://github.com/Essxm01/KONFRM/issues/176#issuecomment-6217585927).
+- **Status string:** SCREEN18_V1_FINAL_BOUNDED_CLOSURE_READY_FOR_FOUNDER_DECISION — NOT visually Founder-frozen, NOT production integrated, NOT Live approved.
+- **Historical baselines:** V1 initial [a063a1a8e362606dbbc33cafadc66452ac85cda0](https://github.com/Essxm01/KONFRM/commit/a063a1a8e362606dbbc33cafadc66452ac85cda0); focused correction [98a1cf9888743971a44a141e05b159f22d6c3e74](https://github.com/Essxm01/KONFRM/commit/98a1cf9888743971a44a141e05b159f22d6c3e74); final closure 70278470. All versions preserved.
+- **Final additive screenshot/evidence:** [review-evidence/customer-screen18/v1-focused-correction/](https://github.com/Essxm01/KONFRM/tree/70278470f9d4158196423a82567c4cd23e8a3114/review-evidence/customer-screen18/v1-focused-correction); original immutable [v1/](https://github.com/Essxm01/KONFRM/tree/a063a1a8e362606dbbc33cafadc66452ac85cda0/review-evidence/customer-screen18/v1).
+- **Hardware claimed in evidence:** genuine Samsung A56 5G SM_A566B, Android 16, 1080x2340. Four new photos in interaction-trace/ demonstrate open photo sheet → crop zoom/pan → crop applied/visible avatar → reopen/reset. Bridge **opened and visually inspected all four actual GitHub PNGs**, as well as the six prior focused-correction PNGs and eight original V1 screenshots.
+- **Real specific visual fixes independently seen:** 200% gender choice «أفضل عدم الإفصاح» fully readable via vertical layout; no nav bar underneath black crop studio; avatar clearly re-frames after Apply; no-photo initials fallback/actions; removed developer issue numbers from customer-facing copy. Original quiet light/pure-black premium layout preserved.
+- **Crop source/behavior inspected:** edits current draft image in isolated preview; cropScale and cropOffset stored in draft; pan bounds maxPan = 260 × (zoom−1)/2 and 0 at 1.0x; limits reclamped on zoom reduction; cancel/reset; 0xFF111827 crop backdrop replaced by pure black. This is a **local visual crop transform, NOT a re-encoded/exported cropped bitmap, uploaded profile photo, or server persistence**.
+- **Typography source inspected:** normal view now inherits OS MediaQuery scaling; explicit 200% override limited to QA scenarios.
+- **Antigravity-reported test results:** Flutter test 29/29 PASS, analyzer 0 issues. **Bridge did NOT itself run Flutter tests on A56**. Do not claim independent lab/device execution by Bridge.
+- **Evidence discrepancy:** prior 6 PNG reported sizes differed from files. [ERRATUM.md](https://github.com/Essxm01/KONFRM/blob/70278470f9d4158196423a82567c4cd23e8a3114/review-evidence/customer-screen18/v1-focused-correction/ERRATUM.md) and manifest now list actual file lengths (152159, 446373, 252220, 137258, 239768, 195020 bytes). Bridge inspected original GitHub PNGs and verified old-size mismatch/read corrected manifest; **cryptographic SHA-256 / Base64 byte-parity was reported by Antigravity, not independently recomputed by Bridge**.
+- **Compare 98a1cf9→70278470 checked:** only isolated runner/tests, additive evidence/ERRATUM/report/manifest and tasks/CURRENT_TASK.md changed. No production customer_app/lib, shared design system, Screen17, Owner/Admin, Backend/DB changes in that commit.
+- **Bridge provisional verdict:** SCREEN18_DESIGN_DIRECTION_PASS__FINAL_FOUNDER_VISUAL_SIGNOFF_PENDING__INTEGRATION_DEFERRED. No reason to order another Screen18 UI loop without a specific Founder-rejected visual or newly verified material blocker.
+
+### Nonproduction truths / PRELIVE dependencies for Screen18
+Screen18 preview uses synthetic user portrait, test phone/email marked as verified, proposed @username, private DOB/gender, and **local-only save**; it does not implement user data security, actual persisted crop/image upload, unique-handle contract, verified identity updates, or real account PATCH/conflict/401. Derived age remains anchored to a fixed test date in isolated runner, NOT a production-ready date implementation. Camera/gallery show demonstrations, not native pickers. Preserve full data minimization, privacy/minor policy, identity permissions, expiry/account switching, verified identifiers and account links for formal separate review in [#171](https://github.com/Essxm01/KONFRM/issues/171) and [#172](https://github.com/Essxm01/KONFRM/issues/172). Do not start these integrations as part of visual signoff.
+
+## 2. OTHER SCREENS AND LOCKED DECISIONS
+
+- **Screen17 Customer Account Home:** Founder explicitly visually accepted and FROZE V4 **AS-IS**, pinned at [d1a8ab97442e35aa83a2866b476a0143be929528](https://github.com/Essxm01/KONFRM/commit/d1a8ab97442e35aa83a2866b476a0143be929528) and [#170](https://github.com/Essxm01/KONFRM/issues/170). DO NOT restart Screen17 V5 or block Screen18 design decision with old review wording. NOT production-approved.
+- **Screen17 mandatory PRELIVE blockers remain:** #171 200% Account rows truncated; #172 unauthenticated/401 QR icon/guard and realistic fake QR with active share/save. Founder accepted VISUAL freeze with known debts; neither debt was waived for actual public release.
+- **Screen15 Favorites:** V2 visually approved/frozen at [5aabc3843ea3b86349b26c7f07f34edfbc787da8](https://github.com/Essxm01/KONFRM/commit/5aabc3843ea3b86349b26c7f07f34edfbc787da8), integration deferred #167.
+- **Screen16 Notifications:** visually frozen according to later dated sections below, but [#174](https://github.com/Essxm01/KONFRM/issues/174) still requires an explicit canonical nav-contract decision before adding an Explore notification bell/moving its entry. Do not silently change approved Screens03/16 or global navigation.
+- **Screen19 Customer Settings:** NEXT in 26-screen inventory after Founder visually decides Screen18; **NOT yet authorized to start**. Its future scope includes security settings, verified identifiers and linked Apple/Google accounts subject to approved Auth contracts, not merely profile edits.
+- **Wallet:** only proposed concept [#173](https://github.com/Essxm01/KONFRM/issues/173). No real top-ups, refund destination, balance or ledger authorized; never alter MR-13/MR-15 financial logic without explicit product approval.
+- **Pure black cross-app audit:** issue [#175](https://github.com/Essxm01/KONFRM/issues/175) establishes #000000 for intended black; historical/staged cross-app migration separate; never global search/replace color values blindly.
+
+## 3. SINGLE NEXT ACTION IN THE NEW CHAT
+
+1. **Open this file first**, then independently recheck [#176](https://github.com/Essxm01/KONFRM/issues/176), final pinned commit 70278470, current branch and the last evidence; if state changed, identify concrete changes before acting.
+2. Give Founder a **short honest final visual recommendation** based on inspected 6+4 screenshots. **Ask for ONE Founder decision:** visually approve/freeze Screen18 as-is (with recorded PRELIVE technical limitations), OR point out a specific visual issue they want corrected. Do NOT invent Founder signoff.
+3. **If Founder approves:** record exact accepted SHA, add a concise authoritative Founder-decision note to #176 and Bridge handoff; retain all old versions under #155. Visual approval ≠ permission to merge/deploy/integrate.
+4. **Only after the Founder authorizes progressing:** prepare the next Screen19 DESIGN-ONLY Antigravity prompt under its screen contract; no Backend/Auth/DB/payment/production changes or implicit cross-app navigation revisions.
+5. **If Founder declines:** one bounded user-specified correction, not fresh redesign or repeating resolved rounds. Do not send an unsolicited Antigravity prompt before hearing the Founder decision.
+
+### Suggested user-facing resume (Egyptian Arabic)
+«إحنا واقفين عند قرارك البصري النهائي على Screen 18 — تعديل الملف الشخصي. Antigravity سلّم آخر نسخة عند 70278470، وأنا راجعت صورها وكودها، وأهم مشاكل الاقتصاص والنصوص اتعالجت في المعاينة. الشاشة لسه مش مربوطة بالإنتاج أو قاعدة البيانات. هل نعتمد شكل Screen 18 الحالي ونجمده، ونحفظ تكاملاتها كتأجيلات، وبعدها ننتقل بتصريحك لتصميم Screen 19؟»
+
+## 4. Continuity pointers / where to read
+
+- **This file is the new-chat entry point:** [KONFRM_BRIDGE14_RESUME_20261015.md](https://github.com/Essxm01/KONFRM/blob/docs/cross-account-recovery-20261013/KONFRM_BRIDGE14_RESUME_20261015.md).
+- Deeper chronological cross-account record: [KONFRM_BRIDGE_LIVE_HANDOFF.md](https://github.com/Essxm01/KONFRM/blob/docs/cross-account-recovery-20261013/KONFRM_BRIDGE_LIVE_HANDOFF.md).
+- This documentation lives on **docs/cross-account-recovery-20261013**, not on default main. Do not confuse docs commits with app delivery commits. GitHub issue/commit states are authoritative over prose.
+- Read relevant Founder project rule/quality documentation and the approved 26-screen inventory; do not discard the full historical timeline below.
+
+---
+
+## HISTORICAL MATERIAL BELOW — ARCHIVED CHRONOLOGICALLY, NOT THE CURRENT STARTING INSTRUCTION
+
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
 ## FOUNDER FREEZES SCREEN17 V4 AS-IS — SCREEN18 NOW AUTHORIZED (2026-10-16)

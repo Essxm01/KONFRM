@@ -1,5 +1,19 @@
 # KONFRM — BRIDGE CURRENT RESUME | 2026-10-16 | SCREEN18 FINAL VISUAL DECISION
 
+## FOUNDER VISUAL DECISION RECORDED — SCREEN18 V1 FROZEN (2026-10-16, Africa/Cairo)
+
+> **NEWEST AUTHORITATIVE HANDOFF — overrides the earlier pending-decision instructions below.** The Founder answered **«نعم»** to the Bridge's direct question to approve and visually freeze Customer Screen18 at `70278470` with technical PRELIVE work deferred. **Founder approval is now RECORDED and no longer pending.** GitHub [#176 final decision comment](https://github.com/Essxm01/KONFRM/issues/176#issuecomment-6217987936).
+
+- **Founder-approved DESIGN-ONLY immutable visual/evidence baseline:** [`70278470f9d4158196423a82567c4cd23e8a3114`](https://github.com/Essxm01/KONFRM/commit/70278470f9d4158196423a82567c4cd23e8a3114) on `evidence/customer-screen18-design-review`. Status: `SCREEN18_V1_FOUNDER_VISUAL_APPROVED_ONLY__FROZEN_AT_70278470__PRODUCTION_INTEGRATION_DEFERRED`.
+- **No more Screen18 UI loops** absent a specific new Founder visual rejection or genuinely material blocker. Last corrected six genuine A56 screenshots, four interaction captures, and ERRATUM are retained at `review-evidence/customer-screen18/v1-focused-correction/`; initial V1 and all predecessor evidence kept unchanged under [#155](https://github.com/Essxm01/KONFRM/issues/155).
+- **Strict separation:** design-only approval does **NOT** approve production merge/deploy, Flutter production integration, actual photo/image crop export or persistence, actual profile PATCH/save, unique `@handle`, verified identifiers, DOB/gender privacy/minors, OAuth/auth/session/reauth/401, Backend/DB, financial product or release. PRELIVE dependencies remain mandatory in [#171](https://github.com/Essxm01/KONFRM/issues/171) and [#172](https://github.com/Essxm01/KONFRM/issues/172). Preview still has synthetic data/local-only save. Antigravity reported 29/29 tests and zero analyzer issues; Bridge did not independently rerun device Flutter tests.
+- **Existing frozen visuals stay locked:** Screen17 V4 pinned at `d1a8ab97442e35aa83a2866b476a0143be929528`; Screen16 V2, Screen15 V2 (and earlier approved screens) unchanged. Preserve Founder design-first rule [#166](https://github.com/Essxm01/KONFRM/issues/166) and exact pure black `#000000` policy [#175](https://github.com/Essxm01/KONFRM/issues/175).
+- **NEXT possible screen is Screen19 Customer Settings**, but the Founder has **not yet issued a separate instruction to start it**. Do not prepare/send an Antigravity execution prompt, launch Screen19, or update production code just from the Screen18 approval. Await explicit instruction; then scope Screen19 DESIGN ONLY and maintain all prior Auth/security/navigation boundaries.
+
+**Conflict resolution:** The sections titled `CURRENT AUTHORITATIVE STATUS`, `SINGLE NEXT ACTION`, and suggested pending-signoff question below are now a historical snapshot prior to this explicit decision. Their technical observations and constraints still apply, but any statement that Screen18 Founder approval is pending is superseded by this section.
+
+---
+
 > **HIGHEST-PRIORITY NEW-CHAT HANDOFF — READ THIS SECTION FIRST.**  
 > Recorded 2026-10-16 | 17:26 Africa/Cairo. This addendum is **newer than and supersedes the old "Screen18 now start" and "Screen17 fixes block design progression" headings lower in this historical file**. Keep all older material for chronological evidence; it is not the present instruction. Reverify branch heads/Issue status in GitHub on resumption. The previous ChatGPT conversation's private state is not transferred automatically.
 

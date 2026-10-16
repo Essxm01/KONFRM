@@ -76,6 +76,20 @@ void main() {
       expect(controller.snackBarNotice, contains('تم إيقاف'));
     });
 
+    test('guest scenario gates notification toggles with authentication notice', () {
+      controller.setScenario(Screen19Scenario.unauthenticatedGuestState);
+      expect(controller.state.isAuthenticated, isFalse);
+      expect(controller.state.bookingUpdatesEnabled, isFalse);
+
+      controller.toggleBookingUpdates(true);
+      expect(controller.state.bookingUpdatesEnabled, isFalse);
+      expect(controller.snackBarNotice, contains('يتطلب تفعيل هذا الخيار تسجيل الدخول'));
+
+      controller.toggleHostMessages(true);
+      expect(controller.state.hostMessagesEnabled, isFalse);
+      expect(controller.snackBarNotice, contains('يتطلب تفعيل هذا الخيار تسجيل الدخول'));
+    });
+
     test('sign-out dialog flow is guarded and non-destructive in prototype', () {
       expect(controller.showSignOutDialog, isFalse);
 
@@ -129,6 +143,8 @@ void main() {
 
       controller.setScenario(Screen19Scenario.unauthenticatedGuestState);
       expect(controller.state.isAuthenticated, isFalse);
+      expect(controller.state.bookingUpdatesEnabled, isFalse);
+      expect(controller.state.hostMessagesEnabled, isFalse);
 
       controller.setScenario(Screen19Scenario.accountDeletionInfoSheet);
       expect(controller.showAccountDeletionSheet, isTrue);
@@ -200,7 +216,7 @@ void main() {
       expect(find.text('الأمان وطرق الدخول'), findsOneWidget);
       expect(find.text('رقم الهاتف الأساسي'), findsOneWidget);
       expect(find.text('البريد الإلكتروني الأساسي'), findsOneWidget);
-      expect(find.text('مؤكّد'), findsNWidgets(2)); // Green verified badges for phone & email
+      expect(find.text('مؤكّد (بيانات تجريبية)'), findsNWidgets(2)); // Green verified badges for phone & email
 
       // Planned feature entry rows
       expect(find.byKey(const Key('row_add_alternate_phone')), findsOneWidget);
@@ -222,7 +238,7 @@ void main() {
 
       expect(find.text('الإشعارات والتنبيهات'), findsOneWidget);
       expect(find.text('إذن إشعارات النظام (الجهاز)'), findsOneWidget);
-      expect(find.text('مفعّل'), findsOneWidget);
+      expect(find.text('مفعّل (حالة توضيحية)'), findsOneWidget);
 
       expect(find.byKey(const Key('toggle_booking_updates')), findsOneWidget);
       expect(find.byKey(const Key('toggle_host_messages')), findsOneWidget);
@@ -280,6 +296,8 @@ void main() {
       expect(find.byKey(const Key('sign_out_cancel_button')), findsOneWidget);
       expect(find.byKey(const Key('sign_out_confirm_button')), findsOneWidget);
       expect(find.textContaining('هل أنت متأكد من رغبتك في تسجيل الخروج'), findsOneWidget);
+      expect(find.textContaining('بيانات حسابك وحجوزاتك'), findsOneWidget);
+      expect(find.textContaining('محفظتك'), findsNothing);
 
       // Cancel dismisses dialog
       await tester.tap(find.byKey(const Key('sign_out_cancel_button')));
@@ -303,7 +321,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('account_deletion_sheet_dismiss')), findsOneWidget);
-      expect(find.textContaining('وفقاً لسياسة حوكمة الحسابات والخصوصية'), findsOneWidget);
+      expect(find.textContaining('إجراءات تصدير البيانات أو حذف الحساب غير متاحة حالياً'), findsOneWidget);
+      expect(find.textContaining('المحفظة'), findsNothing);
 
       await tester.tap(find.byKey(const Key('account_deletion_sheet_dismiss')));
       await tester.pumpAndSettle();
@@ -323,9 +342,9 @@ void main() {
       state.applyScenario(Screen19Scenario.notificationsPermissionDenied);
       await tester.pumpAndSettle();
 
-      expect(find.text('متوقف بالنظام'), findsOneWidget);
+      expect(find.text('متوقف (حالة توضيحية)'), findsOneWidget);
       expect(find.byKey(const Key('permission_sheet_dismiss_button')), findsOneWidget);
-      expect(find.text('إذن الإشعارات متوقف على جهازك'), findsOneWidget);
+      expect(find.text('إذن الإشعارات في النظام (حالة توضيحية)'), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('permission_sheet_dismiss_button')));
       await tester.pumpAndSettle();
@@ -347,6 +366,8 @@ void main() {
 
       expect(find.byKey(const Key('guest_sign_in_button')), findsOneWidget);
       expect(find.text('تسجيل الدخول / إنشاء حساب'), findsOneWidget);
+      expect(find.text('تنبيهات الحجوزات والرسائل تتطلب تسجيل الدخول بحساب مستخدم'), findsOneWidget);
+      expect(find.text('يتطلب تسجيل الدخول لربط تنبيهات الحجز بحسابك'), findsOneWidget);
       expect(find.text('رقم الهاتف الأساسي'), findsNothing);
       expect(find.byKey(const Key('row_sign_out')), findsNothing);
     });

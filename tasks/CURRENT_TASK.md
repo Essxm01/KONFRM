@@ -1,12 +1,12 @@
-# Active Task — CUSTOMER_SCREEN19_V1_DESIGN_ONLY
+# Active Task — CUSTOMER_SCREEN19_V1_TRUTH_CLARITY_CORRECTION
 
-TASK_ID: CUSTOMER_SCREEN19_V1_DESIGN_ONLY
+TASK_ID: CUSTOMER_SCREEN19_V1_TRUTH_CLARITY_CORRECTION
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN19_V1_FOUNDER_AUTHORIZED_DESIGN_ONLY__AWAITING_BRIDGE_REVIEW_AND_FOUNDER_DECISION
+STATUS: SCREEN19_V1_TRUTH_CLARITY_CORRECTION__AWAITING_BRIDGE_REVIEW_AND_FOUNDER_DECISION
 BRANCH: evidence/customer-screen19-design-review
-BASELINE_COMMIT: 70278470f9d4158196423a82567c4cd23e8a3114
+BASELINE_COMMIT: cf0af01456ca7ee6c30ba8de5bda3c5772ffd7a2
 GOVERNING_ISSUES:
-  - Issue #177: Customer Screen 19 Settings («الإعدادات») — Founder-Authorized Isolated Flutter Design
+  - Issue #177: Customer Screen 19 Settings («الإعدادات») — Founder-Authorized Isolated Flutter Design & Bridge Review
   - Issue #175: Mandatory Pure-Black `#000000` Rule & Repository-Wide Audit
   - Issue #174: Notifications Navigation Routing Proposal vs Architecture
   - Issue #172: Identity, Avatar, QR & Connected Profiles Boundaries
@@ -14,35 +14,35 @@ GOVERNING_ISSUES:
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver native Flutter visual design and isolated preview for Customer Screen 19 — Settings («الإعدادات») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. Quiet premium native mobile layout: Cairo Arabic RTL, exact pure black `#000000`, white/light neutral surfaces, grouped low-chrome editorial rows with subtle separators, no card soup, no navy/charcoal (#111827).
-  2. Section 1 (الأمان وطرق الدخول): Masked verified primary contact identifiers (`+20 10 •••• 5678` and `a•••••@gmail.com`) only in synthetic QA fixture; planned entry rows for secondary email/phone and Apple/Google sign-in linking clearly labeled as planned/unavailable; honest microcopy on identity challenges (#172).
-  3. Section 2 (الإشعارات والتنبيهات): Strict distinction between OS permission and channel preferences; local-only preview toggle with transparent disclaimer; permission-denied recovery explanation scenario and bottom sheet.
-  4. Section 3 (تفضيلات التطبيق): Arabic language default, EGP currency, OS-following reduced motion with truthful disclosure.
-  5. Section 4 (الخصوصية والحساب): Privacy Policy (Screen 26) & Terms (Screen 25) links, account deletion/export legal/product notice, demonstration-only sign-out dialog.
-  6. Navigation: Canonical NESTED_CUSTOMER contract: Header with RTL physical-right back button (➔) returning to Screen 17 Account, NO bottom navigation bar. Document discrepancy with Screen 18 isolated preview in report.
-  7. Verification: Normal, scrolled, 200% text scale, permission-denied bottom sheet, sign-out confirmation dialog, and unauthenticated/guest state. 100% genuine Samsung A56 captures, unit/widget tests (18/18 PASS), flutter analyze 0 issues.
+SCOPE: Deliver ONE bounded truth, copy, and guest interaction correction for Customer Screen 19 — Settings («الإعدادات») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. Synthetic Identity & OS Permission Truth: Masked identifiers explicitly labeled as demonstration data (`مؤكّد (بيانات تجريبية)` and card footnote); OS notification permission status truthfully presented as illustrative (`حالة توضيحية`) in pill, subtitle, banner, and denied sheet; internal GitHub issue references removed from customer-facing copy.
+  2. Guest Notification Controls: Unauthenticated guest scenario disables booking updates and host messages in both controller and UI (`isEnabled: false`, OFF), displays guest amber banner, and rejects toggle mutation with login-required notice.
+  3. Unapproved Legal & Wallet Claims: Removed references to customer wallet (`محفظتك`) from sign-out confirmation copy; replaced unapproved deletion policy and wallet liability checks with honest pending-policy regulatory notice.
+  4. Physical Hardware Evidence: 8 screenshots recaptured on genuine Samsung Galaxy A56 5G (`SM_A566B`, Android 16 API 36) and published with Base64 companions in new additive directory `review-evidence/customer-screen19/v1-truth-clarity-correction/`.
+  5. Verification: 19/19 behavioral and widget tests PASS; `flutter analyze` 0 issues; pure black `#000000` compliant.
 
 ## Boundaries & Invariants
 - Screen 17 V4 visual baseline is FROZEN AS-IS at `d1a8ab97442e35aa83a2866b476a0143be929528`.
 - Screen 18 V1 visual baseline is FROZEN AS-IS at `70278470f9d4158196423a82567c4cd23e8a3114`.
+- Screen 19 V1 baseline is PRESERVED at `cf0af01456ca7ee6c30ba8de5bda3c5772ffd7a2`.
 - Zero changes to production code (`customer_app/lib/` untouched, backend untouched, database untouched).
 - All non-visual technical issues (real OS permission intent, server preference sync, OAuth linking, real sign-out, account deletion/export) deferred as PRELIVE gates.
-- All historical evidence preserved untouched per Issue #155 (Screens 12–18).
+- All historical evidence preserved untouched per Issue #155 (Screens 12–18 and Screen 19 V1).
 - Physical device serial redacted in all logs and markdown (`[REDACTED_A56_ID]`).
 
 ## Verification & Quality Gates
-- [x] Screen 19 isolated Flutter preview runner implemented in `tool/screen19_preview_runner.dart`.
-- [x] Source-linked tests implemented in `test/screen19_source_linked_tests.dart` (18/18 PASS).
-- [x] Static analysis passes with 0 issues (`flutter analyze`).
-- [x] Quiet premium editorial rows, exact pure black `#000000`, and subtle separators verified on device.
-- [x] Canonical NESTED_CUSTOMER header with physical right RTL back arrow and NO bottom navigation verified on device.
-- [x] Account & security section with masked synthetic contacts and planned linking entry rows verified on device.
-- [x] Notifications section with OS vs channel distinction, local toggle demo, and permission-denied bottom sheet verified on device.
-- [x] App preferences and privacy/account actions (sign-out demo dialog, deletion info) verified on device.
-- [x] Responsive 200% text scaling verified on device with zero clipping, collisions, or truncated labels.
-- [x] Genuine Samsung Galaxy A56 5G captures and Base64 companions generated in `review-evidence/customer-screen19/v1/`.
-- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen19/v1/`.
+- [x] Verified identifier badges and card footnote updated with explicit demonstration data notice.
+- [x] OS permission status pill, subtitle, disclaimer, and denied sheet updated with illustrative notice.
+- [x] Customer microcopy purged of internal GitHub issue numbers (Issue #172).
+- [x] Unauthenticated guest state gates booking and host message notification controls in controller and UI.
+- [x] Sign-out dialog body cleansed of wallet reference (`محفظتك`).
+- [x] Account deletion sheet cleansed of fictitious regulatory policy and wallet liability claims.
+- [x] Flexible badge wrapping implemented in `_buildVerifiedIdentifierRow` ensuring zero RenderFlex overflow at 200% font scale.
+- [x] Source-linked tests updated and expanded to 19/19 PASS (`test/screen19_source_linked_tests.dart`).
+- [x] Static analysis passes with 0 issues (`flutter analyze tool/screen19_preview_runner.dart test/screen19_source_linked_tests.dart`).
+- [x] 8 genuine physical Samsung Galaxy A56 5G captures and Base64 companions generated in `review-evidence/customer-screen19/v1-truth-clarity-correction/`.
+- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen19/v1-truth-clarity-correction/`.
+- [x] Review source mirrors copied to `review-evidence/customer-screen19/v1-truth-clarity-correction/review-source/`.
 
 ---
 

@@ -184,6 +184,10 @@ class CustomerSettingsController extends ChangeNotifier {
   String? get snackBarNotice => _snackBarNotice;
 
   void toggleBookingUpdates(bool val) {
+    if (!_state.isAuthenticated) {
+      showNotice('يتطلب تفعيل هذا الخيار تسجيل الدخول إلى حسابك');
+      return;
+    }
     _state = _state.copyWith(bookingUpdatesEnabled: val);
     showNotice(val
         ? 'تم تفعيل إشعارات الحجوزات محلياً'
@@ -192,6 +196,10 @@ class CustomerSettingsController extends ChangeNotifier {
   }
 
   void toggleHostMessages(bool val) {
+    if (!_state.isAuthenticated) {
+      showNotice('يتطلب تفعيل هذا الخيار تسجيل الدخول إلى حسابك');
+      return;
+    }
     _state = _state.copyWith(hostMessagesEnabled: val);
     showNotice(val
         ? 'تم تفعيل إشعارات رسائل المضيف محلياً'
@@ -290,6 +298,8 @@ class CustomerSettingsController extends ChangeNotifier {
       case Screen19Scenario.unauthenticatedGuestState:
         _state = const CustomerSettingsState(
           isAuthenticated: false,
+          bookingUpdatesEnabled: false,
+          hostMessagesEnabled: false,
         );
         break;
       case Screen19Scenario.accountDeletionInfoSheet:
@@ -803,7 +813,7 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'لحماية أمان حسابك، يتطلب تغيير بيانات الأمان أو وسائل الدخول التحقق من الهوية وإعادة المصادقة.',
+                      'هذه المعرّفات معروضة كبيانات تجريبية في هذه المعاينة؛ تغيير وسائل الدخول الفعلية يتطلب التحقق من الهوية.',
                       style: const TextStyle(
                         fontFamily: KonfrmTypography.fontFamily,
                         fontSize: 12,
@@ -878,13 +888,15 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
                             color: Color(0xFF059669),
                           ),
                           SizedBox(width: 4),
-                          Text(
-                            'مؤكّد',
-                            style: TextStyle(
-                              fontFamily: KonfrmTypography.fontFamily,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF059669),
+                          Flexible(
+                            child: Text(
+                              'مؤكّد (بيانات تجريبية)',
+                              style: TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF059669),
+                              ),
                             ),
                           ),
                         ],
@@ -1126,7 +1138,7 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
                                   ),
                                 ),
                                 child: Text(
-                                  osGranted ? 'مفعّل' : 'متوقف بالنظام',
+                                  osGranted ? 'مفعّل (حالة توضيحية)' : 'متوقف (حالة توضيحية)',
                                   style: TextStyle(
                                     fontFamily: KonfrmTypography.fontFamily,
                                     fontSize: 11,
@@ -1140,8 +1152,8 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
                           const SizedBox(height: 2),
                           Text(
                             osGranted
-                                ? 'الإذن العام ممنوح للتطبيق من نظام التشغيل'
-                                : 'متوقف في إعدادات النظام — انقر للاطلاع على طريقة التفعيل',
+                                ? 'حالة توضيحية — المعاينة لا تقرأ إذن النظام الفعلي بالجهاز'
+                                : 'محاكاة لحالة إيقاف الإذن من النظام — المعاينة لا تقرأ إذن النظام الفعلي',
                             style: TextStyle(
                               fontFamily: KonfrmTypography.fontFamily,
                               fontSize: 12,
@@ -1164,17 +1176,17 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
             color: const Color(0xFFF9FAFB),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(
+              children: const [
+                Icon(
                   Icons.info_outline,
                   size: 15,
                   color: Color(0xFF6B7280),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'ملاحظة: تفعيل إذن النظام لا يعني تلقائياً تفعيل كل قنوات الإشعارات. التبديل أدناه محاكاة تجريبية محلية فقط.',
-                    style: const TextStyle(
+                    'ملاحظة: حالة الإذن المعروضة توضيحية، والتبديل أدناه محاكاة تجريبية محلية فقط لا تؤثر على إشعارات الجهاز الفعلية.',
+                    style: TextStyle(
                       fontFamily: KonfrmTypography.fontFamily,
                       fontSize: 12,
                       color: Color(0xFF6B7280),
@@ -1187,13 +1199,46 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
           ),
           const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
 
+          if (!state.isAuthenticated) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              color: const Color(0xFFFEF3C7),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Icon(
+                    Icons.lock_outline,
+                    size: 15,
+                    color: Color(0xFFD97706),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'تنبيهات الحجوزات والرسائل تتطلب تسجيل الدخول بحساب مستخدم',
+                      style: TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFB45309),
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
+          ],
+
           // Toggle 1: Booking Updates
           _buildNotificationToggleRow(
             key: const Key('toggle_booking_updates'),
             title: 'تحديثات الحجوزات والطلبات',
-            subtitle: 'إشعارات فورية عند قبول المضيف، تأكيد الحجز، أو أي تعديل',
+            subtitle: !state.isAuthenticated
+                ? 'يتطلب تسجيل الدخول لربط تنبيهات الحجز بحسابك'
+                : 'إشعارات فورية عند قبول المضيف، تأكيد الحجز، أو أي تعديل',
             value: state.bookingUpdatesEnabled,
-            isEnabled: osGranted,
+            isEnabled: osGranted && state.isAuthenticated,
             onChanged: _controller.toggleBookingUpdates,
           ),
           const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
@@ -1202,9 +1247,11 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
           _buildNotificationToggleRow(
             key: const Key('toggle_host_messages'),
             title: 'رسائل المضيف والمحادثات',
-            subtitle: 'تنبيهات فورية عند استلام رسائل مباشرة من مضيف وحدتك',
+            subtitle: !state.isAuthenticated
+                ? 'يتطلب تسجيل الدخول لاستلام رسائل المضيفين'
+                : 'تنبيهات فورية عند استلام رسائل مباشرة من مضيف وحدتك',
             value: state.hostMessagesEnabled,
-            isEnabled: osGranted,
+            isEnabled: osGranted && state.isAuthenticated,
             onChanged: _controller.toggleHostMessages,
           ),
           const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
@@ -1889,7 +1936,7 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
               ),
               const SizedBox(height: 14),
               const Text(
-                'هل أنت متأكد من رغبتك في تسجيل الخروج من هذا الجهاز؟ ستحتاج إلى إعادة تسجيل الدخول للوصول إلى حجوزاتك ومحفظتك.',
+                'هل أنت متأكد من رغبتك في تسجيل الخروج من هذا الجهاز؟ ستحتاج إلى إعادة تسجيل الدخول للوصول إلى بيانات حسابك وحجوزاتك.',
                 style: TextStyle(
                   fontFamily: KonfrmTypography.fontFamily,
                   fontSize: 13,
@@ -2003,7 +2050,7 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
                   const SizedBox(width: 12),
                   const Expanded(
                     child: Text(
-                      'إذن الإشعارات متوقف على جهازك',
+                      'إذن الإشعارات في النظام (حالة توضيحية)',
                       style: TextStyle(
                         fontFamily: KonfrmTypography.fontFamily,
                         fontSize: 16,
@@ -2022,7 +2069,7 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
               const SizedBox(height: 12),
 
               const Text(
-                'تم إيقاف إذن الإشعارات لتطبيق كونفرم في إعدادات النظام بجهازك. لتلقي تحديثات الحجز الفورية ورسائل المضيف، يرجى تفعيل الإذن من إعدادات النظام.',
+                'توضح هذه الشاشة الإرشادات التي ستظهر للمستخدم في حال إيقاف إذن الإشعارات من إعدادات نظام الجهاز، حيث تتطلب متابعة الحجوزات الفورية تفعيل الإذن من إعدادات النظام.',
                 style: TextStyle(
                   fontFamily: KonfrmTypography.fontFamily,
                   fontSize: 13,
@@ -2161,7 +2208,7 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
               const SizedBox(height: 12),
 
               const Text(
-                'وفقاً لسياسة حوكمة الحسابات والخصوصية في منصة كونفرم، يخضع حذف الحساب وتصدير البيانات لسلسلة إجراءات تنظيمية للتحقق من خلو الحساب من أي حجوزات نشطة أو مبالغ معلقة في المحفظة، لضمان حقوق العميل والمضيف.',
+                'إجراءات تصدير البيانات أو حذف الحساب غير متاحة حالياً وهي قيد الإعداد القانوني والتنظيمي. هذه المعاينة توضيحية فقط ولا تقوم بتقديم أي طلب فعلي. ستخضع هذه الإجراءات لسياسات الخصوصية وشروط الاستخدام المعتمدة فور إطلاقها رسمياً.',
                 style: TextStyle(
                   fontFamily: KonfrmTypography.fontFamily,
                   fontSize: 13,
@@ -2184,7 +2231,7 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'هذه الخدمة قيد المراجعة التنظيمية وسيتم تفعيلها في الإصدارات القادمة.',
+                        'هذه الخدمة قيد الإعداد والدراسة القانونية، ولن يتم تنفيذ أي إجراء حذف أو تصدير من خلال هذه المعاينة.',
                         style: TextStyle(
                           fontFamily: KonfrmTypography.fontFamily,
                           fontSize: 12,
@@ -2293,7 +2340,7 @@ class Screen19PreviewViewState extends State<Screen19PreviewView> {
               const SizedBox(height: 12),
 
               Text(
-                'خاصية «$title» قيد الإعداد ضمن خطة ترقية الأمان ووسائل الدخول الموحدة لمنصة كونفرم (Issue #172). ستتاح هذه الإمكانية فور اعتماد بروتوكول التحقق والتأكيد دون التأثير على حسابك الحالي.',
+                'خاصية «$title» قيد الإعداد ضمن خطة ترقية الأمان ووسائل الدخول الموحدة لمنصة كونفرم. ستتاح هذه الإمكانية فور اعتماد بروتوكول التحقق والتأكيد دون التأثير على حسابك الحالي.',
                 style: const TextStyle(
                   fontFamily: KonfrmTypography.fontFamily,
                   fontSize: 13,

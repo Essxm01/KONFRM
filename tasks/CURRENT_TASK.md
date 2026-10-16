@@ -1,62 +1,48 @@
-# Active Task — CUSTOMER_SCREEN18_V1_BOUNDED_CLOSURE
+# Active Task — CUSTOMER_SCREEN19_V1_DESIGN_ONLY
 
-TASK_ID: CUSTOMER_SCREEN18_V1_BOUNDED_CLOSURE
+TASK_ID: CUSTOMER_SCREEN19_V1_DESIGN_ONLY
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN18_V1_FINAL_BOUNDED_CLOSURE_READY_FOR_FOUNDER_DECISION
-BRANCH: evidence/customer-screen18-design-review
-BASELINE_COMMIT: 98a1cf9888743971a44a141e05b159f22d6c3e74
+STATUS: SCREEN19_V1_FOUNDER_AUTHORIZED_DESIGN_ONLY__AWAITING_BRIDGE_REVIEW_AND_FOUNDER_DECISION
+BRANCH: evidence/customer-screen19-design-review
+BASELINE_COMMIT: 70278470f9d4158196423a82567c4cd23e8a3114
 GOVERNING_ISSUES:
-  - Issue #176: Customer Screen 18 Profile / Edit Profile — Founder-Authorized Isolated Flutter Design
+  - Issue #177: Customer Screen 19 Settings («الإعدادات») — Founder-Authorized Isolated Flutter Design
   - Issue #175: Mandatory Pure-Black `#000000` Rule & Repository-Wide Audit
+  - Issue #174: Notifications Navigation Routing Proposal vs Architecture
   - Issue #172: Identity, Avatar, QR & Connected Profiles Boundaries
   - Issue #171: Deferred Screen 17 Technical/QA Backlog (Prelive Gate)
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver ONE bounded UX & interaction correction for Customer Screen 18 (Profile / Edit Profile — «تعديل الملف الشخصي») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. Correction A — Meaningful Photo Cropping & Crop Safety:
-     - Use current draft portrait bytes directly as crop input (no hardcoded demo image in crop studio).
-     - Interactive continuous zoom ($1.0\times$ to $2.5\times$) and pan/drag gestures inside crop viewport.
-     - Commits transformation (`cropScale: double`, `cropOffset: Offset`) to `CustomerProfileEditDraft`, visibly reflected in the avatar hero ($104 \times 104$) via proportional scaling $(104.0 / 260.0)$.
-     - Marks draft as dirty when crop changes; Cancel restores previous committed crop; Reset restores $1.0\times$ zoom and zero offset.
-     - Photo removal nulls bytes and resets crop; opening photo sheet in no-photo state hides Crop and Remove actions and never resurrects demo bytes.
-     - Fullscreen crop modal hides `CustomerBottomNavigation` while active.
-     - Geometry-derived pan bounds: $\text{maxPan} = 260.0 \times (\text{zoom} - 1.0) / 2.0$. Zero pan at $1.0\times$ zoom; automatic reclamping on zoom reduction and reset.
-     - Strict pure black `#000000` compliance (eliminated charcoal `0xFF111827`).
-  2. Correction B — 200% Accessibility Selection & Ambient Scaling:
-     - Responsive gender selector (`_buildGenderSelector()`) adapts dynamically: at text scale $\ge 1.3$, renders vertical full-width tiles with checkmark indicators; at $< 1.3$, renders horizontal row.
-     - `maxLines: 1` and `TextOverflow.ellipsis` removed so «أفضل عدم الإفصاح» is completely visible in full without clipping or ellipsis.
-     - 48dp minimum touch target (`constraints: const BoxConstraints(minHeight: 48)`) and accessible semantics preserved.
-     - Normal preview respects ambient OS text scaling; explicit $200\%$ scaling strictly isolated to QA scenario.
-  3. Correction C — Separate Development Metadata from Customer UX & Evidence Integrity:
-     - Replaced badge `مقترح #172` with customer-facing badge `اسم مقترح`.
-     - Replaced technical username description with natural Arabic: `'معرّف موحّد لحسابك ورابطك الشخصي. يخضع للتحقق من التوفر عند الاعتماد.'`.
-     - Sanitized security footnote: `'لحماية أمان حسابك، لا يمكن تعديل رقم الهاتف أو البريد الإلكتروني أو ربط وسائل تسجيل الدخول مباشرة من هذه الصفحة. لإدارة بيانات الأمان، يرجى الانتقال إلى إعدادات الأمان والحساب.'` (no `شاشة 19` reference).
-     - Sanitized prototype notice banner: `'معاينة تجريبية: يتم حفظ وتعديل البيانات محلياً فقط على هذا الجهاز. لن يتم إرسال أي تعديلات إلى خوادم الإنتاج.'` (no `#176` reference).
-     - Sanitized crop modal disclaimer: `'معاينة محلية لتعديل واقتصاص الصورة — لا يتم رفع الصور إلى الخادم'` (no `#176` reference).
-     - Audited and corrected evidence metadata in `ERRATUM.md` with 100% verified SHA-256 and Base64 match.
+SCOPE: Deliver native Flutter visual design and isolated preview for Customer Screen 19 — Settings («الإعدادات») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. Quiet premium native mobile layout: Cairo Arabic RTL, exact pure black `#000000`, white/light neutral surfaces, grouped low-chrome editorial rows with subtle separators, no card soup, no navy/charcoal (#111827).
+  2. Section 1 (الأمان وطرق الدخول): Masked verified primary contact identifiers (`+20 10 •••• 5678` and `a•••••@gmail.com`) only in synthetic QA fixture; planned entry rows for secondary email/phone and Apple/Google sign-in linking clearly labeled as planned/unavailable; honest microcopy on identity challenges (#172).
+  3. Section 2 (الإشعارات والتنبيهات): Strict distinction between OS permission and channel preferences; local-only preview toggle with transparent disclaimer; permission-denied recovery explanation scenario and bottom sheet.
+  4. Section 3 (تفضيلات التطبيق): Arabic language default, EGP currency, OS-following reduced motion with truthful disclosure.
+  5. Section 4 (الخصوصية والحساب): Privacy Policy (Screen 26) & Terms (Screen 25) links, account deletion/export legal/product notice, demonstration-only sign-out dialog.
+  6. Navigation: Canonical NESTED_CUSTOMER contract: Header with RTL physical-right back button (➔) returning to Screen 17 Account, NO bottom navigation bar. Document discrepancy with Screen 18 isolated preview in report.
+  7. Verification: Normal, scrolled, 200% text scale, permission-denied bottom sheet, sign-out confirmation dialog, and unauthenticated/guest state. 100% genuine Samsung A56 captures, unit/widget tests (18/18 PASS), flutter analyze 0 issues.
 
 ## Boundaries & Invariants
-- Screen 17 V4 visual baseline is FROZEN AS-IS at `d1a8ab97442e35aa83a2866b476a0143be929528`. Do not modify or reopen Screen 17.
+- Screen 17 V4 visual baseline is FROZEN AS-IS at `d1a8ab97442e35aa83a2866b476a0143be929528`.
+- Screen 18 V1 visual baseline is FROZEN AS-IS at `70278470f9d4158196423a82567c4cd23e8a3114`.
 - Zero changes to production code (`customer_app/lib/` untouched, backend untouched, database untouched).
-- All non-visual technical issues (real photo upload, server persistence, OAuth linking, phone/email verification) deferred as PRELIVE gates.
-- All historical evidence preserved untouched per Issue #155 (Screens 12, 13, 14, 15, 16, and 17 V1–V4, and Screen 18 V1).
+- All non-visual technical issues (real OS permission intent, server preference sync, OAuth linking, real sign-out, account deletion/export) deferred as PRELIVE gates.
+- All historical evidence preserved untouched per Issue #155 (Screens 12–18).
 - Physical device serial redacted in all logs and markdown (`[REDACTED_A56_ID]`).
 
 ## Verification & Quality Gates
-- [x] Screen 18 isolated Flutter preview runner updated in `tool/screen18_preview_runner.dart`.
-- [x] Source-linked tests updated in `test/screen18_source_linked_tests.dart` (29/29 tests pass).
+- [x] Screen 19 isolated Flutter preview runner implemented in `tool/screen19_preview_runner.dart`.
+- [x] Source-linked tests implemented in `test/screen19_source_linked_tests.dart` (18/18 PASS).
 - [x] Static analysis passes with 0 issues (`flutter analyze`).
-- [x] Meaningful photo cropping with active draft bytes, interactive pan/zoom, and avatar reflection verified on device.
-- [x] Fullscreen crop modal with hidden bottom navigation and exact pure black `#000000` verified on device.
-- [x] Geometry-derived pan bounds and zoom-reduction reclamping verified on device and in automated tests.
-- [x] Fail-closed photo removal and no-photo initial fallback verified on device.
-- [x] 200% font scale responsive vertical gender tiles verified on device (no clipping, no ellipsis).
-- [x] Ambient OS accessibility text scaling respected in normal scenarios.
-- [x] Complete sanitization of development metadata, issue numbers, and screen IDs verified on device.
-- [x] Genuine Samsung Galaxy A56 5G captures and Base64 companions generated in `review-evidence/customer-screen18/v1-focused-correction/`.
-- [x] Physical device live interaction trace (4 steps) captured and verified in `review-evidence/customer-screen18/v1-focused-correction/interaction-trace/`.
-- [x] Evidence manifest, README, REPORT, and ERRATUM documented in `review-evidence/customer-screen18/v1-focused-correction/`.
+- [x] Quiet premium editorial rows, exact pure black `#000000`, and subtle separators verified on device.
+- [x] Canonical NESTED_CUSTOMER header with physical right RTL back arrow and NO bottom navigation verified on device.
+- [x] Account & security section with masked synthetic contacts and planned linking entry rows verified on device.
+- [x] Notifications section with OS vs channel distinction, local toggle demo, and permission-denied bottom sheet verified on device.
+- [x] App preferences and privacy/account actions (sign-out demo dialog, deletion info) verified on device.
+- [x] Responsive 200% text scaling verified on device with zero clipping, collisions, or truncated labels.
+- [x] Genuine Samsung Galaxy A56 5G captures and Base64 companions generated in `review-evidence/customer-screen19/v1/`.
+- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen19/v1/`.
 
 ---
 

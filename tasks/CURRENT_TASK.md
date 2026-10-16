@@ -1,50 +1,62 @@
-# Active Task — CUSTOMER_SCREEN19_V1_TRUTH_CLARITY_CORRECTION
+# Active Task — CUSTOMER_SCREEN20_V1_DESIGN_ONLY
 
-TASK_ID: CUSTOMER_SCREEN19_V1_TRUTH_CLARITY_CORRECTION
+TASK_ID: CUSTOMER_SCREEN20_V1_DESIGN_ONLY
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN19_V1_TRUTH_CLARITY_CORRECTION__AWAITING_BRIDGE_REVIEW_AND_FOUNDER_DECISION
-BRANCH: evidence/customer-screen19-design-review
-BASELINE_COMMIT: cf0af01456ca7ee6c30ba8de5bda3c5772ffd7a2
+STATUS: SCREEN20_V1_DELIVERED__AWAITING_BRIDGE_REVIEW_AND_FOUNDER_DECISION
+BRANCH: evidence/customer-screen20-design-review
+BASELINE_COMMIT: c2145f9a6bdff092d42c20d083fd559f35fdc631
 GOVERNING_ISSUES:
-  - Issue #177: Customer Screen 19 Settings («الإعدادات») — Founder-Authorized Isolated Flutter Design & Bridge Review
+  - Issue #179: Customer Screen 20 Payment History («سجل المدفوعات») — Founder-Authorized Isolated Flutter Design & Bridge Review
   - Issue #175: Mandatory Pure-Black `#000000` Rule & Repository-Wide Audit
   - Issue #174: Notifications Navigation Routing Proposal vs Architecture
+  - Issue #173: Financial Model Meaning & Booking Lifecycle Boundaries
   - Issue #172: Identity, Avatar, QR & Connected Profiles Boundaries
   - Issue #171: Deferred Screen 17 Technical/QA Backlog (Prelive Gate)
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver ONE bounded truth, copy, and guest interaction correction for Customer Screen 19 — Settings («الإعدادات») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. Synthetic Identity & OS Permission Truth: Masked identifiers explicitly labeled as demonstration data (`مؤكّد (بيانات تجريبية)` and card footnote); OS notification permission status truthfully presented as illustrative (`حالة توضيحية`) in pill, subtitle, banner, and denied sheet; internal GitHub issue references removed from customer-facing copy.
-  2. Guest Notification Controls: Unauthenticated guest scenario disables booking updates and host messages in both controller and UI (`isEnabled: false`, OFF), displays guest amber banner, and rejects toggle mutation with login-required notice.
-  3. Unapproved Legal & Wallet Claims: Removed references to customer wallet (`محفظتك`) from sign-out confirmation copy; replaced unapproved deletion policy and wallet liability checks with honest pending-policy regulatory notice.
-  4. Physical Hardware Evidence: 8 screenshots recaptured on genuine Samsung Galaxy A56 5G (`SM_A566B`, Android 16 API 36) and published with Base64 companions in new additive directory `review-evidence/customer-screen19/v1-truth-clarity-correction/`.
-  5. Verification: 19/19 behavioral and widget tests PASS; `flutter analyze` 0 issues; pure black `#000000` compliant.
+SCOPE: Deliver native Flutter UI/UX design and isolated preview for Customer Screen 20 — Payment History («سجل المدفوعات») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. Read-only trusted financial history answering: What payment events and amounts associated with my own bookings are recorded, and which receipts or details may I view?
+  2. Canonical NESTED_CUSTOMER navigation: physical right-pointing arrow (Icons.arrow_forward_ios), centered header «سجل المدفوعات», no bottom nav bar per DESIGN_SYSTEM/COMPONENTS/navigation.md §3.3.
+  3. Cairo Arabic RTL typography, exact pure black #000000 (Issue #175: zero charcoal/navy #111827 / #1F2937 / #0F172A), white/off-white surfaces, subtle borders.
+  4. Visible first-fold synthetic disclaimer banner: «بيانات تجريبية — ليست معاملات حقيقية». Never imply real payments or bank/card settlement.
+  5. Respect MR-13: first-night deposit after Owner approval («عربون الليلة الأولى»). MR-15 (remaining balance) is open; general refund policies are open. Do NOT invent payment deadlines, remaining balance mechanics, refund SLAs, or live PSP integrations.
+  6. Zero Customer Wallet features: no wallet balances, top-up, owner commission, payout, or wallet credits.
+  7. Contained transaction detail / receipt preview sheet («تفاصيل العملية (معاينة تجريبية)») with clear demonstration disclaimers.
+  8. 8 decision-grade scenarios captured on genuine Samsung Galaxy A56 5G (SM_A566B, Android 16 API 36) and published with Base64 companions in review-evidence/customer-screen20/v1/.
 
 ## Boundaries & Invariants
-- Screen 17 V4 visual baseline is FROZEN AS-IS at `d1a8ab97442e35aa83a2866b476a0143be929528`.
-- Screen 18 V1 visual baseline is FROZEN AS-IS at `70278470f9d4158196423a82567c4cd23e8a3114`.
-- Screen 19 V1 baseline is PRESERVED at `cf0af01456ca7ee6c30ba8de5bda3c5772ffd7a2`.
-- Zero changes to production code (`customer_app/lib/` untouched, backend untouched, database untouched).
-- All non-visual technical issues (real OS permission intent, server preference sync, OAuth linking, real sign-out, account deletion/export) deferred as PRELIVE gates.
-- All historical evidence preserved untouched per Issue #155 (Screens 12–18 and Screen 19 V1).
-- Physical device serial redacted in all logs and markdown (`[REDACTED_A56_ID]`).
+- Screen 17 V4 visual baseline is FROZEN AS-IS at d1a8ab97442e35aa83a2866b476a0143be929528.
+- Screen 18 V1 visual baseline is FROZEN AS-IS at 70278470f9d4158196423a82567c4cd23e8a3114.
+- Screen 19 V1 visual baseline is FROZEN AS-IS at c2145f9a6bdff092d42c20d083fd559f35fdc631.
+- Zero changes to production code (customer_app/lib/ untouched, backend untouched, database untouched).
+- All non-visual technical issues (real payment gateways, live receipts, PDF downloads, bank webhooks) deferred as PRELIVE gates.
+- All historical evidence preserved untouched per Issue #155 (Screens 12–19).
+- Physical device serial redacted in all logs and markdown ([REDACTED_A56_ID]).
 
 ## Verification & Quality Gates
-- [x] Verified identifier badges and card footnote updated with explicit demonstration data notice.
-- [x] OS permission status pill, subtitle, disclaimer, and denied sheet updated with illustrative notice.
-- [x] Customer microcopy purged of internal GitHub issue numbers (Issue #172).
-- [x] Unauthenticated guest state gates booking and host message notification controls in controller and UI.
-- [x] Sign-out dialog body cleansed of wallet reference (`محفظتك`).
-- [x] Account deletion sheet cleansed of fictitious regulatory policy and wallet liability claims.
-- [x] Flexible badge wrapping implemented in `_buildVerifiedIdentifierRow` ensuring zero RenderFlex overflow at 200% font scale.
-- [x] Source-linked tests updated and expanded to 19/19 PASS (`test/screen19_source_linked_tests.dart`).
-- [x] Static analysis passes with 0 issues (`flutter analyze tool/screen19_preview_runner.dart test/screen19_source_linked_tests.dart`).
-- [x] 8 genuine physical Samsung Galaxy A56 5G captures and Base64 companions generated in `review-evidence/customer-screen19/v1-truth-clarity-correction/`.
-- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen19/v1-truth-clarity-correction/`.
-- [x] Review source mirrors copied to `review-evidence/customer-screen19/v1-truth-clarity-correction/review-source/`.
+- [x] Canonical NESTED_CUSTOMER navigation with physical right-pointing back arrow and NO bottom nav bar.
+- [x] Prominent first-fold synthetic disclaimer banner («بيانات تجريبية — ليست معاملات حقيقية»).
+- [x] Chronological grouped transaction list with customer-safe amounts, EGP formatting in isolated LTR spans, semantic status badges, and booking references.
+- [x] Contained transaction detail / receipt preview sheet with explicit demonstration disclaimers.
+- [x] Honest empty state, reconciliation / pending state, network error state, and guest private-data shield.
+- [x] 200% font scale reflow tested with zero RenderFlex overflow.
+- [x] Pure black #000000 compliance (zero forbidden charcoal/navy hex values).
+- [x] Source-linked tests created and 100% PASS (18/18 PASS in test/screen20_source_linked_tests.dart).
+- [x] Static analysis passes with 0 issues (flutter analyze tool/screen20_preview_runner.dart test/screen20_source_linked_tests.dart).
+- [x] Genuine physical Samsung Galaxy A56 5G captures and Base64 companions generated in review-evidence/customer-screen20/v1/.
+- [x] Evidence manifest, README, and REPORT documented in review-evidence/customer-screen20/v1/.
+- [x] Review source mirrors copied to review-evidence/customer-screen20/v1/review-source/.
 
 ---
+
+## Historical Task — CUSTOMER_SCREEN19_V1_TRUTH_CLARITY_CORRECTION (FROZEN & APPROVED)
+- PR / COMMIT: c2145f9a6bdff092d42c20d083fd559f35fdc631
+- SCOPE: Customer Screen 19 Settings truth, copy, and guest interaction bounded correction.
+- VERIFICATION: 19/19 tests PASS; Samsung Galaxy A56 physical QA PASS; Founder visual approval.
+
+---
+
 
 
 ## Historical Task — CUSTOMER_SCREEN_06_PROPERTY_DETAILS_V3 (MERGED)

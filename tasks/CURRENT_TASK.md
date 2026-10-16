@@ -1,14 +1,14 @@
-# Active Task — CUSTOMER_SCREEN20_RECEIPT_TRUTH_A11Y_REFINEMENT
+# Active Task — CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_PLAN
 
-TASK_ID: CUSTOMER_SCREEN20_RECEIPT_TRUTH_A11Y_REFINEMENT
+TASK_ID: CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_PLAN
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN20_RECEIPT_TRUTH_A11Y_REFINEMENT_DELIVERED__AWAITING_FOUNDER_VISUAL_APPROVAL
-BRANCH: evidence/customer-screen20-design-review
-BASELINE_COMMIT: 04c250b6521a272ca3e3694913ca71dd35186bd1
+STATUS: SCREEN21_PLAN_MODE__AWAITING_BRIDGE_AND_FOUNDER_REVIEW
+BRANCH: evidence/customer-screen21-design-review
+BASELINE_COMMIT: bf1aeeb0ef2c8c8e6e6418ca036050d22e4dd6c3
 GOVERNING_ISSUES:
-  - Issue #184: Customer Screen 20 Unified PDF Receipt Design & Founder Final Order Amendment
+  - Issue #185: Customer Screen 21 Help & Support («المساعدة والدعم») — Founder-Authorized Isolated Flutter Design & Bridge Review
+  - Issue #186: [DEFERRED / CUSTOMER SCREEN21 PRELIVE] Verified support channels, case API, auth, privacy, SLA and accessibility
   - Issue #183: Mandatory Design Skills Activation, Design Court Review & Store Platform Gate
-  - Issue #179: Customer Screen 20 Payment History («سجل المدفوعات») — Founder-Authorized Isolated Flutter Design & Bridge Review
   - Issue #175: Mandatory Pure-Black `#000000` Rule & Repository-Wide Audit
   - Issue #174: Notifications Navigation Routing Proposal vs Architecture
   - Issue #173: Financial Model Meaning & Booking Lifecycle Boundaries
@@ -17,40 +17,30 @@ GOVERNING_ISSUES:
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver refined payment receipt truth and 200% accessibility layout for Customer Screen 20 — Payment History («سجل المدفوعات») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. Legal & Issuer Truth: Purged unverified corporate name (`شركة كونفرم لخدمات العطلات ش.ذ.م.م`), fictitious certification badge (`إشعار سداد معتمد`), electronic issuance claim, and unverified support email (`support@konfrm.com`). Retained neutral `إيصال سداد` title; integrated canonical vector `KonfrmBrandSymbol`; verified issuer slots default to null and render only when backed by authoritative database records.
-  2. Fixed 200% Accessibility Layout Failure & Document Stability: Wrapped receipt document paper in `MediaQuery` with `TextScaler.noScaling` for stable printable document geometry, preventing header fragmentation (`KONF / | RM`). Mobile chrome scales with system accessibility, and bottom action buttons adaptively reflow into a full-width vertical `Column` on large font scale (`textScaler > 1.3`), preserving 48dp+ touch targets.
-  3. PDF Export Honesty: Made «حفظ PDF» and «مشاركة» inert preview buttons (`onPressed: () {}`) without claiming fake file creation or success; completely purged all internal `#180` and `PRELIVE #180` issue strings from customer-facing UI. Document real export as deferred under PRELIVE Issue #180.
-  4. Editorial & Brand Polish: Updated location label to «المنطقة: الساحل الشمالي», removed redundant «اسم العملية» data row, and adopted quiet footer «منصة كونفرم لتأجير بيوت العطلات».
-  5. Issue #183 Design Court & Store Honesty: Documented `SINGLE_AGENT_STRUCTURED_PANEL` docket, red-team gate failures/remediations, and explicit open gates (iOS HIG `NOT_TESTED`, real fiscal tax e-receipt `DEFERRED_TO_PRELIVE_180`).
-  6. Additive Evidence Delivery: 3 decision-grade physical Samsung Galaxy A56 5G captures + companions published in `review-evidence/customer-screen20/v1-receipt-truth-a11y-refinement/`.
+SCOPE: Comprehensive UI/UX architecture and scenario planning for Customer Screen 21 — Help & Support («المساعدة والدعم») in Native Flutter:
+  1. Product Model & Information Architecture: Fast FAQ discovery & topic search across loaded fixture content, followed by concise contextual contact intake.
+  2. Dual Origin Support: Account general help origin vs Booking contextual help origin (preserving booking reference #183223 with explicit user consent disclosure).
+  3. Strict Privacy & Zero False Claims: Zero invented phone/WhatsApp/email contacts, response SLAs, 24/7 promises, or confirmed ticket IDs. Inert runner affordances with explicit prelive boundaries under Issue #186.
+  4. Design Court & Issue #183 Governance: Structured single-agent panel deliberation across Design, Product, and Quality axes with honest open gates.
+  5. 10 Decision-Grade Scenarios for Physical Samsung Galaxy A56 5G (Normal & 200% accessibility text scaling).
 
 ## Boundaries & Invariants
 - Screen 17 V4 visual baseline is FROZEN AS-IS at d1a8ab97442e35aa83a2866b476a0143be929528.
 - Screen 18 V1 visual baseline is FROZEN AS-IS at 70278470f9d4158196423a82567c4cd23e8a3114.
 - Screen 19 V1 visual baseline is FROZEN AS-IS at c2145f9a6bdff092d42c20d083fd559f35fdc631.
+- Screen 20 V1 visual baseline is FROZEN AS-IS at bf1aeeb0ef2c8c8e6e6418ca036050d22e4dd6c3.
 - Zero changes to production code (customer_app/lib/ untouched, backend untouched, database untouched).
-- All non-visual technical issues (real payment gateways, backend PDF generation engines, live ETA e-receipts, bank webhooks) deferred as PRELIVE Issue #180 gates.
-- All historical evidence preserved untouched per Issue #155 (Screens 12–19, review-evidence/customer-screen20/v1/, v1-production-fidelity-refinement/, v1-production-fidelity-factual-microfix/, and v1-receipt-design/).
+- All support channels, case submission APIs, live email/WhatsApp endpoints, and SLA guarantees deferred to PRELIVE Issue #186.
+- All historical evidence preserved untouched per Issue #155 (Screens 12–20).
 - Physical device serial redacted in all logs and markdown ([REDACTED_A56_ID]).
 
-## Verification & Quality Gates
-- [x] Canonical NESTED_CUSTOMER navigation with physical right-pointing back arrow and NO bottom nav bar.
-- [x] Founder Final Order Amendment preserved: `TXN-2026-881249` restored inside authenticated transaction details (`تفاصيل العملية`) and receipt document.
-- [x] Real platform clipboard integration: «نسخ رقم المعاملة» copies `TXN-2026-881249` to system clipboard with toast feedback.
-- [x] Currency «ج.م» positioned physically to the LEFT of numeric digits (`ج.م 1,450`), verified by geometry test assertion `currencyRect.left < digitsRect.left` on both list items and receipt document.
-- [x] Financial decimal precision preserved without `double.toInt()` truncation.
-- [x] Absolute purge of development/prototype copy and unverified claims (`بيانات تجريبية`, `MR-13`, `BK-`, `PRELIVE #180`, `#180`, `شركة كونفرم لخدمات العطلات`).
-- [x] Human-friendly booking numbers (`رقم الحجز 183223`) on outer cards.
-- [x] Canonical vector `KonfrmBrandSymbol` integrated and rendered crisp alongside neutral «إيصال سداد».
-- [x] 200% font scale reflow verified without text wrapping, overflow exceptions, or layout breakage (`TextScaler.noScaling` on printable document + adaptive vertical buttons).
-- [x] Pure black #000000 compliance (zero forbidden charcoal/navy hex values).
-- [x] Source-linked tests created and 100% PASS (27/27 PASS in test/screen20_source_linked_tests.dart).
-- [x] Static analysis passes with 0 issues (flutter analyze tool/screen20_preview_runner.dart test/screen20_source_linked_tests.dart).
-- [x] Genuine physical Samsung Galaxy A56 5G captures (3 scenarios) and Base64 companions generated in review-evidence/customer-screen20/v1-receipt-truth-a11y-refinement/.
-- [x] Evidence manifest, README, and REPORT documented in review-evidence/customer-screen20/v1-receipt-truth-a11y-refinement/.
-- [x] Honest Design skills activation, Design Court review, and store compliance receipt documented in review-evidence/customer-screen20/v1-receipt-truth-a11y-refinement/DESIGN_SKILL_COURT_STORE_RECEIPT.md.
-- [x] Review source mirrors copied to review-evidence/customer-screen20/v1-receipt-truth-a11y-refinement/review-source/.
+---
+
+## Historical Task — CUSTOMER_SCREEN20_RECEIPT_TRUTH_A11Y_REFINEMENT (FROZEN & APPROVED)
+- COMMIT: bf1aeeb0ef2c8c8e6e6418ca036050d22e4dd6c3
+- STATUS: FROZEN & APPROVED by Founder; Screen 20 list and unified receipt baseline locked.
+- SCOPE: Payment receipt truth, vector KonfrmBrandSymbol, 200% font scale document stability, adaptive vertical actions, editorial polish.
+- VERIFICATION: 27/27 tests PASS, 0 analyzer issues, Samsung Galaxy A56 physical QA PASS.
 
 ---
 

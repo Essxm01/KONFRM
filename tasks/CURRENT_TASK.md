@@ -1,47 +1,45 @@
-# Active Task — CUSTOMER_SCREEN17_FINAL_REFINEMENT_PURE_BLACK
+# Active Task — CUSTOMER_SCREEN18_PROFILE_EDITOR
 
-TASK_ID: CUSTOMER_SCREEN17_FINAL_REFINEMENT_PURE_BLACK
+TASK_ID: CUSTOMER_SCREEN18_PROFILE_EDITOR
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN17_FINAL_REFINEMENT_PURE_BLACK_000000__AWAITING_BRIDGE_FOUNDER_REVIEW
-BRANCH: evidence/customer-screen17-design-review
+STATUS: SCREEN18_V1_AWAITING_BRIDGE_AND_FOUNDER_VISUAL_REVIEW
+BRANCH: evidence/customer-screen18-design-review
 GOVERNING_ISSUES:
-  - Issue #170: Customer Screen 17 Account Home — Founder UX Recomposition & Directives
+  - Issue #176: Customer Screen 18 Profile / Edit Profile — Founder-Authorized Isolated Flutter Design
   - Issue #175: Mandatory Pure-Black `#000000` Rule & Repository-Wide Audit
-  - Issue #174: Notification Bell in Explore Header vs Navigation Contract Reconciliation
+  - Issue #172: Identity, Avatar, QR & Connected Profiles Boundaries
+  - Issue #171: Deferred Screen 17 Technical/QA Backlog (Prelive Gate)
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
-  - Issue #172: Identity, Avatar, QR & Connected Profiles
-  - Issue #173: Proposed Customer Wallet & Financial Boundaries
-  - Issue #171: Deferred Technical/QA Backlog for Screen 17
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver the Founder-directed Final UX Refinement and Exact Pure-Black (`#000000`) Enforcement for Customer Screen 17 (Account Home — «حسابي — مساحتي في كونفرم») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. Mandatory Pure-Black Enforcement: Replaced all 48 occurrences of `#111827` in Screen 17 with exact pure black `#000000`. Zero charcoal or dark navy substitutions.
-  2. Compact Horizontal Identity Hero as Default: Avatar on physical right in RTL, name, handle, edit button, black camera on white circle, zero phone display. Adapts to vertical hero at >=150% font scale.
-  3. Single Unified Editorial Card: Anti-card-soup, subtle dividers `#F3F4F6`, `#F9FAFB` section banners, physical left `<` chevrons.
-  4. Clean Bidi Text: Linked accounts phrased as «وسائل الدخول (Apple / Google)» eliminating text direction collisions.
-  5. Light Redesigned Wallet Concept Modal: Zero dark slab, zero fake balances (`0.00 ج.م`), status badge «المحفظة قيد التجهيز», Issue #173 financial notice.
-  6. Truthful QR Prototype Modal: Disclaimer badge «معاينة تصميمية غير مفعلة — قيد الاعتماد الفني #172», pure black header and actions.
-  7. Accessibility 200% Font Scale: 3-line stay title with zero truncation, zero RenderFlex overflow.
-  8. Repository-Wide Color Inventory: Comprehensive Issue #175 audit across Customer, Owner, Admin, Mobile, and Design System documented in `COLOR_AUDIT_ISSUE_175.md`.
-  9. Physical Samsung Galaxy A56 5G Evidence: 7 captures, Base64 companions, and SHA-256 digests in `review-evidence/customer-screen17/v4-pure-black-refinement/`.
+SCOPE: Deliver Founder-authorized isolated native Flutter visual design for Customer Screen 18 (Profile / Edit Profile — «تعديل الملف الشخصي») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. Profile Photo & Interactive Crop: Editable portrait with black camera/edit icon inside a WHITE circle (>=48dp touch target). Interactive photo sheet (Camera, Gallery, Crop, Remove, Cancel) and 1:1 circular crop preview modal with pan/zoom controls and honest local prototype disclaimer.
+  2. Personal Identity Fields: Editable full name (live validation >=2 chars), unified proposed `@username` draft with explicit proposal badge (no fabricated availability check), private birth date with auto-derived age, and private gender selection (Male, Female, Prefer not to disclose).
+  3. Verified Account Identifiers: Dedicated read-only identity section distinguishing verified phone and email with green badges, explicitly noting that credential edits and OAuth linking belong to Screen 19.
+  4. Save & Discard Experience: Dirty/pristine detection, pure black `#000000` primary save CTA (6px radius), local preview disclaimer (`معاينة فقط — لم يتم حفظ التعديلات`), unsaved changes confirmation dialog on back navigation, and recoverable error/draft preservation scenarios.
+  5. Visual & Typography System: Cairo Arabic RTL typography, exact pure black `#000000` for all primary black, white/light neutral surfaces (`#F9FAFB` canvas), subtle dividers (`#F3F4F6`), zero charcoal/navy/generic blue, and zero card soup.
+  6. Shell & Navigation: RTL back arrow pointing physically RIGHT for hierarchical return to Account, canonical `CustomerBottomNavigation` with Account (Index 3) selected, and robust reflow at 100% and 200% font scale.
+  7. Verification & Evidence: Unit and widget tests (100% passing), clean `flutter analyze`, genuine Samsung Galaxy A56 5G captures, Base64 companions, and additive documentation in `review-evidence/customer-screen18/v1/`.
 
 ## Boundaries & Invariants
+- Screen 17 V4 visual baseline is FROZEN AS-IS at `d1a8ab97442e35aa83a2866b476a0143be929528`. Do not modify or reopen Screen 17.
 - Zero changes to production code (`customer_app/lib/` untouched, backend untouched, database untouched).
-- All non-visual technical issues (backend persistence, session revocation, real identity RPCs, push integration) deferred under Issue #171.
-- All historical evidence preserved untouched per Issue #155 (Screen 17 V1 preserved in `review-evidence/customer-screen17/v1/`, V2 in `v2-premium/`, V3 in `v3-simplified-premium/`).
+- All non-visual technical issues (real photo upload, server persistence, OAuth linking, phone/email verification) deferred as PRELIVE gates.
+- All historical evidence preserved untouched per Issue #155 (Screens 12, 13, 14, 15, 16, and 17 V1–V4).
 - Physical device serial redacted in all logs and markdown (`[REDACTED_A56_ID]`).
 
 ## Verification & Quality Gates
-- [x] Screen 17 isolated Flutter preview runner updated in `tool/screen17_preview_runner.dart` (0 occurrences of `#111827`).
-- [x] Source-linked tests updated in `test/screen17_source_linked_tests.dart` (21/21 passed).
+- [x] Screen 18 isolated Flutter preview runner created in `tool/screen18_preview_runner.dart`.
+- [x] Source-linked tests created in `test/screen18_source_linked_tests.dart`.
 - [x] Static analysis passes with 0 issues (`flutter analyze`).
-- [x] Canonical `CustomerBottomNavigation` retained with Account active (Index 3) matching Screens 15/16.
-- [x] Compact horizontal identity hero as default, black camera on white circle, and zero phone number in hero fold verified.
-- [x] Single unified editorial container with `#F9FAFB` section headers and physical left chevrons (`<`) verified.
-- [x] Truthful QR modal and zero-claim light wallet modal verified.
-- [x] 7 genuine Samsung Galaxy A56 5G captures and Base64 companions generated.
-- [x] Repository-wide color inventory documented in `COLOR_AUDIT_ISSUE_175.md`.
-- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen17/v4-pure-black-refinement/`.
+- [x] Canonical `CustomerBottomNavigation` retained with Account active (Index 3).
+- [x] Exact pure black `#000000` strictly enforced across all primary black elements.
+- [x] Editable portrait with black camera on white circle and 1:1 circular crop preview modal verified.
+- [x] Form fields, age derivation, gender selection, and read-only verified identifiers verified.
+- [x] Discard changes dialog and dirty form safety verified.
+- [x] 200% font scale verified with zero RenderFlex overflow.
+- [x] Genuine Samsung Galaxy A56 5G captures and Base64 companions generated.
+- [x] Evidence manifest, README, and REPORT documented in `review-evidence/customer-screen18/v1/`.
 
 ---
 

@@ -1,8 +1,8 @@
-# Active Task — CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_PLAN
+# Active Task — CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_V1
 
-TASK_ID: CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_PLAN
+TASK_ID: CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_V1
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN21_PLAN_MODE__AWAITING_BRIDGE_AND_FOUNDER_REVIEW
+STATUS: SCREEN21_V1_DESIGN_DELIVERED__AWAITING_BRIDGE_AND_FOUNDER_REVIEW
 BRANCH: evidence/customer-screen21-design-review
 BASELINE_COMMIT: bf1aeeb0ef2c8c8e6e6418ca036050d22e4dd6c3
 GOVERNING_ISSUES:
@@ -17,12 +17,13 @@ GOVERNING_ISSUES:
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Comprehensive UI/UX architecture and scenario planning for Customer Screen 21 — Help & Support («المساعدة والدعم») in Native Flutter:
-  1. Product Model & Information Architecture: Fast FAQ discovery & topic search across loaded fixture content, followed by concise contextual contact intake.
-  2. Dual Origin Support: Account general help origin vs Booking contextual help origin (preserving booking reference #183223 with explicit user consent disclosure).
-  3. Strict Privacy & Zero False Claims: Zero invented phone/WhatsApp/email contacts, response SLAs, 24/7 promises, or confirmed ticket IDs. Inert runner affordances with explicit prelive boundaries under Issue #186.
-  4. Design Court & Issue #183 Governance: Structured single-agent panel deliberation across Design, Product, and Quality axes with honest open gates.
-  5. 10 Decision-Grade Scenarios for Physical Samsung Galaxy A56 5G (Normal & 200% accessibility text scaling).
+SCOPE: Comprehensive delivery of Customer Screen 21 — Help & Support («المساعدة والدعم») Native Flutter Design V1:
+  1. Product Model & Sourced FAQs: 5 authoritative FAQ items grounded strictly in confirmed Master Rules (MR-12, MR-13, Booking Canon). Zero invented check-in times or unapproved penalty policies.
+  2. Contextual Intake & Opt-In Booking Consent (Amendment 3): Sanitized booking number #183223 with dedicated opt-in consent checkbox default strictly to OFF (false). Generic inquiries remain fully supported without forced metadata disclosure.
+  3. Strict Privacy & Zero Phantom Claims: Proposed intake UX with draft preservation on validation errors and timeout/uncertain states; zero fake ticket IDs, fake SLA promises, or phantom success toasts. Real case APIs deferred to PRELIVE Issue #186.
+  4. Design Court & Issue #183 Governance: Genuine consultation of konfrm-design, konfrm-product, konfrm-flutter, and konfrm-quality. Structured single-agent panel deliberation with honest open gates (iOS HIG NOT_TESTED, support backend DEFERRED_TO_PRELIVE_186).
+  5. 12 Decision-Grade Physical Captures on Samsung Galaxy A56 5G (Android 16 API 36, [REDACTED_A56_ID]) across Help Center top fold, search filtering, empty state, booking consent default OFF / ON, inline validation error, timeout/uncertain recovery, unauthenticated guest barrier, and 200% accessibility font scale reflow.
+VERIFICATION: 25/25 automated unit/widget tests PASS (100%), 0 static analyzer issues, Samsung Galaxy A56 physical QA PASS.
 
 ## Boundaries & Invariants
 - Screen 17 V4 visual baseline is FROZEN AS-IS at d1a8ab97442e35aa83a2866b476a0143be929528.

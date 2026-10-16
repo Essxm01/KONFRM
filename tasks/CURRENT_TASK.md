@@ -1,13 +1,13 @@
-# Active Task — CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_V1
+# Active Task — CUSTOMER_SCREEN22_BOOKING_CHAT_NATIVE_FLUTTER_V1
 
-TASK_ID: CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_V1
+TASK_ID: CUSTOMER_SCREEN22_BOOKING_CHAT_NATIVE_FLUTTER_V1
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN21_V1_CORRECTION_DELIVERED__AWAITING_BRIDGE_AND_FOUNDER_REVIEW
-BRANCH: evidence/customer-screen21-design-review
-BASELINE_COMMIT: bf1aeeb0ef2c8c8e6e6418ca036050d22e4dd6c3
+STATUS: SCREEN22_V1_DESIGN_DELIVERED__AWAITING_BRIDGE_AND_FOUNDER_REVIEW
+BRANCH: evidence/customer-screen22-design-review
+BASELINE_COMMIT: d04f8e5e657502b58886a9b9d0dd934d1a97f20a
 GOVERNING_ISSUES:
-  - Issue #185: Customer Screen 21 Help & Support («المساعدة والدعم») — Founder-Authorized Isolated Flutter Design & Bridge Review
-  - Issue #186: [DEFERRED / CUSTOMER SCREEN21 PRELIVE] Verified support channels, case API, auth, privacy, SLA and accessibility
+  - Issue #191: Customer Screen 22 — Booking-Scoped Chat («محادثة الحجز») — Founder-Authorized Isolated Flutter Design & Bridge Review
+  - Issue #190: [DEFERRED / CUSTOMER SCREEN22 PRELIVE] Real-time WebSocket synchronization, Supabase Realtime, push notifications, and chat persistence
   - Issue #183: Mandatory Design Skills Activation, Design Court Review & Store Platform Gate
   - Issue #175: Mandatory Pure-Black `#000000` Rule & Repository-Wide Audit
   - Issue #174: Notifications Navigation Routing Proposal vs Architecture
@@ -17,23 +17,34 @@ GOVERNING_ISSUES:
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Bounded Founder-Truth & Accessibility Correction for Customer Screen 21:
-  1. FAQ Truth (MR-15 & Context §24.3): Purged unconfirmed cancellation claims; replaced with confirmed booking truth explaining pending status meaning («ماذا تعني حالة الطلب «قيد الانتظار»؟») per MR-12/MR-13.
-  2. 200% Accessibility & Topic Selector: Replaced rigid DropdownButton with content-responsive InkWell selector (minHeight: 48, multiline wrapping) opening a scroll-controlled bottom sheet modal; wrapped form header in Expanded. Zero text clipping at 200% font scale.
-  3. Zero Development Copy: Purged all developer testing/benchmark strings from customer UI; replaced with realistic customer inquiry copy.
-  4. Corrected Uncertain Submission UX: Eliminated dual-button collision; single «مراجعة الاستفسار» draft review action returning safely to idle state without duplicate case risk.
-  5. Additive Evidence Package: Published 12 fresh decision-grade captures on Samsung Galaxy A56 5G (Android 16 API 36, [REDACTED_A56_ID]) to review-evidence/customer-screen21/v1-founder-truth-a11y-correction/.
-VERIFICATION: 25/25 automated unit/widget tests PASS (100%), 0 static analyzer issues, Samsung Galaxy A56 physical QA PASS.
+SCOPE: Isolated Native Flutter UI/UX Design V1 for Customer Screen 22 Booking-Scoped Chat:
+  1. Canonical NESTED_CUSTOMER Navigation: Physical right back arrow [➔] (48×48dp target) returning to Screen 13; title «محادثة الحجز»; subtitle «المالك • فيلا لؤلؤة البحر — مراسي»; sanitized booking pill `#183223` (no `BK-` prefix); strictly zero bottom navigation bar.
+  2. Truthful Conversation Stream & Asymmetric RTL Bubbles: Outgoing customer bubble (left-aligned, pure black `#000000`, white text, single checkmark); incoming owner bubble (right-aligned, white card, 1px border `#E5E7EB`, dark text, host avatar and badge); discrete sticky booking context strip and centered scope security banner.
+  3. Epistemic Delivery Truth & Recovery Cards: Zero fake read receipts, zero double blue ticks, zero typing status. Four honest states: local optimistic `sending` spinner, server-acknowledged `sent` single check, `unknownTimeout` notice card with draft preservation and single «مراجعة المسودة» button suppressing duplicate sends, and `failed` notice card with safe retry.
+  4. Barrier States & Offline Handling: Unauthenticated guest barrier (`chat_guest_barrier_card`) shielding chat and metadata with login CTA; unavailable thread card (`chat_unavailable_card`) for ineligible bookings; offline warning banner with draft capability.
+  5. Keyboard-Safe Composer & 200% Accessibility: Dynamic container constraints (expanding up to 180dp in 200% mode) eliminating multiline text clipping; 48×48dp send CTA with mirrored arrow for RTL; verified under `TextScaler.linear(2.0)` on physical hardware.
+  6. Additive Evidence Package: Published 11 decision-grade captures on Samsung Galaxy A56 5G (Android 16 API 36, [REDACTED_A56_ID]) with `.b64.txt` companions in review-evidence/customer-screen22/v1/.
+VERIFICATION: 20/20 automated unit/widget tests PASS (100%), 0 static analyzer issues, Samsung Galaxy A56 physical QA PASS.
 
 ## Boundaries & Invariants
 - Screen 17 V4 visual baseline is FROZEN AS-IS at d1a8ab97442e35aa83a2866b476a0143be929528.
 - Screen 18 V1 visual baseline is FROZEN AS-IS at 70278470f9d4158196423a82567c4cd23e8a3114.
 - Screen 19 V1 visual baseline is FROZEN AS-IS at c2145f9a6bdff092d42c20d083fd559f35fdc631.
 - Screen 20 V1 visual baseline is FROZEN AS-IS at bf1aeeb0ef2c8c8e6e6418ca036050d22e4dd6c3.
+- Screen 21 V1 visual baseline is FROZEN AS-IS at d04f8e5e657502b58886a9b9d0dd934d1a97f20a.
 - Zero changes to production code (customer_app/lib/ untouched, backend untouched, database untouched).
-- All support channels, case submission APIs, live email/WhatsApp endpoints, and SLA guarantees deferred to PRELIVE Issue #186.
-- All historical evidence preserved untouched per Issue #155 (Screens 12–20).
+- All real-time chat persistence, WebSockets, Supabase Realtime, and push notifications deferred to PRELIVE Issue #190.
+- All historical evidence preserved untouched per Issue #155 (Screens 12–21).
 - Physical device serial redacted in all logs and markdown ([REDACTED_A56_ID]).
+- Clean stop: Screen 23 (Dispute / Evidence) is strictly unstarted and unauthorized pending formal Founder signoff.
+
+---
+
+## Historical Task — CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_V1 (FROZEN & APPROVED)
+- COMMIT: d04f8e5e657502b58886a9b9d0dd934d1a97f20a
+- STATUS: FROZEN & APPROVED by Founder; Screen 21 Help & Support baseline locked.
+- SCOPE: Help & Support FAQ truth, content-responsive topic selector, 200% font scale accessibility, pure black styling, opt-in booking consent default OFF, single-action draft review.
+- VERIFICATION: 25/25 tests PASS, 0 analyzer issues, Samsung Galaxy A56 physical QA PASS.
 
 ---
 

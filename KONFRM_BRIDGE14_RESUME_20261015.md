@@ -1,4 +1,16 @@
-# KONFRM — BRIDGE CURRENT RESUME | 2026-10-16 | SCREEN20 PDF RECEIPT FOUNDER OVERRIDE
+# KONFRM — BRIDGE CURRENT RESUME | 2026-10-16 | SCREEN20 MICROFIX VERIFIED, PDF RECEIPT NEXT
+
+## SCREEN20 FACTUAL MICROFIX 175B76D DELIVERED — HISTORICAL INTERMEDIATE BEFORE PDF DESIGN (2026-10-16, Africa/Cairo)
+
+> **NEWEST VERIFIED STATUS:** Antigravity completed its PREVIOUS targeted factual Screen20 microfix at [`175b76d49b08e1c1b3b820c2a7c8d2829ea13999`](https://github.com/Essxm01/KONFRM/commit/175b76d49b08e1c1b3b820c2a7c8d2829ea13999), one commit after docs/Court receipt `58e7b57`, branch `evidence/customer-screen20-design-review`. Bridge independently opened both revised A56 PNG image companions #03 detail and #05 reconciliation, inspected relevant Flutter runner code, verified additive-only file diff and branch HEAD; Antigravity reports 23/23 tests and clean analyzer (NOT rerun by Bridge). **This is an intermediate snapshot, NOT Founder Screen20 final visual approval.** Independent Bridge result recorded [#179 comment](https://github.com/Essxm01/KONFRM/issues/179#issuecomment-6224456554).
+
+- The old Bridge microfix removed TXN from details and changed copy to booking number, updated amount label to neutral «المبلغ», removed unapproved provider/policy rows and oversized blue bank reconciliation notice. Screenshots visually confirm those effects. Old evidence preserved; no production `lib/`, backend, PSP, DB, prior frozen screen changes (#155).
+- **MOST RECENT FOUNDER OVERRIDE REMAINS HIGHER AUTHORITY:** Founder explicitly **permits full `TXN-2026-881249` inside private authenticated transaction detail**, while keeping it off outer list, and adds **one unified branded A4 KONFRM `إيصال سداد` PDF preview/Save/Share experience** for PAID-only transactions. Design/issuer/tax contract [#184](https://github.com/Essxm01/KONFRM/issues/184), complete amendment prompt [GitHub pinned](https://github.com/Essxm01/KONFRM/blob/6ab04d3e05f6e239eaf8f1d978c343a7ecf7d0ab/prompt/CUSTOMER_SCREEN20_FOUNDER_UNIFIED_PDF_RECEIPT_AMENDMENT_20261016.md), Founder #179 latest directive [comment](https://github.com/Essxm01/KONFRM/issues/179#issuecomment-6224328947). **Do not request separate restorative TXN microfix**; restore optionally inside detail in the single forthcoming receipt design pass. Do not re-introduce erroneous reconciliation banner or mock card/payment method; preserve clean Screen20 visual.
+- Antigravity has been reported to have finished the older microfix; Founder **says they will send the new PDF amendment**, not yet claimed delivered or run. The new amendment was authored against branch then-HEAD `58e7b57`, so executor MUST independently start from CURRENT verified `175b76d` or newer; never reset/force-push/rebase or overwrite original evidence. Next deliverable one additive receipt visual evidence package; actual issuer legal name/verified tax registration unknown. Design Court material receipt design #183; real ETA/PSP/auth PDF issuance/storage/share iOS+Android gates PRELIVE #180; NO Screen21.
+
+**Current state:** `SCREEN20_175B76D_INTERMEDIATE_MICROFIX_VERIFIED__FOUNDER_TXN_DETAIL_PERMITTED__ONE_PDF_RECEIPT_DESIGN_STAGE_NEXT__FOUNDER_VISUAL_SIGNOFF_PENDING`.
+
+---
 
 ## SCREEN20 FOUNDER RECEIPT DIRECTION — TXN DETAILS APPROVED, UNIFIED PDF DESIGN (2026-10-16, Africa/Cairo)
 

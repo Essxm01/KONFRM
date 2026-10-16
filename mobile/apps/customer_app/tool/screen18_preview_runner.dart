@@ -56,6 +56,8 @@ class CustomerProfileEditDraft {
   final DateTime? birthDate;
   final CustomerGender? gender;
   final Uint8List? portraitBytes;
+  final double cropScale;
+  final Offset cropOffset;
   final String verifiedPhone;
   final String verifiedEmail;
 
@@ -65,6 +67,8 @@ class CustomerProfileEditDraft {
     this.birthDate,
     this.gender,
     this.portraitBytes,
+    this.cropScale = 1.0,
+    this.cropOffset = Offset.zero,
     required this.verifiedPhone,
     required this.verifiedEmail,
   });
@@ -101,6 +105,8 @@ class CustomerProfileEditDraft {
     CustomerGender? gender,
     Uint8List? portraitBytes,
     bool clearPortrait = false,
+    double? cropScale,
+    Offset? cropOffset,
     String? verifiedPhone,
     String? verifiedEmail,
   }) {
@@ -110,6 +116,8 @@ class CustomerProfileEditDraft {
       birthDate: clearBirthDate ? null : (birthDate ?? this.birthDate),
       gender: gender ?? this.gender,
       portraitBytes: clearPortrait ? null : (portraitBytes ?? this.portraitBytes),
+      cropScale: cropScale ?? (clearPortrait ? 1.0 : this.cropScale),
+      cropOffset: cropOffset ?? (clearPortrait ? Offset.zero : this.cropOffset),
       verifiedPhone: verifiedPhone ?? this.verifiedPhone,
       verifiedEmail: verifiedEmail ?? this.verifiedEmail,
     );
@@ -144,6 +152,8 @@ enum Screen18Scenario {
   mainEditScrolled,
   photoActionSheet,
   photoCropModal,
+  appliedCropAvatar,
+  noPhotoInitials,
   discardConfirmationDialog,
   validationErrorEmptyName,
   accessibility200Top,
@@ -161,22 +171,27 @@ extension Screen18ScenarioMetadata on Screen18Scenario {
         return '03 Photo Action Sheet';
       case Screen18Scenario.photoCropModal:
         return '04 1:1 Circular Crop Modal';
+      case Screen18Scenario.appliedCropAvatar:
+        return '05 Avatar Visibly Reflecting Applied Crop';
+      case Screen18Scenario.noPhotoInitials:
+        return '06 Avatar Initials (No Photo State)';
       case Screen18Scenario.discardConfirmationDialog:
-        return '05 Discard Changes Dialog';
+        return '07 Discard Changes Dialog';
       case Screen18Scenario.validationErrorEmptyName:
-        return '06 Validation Error (Empty Name)';
+        return '08 Validation Error (Empty Name)';
       case Screen18Scenario.accessibility200Top:
-        return '07 Accessibility 200% (Top Fold)';
+        return '09 Accessibility 200% (Top Fold)';
       case Screen18Scenario.accessibility200Scrolled:
-        return '08 Accessibility 200% (Scrolled)';
+        return '10 Accessibility 200% (Scrolled)';
     }
   }
 
   double get scrollOffset {
     switch (this) {
       case Screen18Scenario.mainEditScrolled:
-      case Screen18Scenario.accessibility200Scrolled:
         return 480.0;
+      case Screen18Scenario.accessibility200Scrolled:
+        return 650.0;
       default:
         return 0.0;
     }
@@ -208,6 +223,7 @@ class Screen18EditProfileController extends ChangeNotifier {
   bool _showCropModal = false;
   String? _snackBarNotice;
   double _cropZoom = 1.0;
+  Offset _cropOffset = Offset.zero;
 
   CustomerProfileEditDraft get initialProfile => _initialProfile;
   CustomerProfileEditDraft get draft => _draft;
@@ -218,6 +234,7 @@ class Screen18EditProfileController extends ChangeNotifier {
   bool get showCropModal => _showCropModal;
   String? get snackBarNotice => _snackBarNotice;
   double get cropZoom => _cropZoom;
+  Offset get cropOffset => _cropOffset;
 
   Screen18EditProfileController() {
     _initialProfile = CustomerProfileEditDraft(
@@ -226,6 +243,8 @@ class Screen18EditProfileController extends ChangeNotifier {
       birthDate: DateTime(1998, 3, 15),
       gender: CustomerGender.male,
       portraitBytes: kScreen17DemoPortraitBytes,
+      cropScale: 1.0,
+      cropOffset: Offset.zero,
       verifiedPhone: '+201012345678',
       verifiedEmail: 'ahmed.mostafa@example.com',
     );
@@ -237,7 +256,9 @@ class Screen18EditProfileController extends ChangeNotifier {
         _draft.proposedUsername?.trim() != _initialProfile.proposedUsername?.trim() ||
         _draft.birthDate != _initialProfile.birthDate ||
         _draft.gender != _initialProfile.gender ||
-        _draft.portraitBytes != _initialProfile.portraitBytes;
+        _draft.portraitBytes != _initialProfile.portraitBytes ||
+        _draft.cropScale != _initialProfile.cropScale ||
+        _draft.cropOffset != _initialProfile.cropOffset;
   }
 
   bool get isValid {
@@ -278,9 +299,9 @@ class Screen18EditProfileController extends ChangeNotifier {
 
   void updatePortrait(Uint8List? bytes) {
     if (bytes == null) {
-      _draft = _draft.copyWith(clearPortrait: true);
+      _draft = _draft.copyWith(clearPortrait: true, cropScale: 1.0, cropOffset: Offset.zero);
     } else {
-      _draft = _draft.copyWith(portraitBytes: bytes);
+      _draft = _draft.copyWith(portraitBytes: bytes, cropScale: 1.0, cropOffset: Offset.zero);
     }
     notifyListeners();
   }
@@ -296,19 +317,54 @@ class Screen18EditProfileController extends ChangeNotifier {
   }
 
   void openCropModal() {
+    if (!_draft.hasPortrait) {
+      _showPhotoSheet = false;
+      showNotice('لا توجد صورة شخصية لاقتصاصها');
+      notifyListeners();
+      return;
+    }
     _showPhotoSheet = false;
     _showCropModal = true;
-    _cropZoom = 1.0;
+    _cropZoom = _draft.cropScale;
+    _cropOffset = _draft.cropOffset;
     notifyListeners();
   }
 
   void closeCropModal() {
     _showCropModal = false;
+    _cropZoom = _draft.cropScale;
+    _cropOffset = _draft.cropOffset;
     notifyListeners();
   }
 
   void setCropZoom(double zoom) {
-    _cropZoom = zoom.clamp(1.0, 3.0);
+    _cropZoom = zoom.clamp(1.0, 2.5);
+    notifyListeners();
+  }
+
+  void updateCropOffset(Offset delta) {
+    final maxPan = 80.0 * _cropZoom;
+    final newOffset = _cropOffset + delta;
+    _cropOffset = Offset(
+      newOffset.dx.clamp(-maxPan, maxPan),
+      newOffset.dy.clamp(-maxPan, maxPan),
+    );
+    notifyListeners();
+  }
+
+  void resetCrop() {
+    _cropZoom = 1.0;
+    _cropOffset = Offset.zero;
+    notifyListeners();
+  }
+
+  void applyCrop() {
+    _draft = _draft.copyWith(
+      cropScale: _cropZoom,
+      cropOffset: _cropOffset,
+    );
+    _showCropModal = false;
+    showNotice('تم اعتماد اقتصاص الصورة وتحديث المعاينة');
     notifyListeners();
   }
 
@@ -316,7 +372,7 @@ class Screen18EditProfileController extends ChangeNotifier {
     if (isDirty) {
       _showDiscardDialog = true;
     } else {
-      showNotice('رجوع إلى صفحة الحساب (شاشة 17)');
+      showNotice('رجوع إلى صفحة الحساب');
     }
     notifyListeners();
   }
@@ -330,6 +386,8 @@ class Screen18EditProfileController extends ChangeNotifier {
     _showDiscardDialog = false;
     _draft = _initialProfile;
     _inlineNameError = null;
+    _cropZoom = _initialProfile.cropScale;
+    _cropOffset = _initialProfile.cropOffset;
     showNotice('تم تجاهل التعديلات والرجوع إلى الحساب');
     notifyListeners();
   }
@@ -352,7 +410,7 @@ class Screen18EditProfileController extends ChangeNotifier {
     await Future.delayed(const Duration(milliseconds: 600));
     _isSaving = false;
     _initialProfile = _draft; // sync pristine state in prototype
-    showNotice('معاينة فقط — لم يتم حفظ البيانات على الخادم الفعلي بموجب #176');
+    showNotice('معاينة محلية — تم حفظ التعديلات تجريبياً على هذا الجهاز');
     notifyListeners();
   }
 
@@ -369,6 +427,8 @@ class Screen18EditProfileController extends ChangeNotifier {
       case Screen18Scenario.accessibility200Top:
       case Screen18Scenario.accessibility200Scrolled:
         _draft = _initialProfile;
+        _cropZoom = _draft.cropScale;
+        _cropOffset = _draft.cropOffset;
         break;
       case Screen18Scenario.photoActionSheet:
         _draft = _initialProfile;
@@ -377,7 +437,21 @@ class Screen18EditProfileController extends ChangeNotifier {
       case Screen18Scenario.photoCropModal:
         _draft = _initialProfile;
         _showCropModal = true;
-        _cropZoom = 1.25;
+        _cropZoom = 1.35;
+        _cropOffset = const Offset(15, -10);
+        break;
+      case Screen18Scenario.appliedCropAvatar:
+        _draft = _initialProfile.copyWith(
+          cropScale: 1.85,
+          cropOffset: const Offset(20, -15),
+        );
+        _cropZoom = 1.85;
+        _cropOffset = const Offset(20, -15);
+        break;
+      case Screen18Scenario.noPhotoInitials:
+        _draft = _initialProfile.copyWith(clearPortrait: true);
+        _cropZoom = 1.0;
+        _cropOffset = Offset.zero;
         break;
       case Screen18Scenario.discardConfirmationDialog:
         _draft = _draft.copyWith(fullName: 'أحمد مصطفى المعدل');
@@ -539,15 +613,21 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
         applyScenario(Screen18Scenario.photoCropModal);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit5) {
-        applyScenario(Screen18Scenario.discardConfirmationDialog);
+        applyScenario(Screen18Scenario.appliedCropAvatar);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit6) {
-        applyScenario(Screen18Scenario.validationErrorEmptyName);
+        applyScenario(Screen18Scenario.noPhotoInitials);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit7) {
-        applyScenario(Screen18Scenario.accessibility200Top);
+        applyScenario(Screen18Scenario.discardConfirmationDialog);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.digit8) {
+        applyScenario(Screen18Scenario.validationErrorEmptyName);
+        return KeyEventResult.handled;
+      } else if (key == LogicalKeyboardKey.digit9) {
+        applyScenario(Screen18Scenario.accessibility200Top);
+        return KeyEventResult.handled;
+      } else if (key == LogicalKeyboardKey.digit0) {
         applyScenario(Screen18Scenario.accessibility200Scrolled);
         return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.keyO) {
@@ -572,17 +652,19 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
         ),
         child: Scaffold(
           backgroundColor: const Color(0xFFF9FAFB),
-          bottomNavigationBar: CustomerBottomNavigation(
-            selectedIndex: 3, // Account tab active!
-            onSelected: (index) {
-              final customerDestinations = ['استكشف', 'المفضلة', 'حجوزاتي', 'الحساب'];
-              if (index == 3) {
-                applyScenario(Screen18Scenario.mainEditTop);
-              } else {
-                _controller.showNotice('معاينة: الانتقال إلى الوجهة (${customerDestinations[index]})');
-              }
-            },
-          ),
+          bottomNavigationBar: _controller.showCropModal
+              ? null
+              : CustomerBottomNavigation(
+                  selectedIndex: 3, // Account tab active!
+                  onSelected: (index) {
+                    final customerDestinations = ['استكشف', 'المفضلة', 'حجوزاتي', 'الحساب'];
+                    if (index == 3) {
+                      applyScenario(Screen18Scenario.mainEditTop);
+                    } else {
+                      _controller.showNotice('معاينة: الانتقال إلى الوجهة (${customerDestinations[index]})');
+                    }
+                  },
+                ),
           body: SafeArea(
             bottom: false,
             child: Stack(
@@ -777,9 +859,17 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
                   ),
                   child: ClipOval(
                     child: draft.hasPortrait
-                        ? Image.memory(
-                            draft.portraitBytes!,
-                            fit: BoxFit.cover,
+                        ? Transform.translate(
+                            offset: draft.cropOffset * (104.0 / 260.0),
+                            child: Transform.scale(
+                              scale: draft.cropScale,
+                              child: Image.memory(
+                                draft.portraitBytes!,
+                                width: 104,
+                                height: 104,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           )
                         : Container(
                             color: const Color(0xFF000000),
@@ -977,7 +1067,7 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
                 // Field 2: Proposed Unified Username (@username)
                 _buildFieldLabel(
                   label: 'اسم المستخدم الموحّد',
-                  badge: 'مقترح #172',
+                  badge: 'اسم مقترح',
                 ),
                 const SizedBox(height: 6),
                 Directionality(
@@ -1022,7 +1112,7 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
                 ),
                 const SizedBox(height: 4),
                 const Text(
-                  'معرّف موحّد مقترح للبحث والرمز التعريفي الشخصي. يخضع للتحقق من التوفر عند الاعتماد الفني.',
+                  'معرّف موحّد لحسابك ورابطك الشخصي. يخضع للتحقق من التوفر عند الاعتماد.',
                   style: TextStyle(
                     fontFamily: KonfrmTypography.fontFamily,
                     fontSize: 11,
@@ -1105,47 +1195,119 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
                   badge: '🔒 خاص — لا يظهر للعامة',
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: CustomerGender.values.map((gender) {
-                    final isSelected = draft.gender == gender;
-                    return Expanded(
-                      child: GestureDetector(
-                        key: Key('gender_option_${gender.name}'),
-                        onTap: () => _controller.updateGender(gender),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 3),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: isSelected ? const Color(0xFF000000) : Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: isSelected ? const Color(0xFF000000) : const Color(0xFFE5E7EB),
-                              width: 1.0,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              gender.labelArabic,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontFamily: KonfrmTypography.fontFamily,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: isSelected ? Colors.white : const Color(0xFF000000),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+                _buildGenderSelector(),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildGenderSelector() {
+    final draft = _controller.draft;
+    final isLargeText = _scenario.textScale >= 1.3 || MediaQuery.textScalerOf(context).scale(1.0) >= 1.3;
+
+    if (isLargeText) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: CustomerGender.values.map((gender) {
+          final isSelected = draft.gender == gender;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Semantics(
+              button: true,
+              selected: isSelected,
+              label: gender.labelArabic,
+              child: GestureDetector(
+                key: Key('gender_option_${gender.name}'),
+                onTap: () => _controller.updateGender(gender),
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 48),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: isSelected ? const Color(0xFF000000) : Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isSelected ? const Color(0xFF000000) : const Color(0xFFE5E7EB),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          gender.labelArabic,
+                          style: TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: isSelected ? Colors.white : const Color(0xFF000000),
+                          ),
+                        ),
+                      ),
+                      if (isSelected)
+                        const Icon(Icons.check, size: 18, color: Colors.white)
+                      else
+                        Container(
+                          width: 18,
+                          height: 18,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: const Color(0xFFD1D5DB), width: 1.5),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      );
+    }
+
+    return Row(
+      children: CustomerGender.values.map((gender) {
+        final isSelected = draft.gender == gender;
+        return Expanded(
+          child: Semantics(
+            button: true,
+            selected: isSelected,
+            label: gender.labelArabic,
+            child: GestureDetector(
+              key: Key('gender_option_${gender.name}'),
+              onTap: () => _controller.updateGender(gender),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                constraints: const BoxConstraints(minHeight: 48),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                decoration: BoxDecoration(
+                  color: isSelected ? const Color(0xFF000000) : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: isSelected ? const Color(0xFF000000) : const Color(0xFFE5E7EB),
+                    width: 1.0,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    gender.labelArabic,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: isSelected ? Colors.white : const Color(0xFF000000),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -1407,12 +1569,12 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
           ),
           const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
 
-          // Explanatory footnote regarding Screen 19 boundary
+          // Explanatory footnote regarding security settings boundary
           Container(
             padding: const EdgeInsets.all(12),
             color: const Color(0xFFF9FAFB),
             child: const Text(
-              'لحماية أمان حسابك، لا يمكن تعديل رقم الهاتف أو البريد الإلكتروني أو ربط حسابات Apple / Google مباشرة من هذه الشاشة. لإدارة وسائل الدخول، انتقل إلى شاشة إدارة الأمان (شاشة 19).',
+              'لحماية أمان حسابك، لا يمكن تعديل رقم الهاتف أو البريد الإلكتروني أو ربط وسائل تسجيل الدخول مباشرة من هذه الصفحة. لإدارة بيانات الأمان، يرجى الانتقال إلى إعدادات الأمان والحساب.',
               style: TextStyle(
                 fontFamily: KonfrmTypography.fontFamily,
                 fontSize: 11,
@@ -1507,7 +1669,7 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
           SizedBox(width: 8),
           Expanded(
             child: Text(
-              'معاينة تصميمية محلية (#176): يتم حفظ وتعديل البيانات محلياً فقط في هذا النموذج الأولي. لن يتم إرسال أي تعديلات على خادم الإنتاج.',
+              'معاينة تجريبية: يتم حفظ وتعديل البيانات محلياً فقط على هذا الجهاز. لن يتم إرسال أي تعديلات إلى خوادم الإنتاج.',
               style: TextStyle(
                 fontFamily: KonfrmTypography.fontFamily,
                 fontSize: 11,
@@ -1599,15 +1761,17 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
             const Divider(height: 1, color: Color(0xFFF3F4F6)),
 
             // Action 3: Preview & Crop
-            _buildPhotoActionItem(
-              key: const Key('photo_action_crop'),
-              icon: Icons.crop_rotate_rounded,
-              label: 'معاينة واقتصاص الصورة (1:1)',
-              onTap: () {
-                _controller.openCropModal();
-              },
-            ),
-            const Divider(height: 1, color: Color(0xFFF3F4F6)),
+            if (_controller.draft.hasPortrait) ...[
+              _buildPhotoActionItem(
+                key: const Key('photo_action_crop'),
+                icon: Icons.crop_rotate_rounded,
+                label: 'معاينة واقتصاص الصورة (1:1)',
+                onTap: () {
+                  _controller.openCropModal();
+                },
+              ),
+              const Divider(height: 1, color: Color(0xFFF3F4F6)),
+            ],
 
             // Action 4: Remove Photo (if present)
             if (_controller.draft.hasPortrait) ...[
@@ -1697,6 +1861,8 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
   // ===========================================================================
 
   Widget _buildCropModal() {
+    final portraitBytes = _controller.draft.portraitBytes;
+
     return Container(
       color: const Color(0xFF000000),
       child: SafeArea(
@@ -1732,7 +1898,7 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
                   ),
                   GestureDetector(
                     key: const Key('crop_modal_reset'),
-                    onTap: () => _controller.setCropZoom(1.0),
+                    onTap: _controller.resetCrop,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
@@ -1764,7 +1930,7 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
                 border: Border.all(color: const Color(0x4DFFFFFF)),
               ),
               child: const Text(
-                'معاينة تعديل واقتصاص محلية — لا يتم رفع الصور على الخادم (#176)',
+                'معاينة محلية لتعديل واقتصاص الصورة — لا يتم رفع الصور إلى الخادم',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: KonfrmTypography.fontFamily,
@@ -1775,7 +1941,7 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
               ),
             ),
 
-            // Circular Crop Viewport Simulation
+            // Circular Crop Viewport Simulation with Pan & Zoom
             Expanded(
               child: Center(
                 child: SizedBox(
@@ -1784,39 +1950,61 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Underneath Image scaled by cropZoom
-                      Transform.scale(
-                        scale: _controller.cropZoom,
-                        child: ClipOval(
-                          child: Image.memory(
-                            kScreen17DemoPortraitBytes,
+                      // Underneath Image scaled by cropZoom and translated by cropOffset
+                      ClipOval(
+                        child: GestureDetector(
+                          key: const Key('crop_viewport_gesture'),
+                          onPanUpdate: (details) {
+                            _controller.updateCropOffset(details.delta);
+                          },
+                          child: Container(
                             width: 260,
                             height: 260,
-                            fit: BoxFit.cover,
+                            color: const Color(0xFF111827),
+                            child: portraitBytes != null
+                                ? Transform.translate(
+                                    offset: _controller.cropOffset,
+                                    child: Transform.scale(
+                                      scale: _controller.cropZoom,
+                                      child: Image.memory(
+                                        portraitBytes,
+                                        width: 260,
+                                        height: 260,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  )
+                                : const Center(
+                                    child: Icon(Icons.person, size: 80, color: Colors.white54),
+                                  ),
                           ),
                         ),
                       ),
 
                       // Circular Crop Overlay Ring
-                      Container(
-                        width: 260,
-                        height: 260,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2.5),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x40000000),
-                              blurRadius: 16,
-                            ),
-                          ],
+                      IgnorePointer(
+                        child: Container(
+                          width: 260,
+                          height: 260,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2.5),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x40000000),
+                                blurRadius: 16,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
 
                       // Grid lines overlay
-                      CustomPaint(
-                        size: const Size(260, 260),
-                        painter: _CropGridPainter(),
+                      IgnorePointer(
+                        child: CustomPaint(
+                          size: const Size(260, 260),
+                          painter: _CropGridPainter(),
+                        ),
                       ),
                     ],
                   ),
@@ -1851,10 +2039,7 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
               padding: const EdgeInsets.all(20),
               child: GestureDetector(
                 key: const Key('crop_modal_apply'),
-                onTap: () {
-                  _controller.closeCropModal();
-                  _controller.showNotice('تم اعتماد اقتصاص الصورة محلياً');
-                },
+                onTap: _controller.applyCrop,
                 child: Container(
                   height: 48,
                   decoration: BoxDecoration(

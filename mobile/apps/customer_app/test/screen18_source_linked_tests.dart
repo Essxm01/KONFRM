@@ -98,13 +98,21 @@ void main() {
         birthDate: DateTime(1998, 3, 15),
         gender: CustomerGender.male,
         portraitBytes: kScreen17DemoPortraitBytes,
+        cropScale: 1.0,
+        cropOffset: Offset.zero,
         verifiedPhone: '+201012345678',
         verifiedEmail: 'ahmed@example.com',
       );
 
-      final clearedPortrait = initial.copyWith(clearPortrait: true);
+      final cropped = initial.copyWith(cropScale: 1.5, cropOffset: const Offset(10, -15));
+      expect(cropped.cropScale, equals(1.5));
+      expect(cropped.cropOffset, equals(const Offset(10, -15)));
+
+      final clearedPortrait = cropped.copyWith(clearPortrait: true);
       expect(clearedPortrait.hasPortrait, isFalse);
       expect(clearedPortrait.portraitBytes, isNull);
+      expect(clearedPortrait.cropScale, equals(1.0));
+      expect(clearedPortrait.cropOffset, equals(Offset.zero));
 
       final clearedDob = initial.copyWith(clearBirthDate: true);
       expect(clearedDob.birthDate, isNull);
@@ -131,6 +139,8 @@ void main() {
       expect(controller.draft.fullName, equals('أحمد مصطفى'));
       expect(controller.draft.proposedUsername, equals('ahmed_mostafa'));
       expect(controller.draft.hasPortrait, isTrue);
+      expect(controller.draft.cropScale, equals(1.0));
+      expect(controller.draft.cropOffset, equals(Offset.zero));
     });
 
     test('modifying full name updates draft and dirty status', () {
@@ -165,7 +175,7 @@ void main() {
       expect(controller.isDirty, isTrue);
     });
 
-    test('photo sheet and crop modal transitions', () {
+    test('photo sheet and crop modal transitions with pan, zoom, reset, and apply', () {
       expect(controller.showPhotoSheet, isFalse);
       expect(controller.showCropModal, isFalse);
 
@@ -176,16 +186,54 @@ void main() {
       expect(controller.showPhotoSheet, isFalse);
       expect(controller.showCropModal, isTrue);
       expect(controller.cropZoom, equals(1.0));
+      expect(controller.cropOffset, equals(Offset.zero));
 
+      // Test zoom clamp to 2.5
       controller.setCropZoom(2.2);
       expect(controller.cropZoom, equals(2.2));
-
-      // Test clamp boundary
       controller.setCropZoom(4.5);
-      expect(controller.cropZoom, equals(3.0));
+      expect(controller.cropZoom, equals(2.5));
 
+      // Test pan offset update
+      controller.updateCropOffset(const Offset(20, -15));
+      expect(controller.cropOffset, equals(const Offset(20, -15)));
+
+      // Test reset
+      controller.resetCrop();
+      expect(controller.cropZoom, equals(1.0));
+      expect(controller.cropOffset, equals(Offset.zero));
+
+      // Set new crop and apply
+      controller.setCropZoom(1.8);
+      controller.updateCropOffset(const Offset(15, 10));
+      controller.applyCrop();
+
+      expect(controller.showCropModal, isFalse);
+      expect(controller.draft.cropScale, equals(1.8));
+      expect(controller.draft.cropOffset, equals(const Offset(15, 10)));
+      expect(controller.isDirty, isTrue);
+      expect(controller.snackBarNotice, contains('تم اعتماد اقتصاص الصورة'));
+
+      // Test close/cancel restores previous committed crop
+      controller.openCropModal();
+      expect(controller.cropZoom, equals(1.8));
+      expect(controller.cropOffset, equals(const Offset(15, 10)));
+      controller.setCropZoom(2.4);
+      controller.updateCropOffset(const Offset(30, 30));
       controller.closeCropModal();
       expect(controller.showCropModal, isFalse);
+      expect(controller.draft.cropScale, equals(1.8));
+      expect(controller.draft.cropOffset, equals(const Offset(15, 10)));
+
+      // Test photo removal resets crop and prevents crop modal resurrection
+      controller.updatePortrait(null);
+      expect(controller.draft.hasPortrait, isFalse);
+      expect(controller.draft.cropScale, equals(1.0));
+      expect(controller.draft.cropOffset, equals(Offset.zero));
+
+      controller.openCropModal();
+      expect(controller.showCropModal, isFalse);
+      expect(controller.snackBarNotice, contains('لا توجد صورة'));
     });
 
     test('discard confirmation flow protects unsaved changes', () {
@@ -222,7 +270,7 @@ void main() {
       await saveFuture;
       expect(controller.isSaving, isFalse);
       expect(controller.isDirty, isFalse); // draft now synced to initialProfile
-      expect(controller.snackBarNotice, contains('معاينة فقط'));
+      expect(controller.snackBarNotice, contains('معاينة محلية'));
     });
 
     test('setting scenarios configures appropriate view and overlay state', () {
@@ -231,7 +279,15 @@ void main() {
 
       controller.setScenario(Screen18Scenario.photoCropModal);
       expect(controller.showCropModal, isTrue);
-      expect(controller.cropZoom, equals(1.25));
+      expect(controller.cropZoom, equals(1.35));
+      expect(controller.cropOffset, equals(const Offset(15, -10)));
+
+      controller.setScenario(Screen18Scenario.appliedCropAvatar);
+      expect(controller.draft.cropScale, equals(1.85));
+      expect(controller.draft.cropOffset, equals(const Offset(20, -15)));
+
+      controller.setScenario(Screen18Scenario.noPhotoInitials);
+      expect(controller.draft.hasPortrait, isFalse);
 
       controller.setScenario(Screen18Scenario.discardConfirmationDialog);
       expect(controller.showDiscardDialog, isTrue);
@@ -298,25 +354,26 @@ void main() {
       expect(nameField, findsOneWidget);
       expect(find.text('الاسم الكامل'), findsOneWidget);
 
-      // Unified username field with @ prefix
+      // Unified username field with @ prefix and customer-facing badge
       final usernameField = find.byKey(const Key('field_proposed_username'));
       expect(usernameField, findsOneWidget);
       expect(find.text('اسم المستخدم الموحّد'), findsOneWidget);
-      expect(find.text('مقترح #172'), findsOneWidget);
+      expect(find.text('اسم مقترح'), findsOneWidget);
+      expect(find.textContaining('#172'), findsNothing);
 
       // Birth date field and derived age badge
       expect(find.byKey(const Key('field_birth_date_picker')), findsOneWidget);
       expect(find.text('تاريخ الميلاد'), findsOneWidget);
       expect(find.text('28 سنة (محسوب تلقائياً)'), findsOneWidget);
 
-      // Gender chips
+      // Gender options
       expect(find.text('الجنس'), findsOneWidget);
       expect(find.byKey(const Key('gender_option_male')), findsOneWidget);
       expect(find.byKey(const Key('gender_option_female')), findsOneWidget);
       expect(find.byKey(const Key('gender_option_preferNotToDisclose')), findsOneWidget);
     });
 
-    testWidgets('renders read-only verified account identifiers with green badges and Screen 19 footnote', (tester) async {
+    testWidgets('renders read-only verified account identifiers with green badges and sanitized security footnote', (tester) async {
       await tester.pumpWidget(const Screen18PreviewApp());
       await tester.pumpAndSettle();
 
@@ -329,11 +386,13 @@ void main() {
       // Two verified green badges
       expect(find.text('موثّق'), findsNWidgets(2));
 
-      // Screen 19 boundary explanation footnote
+      // Security boundary explanation footnote without internal screen numbers
       expect(
-        find.textContaining('انتقل إلى شاشة إدارة الأمان (شاشة 19)'),
+        find.textContaining('إعدادات الأمان والحساب'),
         findsOneWidget,
       );
+      expect(find.textContaining('شاشة 19'), findsNothing);
+      expect(find.textContaining('#176'), findsNothing);
     });
 
     testWidgets('renders canonical CustomerBottomNavigation with Account tab active (index 3)', (tester) async {
@@ -368,9 +427,12 @@ void main() {
       expect(find.text('صورة الملف الشخصي'), findsNothing);
     });
 
-    testWidgets('crop modal displays 1:1 circular crop ring, zoom slider, and honest disclaimer', (tester) async {
+    testWidgets('crop modal hides bottom navigation, supports pan/zoom, and commits crop to avatar on apply', (tester) async {
       await tester.pumpWidget(const Screen18PreviewApp());
       await tester.pumpAndSettle();
+
+      // Initial state has bottom navigation visible
+      expect(find.byType(CustomerBottomNavigation), findsOneWidget);
 
       // Open sheet then crop modal
       await tester.tap(find.byKey(const Key('camera_badge_button')));
@@ -378,17 +440,30 @@ void main() {
       await tester.tap(find.byKey(const Key('photo_action_crop')));
       await tester.pumpAndSettle();
 
+      // Bottom navigation MUST be hidden in full-screen crop mode
+      expect(find.byType(CustomerBottomNavigation), findsNothing);
+
       expect(find.text('اقتصاص الصورة الشخصية'), findsOneWidget);
-      expect(find.textContaining('معاينة تعديل واقتصاص محلية'), findsOneWidget);
+      expect(find.textContaining('معاينة محلية لتعديل واقتصاص الصورة'), findsOneWidget);
+      expect(find.textContaining('#176'), findsNothing);
       expect(find.byType(Slider), findsOneWidget);
+      expect(find.byKey(const Key('crop_viewport_gesture')), findsOneWidget);
       expect(find.byKey(const Key('crop_modal_apply')), findsOneWidget);
       expect(find.byKey(const Key('crop_modal_reset')), findsOneWidget);
       expect(find.byKey(const Key('crop_modal_cancel')), findsOneWidget);
 
-      // Close modal
-      await tester.tap(find.byKey(const Key('crop_modal_cancel')));
+      // Drag on crop viewport
+      await tester.drag(find.byKey(const Key('crop_viewport_gesture')), const Offset(20, -10));
       await tester.pumpAndSettle();
+
+      // Apply crop
+      await tester.tap(find.byKey(const Key('crop_modal_apply')));
+      await tester.pumpAndSettle();
+
+      // Crop modal is closed, bottom navigation is restored
       expect(find.text('اقتصاص الصورة الشخصية'), findsNothing);
+      expect(find.byType(CustomerBottomNavigation), findsOneWidget);
+      expect(find.textContaining('تم اعتماد اقتصاص الصورة'), findsOneWidget);
     });
 
     testWidgets('discard confirmation dialog renders warning and allows cancel or confirm', (tester) async {
@@ -426,7 +501,7 @@ void main() {
       expect(find.text('أحمد مصطفى'), findsOneWidget);
     });
 
-    testWidgets('renders cleanly under 200% text scale without overflow', (tester) async {
+    testWidgets('renders cleanly under 200% text scale with responsive vertical gender selector and no overflow', (tester) async {
       tester.view.physicalSize = const Size(1080, 2340);
       tester.view.devicePixelRatio = 2.625; // Samsung A56 5G scale factor
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -444,6 +519,12 @@ void main() {
       expect(find.text('البيانات الأساسية'), findsOneWidget);
       expect(find.text('معرّفات الحساب الموثّقة'), findsOneWidget);
       expect(find.text('حفظ التعديلات'), findsOneWidget);
+
+      // Gender options render without ellipsis in responsive layout
+      expect(find.text('ذكر'), findsOneWidget);
+      expect(find.text('أنثى'), findsOneWidget);
+      expect(find.text('أفضل عدم الإفصاح'), findsOneWidget);
+
       expect(tester.takeException(), isNull);
     });
   });

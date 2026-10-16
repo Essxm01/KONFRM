@@ -1,5 +1,23 @@
 # KONFRM — Bridge 14 NEW CHAT HANDOFF | DESIGN-FIRST / Screen 15 Favorites
 
+## FOUNDER FREEZES SCREEN17 V4 AS-IS — SCREEN18 NOW AUTHORIZED (2026-10-16)
+
+**Founder direct choice:** «لا مش عاوز تعديلات تاني ، خلاص احفظ التأجيلات وادخل على الاسكرين اللي بعد كده». **Do not request further Screen17 design changes**. SCREEN17 V4 FOUNDER VISUALLY ACCEPTED and FROZEN AS-IS at [full evidence commit d1a8ab97442e35aa83a2866b476a0143be929528](https://github.com/Essxm01/KONFRM/commit/d1a8ab97442e35aa83a2866b476a0143be929528). Earlier Bridge '200%+QR fixes required before design advancement' text below is explicitly SUPERSEDED for design continuation, not silently resolved. Founder acceptance is visual only, not integration/release.
+
+**Critical PRELIVE deferred (NOT current preview work):**
+- Issue [#171](https://github.com/Essxm01/KONFRM/issues/171): genuine V4 A56 screenshot `07_screen17_v4_a56_accessibility_200_scrolled.png` truncates account/linked identity labels from `maxLines:1` and ellipsis. Must resolve and rerun real accessible visual tests before public release; do NOT make a Screen17 V5 now.
+- Issue [#172](https://github.com/Essxm01/KONFRM/issues/172): guest/401 QR icon visible, controller-level authentication missing, fake QR looks real and pseudo Share/Save enabled; **privacy/security block for any actual public QR launch** until authorized account contract and working implementation. No more Screen17 preview modifications now.
+- Existing source-of-truth account persistence / actual avatar photo upload-crop-storage and identity verification #171/#172; Wallet finance #173; Explore bell route change #174; staged pure black audit #175; history #155.
+
+**NOW FOUNDER-AUTHORIZED:** Customer **Screen18 Profile / Edit Profile** as isolated native Flutter premium personal editor. NEW execution issue [#176](https://github.com/Essxm01/KONFRM/issues/176) includes contract and boundaries. Canonical Screen18 section in `KONFRM_EXECUTION_TASKS_SCREEN_CONTRACTS_DRAFT.md`; current Web `customer-app/src/components/CustomerEditAccountPage.tsx` is schema/state reference ONLY, not styling target. Screen17 V4 is immutable visual continuity anchor: Cairo RTL, compact portrait/camera black-on-white, pure black #000000, neutral shared bottom navigation Account index3; avoid oversized card groups/blue.
+
+**Screen18 intent:** thoughtful, high-end editable photo and crop preview, honest local-only draft and save feedback, fullName currently supported, @handle global uniqueness PROPOSED not real, optional PRIVATE DOB with derived age, optional PRIVATE gender, verified phone/email not freely editable; Google/Apple and adding a verified identifier belong in future Screen19/reauth. Real photo persist, avatar permissions, username uniqueness, privacy/minors and edit API integration are nonvisual PRELIVE gates, do not implement now. A56 normal+200% preview, add-only new `review-evidence/customer-screen18/v1/`, focused tests, GitHub evidence. No production lib/backend/DB/auth/payment changes, merge/deploy, Screen17 reopen or Screen19 start. Founder final visual signoff still pending for Screen18.
+
+**NEXT:** Send one concise Antigravity prompt linked to Issue #176; do not ask Founder to reauthorize Screen18 start or reopen Screen17 visual review.
+
+---
+
+
 ## LATEST SCREEN17 V4 BRIDGE REVIEW — PURE BLACK VISUAL PASS / QR + 200% GATES (2026-10-16)
 
 Antigravity delivered Screen17 V4 at commit [`d1a8ab97442e35aa83a2866b476a0143be929528`](https://github.com/Essxm01/KONFRM/commit/d1a8ab97442e35aa83a2866b476a0143be929528). Bridge independently inspected **ALL 7 physical Samsung A56 V4 screenshot companions**, Flutter runner/tests/report, and V3→V4 Git diff. Previous V1/V2/V3 evidence unchanged; no production Flutter lib, Backend, Supabase/DB edits in diff. Antigravity reports 21/21 tests and clean analysis; Bridge did NOT rerun Flutter.

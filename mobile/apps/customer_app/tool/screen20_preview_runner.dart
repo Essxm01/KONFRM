@@ -130,6 +130,9 @@ class PaymentTransactionItem {
   final PaymentStatus status;
   final String paymentMethodLabel;
   final String statusExplanation;
+  final String unitType;
+  final String city;
+  final String authorizedAddress;
 
   const PaymentTransactionItem({
     required this.id,
@@ -142,6 +145,9 @@ class PaymentTransactionItem {
     required this.status,
     required this.paymentMethodLabel,
     required this.statusExplanation,
+    this.unitType = 'وحدة سكنية',
+    this.city = 'الساحل الشمالي',
+    this.authorizedAddress = 'جمهورية مصر العربية',
   });
 
   String get humanBookingNumber => bookingReference.replaceFirst('BK-', '');
@@ -176,6 +182,7 @@ class CustomerPaymentHistoryState {
   final List<PaymentTransactionItem> transactions;
   final PaymentHistoryFilter selectedFilter;
   final PaymentTransactionItem? selectedTransactionForSheet;
+  final PaymentTransactionItem? selectedTransactionForReceipt;
 
   const CustomerPaymentHistoryState({
     this.isAuthenticated = true,
@@ -184,6 +191,7 @@ class CustomerPaymentHistoryState {
     this.transactions = const [],
     this.selectedFilter = PaymentHistoryFilter.all,
     this.selectedTransactionForSheet,
+    this.selectedTransactionForReceipt,
   });
 
   CustomerPaymentHistoryState copyWith({
@@ -193,6 +201,7 @@ class CustomerPaymentHistoryState {
     List<PaymentTransactionItem>? transactions,
     PaymentHistoryFilter? selectedFilter,
     PaymentTransactionItem? Function()? selectedTransactionForSheet,
+    PaymentTransactionItem? Function()? selectedTransactionForReceipt,
   }) {
     return CustomerPaymentHistoryState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
@@ -203,6 +212,9 @@ class CustomerPaymentHistoryState {
       selectedTransactionForSheet: selectedTransactionForSheet != null
           ? selectedTransactionForSheet()
           : this.selectedTransactionForSheet,
+      selectedTransactionForReceipt: selectedTransactionForReceipt != null
+          ? selectedTransactionForReceipt()
+          : this.selectedTransactionForReceipt,
     );
   }
 
@@ -325,8 +337,11 @@ final List<PaymentTransactionItem> kSyntheticPaymentTransactions = [
     monthGroup: 'أكتوبر 2026',
     amountEgp: 1450.0,
     status: PaymentStatus.paid,
-    paymentMethodLabel: 'بطاقة ائتمانية',
+    paymentMethodLabel: 'بطاقة دفع إلكتروني',
     statusExplanation: 'تم تحصيل عربون الليلة الأولى بنجاح عقب موافقة المالك.',
+    unitType: 'فيلا',
+    city: 'الساحل الشمالي',
+    authorizedAddress: 'مراسي، الساحل الشمالي، مصر',
   ),
   const PaymentTransactionItem(
     id: 'TXN-2026-881104',
@@ -337,8 +352,11 @@ final List<PaymentTransactionItem> kSyntheticPaymentTransactions = [
     monthGroup: 'أكتوبر 2026',
     amountEgp: 850.0,
     status: PaymentStatus.reconciling,
-    paymentMethodLabel: 'بطاقة ائتمانية',
+    paymentMethodLabel: 'بطاقة دفع إلكتروني',
     statusExplanation: 'لم تتأكد حالة هذه العملية بعد — جاري التحقق مع مزود الدفع دون افتراض النجاح أو الفشل.',
+    unitType: 'شقة شاطئية',
+    city: 'مارينا',
+    authorizedAddress: 'مارينا 5، الساحل الشمالي، مصر',
   ),
   const PaymentTransactionItem(
     id: 'TXN-2026-879412',
@@ -351,6 +369,9 @@ final List<PaymentTransactionItem> kSyntheticPaymentTransactions = [
     status: PaymentStatus.pending,
     paymentMethodLabel: 'محفظة إلكترونية',
     statusExplanation: 'الطلب قيد المعالجة لدى مزود الدفع، بانتظار استجابة الشبكة.',
+    unitType: 'بنتهاوس',
+    city: 'الجونة',
+    authorizedAddress: 'الجونة، البحر الأحمر، مصر',
   ),
   const PaymentTransactionItem(
     id: 'TXN-2026-764019',
@@ -361,8 +382,11 @@ final List<PaymentTransactionItem> kSyntheticPaymentTransactions = [
     monthGroup: 'سبتمبر 2026',
     amountEgp: 1100.0,
     status: PaymentStatus.paid,
-    paymentMethodLabel: 'بطاقة ميزة',
+    paymentMethodLabel: 'بطاقة دفع إلكتروني',
     statusExplanation: 'تم استلام عربون الحجز وتأكيد موافقة المالك.',
+    unitType: 'شاليه',
+    city: 'الساحل الشمالي',
+    authorizedAddress: 'الساحل الشمالي، مصر',
   ),
   const PaymentTransactionItem(
     id: 'TXN-2026-749821',
@@ -373,8 +397,11 @@ final List<PaymentTransactionItem> kSyntheticPaymentTransactions = [
     monthGroup: 'سبتمبر 2026',
     amountEgp: 750.0,
     status: PaymentStatus.refunded,
-    paymentMethodLabel: 'بطاقة ائتمانية',
+    paymentMethodLabel: 'بطاقة دفع إلكتروني',
     statusExplanation: 'تم استرداد مبلغ العربون بنجاح.',
+    unitType: 'استوديو',
+    city: 'رأس الحكمة',
+    authorizedAddress: 'رأس الحكمة، مطروح، مصر',
   ),
 ];
 
@@ -392,6 +419,10 @@ enum Screen20Scenario {
   unauthenticatedGuestState,
   accessibility200Top,
   accessibility200Scrolled,
+  receiptDocumentView,
+  receiptDocumentViewScrolled,
+  receiptDocumentViewA11y200,
+  transactionDetailPendingGuarded,
 }
 
 extension Screen20ScenarioMetadata on Screen20Scenario {
@@ -402,7 +433,7 @@ extension Screen20ScenarioMetadata on Screen20Scenario {
       case Screen20Scenario.normalTransactionsScrolled:
         return '02 Payment History (Scrolled Fold)';
       case Screen20Scenario.transactionDetailSheet:
-        return '03 Transaction Detail Sheet';
+        return '03 Transaction Detail Sheet (with Receipt CTA)';
       case Screen20Scenario.emptyState:
         return '04 Empty State (No Transactions)';
       case Screen20Scenario.reconciliationUnknownState:
@@ -415,6 +446,14 @@ extension Screen20ScenarioMetadata on Screen20Scenario {
         return '08 Accessibility 200% Font Scale (Top Fold)';
       case Screen20Scenario.accessibility200Scrolled:
         return '09 Accessibility 200% Font Scale (Scrolled)';
+      case Screen20Scenario.receiptDocumentView:
+        return '10 Unified KONFRM Payment Receipt (A4 Document Top)';
+      case Screen20Scenario.receiptDocumentViewScrolled:
+        return '11 Payment Receipt Scrolled (Actions & Footer)';
+      case Screen20Scenario.receiptDocumentViewA11y200:
+        return '12 Payment Receipt (Accessibility 200% Font Scale)';
+      case Screen20Scenario.transactionDetailPendingGuarded:
+        return '13 Pending Detail Sheet (Receipt Guarded)';
     }
   }
 
@@ -422,6 +461,7 @@ extension Screen20ScenarioMetadata on Screen20Scenario {
     switch (this) {
       case Screen20Scenario.accessibility200Top:
       case Screen20Scenario.accessibility200Scrolled:
+      case Screen20Scenario.receiptDocumentViewA11y200:
         return 2.0;
       default:
         return null;
@@ -471,6 +511,7 @@ class CustomerPaymentHistoryController extends ChangeNotifier {
   void openTransactionDetail(PaymentTransactionItem item) {
     _state = _state.copyWith(
       selectedTransactionForSheet: () => item,
+      selectedTransactionForReceipt: () => null,
     );
     notifyListeners();
   }
@@ -478,6 +519,21 @@ class CustomerPaymentHistoryController extends ChangeNotifier {
   void closeTransactionDetail() {
     _state = _state.copyWith(
       selectedTransactionForSheet: () => null,
+    );
+    notifyListeners();
+  }
+
+  void openTransactionReceipt(PaymentTransactionItem item) {
+    _state = _state.copyWith(
+      selectedTransactionForSheet: () => null,
+      selectedTransactionForReceipt: () => item,
+    );
+    notifyListeners();
+  }
+
+  void closeTransactionReceipt() {
+    _state = _state.copyWith(
+      selectedTransactionForReceipt: () => null,
     );
     notifyListeners();
   }
@@ -510,6 +566,7 @@ class CustomerPaymentHistoryController extends ChangeNotifier {
           transactions: kSyntheticPaymentTransactions,
           selectedFilter: PaymentHistoryFilter.all,
           selectedTransactionForSheet: null,
+          selectedTransactionForReceipt: null,
         );
         break;
       case Screen20Scenario.transactionDetailSheet:
@@ -518,6 +575,27 @@ class CustomerPaymentHistoryController extends ChangeNotifier {
           transactions: kSyntheticPaymentTransactions,
           selectedFilter: PaymentHistoryFilter.all,
           selectedTransactionForSheet: kSyntheticPaymentTransactions.first,
+          selectedTransactionForReceipt: null,
+        );
+        break;
+      case Screen20Scenario.receiptDocumentView:
+      case Screen20Scenario.receiptDocumentViewScrolled:
+      case Screen20Scenario.receiptDocumentViewA11y200:
+        _state = CustomerPaymentHistoryState(
+          isAuthenticated: true,
+          transactions: kSyntheticPaymentTransactions,
+          selectedFilter: PaymentHistoryFilter.all,
+          selectedTransactionForSheet: null,
+          selectedTransactionForReceipt: kSyntheticPaymentTransactions.first,
+        );
+        break;
+      case Screen20Scenario.transactionDetailPendingGuarded:
+        _state = CustomerPaymentHistoryState(
+          isAuthenticated: true,
+          transactions: kSyntheticPaymentTransactions,
+          selectedFilter: PaymentHistoryFilter.all,
+          selectedTransactionForSheet: kSyntheticPaymentTransactions[2], // Pending item
+          selectedTransactionForReceipt: null,
         );
         break;
       case Screen20Scenario.emptyState:
@@ -526,6 +604,7 @@ class CustomerPaymentHistoryController extends ChangeNotifier {
           transactions: [],
           selectedFilter: PaymentHistoryFilter.all,
           selectedTransactionForSheet: null,
+          selectedTransactionForReceipt: null,
         );
         break;
       case Screen20Scenario.reconciliationUnknownState:
@@ -537,6 +616,7 @@ class CustomerPaymentHistoryController extends ChangeNotifier {
           ],
           selectedFilter: PaymentHistoryFilter.all,
           selectedTransactionForSheet: null,
+          selectedTransactionForReceipt: null,
         );
         break;
       case Screen20Scenario.networkErrorRetryState:
@@ -546,6 +626,7 @@ class CustomerPaymentHistoryController extends ChangeNotifier {
           transactions: [],
           selectedFilter: PaymentHistoryFilter.all,
           selectedTransactionForSheet: null,
+          selectedTransactionForReceipt: null,
         );
         break;
       case Screen20Scenario.unauthenticatedGuestState:
@@ -554,6 +635,7 @@ class CustomerPaymentHistoryController extends ChangeNotifier {
           transactions: [],
           selectedFilter: PaymentHistoryFilter.all,
           selectedTransactionForSheet: null,
+          selectedTransactionForReceipt: null,
         );
         break;
     }
@@ -604,6 +686,7 @@ class Screen20PreviewView extends StatefulWidget {
 class Screen20PreviewViewState extends State<Screen20PreviewView> {
   late final CustomerPaymentHistoryController _controller;
   final ScrollController _scrollController = ScrollController();
+  final ScrollController _receiptScrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
   Screen20Scenario _scenario = Screen20Scenario.normalTransactionsTop;
   bool _showDevTools = false;
@@ -620,6 +703,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
     _controller.removeListener(_onControllerChange);
     _controller.dispose();
     _scrollController.dispose();
+    _receiptScrollController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -635,6 +719,17 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
     _controller.setScenario(scenario);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_receiptScrollController.hasClients) {
+        if (scenario == Screen20Scenario.receiptDocumentViewScrolled) {
+          _receiptScrollController.animateTo(
+            _receiptScrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutCubic,
+          );
+        } else {
+          _receiptScrollController.jumpTo(0.0);
+        }
+      }
       if (_scrollController.hasClients) {
         final offset = scenario.scrollOffset;
         if (offset > 0) {
@@ -684,6 +779,18 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
       } else if (key == LogicalKeyboardKey.digit9) {
         applyScenario(Screen20Scenario.accessibility200Scrolled);
         return KeyEventResult.handled;
+      } else if (key == LogicalKeyboardKey.digit0 || key == LogicalKeyboardKey.keyR) {
+        applyScenario(Screen20Scenario.receiptDocumentView);
+        return KeyEventResult.handled;
+      } else if (key == LogicalKeyboardKey.keyS || key == LogicalKeyboardKey.keyK) {
+        applyScenario(Screen20Scenario.receiptDocumentViewScrolled);
+        return KeyEventResult.handled;
+      } else if (key == LogicalKeyboardKey.keyP) {
+        applyScenario(Screen20Scenario.receiptDocumentViewA11y200);
+        return KeyEventResult.handled;
+      } else if (key == LogicalKeyboardKey.keyG) {
+        applyScenario(Screen20Scenario.transactionDetailPendingGuarded);
+        return KeyEventResult.handled;
       } else if (key == LogicalKeyboardKey.keyD) {
         setState(() {
           _showDevTools = !_showDevTools;
@@ -729,6 +836,12 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                 if (_controller.state.selectedTransactionForSheet != null)
                   _buildTransactionDetailSheetOverlay(
                     _controller.state.selectedTransactionForSheet!,
+                  ),
+
+                // Unified Payment Receipt Screen (A4 Document View)
+                if (_controller.state.selectedTransactionForReceipt != null)
+                  _buildPaymentReceiptScreen(
+                    _controller.state.selectedTransactionForReceipt!,
                   ),
 
                 // Transient Feedback Toast
@@ -1565,6 +1678,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                     const SizedBox(height: 16),
 
                     // Key-Value Grid
+                    _buildDetailItemRow('رقم المعاملة', item.id),
                     _buildDetailItemRow('رقم الحجز', humanBookingNumber),
                     _buildDetailItemRow('العقار', item.propertyTitle),
                     _buildDetailItemRow('نوع السداد', item.typeLabel),
@@ -1581,6 +1695,70 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                         height: 1.45,
                       ),
                     ),
+
+                    // Receipt View CTA (Only for PAID transactions per Issue #184 rule 7)
+                    if (item.status == PaymentStatus.paid) ...[
+                      const SizedBox(height: 14),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          key: const Key('view_payment_receipt_button'),
+                          onPressed: () {
+                            _controller.openTransactionReceipt(item);
+                          },
+                          icon: const Icon(
+                            Icons.receipt_long_outlined,
+                            size: 18,
+                            color: Color(0xFF000000),
+                          ),
+                          label: const Text(
+                            'عرض إيصال السداد',
+                            style: TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF000000),
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF000000),
+                            side: const BorderSide(color: Color(0xFF000000), width: 1.2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF9FAFB),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.info_outline_rounded, size: 15, color: Color(0xFF6B7280)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                item.status == PaymentStatus.refunded
+                                    ? 'إيصال السداد غير متاح للمعاملات المستردة — إشعار الاسترداد يصدر بشكل منفصل.'
+                                    : 'إيصال السداد متاح فقط بعد اكتمال التحصيل وتأكيد العملية بنجاح.',
+                                style: const TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 11,
+                                  color: Color(0xFF6B7280),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 20),
 
                     // Actions
@@ -1588,10 +1766,10 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            key: const Key('copy_booking_ref_button'),
+                            key: const Key('copy_transaction_ref_button'),
                             onPressed: () async {
-                              await Clipboard.setData(ClipboardData(text: humanBookingNumber));
-                              _controller.showNotice('تم نسخ رقم الحجز');
+                              await Clipboard.setData(ClipboardData(text: item.id));
+                              _controller.showNotice('تم نسخ رقم المعاملة');
                             },
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF000000),
@@ -1602,7 +1780,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                             child: const Text(
-                              'نسخ رقم الحجز',
+                              'نسخ رقم المعاملة',
                               style: TextStyle(
                                 fontFamily: KonfrmTypography.fontFamily,
                                 fontWeight: FontWeight.w700,
@@ -1644,6 +1822,452 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
           ),
         ),
       ],
+    );
+  }
+
+  // ===========================================================================
+  // Unified Payment Receipt Screen (A4 RTL Template)
+  // ===========================================================================
+
+  Widget _buildPaymentReceiptScreen(PaymentTransactionItem item) {
+    return Positioned.fill(
+      child: Container(
+        key: const Key('payment_receipt_screen'),
+        color: const Color(0xFFF3F4F6), // Neutral canvas background
+        child: Column(
+          children: [
+            // Canonical Top Bar
+            Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1.0),
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  Semantics(
+                    button: true,
+                    label: 'الرجوع',
+                    child: IconButton(
+                      key: const Key('receipt_back_button'),
+                      icon: const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 20,
+                        color: Color(0xFF000000),
+                      ),
+                      onPressed: () {
+                        _controller.closeTransactionReceipt();
+                      },
+                    ),
+                  ),
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        'إيصال السداد',
+                        style: TextStyle(
+                          fontFamily: KonfrmTypography.fontFamily,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF000000),
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    key: const Key('receipt_share_appbar_button'),
+                    icon: const Icon(
+                      Icons.share_outlined,
+                      size: 20,
+                      color: Color(0xFF000000),
+                    ),
+                    onPressed: () {
+                      _controller.showNotice('مشاركة المستند (مؤجلة لبوابة التكامل #180)');
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            // Scrollable A4 Document Paper View
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _receiptScrollController,
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: Column(
+                  children: [
+                    // A4 Paper Document Card
+                    Container(
+                      key: const Key('receipt_document_paper'),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x0A000000),
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Header: Brand & Legal Issuer
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'KONFRM | كونفرم',
+                                      style: TextStyle(
+                                        fontFamily: KonfrmTypography.fontFamily,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w800,
+                                        color: Color(0xFF000000), // Pure Black #000000
+                                        letterSpacing: -0.2,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2),
+                                    Text(
+                                      'منصة تأجير بيوت العطلات',
+                                      style: TextStyle(
+                                        fontFamily: KonfrmTypography.fontFamily,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xFF6B7280),
+                                      ),
+                                    ),
+                                    SizedBox(height: 2),
+                                    Text(
+                                      'شركة كونفرم لخدمات العطلات ش.ذ.م.م',
+                                      style: TextStyle(
+                                        fontFamily: KonfrmTypography.fontFamily,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w400,
+                                        color: Color(0xFF9CA3AF),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF9FAFB),
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                                ),
+                                child: const Text(
+                                  'إشعار سداد معتمد',
+                                  style: TextStyle(
+                                    fontFamily: KonfrmTypography.fontFamily,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF000000),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          const Divider(color: Color(0xFFF3F4F6), height: 1),
+                          const SizedBox(height: 16),
+
+                          // Document Title & Secondary Reference
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'إيصال سداد',
+                                style: TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF000000),
+                                ),
+                              ),
+                              Flexible(
+                                child: Text(
+                                  'المرجع: ${item.id}',
+                                  style: const TextStyle(
+                                    fontFamily: KonfrmTypography.fontFamily,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF6B7280),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Central Financial Hero Card
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF9FAFB),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0xFFE5E7EB)),
+                            ),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  'المبلغ المسدد',
+                                  style: TextStyle(
+                                    fontFamily: KonfrmTypography.fontFamily,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF6B7280),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                KonfrmAmountText(
+                                  amount: item.amountEgp,
+                                  fontSize: 28,
+                                  currencyFontSize: 16,
+                                  currencyKey: const Key('receipt_amount_currency'),
+                                  digitsKey: const Key('receipt_amount_digits'),
+                                ),
+                                const SizedBox(height: 8),
+                                Wrap(
+                                  alignment: WrapAlignment.center,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: 8,
+                                  runSpacing: 4,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFECFDF5), // Green 50
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(color: const Color(0xFFA7F3D0)), // Green 200
+                                      ),
+                                      child: const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.check_circle_rounded,
+                                            size: 13,
+                                            color: Color(0xFF059669), // Green 600
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            'مكتمل',
+                                            style: TextStyle(
+                                              fontFamily: KonfrmTypography.fontFamily,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w700,
+                                              color: Color(0xFF059669),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      '${item.dateFormatted} (توقيت مصر)',
+                                      style: const TextStyle(
+                                        fontFamily: KonfrmTypography.fontFamily,
+                                        fontSize: 11,
+                                        color: Color(0xFF6B7280),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // One Tasteful Partial Payment Note
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF9FAFB),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: const Color(0xFFE5E7EB)),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline_rounded,
+                                  size: 15,
+                                  color: Color(0xFF4B5563),
+                                ),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'عربون الليلة الأولى — دفعة من قيمة الحجز وليست إجمالي تكلفة الإقامة.',
+                                    style: TextStyle(
+                                      fontFamily: KonfrmTypography.fontFamily,
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF374151),
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          const Divider(color: Color(0xFFF3F4F6), height: 1),
+                          const SizedBox(height: 16),
+
+                          // Document Details Grid
+                          _buildReceiptDataRow('رقم الحجز', item.humanBookingNumber),
+                          _buildReceiptDataRow('العقار', item.propertyTitle),
+                          _buildReceiptDataRow('نوع الوحدة', item.unitType),
+                          _buildReceiptDataRow('المدينة', item.city),
+                          _buildReceiptDataRow('العنوان المصرح', item.authorizedAddress),
+                          _buildReceiptDataRow('وسيلة الدفع', item.paymentMethodLabel),
+                          _buildReceiptDataRow('اسم العملية', 'سداد عربون الليلة الأولى'),
+
+                          const SizedBox(height: 16),
+                          const Divider(color: Color(0xFFF3F4F6), height: 1),
+                          const SizedBox(height: 16),
+
+                          // Document Quiet Footer
+                          const Center(
+                            child: Column(
+                              children: [
+                                Text(
+                                  'كونفرم | منصة تأجير بيوت العطلات — support@konfrm.com',
+                                  style: TextStyle(
+                                    fontFamily: KonfrmTypography.fontFamily,
+                                    fontSize: 11,
+                                    color: Color(0xFF6B7280),
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'هذا المستند إشعار سداد معتمد صادر إلكترونياً ولا يتطلب ختماً يدوياً.',
+                                  style: TextStyle(
+                                    fontFamily: KonfrmTypography.fontFamily,
+                                    fontSize: 10,
+                                    color: Color(0xFF9CA3AF),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Actions Row
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: ElevatedButton.icon(
+                            key: const Key('save_receipt_pdf_button'),
+                            onPressed: () {
+                              _controller.showNotice('تم حفظ نسخة الإيصال (تصدير PDF الفعلي مؤجل لبوابة PRELIVE #180)');
+                            },
+                            icon: const Icon(Icons.file_download_outlined, size: 18),
+                            label: const Text(
+                              'حفظ PDF',
+                              style: TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF000000), // Pure Black #000000
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          flex: 1,
+                          child: OutlinedButton.icon(
+                            key: const Key('share_receipt_button'),
+                            onPressed: () {
+                              _controller.showNotice('مشاركة المستند (مؤجلة لبوابة التكامل #180)');
+                            },
+                            icon: const Icon(Icons.share_outlined, size: 18, color: Color(0xFF000000)),
+                            label: const Text(
+                              'مشاركة',
+                              style: TextStyle(
+                                fontFamily: KonfrmTypography.fontFamily,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF000000),
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF000000),
+                              side: const BorderSide(color: Color(0xFFE5E7EB)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReceiptDataRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 95,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF6B7280),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF000000), // Pure Black #000000
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

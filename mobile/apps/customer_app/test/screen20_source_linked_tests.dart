@@ -189,7 +189,7 @@ void main() {
   });
 
   group('Screen 20 — Real Platform Clipboard Integration', () {
-    testWidgets('Tapping «نسخ رقم الحجز» writes booking reference to system clipboard', (tester) async {
+    testWidgets('Tapping «نسخ رقم المعاملة» writes transaction reference to system clipboard', (tester) async {
       tester.view.physicalSize = const Size(1080, 2340);
       tester.view.devicePixelRatio = 3.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -219,12 +219,12 @@ void main() {
       expect(find.byKey(const Key('transaction_detail_sheet')), findsOneWidget);
 
       // Tap copy button
-      await tester.tap(find.byKey(const Key('copy_booking_ref_button')));
+      await tester.tap(find.byKey(const Key('copy_transaction_ref_button')));
       await tester.pumpAndSettle();
 
-      // Verify real clipboard was populated with booking number
-      expect(clipboardText, '183223');
-      expect(find.text('تم نسخ رقم الحجز'), findsOneWidget);
+      // Verify real clipboard was populated with transaction reference
+      expect(clipboardText, 'TXN-2026-881249');
+      expect(find.text('تم نسخ رقم المعاملة'), findsOneWidget);
     });
   });
 
@@ -263,6 +263,18 @@ void main() {
       expect(controller.state.selectedTransactionForSheet, isNull);
     });
 
+    test('open and close transaction receipt behaves correctly', () {
+      expect(controller.state.selectedTransactionForReceipt, isNull);
+
+      final item = kSyntheticPaymentTransactions.first;
+      controller.openTransactionReceipt(item);
+      expect(controller.state.selectedTransactionForReceipt, equals(item));
+      expect(controller.state.selectedTransactionForSheet, isNull);
+
+      controller.closeTransactionReceipt();
+      expect(controller.state.selectedTransactionForReceipt, isNull);
+    });
+
     test('retryLoading clears network error and restores transactions', () {
       controller.setScenario(Screen20Scenario.networkErrorRetryState);
       expect(controller.state.hasNetworkError, isTrue);
@@ -288,6 +300,14 @@ void main() {
 
       controller.setScenario(Screen20Scenario.transactionDetailSheet);
       expect(controller.state.selectedTransactionForSheet, isNotNull);
+
+      controller.setScenario(Screen20Scenario.receiptDocumentView);
+      expect(controller.state.selectedTransactionForReceipt, isNotNull);
+      expect(controller.state.selectedTransactionForSheet, isNull);
+
+      controller.setScenario(Screen20Scenario.transactionDetailPendingGuarded);
+      expect(controller.state.selectedTransactionForSheet, isNotNull);
+      expect(controller.state.selectedTransactionForSheet!.status, PaymentStatus.pending);
     });
   });
 
@@ -359,7 +379,7 @@ void main() {
       expect(find.text('ج.م'), findsWidgets);
     });
 
-    testWidgets('Tapping transaction card opens contained detail sheet', (tester) async {
+    testWidgets('Tapping transaction card opens contained detail sheet and restores TXN ref', (tester) async {
       tester.view.physicalSize = const Size(1080, 2340);
       tester.view.devicePixelRatio = 3.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -379,12 +399,15 @@ void main() {
       expect(find.byKey(const Key('transaction_detail_sheet')), findsOneWidget);
       expect(find.text('تفاصيل العملية'), findsOneWidget);
       expect(find.text('183223'), findsOneWidget);
-      // Factual Microfix: internal transaction ID and payment method omitted from detail sheet
-      expect(find.text('TXN-2026-881249'), findsNothing);
-      expect(find.text('وسيلة الدفع'), findsNothing);
-      // Factual Microfix: neutral 'المبلغ' instead of unconditional 'المبلغ المسدد'
+      // Founder Final Order Amendment: TXN reference restored inside detail sheet
+      expect(find.text('TXN-2026-881249'), findsOneWidget);
+      // Neutral 'المبلغ' in detail sheet
       expect(find.text('المبلغ'), findsOneWidget);
       expect(find.text('المبلغ المسدد'), findsNothing);
+
+      // Receipt CTA is present for PAID transactions
+      expect(find.byKey(const Key('view_payment_receipt_button')), findsOneWidget);
+      expect(find.text('عرض إيصال السداد'), findsOneWidget);
 
       // Close sheet via top close button
       await tester.tap(find.byKey(const Key('close_detail_sheet_button')));
@@ -393,7 +416,7 @@ void main() {
       expect(find.byKey(const Key('transaction_detail_sheet')), findsNothing);
     });
 
-    testWidgets('Pending transaction detail sheet displays neutral «المبلغ» and copies booking number', (tester) async {
+    testWidgets('Pending transaction detail sheet displays neutral «المبلغ» and guards receipt access', (tester) async {
       tester.view.physicalSize = const Size(1080, 2340);
       tester.view.devicePixelRatio = 3.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -430,14 +453,140 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('774102'), findsOneWidget);
-      expect(find.text('TXN-2026-879412'), findsNothing);
+      expect(find.text('TXN-2026-879412'), findsOneWidget);
 
-      // Copy booking number
-      await tester.tap(find.byKey(const Key('copy_booking_ref_button')));
+      // Receipt CTA is strictly NOT displayed for pending transactions (Issue #184 rule 7)
+      expect(find.byKey(const Key('view_payment_receipt_button')), findsNothing);
+      expect(
+        find.text('إيصال السداد متاح فقط بعد اكتمال التحصيل وتأكيد العملية بنجاح.'),
+        findsOneWidget,
+      );
+
+      // Copy transaction reference
+      await tester.tap(find.byKey(const Key('copy_transaction_ref_button')));
       await tester.pumpAndSettle();
 
-      expect(clipboardText, '774102');
-      expect(find.text('تم نسخ رقم الحجز'), findsOneWidget);
+      expect(clipboardText, 'TXN-2026-879412');
+      expect(find.text('تم نسخ رقم المعاملة'), findsOneWidget);
+    });
+
+    testWidgets('Unified Payment Receipt Screen renders A4 RTL document and actions', (tester) async {
+      tester.view.physicalSize = const Size(1080, 2340);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      await tester.pumpWidget(const Screen20PreviewApp());
+      await tester.pumpAndSettle();
+
+      // Open detail sheet for paid transaction
+      await tester.tap(find.byKey(const Key('transaction_card_TXN-2026-881249')));
+      await tester.pumpAndSettle();
+
+      // Tap view receipt button
+      await tester.tap(find.byKey(const Key('view_payment_receipt_button')));
+      await tester.pumpAndSettle();
+
+      // Receipt screen is visible
+      expect(find.byKey(const Key('payment_receipt_screen')), findsOneWidget);
+      expect(find.byKey(const Key('receipt_document_paper')), findsOneWidget);
+
+      // Header verification
+      expect(find.text('KONFRM | كونفرم'), findsOneWidget);
+      expect(find.text('شركة كونفرم لخدمات العطلات ش.ذ.م.م'), findsOneWidget);
+      expect(find.text('إشعار سداد معتمد'), findsOneWidget);
+      expect(find.text('المرجع: TXN-2026-881249'), findsOneWidget);
+
+      // Central financial card verification
+      expect(find.text('المبلغ المسدد'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('receipt_document_paper')),
+          matching: find.text('1,450'),
+        ),
+        findsOneWidget,
+      );
+
+      // Geometry check: currency physically to the LEFT of digits in receipt
+      final currencyFinder = find.byKey(const Key('receipt_amount_currency'));
+      final digitsFinder = find.byKey(const Key('receipt_amount_digits'));
+      expect(currencyFinder, findsOneWidget);
+      expect(digitsFinder, findsOneWidget);
+      final currencyRect = tester.getRect(currencyFinder);
+      final digitsRect = tester.getRect(digitsFinder);
+      expect(currencyRect.left < digitsRect.left, isTrue);
+
+      // Single-line deposit note
+      expect(
+        find.text('عربون الليلة الأولى — دفعة من قيمة الحجز وليست إجمالي تكلفة الإقامة.'),
+        findsOneWidget,
+      );
+
+      // Grid data rows
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('receipt_document_paper')),
+          matching: find.text('183223'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('receipt_document_paper')),
+          matching: find.text('فيلا لؤلؤة البحر — مراسي'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('فيلا'), findsOneWidget);
+      expect(find.text('الساحل الشمالي'), findsOneWidget);
+      expect(find.text('مراسي، الساحل الشمالي، مصر'), findsOneWidget);
+      expect(find.text('بطاقة دفع إلكتروني'), findsOneWidget);
+      expect(find.text('سداد عربون الليلة الأولى'), findsOneWidget);
+
+      // Quiet footer
+      expect(find.text('كونفرم | منصة تأجير بيوت العطلات — support@konfrm.com'), findsOneWidget);
+      expect(
+        find.text('هذا المستند إشعار سداد معتمد صادر إلكترونياً ولا يتطلب ختماً يدوياً.'),
+        findsOneWidget,
+      );
+
+      // Buttons
+      expect(find.byKey(const Key('save_receipt_pdf_button')), findsOneWidget);
+      expect(find.byKey(const Key('share_receipt_button')), findsOneWidget);
+
+      // Tap Save PDF shows honest prelive notice
+      await tester.ensureVisible(find.byKey(const Key('save_receipt_pdf_button')));
+      await tester.tap(find.byKey(const Key('save_receipt_pdf_button')));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('PRELIVE #180'), findsOneWidget);
+
+      // Back button closes receipt
+      await tester.tap(find.byKey(const Key('receipt_back_button')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('payment_receipt_screen')), findsNothing);
+    });
+
+    testWidgets('Refunded transaction detail sheet displays guarded refund notice', (tester) async {
+      tester.view.physicalSize = const Size(1080, 2340);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      await tester.pumpWidget(const Screen20PreviewApp());
+      await tester.pumpAndSettle();
+
+      // Tap on refunded transaction (TXN-2026-749821)
+      await tester.ensureVisible(find.byKey(const Key('transaction_card_TXN-2026-749821')));
+      await tester.tap(find.byKey(const Key('transaction_card_TXN-2026-749821')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('transaction_detail_sheet')), findsOneWidget);
+      expect(find.text('TXN-2026-749821'), findsOneWidget);
+
+      // Receipt CTA is strictly NOT displayed for refunded transactions (Issue #184 rule 7)
+      expect(find.byKey(const Key('view_payment_receipt_button')), findsNothing);
+      expect(
+        find.text('إيصال السداد غير متاح للمعاملات المستردة — إشعار الاسترداد يصدر بشكل منفصل.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('Empty state renders honest message and explore CTA', (tester) async {

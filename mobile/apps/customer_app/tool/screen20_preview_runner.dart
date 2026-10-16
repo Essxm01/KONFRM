@@ -133,6 +133,8 @@ class PaymentTransactionItem {
   final String unitType;
   final String city;
   final String authorizedAddress;
+  final String? verifiedIssuerName;
+  final String? verifiedTaxRegistrationNumber;
 
   const PaymentTransactionItem({
     required this.id,
@@ -148,6 +150,8 @@ class PaymentTransactionItem {
     this.unitType = 'وحدة سكنية',
     this.city = 'الساحل الشمالي',
     this.authorizedAddress = 'جمهورية مصر العربية',
+    this.verifiedIssuerName,
+    this.verifiedTaxRegistrationNumber,
   });
 
   String get humanBookingNumber => bookingReference.replaceFirst('BK-', '');
@@ -721,11 +725,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_receiptScrollController.hasClients) {
         if (scenario == Screen20Scenario.receiptDocumentViewScrolled) {
-          _receiptScrollController.animateTo(
-            _receiptScrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutCubic,
-          );
+          _receiptScrollController.jumpTo(_receiptScrollController.position.maxScrollExtent);
         } else {
           _receiptScrollController.jumpTo(0.0);
         }
@@ -1882,9 +1882,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                       size: 20,
                       color: Color(0xFF000000),
                     ),
-                    onPressed: () {
-                      _controller.showNotice('مشاركة المستند (مؤجلة لبوابة التكامل #180)');
-                    },
+                    onPressed: () {},
                   ),
                 ],
               ),
@@ -1895,12 +1893,13 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
               child: SingleChildScrollView(
                 controller: _receiptScrollController,
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                 child: Column(
                   children: [
                     // A4 Paper Document Card
                     Container(
                       key: const Key('receipt_document_paper'),
+                      constraints: const BoxConstraints(minHeight: 620),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
@@ -1913,316 +1912,332 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                           ),
                         ],
                       ),
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Header: Brand & Legal Issuer
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'KONFRM | كونفرم',
-                                      style: TextStyle(
-                                        fontFamily: KonfrmTypography.fontFamily,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w800,
-                                        color: Color(0xFF000000), // Pure Black #000000
-                                        letterSpacing: -0.2,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                      child: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          textScaler: TextScaler.noScaling,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Header: Canonical Brand Symbol & Identity
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const KonfrmBrandSymbol(
+                                  size: 28,
+                                  color: Color(0xFF000000),
+                                ),
+                                const SizedBox(width: 10),
+                                const Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'KONFRM | كونفرم',
+                                        style: TextStyle(
+                                          fontFamily: KonfrmTypography.fontFamily,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w800,
+                                          color: Color(0xFF000000), // Pure Black #000000
+                                          letterSpacing: -0.2,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 2),
-                                    Text(
-                                      'منصة تأجير بيوت العطلات',
-                                      style: TextStyle(
-                                        fontFamily: KonfrmTypography.fontFamily,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w500,
-                                        color: Color(0xFF6B7280),
+                                      SizedBox(height: 2),
+                                      Text(
+                                        'منصة تأجير بيوت العطلات',
+                                        style: TextStyle(
+                                          fontFamily: KonfrmTypography.fontFamily,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xFF6B7280),
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 2),
-                                    Text(
-                                      'شركة كونفرم لخدمات العطلات ش.ذ.م.م',
-                                      style: TextStyle(
-                                        fontFamily: KonfrmTypography.fontFamily,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xFF9CA3AF),
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Conditional Verified Issuer / Tax Slot (rendered only if source-verified)
+                            if (item.verifiedIssuerName != null && item.verifiedIssuerName!.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                item.verifiedIssuerName!,
+                                style: const TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF4B5563),
                                 ),
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF9FAFB),
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                            ],
+                            if (item.verifiedTaxRegistrationNumber != null &&
+                                item.verifiedTaxRegistrationNumber!.isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                'التسجيل الضريبي: ${item.verifiedTaxRegistrationNumber!}',
+                                style: const TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF6B7280),
                                 ),
-                                child: const Text(
-                                  'إشعار سداد معتمد',
+                              ),
+                            ],
+
+                            const SizedBox(height: 16),
+                            const Divider(color: Color(0xFFF3F4F6), height: 1),
+                            const SizedBox(height: 16),
+
+                            // Document Title & Secondary Reference
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'إيصال سداد',
                                   style: TextStyle(
                                     fontFamily: KonfrmTypography.fontFamily,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
                                     color: Color(0xFF000000),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          const Divider(color: Color(0xFFF3F4F6), height: 1),
-                          const SizedBox(height: 16),
-
-                          // Document Title & Secondary Reference
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'إيصال سداد',
-                                style: TextStyle(
-                                  fontFamily: KonfrmTypography.fontFamily,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w800,
-                                  color: Color(0xFF000000),
-                                ),
-                              ),
-                              Flexible(
-                                child: Text(
-                                  'المرجع: ${item.id}',
-                                  style: const TextStyle(
-                                    fontFamily: KonfrmTypography.fontFamily,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF6B7280),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Central Financial Hero Card
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF9FAFB),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: const Color(0xFFE5E7EB)),
-                            ),
-                            child: Column(
-                              children: [
-                                const Text(
-                                  'المبلغ المسدد',
-                                  style: TextStyle(
-                                    fontFamily: KonfrmTypography.fontFamily,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF6B7280),
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                KonfrmAmountText(
-                                  amount: item.amountEgp,
-                                  fontSize: 28,
-                                  currencyFontSize: 16,
-                                  currencyKey: const Key('receipt_amount_currency'),
-                                  digitsKey: const Key('receipt_amount_digits'),
-                                ),
-                                const SizedBox(height: 8),
-                                Wrap(
-                                  alignment: WrapAlignment.center,
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  spacing: 8,
-                                  runSpacing: 4,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFECFDF5), // Green 50
-                                        borderRadius: BorderRadius.circular(6),
-                                        border: Border.all(color: const Color(0xFFA7F3D0)), // Green 200
-                                      ),
-                                      child: const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.check_circle_rounded,
-                                            size: 13,
-                                            color: Color(0xFF059669), // Green 600
-                                          ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            'مكتمل',
-                                            style: TextStyle(
-                                              fontFamily: KonfrmTypography.fontFamily,
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w700,
-                                              color: Color(0xFF059669),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Text(
-                                      '${item.dateFormatted} (توقيت مصر)',
-                                      style: const TextStyle(
-                                        fontFamily: KonfrmTypography.fontFamily,
-                                        fontSize: 11,
-                                        color: Color(0xFF6B7280),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          // One Tasteful Partial Payment Note
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF9FAFB),
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: const Color(0xFFE5E7EB)),
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(
-                                  Icons.info_outline_rounded,
-                                  size: 15,
-                                  color: Color(0xFF4B5563),
-                                ),
-                                SizedBox(width: 8),
-                                Expanded(
+                                const SizedBox(width: 8),
+                                Flexible(
                                   child: Text(
-                                    'عربون الليلة الأولى — دفعة من قيمة الحجز وليست إجمالي تكلفة الإقامة.',
-                                    style: TextStyle(
+                                    'المرجع: ${item.id}',
+                                    textAlign: TextAlign.end,
+                                    style: const TextStyle(
                                       fontFamily: KonfrmTypography.fontFamily,
                                       fontSize: 11.5,
                                       fontWeight: FontWeight.w600,
-                                      color: Color(0xFF374151),
-                                      height: 1.4,
+                                      color: Color(0xFF6B7280),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          const Divider(color: Color(0xFFF3F4F6), height: 1),
-                          const SizedBox(height: 16),
+                            const SizedBox(height: 16),
 
-                          // Document Details Grid
-                          _buildReceiptDataRow('رقم الحجز', item.humanBookingNumber),
-                          _buildReceiptDataRow('العقار', item.propertyTitle),
-                          _buildReceiptDataRow('نوع الوحدة', item.unitType),
-                          _buildReceiptDataRow('المدينة', item.city),
-                          _buildReceiptDataRow('العنوان المصرح', item.authorizedAddress),
-                          _buildReceiptDataRow('وسيلة الدفع', item.paymentMethodLabel),
-                          _buildReceiptDataRow('اسم العملية', 'سداد عربون الليلة الأولى'),
-
-                          const SizedBox(height: 16),
-                          const Divider(color: Color(0xFFF3F4F6), height: 1),
-                          const SizedBox(height: 16),
-
-                          // Document Quiet Footer
-                          const Center(
-                            child: Column(
-                              children: [
-                                Text(
-                                  'كونفرم | منصة تأجير بيوت العطلات — support@konfrm.com',
-                                  style: TextStyle(
-                                    fontFamily: KonfrmTypography.fontFamily,
-                                    fontSize: 11,
-                                    color: Color(0xFF6B7280),
+                            // Central Financial Hero Card
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF9FAFB),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: const Color(0xFFE5E7EB)),
+                              ),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'المبلغ المسدد',
+                                    style: TextStyle(
+                                      fontFamily: KonfrmTypography.fontFamily,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFF6B7280),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'هذا المستند إشعار سداد معتمد صادر إلكترونياً ولا يتطلب ختماً يدوياً.',
-                                  style: TextStyle(
-                                    fontFamily: KonfrmTypography.fontFamily,
-                                    fontSize: 10,
-                                    color: Color(0xFF9CA3AF),
+                                  const SizedBox(height: 4),
+                                  KonfrmAmountText(
+                                    amount: item.amountEgp,
+                                    fontSize: 28,
+                                    currencyFontSize: 16,
+                                    currencyKey: const Key('receipt_amount_currency'),
+                                    digitsKey: const Key('receipt_amount_digits'),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                    alignment: WrapAlignment.center,
+                                    crossAxisAlignment: WrapCrossAlignment.center,
+                                    spacing: 8,
+                                    runSpacing: 4,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFECFDF5), // Green 50
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(color: const Color(0xFFA7F3D0)), // Green 200
+                                        ),
+                                        child: const Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.check_circle_rounded,
+                                              size: 13,
+                                              color: Color(0xFF059669), // Green 600
+                                            ),
+                                            SizedBox(width: 4),
+                                            Text(
+                                              'مكتمل',
+                                              style: TextStyle(
+                                                fontFamily: KonfrmTypography.fontFamily,
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w700,
+                                                color: Color(0xFF059669),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Text(
+                                        '${item.dateFormatted} (توقيت مصر)',
+                                        style: const TextStyle(
+                                          fontFamily: KonfrmTypography.fontFamily,
+                                          fontSize: 11,
+                                          color: Color(0xFF6B7280),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 12),
+
+                            // One Tasteful Partial Payment Note
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF9FAFB),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: const Color(0xFFE5E7EB)),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.info_outline_rounded,
+                                    size: 15,
+                                    color: Color(0xFF4B5563),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'عربون الليلة الأولى — دفعة من قيمة الحجز وليست إجمالي تكلفة الإقامة.',
+                                      style: TextStyle(
+                                        fontFamily: KonfrmTypography.fontFamily,
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF374151),
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            const Divider(color: Color(0xFFF3F4F6), height: 1),
+                            const SizedBox(height: 16),
+
+                            // Document Details Grid
+                            _buildReceiptDataRow('رقم الحجز', item.humanBookingNumber),
+                            _buildReceiptDataRow('العقار', item.propertyTitle),
+                            _buildReceiptDataRow('نوع الوحدة', item.unitType),
+                            _buildReceiptDataRow('المنطقة', item.city),
+                            _buildReceiptDataRow('العنوان المصرح', item.authorizedAddress),
+                            _buildReceiptDataRow('وسيلة الدفع', item.paymentMethodLabel),
+
+                            const SizedBox(height: 16),
+                            const Divider(color: Color(0xFFF3F4F6), height: 1),
+                            const SizedBox(height: 16),
+
+                            // Document Quiet Footer (Minimal Brand Presence, Zero False Claims)
+                            const Center(
+                              child: Text(
+                                'منصة كونفرم لتأجير بيوت العطلات',
+                                style: TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF9CA3AF),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
 
-                    // Actions Row
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: ElevatedButton.icon(
-                            key: const Key('save_receipt_pdf_button'),
-                            onPressed: () {
-                              _controller.showNotice('تم حفظ نسخة الإيصال (تصدير PDF الفعلي مؤجل لبوابة PRELIVE #180)');
-                            },
-                            icon: const Icon(Icons.file_download_outlined, size: 18),
-                            label: const Text(
-                              'حفظ PDF',
-                              style: TextStyle(
-                                fontFamily: KonfrmTypography.fontFamily,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF000000), // Pure Black #000000
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                    // Actions (External Mobile Controls with Responsive Layout)
+                    Builder(
+                      builder: (context) {
+                        final isA11yLarge = MediaQuery.of(context).textScaler.scale(1.0) > 1.3;
+                        final saveButton = ElevatedButton.icon(
+                          key: const Key('save_receipt_pdf_button'),
+                          onPressed: () {},
+                          icon: const Icon(Icons.file_download_outlined, size: 18),
+                          label: const Text(
+                            'حفظ PDF',
+                            style: TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          flex: 1,
-                          child: OutlinedButton.icon(
-                            key: const Key('share_receipt_button'),
-                            onPressed: () {
-                              _controller.showNotice('مشاركة المستند (مؤجلة لبوابة التكامل #180)');
-                            },
-                            icon: const Icon(Icons.share_outlined, size: 18, color: Color(0xFF000000)),
-                            label: const Text(
-                              'مشاركة',
-                              style: TextStyle(
-                                fontFamily: KonfrmTypography.fontFamily,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF000000),
-                              ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF000000), // Pure Black #000000
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
                             ),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFF000000),
-                              side: const BorderSide(color: Color(0xFFE5E7EB)),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        );
+
+                        final shareButton = OutlinedButton.icon(
+                          key: const Key('share_receipt_button'),
+                          onPressed: () {},
+                          icon: const Icon(Icons.share_outlined, size: 18, color: Color(0xFF000000)),
+                          label: const Text(
+                            'مشاركة',
+                            style: TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF000000),
                             ),
                           ),
-                        ),
-                      ],
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF000000),
+                            side: const BorderSide(color: Color(0xFFE5E7EB)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        );
+
+                        if (isA11yLarge) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              saveButton,
+                              const SizedBox(height: 10),
+                              shareButton,
+                            ],
+                          );
+                        }
+
+                        return Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: saveButton,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 1,
+                              child: shareButton,
+                            ),
+                          ],
+                        );
+                      },
                     ),
                     const SizedBox(height: 16),
                   ],
@@ -2242,7 +2257,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 95,
+            width: 90,
             child: Text(
               label,
               style: const TextStyle(

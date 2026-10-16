@@ -1,8 +1,8 @@
-# Active Task — CUSTOMER_SCREEN20_FOUNDER_UNIFIED_RECEIPT_DESIGN
+# Active Task — CUSTOMER_SCREEN20_RECEIPT_TRUTH_A11Y_REFINEMENT
 
-TASK_ID: CUSTOMER_SCREEN20_FOUNDER_UNIFIED_RECEIPT_DESIGN
+TASK_ID: CUSTOMER_SCREEN20_RECEIPT_TRUTH_A11Y_REFINEMENT
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN20_RECEIPT_DESIGN_DELIVERED__AWAITING_FOUNDER_VISUAL_APPROVAL
+STATUS: SCREEN20_RECEIPT_TRUTH_A11Y_REFINEMENT_DELIVERED__AWAITING_FOUNDER_VISUAL_APPROVAL
 BRANCH: evidence/customer-screen20-design-review
 BASELINE_COMMIT: 04c250b6521a272ca3e3694913ca71dd35186bd1
 GOVERNING_ISSUES:
@@ -17,14 +17,13 @@ GOVERNING_ISSUES:
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
   - Issue #155: Historical Evidence Directory Immutability & Preservation
   - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Deliver unified KONFRM payment receipt design and execute Founder Final Order Amendment for Customer Screen 20 — Payment History («سجل المدفوعات») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
-  1. Founder Final Order Amendment: restore `TXN-2026-881249` strictly inside authenticated transaction details (`تفاصيل العملية`) and receipt document; outer payment list remains uncluttered.
-  2. Real platform clipboard copying: «نسخ رقم المعاملة» copies `TXN-2026-881249` with transient confirmation toast.
-  3. Unified KONFRM payment receipt A4 document view: authentic document card accessible from completed payments via «عرض إيصال السداد». Includes brand identity, verified legal issuer name (`شركة كونفرم لخدمات العطلات ش.ذ.م.م`), payment amount with currency physically on the LEFT (`ج.م 1,450`), green `مكتمل` badge, Egypt timestamp, one-line deposit note, complete booking/property details grid, quiet footer, and «حفظ PDF» (Pure Black `#000000`) / «مشاركة» actions.
-  4. Single-line deposit note: «عربون الليلة الأولى — دفعة من قيمة الحجز وليست إجمالي تكلفة الإقامة.» providing transparent deposit semantics without repetitive legal text or fake remaining calculations.
-  5. Receipt eligibility guardrails: only settled payments (`paid`) can access the receipt view. Pending, reconciling, and refunded states are guarded with honest explanations, strictly preventing premature or misleading proof of payment.
-  6. Preserved production-fidelity styling: Cairo Arabic RTL typography, exact pure black #000000 (Issue #175: zero charcoal/navy), currency «ج.م» physically on the LEFT of digits, and canonical NESTED_CUSTOMER navigation without bottom nav bar.
-  7. Genuine physical Samsung Galaxy A56 5G (SM_A566B, Android 16 API 36) captures (5 scenarios) and Base64 companions published in additive directory `review-evidence/customer-screen20/v1-receipt-design/`.
+SCOPE: Deliver refined payment receipt truth and 200% accessibility layout for Customer Screen 20 — Payment History («سجل المدفوعات») on Samsung Galaxy A56 5G (Android 16, 1080x2340):
+  1. Legal & Issuer Truth: Purged unverified corporate name (`شركة كونفرم لخدمات العطلات ش.ذ.م.م`), fictitious certification badge (`إشعار سداد معتمد`), electronic issuance claim, and unverified support email (`support@konfrm.com`). Retained neutral `إيصال سداد` title; integrated canonical vector `KonfrmBrandSymbol`; verified issuer slots default to null and render only when backed by authoritative database records.
+  2. Fixed 200% Accessibility Layout Failure & Document Stability: Wrapped receipt document paper in `MediaQuery` with `TextScaler.noScaling` for stable printable document geometry, preventing header fragmentation (`KONF / | RM`). Mobile chrome scales with system accessibility, and bottom action buttons adaptively reflow into a full-width vertical `Column` on large font scale (`textScaler > 1.3`), preserving 48dp+ touch targets.
+  3. PDF Export Honesty: Made «حفظ PDF» and «مشاركة» inert preview buttons (`onPressed: () {}`) without claiming fake file creation or success; completely purged all internal `#180` and `PRELIVE #180` issue strings from customer-facing UI. Document real export as deferred under PRELIVE Issue #180.
+  4. Editorial & Brand Polish: Updated location label to «المنطقة: الساحل الشمالي», removed redundant «اسم العملية» data row, and adopted quiet footer «منصة كونفرم لتأجير بيوت العطلات».
+  5. Issue #183 Design Court & Store Honesty: Documented `SINGLE_AGENT_STRUCTURED_PANEL` docket, red-team gate failures/remediations, and explicit open gates (iOS HIG `NOT_TESTED`, real fiscal tax e-receipt `DEFERRED_TO_PRELIVE_180`).
+  6. Additive Evidence Delivery: 3 decision-grade physical Samsung Galaxy A56 5G captures + companions published in `review-evidence/customer-screen20/v1-receipt-truth-a11y-refinement/`.
 
 ## Boundaries & Invariants
 - Screen 17 V4 visual baseline is FROZEN AS-IS at d1a8ab97442e35aa83a2866b476a0143be929528.
@@ -32,26 +31,32 @@ SCOPE: Deliver unified KONFRM payment receipt design and execute Founder Final O
 - Screen 19 V1 visual baseline is FROZEN AS-IS at c2145f9a6bdff092d42c20d083fd559f35fdc631.
 - Zero changes to production code (customer_app/lib/ untouched, backend untouched, database untouched).
 - All non-visual technical issues (real payment gateways, backend PDF generation engines, live ETA e-receipts, bank webhooks) deferred as PRELIVE Issue #180 gates.
-- All historical evidence preserved untouched per Issue #155 (Screens 12–19, review-evidence/customer-screen20/v1/, v1-production-fidelity-refinement/, and v1-production-fidelity-factual-microfix/).
+- All historical evidence preserved untouched per Issue #155 (Screens 12–19, review-evidence/customer-screen20/v1/, v1-production-fidelity-refinement/, v1-production-fidelity-factual-microfix/, and v1-receipt-design/).
 - Physical device serial redacted in all logs and markdown ([REDACTED_A56_ID]).
 
 ## Verification & Quality Gates
 - [x] Canonical NESTED_CUSTOMER navigation with physical right-pointing back arrow and NO bottom nav bar.
-- [x] Founder Final Order Amendment executed: `TXN-2026-881249` restored inside authenticated transaction details (`تفاصيل العملية`) and receipt document.
+- [x] Founder Final Order Amendment preserved: `TXN-2026-881249` restored inside authenticated transaction details (`تفاصيل العملية`) and receipt document.
 - [x] Real platform clipboard integration: «نسخ رقم المعاملة» copies `TXN-2026-881249` to system clipboard with toast feedback.
 - [x] Currency «ج.م» positioned physically to the LEFT of numeric digits (`ج.م 1,450`), verified by geometry test assertion `currencyRect.left < digitsRect.left` on both list items and receipt document.
 - [x] Financial decimal precision preserved without `double.toInt()` truncation.
-- [x] Absolute purge of development/prototype copy (`بيانات تجريبية`, `معاينة`, `MR-13`, `MR-15`, `BK-`).
+- [x] Absolute purge of development/prototype copy and unverified claims (`بيانات تجريبية`, `MR-13`, `BK-`, `PRELIVE #180`, `#180`, `شركة كونفرم لخدمات العطلات`).
 - [x] Human-friendly booking numbers (`رقم الحجز 183223`) on outer cards.
-- [x] Unified KONFRM payment receipt A4 document view rendered with Cairo RTL, pure black `#000000`, issuer name, hero amount, deposit note, details grid, quiet footer, and «حفظ PDF» CTA.
-- [x] Receipt eligibility strictly enforced: only `paid` transactions display «عرض إيصال السداد». Pending and refunded states are guarded.
+- [x] Canonical vector `KonfrmBrandSymbol` integrated and rendered crisp alongside neutral «إيصال سداد».
+- [x] 200% font scale reflow verified without text wrapping, overflow exceptions, or layout breakage (`TextScaler.noScaling` on printable document + adaptive vertical buttons).
 - [x] Pure black #000000 compliance (zero forbidden charcoal/navy hex values).
-- [x] Source-linked tests created and 100% PASS (26/26 PASS in test/screen20_source_linked_tests.dart).
+- [x] Source-linked tests created and 100% PASS (27/27 PASS in test/screen20_source_linked_tests.dart).
 - [x] Static analysis passes with 0 issues (flutter analyze tool/screen20_preview_runner.dart test/screen20_source_linked_tests.dart).
-- [x] Genuine physical Samsung Galaxy A56 5G captures (5 scenarios) and Base64 companions generated in review-evidence/customer-screen20/v1-receipt-design/.
-- [x] Evidence manifest, README, and REPORT documented in review-evidence/customer-screen20/v1-receipt-design/.
-- [x] Design skills activation, Design Court review, and store compliance receipt documented in review-evidence/customer-screen20/v1-receipt-design/DESIGN_SKILL_COURT_STORE_RECEIPT.md.
-- [x] Review source mirrors copied to review-evidence/customer-screen20/v1-receipt-design/review-source/.
+- [x] Genuine physical Samsung Galaxy A56 5G captures (3 scenarios) and Base64 companions generated in review-evidence/customer-screen20/v1-receipt-truth-a11y-refinement/.
+- [x] Evidence manifest, README, and REPORT documented in review-evidence/customer-screen20/v1-receipt-truth-a11y-refinement/.
+- [x] Honest Design skills activation, Design Court review, and store compliance receipt documented in review-evidence/customer-screen20/v1-receipt-truth-a11y-refinement/DESIGN_SKILL_COURT_STORE_RECEIPT.md.
+- [x] Review source mirrors copied to review-evidence/customer-screen20/v1-receipt-truth-a11y-refinement/review-source/.
+
+---
+
+## Historical Task — CUSTOMER_SCREEN20_FOUNDER_UNIFIED_RECEIPT_DESIGN (SUPERSEDED)
+- COMMIT: f078be08828210682533321783b3eebecf49de6b
+- STATUS: Historical delivery; superseded by Bridge review refinement in v1-receipt-truth-a11y-refinement/.
 
 ---
 

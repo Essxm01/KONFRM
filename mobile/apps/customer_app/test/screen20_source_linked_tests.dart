@@ -11,6 +11,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:konfrm_design_system/konfrm_design_system.dart';
 import '../tool/screen20_preview_runner.dart';
 
 void main() {
@@ -157,6 +158,11 @@ void main() {
         'إيصال تجريبي',
         'MR-13',
         'MR-15',
+        'شركة كونفرم لخدمات العطلات ش.ذ.م.م',
+        'إشعار سداد معتمد',
+        'support@konfrm.com',
+        'PRELIVE #180',
+        '#180',
       ];
 
       for (final forbidden in forbiddenStrings) {
@@ -490,11 +496,20 @@ void main() {
       expect(find.byKey(const Key('payment_receipt_screen')), findsOneWidget);
       expect(find.byKey(const Key('receipt_document_paper')), findsOneWidget);
 
-      // Header verification
+      // Header verification: Canonical symbol and brand identity present
+      expect(find.byType(KonfrmBrandSymbol), findsAtLeastNWidgets(1));
       expect(find.text('KONFRM | كونفرم'), findsOneWidget);
-      expect(find.text('شركة كونفرم لخدمات العطلات ش.ذ.م.م'), findsOneWidget);
-      expect(find.text('إشعار سداد معتمد'), findsOneWidget);
+      expect(find.text('منصة تأجير بيوت العطلات'), findsOneWidget);
       expect(find.text('المرجع: TXN-2026-881249'), findsOneWidget);
+
+      // Unverified legal strings and fake certifications strictly omitted
+      expect(find.text('شركة كونفرم لخدمات العطلات ش.ذ.م.م'), findsNothing);
+      expect(find.text('إشعار سداد معتمد'), findsNothing);
+      expect(find.textContaining('support@konfrm.com'), findsNothing);
+      expect(
+        find.text('هذا المستند إشعار سداد معتمد صادر إلكترونياً ولا يتطلب ختماً يدوياً.'),
+        findsNothing,
+      );
 
       // Central financial card verification
       expect(find.text('المبلغ المسدد'), findsOneWidget);
@@ -537,32 +552,50 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('فيلا'), findsOneWidget);
+      expect(find.text('المنطقة'), findsOneWidget);
       expect(find.text('الساحل الشمالي'), findsOneWidget);
       expect(find.text('مراسي، الساحل الشمالي، مصر'), findsOneWidget);
       expect(find.text('بطاقة دفع إلكتروني'), findsOneWidget);
-      expect(find.text('سداد عربون الليلة الأولى'), findsOneWidget);
+      expect(find.text('سداد عربون الليلة الأولى'), findsNothing);
 
-      // Quiet footer
-      expect(find.text('كونفرم | منصة تأجير بيوت العطلات — support@konfrm.com'), findsOneWidget);
-      expect(
-        find.text('هذا المستند إشعار سداد معتمد صادر إلكترونياً ولا يتطلب ختماً يدوياً.'),
-        findsOneWidget,
-      );
-
-      // Buttons
+      // Buttons are present and inert (no fake success or issue numbers)
       expect(find.byKey(const Key('save_receipt_pdf_button')), findsOneWidget);
       expect(find.byKey(const Key('share_receipt_button')), findsOneWidget);
 
-      // Tap Save PDF shows honest prelive notice
       await tester.ensureVisible(find.byKey(const Key('save_receipt_pdf_button')));
       await tester.tap(find.byKey(const Key('save_receipt_pdf_button')));
       await tester.pumpAndSettle();
-      expect(find.textContaining('PRELIVE #180'), findsOneWidget);
+      expect(find.textContaining('PRELIVE #180'), findsNothing);
+      expect(find.textContaining('تم حفظ'), findsNothing);
 
       // Back button closes receipt
       await tester.tap(find.byKey(const Key('receipt_back_button')));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('payment_receipt_screen')), findsNothing);
+    });
+
+    testWidgets('Receipt document view under 200% font scale preserves canonical symbol and stable page layout', (tester) async {
+      tester.view.physicalSize = const Size(1080, 2340);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      await tester.pumpWidget(const Screen20PreviewApp());
+      await tester.pumpAndSettle();
+
+      final state = tester.state<Screen20PreviewViewState>(find.byType(Screen20PreviewView));
+      state.applyScenario(Screen20Scenario.receiptDocumentViewA11y200);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('payment_receipt_screen')), findsOneWidget);
+      expect(find.byType(KonfrmBrandSymbol), findsAtLeastNWidgets(1));
+      expect(find.text('KONFRM | كونفرم'), findsOneWidget);
+      expect(find.text('إيصال سداد'), findsOneWidget);
+      expect(find.text('المرجع: TXN-2026-881249'), findsOneWidget);
+      expect(find.byKey(const Key('save_receipt_pdf_button')), findsOneWidget);
+      expect(find.byKey(const Key('share_receipt_button')), findsOneWidget);
+
+      // Verify no overflow exception occurred
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('Refunded transaction detail sheet displays guarded refund notice', (tester) async {

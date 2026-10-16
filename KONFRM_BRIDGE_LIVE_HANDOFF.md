@@ -1,5 +1,15 @@
 # KONFRM — LIVE BRIDGE & CROSS-ACCOUNT CONTINUITY
 
+## LATEST CONTINUITY OVERRIDE — 2026-10-16: SCREEN18 FINAL FOUNDER DECISION PENDING
+
+**FIRST READ [KONFRM_BRIDGE14_RESUME_20261015.md](KONFRM_BRIDGE14_RESUME_20261015.md) TOP NEWEST SECTION.** This dated note supersedes all old "Screen15 next", "Screen16 active", "Screen17 needs fixes before moving", and "Screen18 start now" wording retained in older sections below.
+
+Current state on 2026-10-16: Screen17 V4 visually Founder-frozen at d1a8ab97442e35aa83a2866b476a0143be929528 **with #171 accessibility and #172 QR PRELIVE blockers explicitly deferred**. Customer Screen18 premium profile isolated design and scoped corrections delivered on branch evidence/customer-screen18-design-review pinned at [70278470f9d4158196423a82567c4cd23e8a3114](https://github.com/Essxm01/KONFRM/commit/70278470f9d4158196423a82567c4cd23e8a3114), [Issue #176](https://github.com/Essxm01/KONFRM/issues/176). Bridge visually reviewed original and corrected genuine A56 PNGs and 4 latest interaction-trace captures, inspected crop bounds, pure black, text scaling and focused change scope. Agent reports 29/29 tests and clean analyzer; Bridge did not rerun tests. **FOUNDER HAS NOT YET VISUALLY APPROVED SCREEN18**; do not claim frozen, live, integrated, merged, or production approved.
+
+**NEXT:** Ask Founder for single Screen18 visual approve/freeze-or-specific-objection decision. On approval, record pinned freeze with open integration/PRELIVE gates, then obtain separate authorization for DESIGN-ONLY Screen19. No further unsolicited Screen18 redesign loops; no Screen19 execution yet; preserve #155 history. Live documentation branch is docs/cross-account-recovery-20261013, not main.
+
+---
+
 ## LATEST OVERRIDE — 2026-10-15 | SCREEN15 VISUALLY APPROVED & FROZEN — SCREEN 16 NOTIFICATION CENTER NOW
 
 **READ [KONFRM_BRIDGE14_RESUME_20261015.md](KONFRM_BRIDGE14_RESUME_20261015.md) FIRST**. This addendum supersedes older "Screen 15 in progress" or "Screen 15 approval pending" notes.

@@ -7,6 +7,7 @@ BRANCH: evidence/customer-screen20-design-review
 BASELINE_COMMIT: 04c250b6521a272ca3e3694913ca71dd35186bd1
 GOVERNING_ISSUES:
   - Issue #179: Customer Screen 20 Payment History («سجل المدفوعات») — Founder-Authorized Isolated Flutter Design & Bridge Review
+  - Issue #183: Mandatory Design Skills Activation, Design Court Review & Store Platform Gate
   - Issue #175: Mandatory Pure-Black `#000000` Rule & Repository-Wide Audit
   - Issue #174: Notifications Navigation Routing Proposal vs Architecture
   - Issue #173: Financial Model Meaning & Booking Lifecycle Boundaries
@@ -54,6 +55,7 @@ SCOPE: Deliver production-fidelity native Flutter UI/UX refinement for Customer 
 - [x] Static analysis passes with 0 issues (flutter analyze tool/screen20_preview_runner.dart test/screen20_source_linked_tests.dart).
 - [x] Genuine physical Samsung Galaxy A56 5G captures and Base64 companions generated in review-evidence/customer-screen20/v1-production-fidelity-refinement/.
 - [x] Evidence manifest, README, and REPORT documented in review-evidence/customer-screen20/v1-production-fidelity-refinement/.
+- [x] Design skills activation, Design Court review, and store compliance receipt documented in review-evidence/customer-screen20/v1-production-fidelity-refinement/DESIGN_SKILL_COURT_STORE_RECEIPT.md.
 - [x] Review source mirrors copied to review-evidence/customer-screen20/v1-production-fidelity-refinement/review-source/.
 
 ---

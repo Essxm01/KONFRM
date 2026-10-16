@@ -9,6 +9,7 @@ review-evidence/customer-screen20/v1-production-fidelity-refinement/
 ├── README.md                                    # This directory index
 ├── VISUAL_BRIDGE_README.md                      # Detailed Bridge & Founder review brief
 ├── REPORT.md                                   # Comprehensive before/after audit & quality gate report
+├── DESIGN_SKILL_COURT_STORE_RECEIPT.md         # Design Skills, Design Court triage & store compliance receipt
 ├── review-source/                              # Exact frozen source mirrors
 │   ├── screen20_preview_runner.dart            # Flutter native preview runner
 │   └── screen20_source_linked_tests.dart       # Behavioral and geometry tests

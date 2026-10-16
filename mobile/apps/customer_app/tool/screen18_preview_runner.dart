@@ -197,15 +197,17 @@ extension Screen18ScenarioMetadata on Screen18Scenario {
     }
   }
 
-  double get textScale {
+  double? get textScaleOverride {
     switch (this) {
       case Screen18Scenario.accessibility200Top:
       case Screen18Scenario.accessibility200Scrolled:
         return 2.0;
       default:
-        return 1.0;
+        return null;
     }
   }
+
+  double get textScale => textScaleOverride ?? 1.0;
 }
 
 // =============================================================================
@@ -316,6 +318,25 @@ class Screen18EditProfileController extends ChangeNotifier {
     notifyListeners();
   }
 
+  static const double cropViewportDimension = 260.0;
+
+  static double maxPanForZoom(double zoom) {
+    if (zoom <= 1.0) return 0.0;
+    return (cropViewportDimension * (zoom - 1.0) / 2.0);
+  }
+
+  void _clampCropOffset() {
+    final maxPan = maxPanForZoom(_cropZoom);
+    if (maxPan <= 0.0) {
+      _cropOffset = Offset.zero;
+    } else {
+      _cropOffset = Offset(
+        _cropOffset.dx.clamp(-maxPan, maxPan),
+        _cropOffset.dy.clamp(-maxPan, maxPan),
+      );
+    }
+  }
+
   void openCropModal() {
     if (!_draft.hasPortrait) {
       _showPhotoSheet = false;
@@ -325,30 +346,37 @@ class Screen18EditProfileController extends ChangeNotifier {
     }
     _showPhotoSheet = false;
     _showCropModal = true;
-    _cropZoom = _draft.cropScale;
+    _cropZoom = _draft.cropScale.clamp(1.0, 2.5);
     _cropOffset = _draft.cropOffset;
+    _clampCropOffset();
     notifyListeners();
   }
 
   void closeCropModal() {
     _showCropModal = false;
-    _cropZoom = _draft.cropScale;
+    _cropZoom = _draft.cropScale.clamp(1.0, 2.5);
     _cropOffset = _draft.cropOffset;
+    _clampCropOffset();
     notifyListeners();
   }
 
   void setCropZoom(double zoom) {
     _cropZoom = zoom.clamp(1.0, 2.5);
+    _clampCropOffset();
     notifyListeners();
   }
 
   void updateCropOffset(Offset delta) {
-    final maxPan = 80.0 * _cropZoom;
-    final newOffset = _cropOffset + delta;
-    _cropOffset = Offset(
-      newOffset.dx.clamp(-maxPan, maxPan),
-      newOffset.dy.clamp(-maxPan, maxPan),
-    );
+    final maxPan = maxPanForZoom(_cropZoom);
+    if (maxPan <= 0.0) {
+      _cropOffset = Offset.zero;
+    } else {
+      final newOffset = _cropOffset + delta;
+      _cropOffset = Offset(
+        newOffset.dx.clamp(-maxPan, maxPan),
+        newOffset.dy.clamp(-maxPan, maxPan),
+      );
+    }
     notifyListeners();
   }
 
@@ -359,6 +387,7 @@ class Screen18EditProfileController extends ChangeNotifier {
   }
 
   void applyCrop() {
+    _clampCropOffset();
     _draft = _draft.copyWith(
       cropScale: _cropZoom,
       cropOffset: _cropOffset,
@@ -439,6 +468,7 @@ class Screen18EditProfileController extends ChangeNotifier {
         _showCropModal = true;
         _cropZoom = 1.35;
         _cropOffset = const Offset(15, -10);
+        _clampCropOffset();
         break;
       case Screen18Scenario.appliedCropAvatar:
         _draft = _initialProfile.copyWith(
@@ -447,6 +477,7 @@ class Screen18EditProfileController extends ChangeNotifier {
         );
         _cropZoom = 1.85;
         _cropOffset = const Offset(20, -15);
+        _clampCropOffset();
         break;
       case Screen18Scenario.noPhotoInitials:
         _draft = _initialProfile.copyWith(clearPortrait: true);
@@ -642,14 +673,20 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
 
   @override
   Widget build(BuildContext context) {
+    final ambientMediaQuery = MediaQuery.of(context);
+    final textScaleOverride = _scenario.textScaleOverride;
+    final effectiveMediaQuery = textScaleOverride != null
+        ? ambientMediaQuery.copyWith(
+            textScaler: TextScaler.linear(textScaleOverride),
+          )
+        : ambientMediaQuery;
+
     return Focus(
       focusNode: _keyboardFocusNode,
       autofocus: true,
       onKeyEvent: _handleKeyEvent,
       child: MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-          textScaler: TextScaler.linear(_scenario.textScale),
-        ),
+        data: effectiveMediaQuery,
         child: Scaffold(
           backgroundColor: const Color(0xFFF9FAFB),
           bottomNavigationBar: _controller.showCropModal
@@ -979,13 +1016,15 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
               children: [
                 Icon(Icons.badge_outlined, size: 16, color: Color(0xFF000000)),
                 SizedBox(width: 8),
-                Text(
-                  'البيانات الأساسية',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF000000),
+                Expanded(
+                  child: Text(
+                    'البيانات الأساسية',
+                    style: TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF000000),
+                    ),
                   ),
                 ),
               ],
@@ -1150,17 +1189,19 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
                           children: [
                             const Icon(Icons.cake_outlined, size: 18, color: Color(0xFF000000)),
                             const SizedBox(width: 8),
-                            Text(
-                              draft.birthDate != null
-                                  ? formatArabicDate(draft.birthDate!)
-                                  : 'حدد تاريخ ميلادك',
-                              style: TextStyle(
-                                fontFamily: KonfrmTypography.fontFamily,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: draft.birthDate != null
-                                    ? const Color(0xFF000000)
-                                    : const Color(0xFF9CA3AF),
+                            Flexible(
+                              child: Text(
+                                draft.birthDate != null
+                                    ? formatArabicDate(draft.birthDate!)
+                                    : 'حدد تاريخ ميلادك',
+                                style: TextStyle(
+                                  fontFamily: KonfrmTypography.fontFamily,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: draft.birthDate != null
+                                      ? const Color(0xFF000000)
+                                      : const Color(0xFF9CA3AF),
+                                ),
                               ),
                             ),
                           ],
@@ -1206,7 +1247,8 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
 
   Widget _buildGenderSelector() {
     final draft = _controller.draft;
-    final isLargeText = _scenario.textScale >= 1.3 || MediaQuery.textScalerOf(context).scale(1.0) >= 1.3;
+    final effectiveScale = _scenario.textScaleOverride ?? MediaQuery.textScalerOf(context).scale(1.0);
+    final isLargeText = effectiveScale >= 1.3;
 
     if (isLargeText) {
       return Column(
@@ -1325,13 +1367,15 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF000000),
+            Flexible(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontFamily: KonfrmTypography.fontFamily,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF000000),
+                ),
               ),
             ),
             if (isRequired)
@@ -1399,13 +1443,15 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
               children: [
                 Icon(Icons.verified_user_outlined, size: 16, color: Color(0xFF000000)),
                 SizedBox(width: 8),
-                Text(
-                  'معرّفات الحساب الموثّقة',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF000000),
+                Expanded(
+                  child: Text(
+                    'معرّفات الحساب الموثّقة',
+                    style: TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF000000),
+                    ),
                   ),
                 ),
               ],
@@ -1630,16 +1676,19 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
                   )
                 : const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.check, size: 18, color: Colors.white),
                       SizedBox(width: 8),
-                      Text(
-                        'حفظ التعديلات',
-                        style: TextStyle(
-                          fontFamily: KonfrmTypography.fontFamily,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                      Flexible(
+                        child: Text(
+                          'حفظ التعديلات',
+                          style: TextStyle(
+                            fontFamily: KonfrmTypography.fontFamily,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ],
@@ -1960,7 +2009,7 @@ class Screen18PreviewViewState extends State<Screen18PreviewView> {
                           child: Container(
                             width: 260,
                             height: 260,
-                            color: const Color(0xFF111827),
+                            color: const Color(0xFF000000), // Pure Black #000000 per Founder mandate
                             child: portraitBytes != null
                                 ? Transform.translate(
                                     offset: _controller.cropOffset,

@@ -298,6 +298,111 @@ void main() {
     });
   });
 
+  group('Screen 18 — Geometry-Derived Crop Pan & Safety Invariants', () {
+    late Screen18EditProfileController controller;
+
+    setUp(() {
+      controller = Screen18EditProfileController();
+    });
+
+    test('at 1.0x zoom, image cannot be panned outside viewport (maxPan = 0)', () {
+      controller.openCropModal();
+      expect(controller.cropZoom, equals(1.0));
+      expect(Screen18EditProfileController.maxPanForZoom(1.0), equals(0.0));
+
+      // Attempting to pan in any direction does not displace image
+      controller.updateCropOffset(const Offset(40, -40));
+      expect(controller.cropOffset, equals(Offset.zero));
+
+      controller.updateCropOffset(const Offset(-100, 200));
+      expect(controller.cropOffset, equals(Offset.zero));
+    });
+
+    test('at intermediate zoom (1.5x), pan offset is clamped to exact geometry bounds', () {
+      controller.openCropModal();
+      controller.setCropZoom(1.5);
+      // maxPan = 260 * (1.5 - 1.0) / 2 = 65.0
+      expect(Screen18EditProfileController.maxPanForZoom(1.5), equals(65.0));
+
+      // Pan within bounds
+      controller.updateCropOffset(const Offset(30, -25));
+      expect(controller.cropOffset, equals(const Offset(30, -25)));
+
+      // Extreme drag beyond bounds clamps to 65.0
+      controller.updateCropOffset(const Offset(500, -500));
+      expect(controller.cropOffset, equals(const Offset(65.0, -65.0)));
+
+      // Negative extreme drag clamps to -65.0
+      controller.updateCropOffset(const Offset(-1000, 1000));
+      expect(controller.cropOffset, equals(const Offset(-65.0, 65.0)));
+    });
+
+    test('at maximum zoom (2.5x), pan offset is clamped to maximum geometry bounds', () {
+      controller.openCropModal();
+      controller.setCropZoom(2.5);
+      // maxPan = 260 * (2.5 - 1.0) / 2 = 195.0
+      expect(Screen18EditProfileController.maxPanForZoom(2.5), equals(195.0));
+
+      controller.updateCropOffset(const Offset(150, -120));
+      expect(controller.cropOffset, equals(const Offset(150, -120)));
+
+      // Extreme drag beyond 195.0 clamps
+      controller.updateCropOffset(const Offset(200, -200));
+      expect(controller.cropOffset, equals(const Offset(195.0, -195.0)));
+    });
+
+    test('reducing zoom reclamps existing pan offset to new tighter geometry bounds', () {
+      controller.openCropModal();
+      // Zoom in to 2.0 (maxPan = 130.0)
+      controller.setCropZoom(2.0);
+      expect(Screen18EditProfileController.maxPanForZoom(2.0), equals(130.0));
+      controller.updateCropOffset(const Offset(120, 120));
+      expect(controller.cropOffset, equals(const Offset(120, 120)));
+
+      // Reduce zoom to 1.2 (maxPan = 260 * 0.2 / 2 = 26.0)
+      controller.setCropZoom(1.2);
+      expect(Screen18EditProfileController.maxPanForZoom(1.2), closeTo(26.0, 0.001));
+      // Offset must have been reclamped automatically!
+      expect(controller.cropOffset.dx, closeTo(26.0, 0.001));
+      expect(controller.cropOffset.dy, closeTo(26.0, 0.001));
+
+      // Reduce zoom down to 1.0 -> offset must reclamp to Offset.zero
+      controller.setCropZoom(1.0);
+      expect(controller.cropOffset, equals(Offset.zero));
+    });
+
+    test('resetCrop restores 1.0x zoom and zero offset', () {
+      controller.openCropModal();
+      controller.setCropZoom(2.0);
+      controller.updateCropOffset(const Offset(50, 50));
+      expect(controller.cropOffset, equals(const Offset(50, 50)));
+
+      controller.resetCrop();
+      expect(controller.cropZoom, equals(1.0));
+      expect(controller.cropOffset, equals(Offset.zero));
+    });
+
+    testWidgets('crop modal viewport background enforces pure black #000000', (tester) async {
+      await tester.pumpWidget(const Screen18PreviewApp());
+      await tester.pumpAndSettle();
+
+      // Open photo sheet and tap crop
+      await tester.tap(find.byKey(const Key('camera_badge_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('photo_action_crop')));
+      await tester.pumpAndSettle();
+
+      // Find the crop viewport container inside gesture detector
+      final gestureFinder = find.byKey(const Key('crop_viewport_gesture'));
+      expect(gestureFinder, findsOneWidget);
+
+      final container = tester.widget<Container>(
+        find.descendant(of: gestureFinder, matching: find.byType(Container)).first,
+      );
+      expect(container.color, equals(const Color(0xFF000000)));
+    });
+  });
+
   group('Screen 18 — Behavioral Widget Tests', () {
     testWidgets('renders top bar with physical RIGHT return arrow, title, and cancel button', (tester) async {
       await tester.pumpWidget(const Screen18PreviewApp());

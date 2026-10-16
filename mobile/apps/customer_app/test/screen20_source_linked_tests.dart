@@ -9,11 +9,12 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../tool/screen20_preview_runner.dart';
 
 void main() {
-  group('Screen 20 — Domain Models & Synthetic State', () {
+  group('Screen 20 — Domain Models & State', () {
     test('CustomerPaymentHistoryState default values are secure and empty', () {
       const state = CustomerPaymentHistoryState();
 
@@ -50,7 +51,7 @@ void main() {
       expect(state.selectedFilter, PaymentHistoryFilter.all);
     });
 
-    test('filteredTransactions correctly isolates paid, pending, and other items', () {
+    test('filteredTransactions correctly isolates paid, pending, and refunded items', () {
       final state = CustomerPaymentHistoryState(
         transactions: kSyntheticPaymentTransactions,
       );
@@ -58,19 +59,25 @@ void main() {
       // All: 5 items
       expect(state.filteredTransactions.length, 5);
 
-      // Paid filter: 2 items
+      // Paid filter: 2 items (paid only)
       final paidState = state.copyWith(selectedFilter: PaymentHistoryFilter.paid);
       expect(paidState.filteredTransactions.length, 2);
       expect(paidState.filteredTransactions.every((t) => t.status == PaymentStatus.paid), isTrue);
 
-      // Pending filter: 1 item
+      // Pending filter: 2 items (pending + reconciling)
       final pendingState = state.copyWith(selectedFilter: PaymentHistoryFilter.pending);
-      expect(pendingState.filteredTransactions.length, 1);
-      expect(pendingState.filteredTransactions.first.status, PaymentStatus.pending);
+      expect(pendingState.filteredTransactions.length, 2);
+      expect(
+        pendingState.filteredTransactions.every(
+          (t) => t.status == PaymentStatus.pending || t.status == PaymentStatus.reconciling,
+        ),
+        isTrue,
+      );
 
-      // Other filter (reconciling, refunded, failed): 2 items
-      final otherState = state.copyWith(selectedFilter: PaymentHistoryFilter.other);
-      expect(otherState.filteredTransactions.length, 2);
+      // Refunded filter: 1 item (refunded only; does NOT include failed per Bridge Amendment 5)
+      final refundedState = state.copyWith(selectedFilter: PaymentHistoryFilter.refunded);
+      expect(refundedState.filteredTransactions.length, 1);
+      expect(refundedState.filteredTransactions.first.status, PaymentStatus.refunded);
     });
 
     test('groupedTransactions creates chronological month buckets properly', () {
@@ -82,6 +89,142 @@ void main() {
       expect(grouped.keys, containsAll(['أكتوبر 2026', 'سبتمبر 2026']));
       expect(grouped['أكتوبر 2026']!.length, 3);
       expect(grouped['سبتمبر 2026']!.length, 2);
+    });
+  });
+
+  group('Screen 20 — Financial Precision & Currency Placement', () {
+    test('formatEgpAmount formats thousands separator and preserves decimal precision without toInt()', () {
+      expect(formatEgpAmount(1450.0), '1,450');
+      expect(formatEgpAmount(850.0), '850');
+      expect(formatEgpAmount(2200.0), '2,200');
+      expect(formatEgpAmount(1100.0), '1,100');
+      expect(formatEgpAmount(750.0), '750');
+      expect(formatEgpAmount(1450.50), '1,450.50');
+      expect(formatEgpAmount(0.0), '0');
+    });
+
+    testWidgets('KonfrmAmountText positions currency symbol «ج.م» physically on the LEFT of digits', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl, // RTL context
+            child: Scaffold(
+              body: Center(
+                child: KonfrmAmountText(
+                  amount: 1450.0,
+                  currencyKey: Key('test_currency'),
+                  digitsKey: Key('test_digits'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final currencyFinder = find.byKey(const Key('test_currency'));
+      final digitsFinder = find.byKey(const Key('test_digits'));
+
+      expect(currencyFinder, findsOneWidget);
+      expect(digitsFinder, findsOneWidget);
+
+      final currencyRect = tester.getRect(currencyFinder);
+      final digitsRect = tester.getRect(digitsFinder);
+
+      // In physical screen coordinates, left-to-right order requires:
+      // currencyRect.left < digitsRect.left
+      expect(
+        currencyRect.left < digitsRect.left,
+        isTrue,
+        reason: 'Currency symbol «ج.م» must be physically to the LEFT of the numeric digits.',
+      );
+    });
+  });
+
+  group('Screen 20 — Zero Visible Development Copy Protocol', () {
+    test('Runner source contains ZERO occurrences of forbidden test/mock strings in UI copy', () {
+      final runnerFile = File('tool/screen20_preview_runner.dart');
+      expect(runnerFile.existsSync(), isTrue);
+
+      final content = runnerFile.readAsStringSync();
+
+      const forbiddenStrings = [
+        'بيانات تجريبية',
+        'ليست معاملات حقيقية',
+        'معاينة تجريبية',
+        'محاكاة',
+        'حالة توضيحية',
+        'إيصال تجريبي',
+        'MR-13',
+        'MR-15',
+      ];
+
+      for (final forbidden in forbiddenStrings) {
+        expect(
+          content.contains(forbidden),
+          isFalse,
+          reason: 'Source in tool/screen20_preview_runner.dart must not contain prohibited copy "$forbidden"',
+        );
+      }
+    });
+
+    testWidgets('Rendered normal transactions screen contains NO forbidden development copy or raw BK- references', (tester) async {
+      await tester.pumpWidget(const Screen20PreviewApp());
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('بيانات تجريبية'), findsNothing);
+      expect(find.textContaining('ليست معاملات حقيقية'), findsNothing);
+      expect(find.textContaining('معاينة تجريبية'), findsNothing);
+      expect(find.textContaining('محاكاة'), findsNothing);
+      expect(find.textContaining('إيصال تجريبي'), findsNothing);
+      expect(find.textContaining('MR-13'), findsNothing);
+      expect(find.textContaining('MR-15'), findsNothing);
+
+      // Verify human-friendly booking number is displayed
+      expect(find.text('رقم الحجز 183223'), findsOneWidget);
+      // Raw internal key is not exposed in UI text
+      expect(find.text('#BK-183223'), findsNothing);
+      expect(find.text('BK-183223'), findsNothing);
+    });
+  });
+
+  group('Screen 20 — Real Platform Clipboard Integration', () {
+    testWidgets('Tapping «نسخ المرجع» writes transaction ID to system clipboard', (tester) async {
+      tester.view.physicalSize = const Size(1080, 2340);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      // Mock Clipboard handler
+      String? clipboardText;
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'Clipboard.setData') {
+            clipboardText = (methodCall.arguments as Map)['text'] as String?;
+            return null;
+          } else if (methodCall.method == 'Clipboard.getData') {
+            return {'text': clipboardText};
+          }
+          return null;
+        },
+      );
+
+      await tester.pumpWidget(const Screen20PreviewApp());
+      await tester.pumpAndSettle();
+
+      // Open detail sheet for first item (TXN-2026-881249)
+      await tester.tap(find.byKey(const Key('transaction_card_TXN-2026-881249')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('transaction_detail_sheet')), findsOneWidget);
+
+      // Tap copy button
+      await tester.tap(find.byKey(const Key('copy_transaction_ref_button')));
+      await tester.pumpAndSettle();
+
+      // Verify real clipboard was populated
+      expect(clipboardText, 'TXN-2026-881249');
+      expect(find.text('تم نسخ رقم المعاملة'), findsOneWidget);
     });
   });
 
@@ -104,6 +247,9 @@ void main() {
 
       controller.setFilter(PaymentHistoryFilter.pending);
       expect(controller.state.selectedFilter, PaymentHistoryFilter.pending);
+
+      controller.setFilter(PaymentHistoryFilter.refunded);
+      expect(controller.state.selectedFilter, PaymentHistoryFilter.refunded);
     });
 
     test('open and close transaction detail sheet behaves correctly', () {
@@ -192,33 +338,24 @@ void main() {
       expect(find.byType(NavigationBar), findsNothing);
     });
 
-    testWidgets('Displays prominent first-fold synthetic disclaimer banner', (tester) async {
+    testWidgets('Renders filter bar and transaction cards directly below header without disclaimer banner', (tester) async {
       await tester.pumpWidget(const Screen20PreviewApp());
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('first_fold_synthetic_disclaimer')), findsOneWidget);
-      expect(find.text('بيانات تجريبية — ليست معاملات حقيقية'), findsOneWidget);
-      expect(find.textContaining('جميع العمليات والمبالغ المعروضة في هذه الشاشة هي بيانات محاكاة'), findsOneWidget);
-    });
-
-    testWidgets('Renders summary card, filter bar, and transaction cards', (tester) async {
-      await tester.pumpWidget(const Screen20PreviewApp());
-      await tester.pumpAndSettle();
-
-      // Summary Card
-      expect(find.byKey(const Key('payment_summary_card')), findsOneWidget);
-      expect(find.text('ملخص العمليات المسجلة'), findsOneWidget);
-      expect(find.text('5 عمليات'), findsOneWidget);
+      // No disclaimer banner or summary stats clutter
+      expect(find.byKey(const Key('first_fold_synthetic_disclaimer')), findsNothing);
+      expect(find.byKey(const Key('payment_summary_card')), findsNothing);
 
       // Filter Bar
       expect(find.byKey(const Key('filter_tab_all')), findsOneWidget);
       expect(find.byKey(const Key('filter_tab_paid')), findsOneWidget);
       expect(find.byKey(const Key('filter_tab_pending')), findsOneWidget);
+      expect(find.byKey(const Key('filter_tab_refunded')), findsOneWidget);
 
       // First transaction card
       expect(find.byKey(const Key('transaction_card_TXN-2026-881249')), findsOneWidget);
       expect(find.text('فيلا لؤلؤة البحر — مراسي'), findsOneWidget);
-      expect(find.text('1450'), findsOneWidget);
+      expect(find.text('1,450'), findsOneWidget);
       expect(find.text('ج.م'), findsWidgets);
     });
 
@@ -240,9 +377,9 @@ void main() {
 
       // Sheet opened
       expect(find.byKey(const Key('transaction_detail_sheet')), findsOneWidget);
-      expect(find.text('تفاصيل العملية (معاينة تجريبية)'), findsOneWidget);
-      expect(find.text('إيصال تجريبي — لا يُعد مستنداً بنكياً رسمياً أو إشعار خصم ضريبي ملزم.'), findsOneWidget);
-      expect(find.text('#BK-183223'), findsOneWidget);
+      expect(find.text('تفاصيل العملية'), findsOneWidget);
+      expect(find.text('183223'), findsOneWidget);
+      expect(find.text('TXN-2026-881249'), findsOneWidget);
 
       // Close sheet via top close button
       await tester.tap(find.byKey(const Key('close_detail_sheet_button')));
@@ -339,7 +476,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('سجل المدفوعات'), findsOneWidget);
-      expect(find.byKey(const Key('first_fold_synthetic_disclaimer')), findsOneWidget);
       expect(tester.takeException(), isNull);
 
       state.applyScenario(Screen20Scenario.accessibility200Scrolled);

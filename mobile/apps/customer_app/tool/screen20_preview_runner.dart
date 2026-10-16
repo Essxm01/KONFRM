@@ -2,6 +2,7 @@
 // KONFRM Customer Screen 20 — Payment History («سجل المدفوعات»)
 //
 // Target Hardware: Samsung Galaxy A56 5G (1080 x 2340, Android 16 API 36)
+// Physical Device: [REDACTED_A56_ID]
 // Design Authority: Cairo Typography, RTL First, Pure Monochrome & Neutrals
 // Navigation Context: Nested Customer Destination (Canonical NESTED_CUSTOMER)
 // Bottom Navigation: HIDDEN (Per canonical DESIGN_SYSTEM/COMPONENTS/navigation.md §3.3)
@@ -16,7 +17,7 @@
 //   - Issue #155 (Historical Evidence Directory Immutability & Preservation)
 //   - Issue #145 (Physical Device Serial Redaction Protocol)
 //
-// Scope: Isolated visual preview with synthetic scenarios. Zero production mutations.
+// Scope: Production-Fidelity UI/UX Refinement per Founder & Bridge Decisions.
 // =============================================================================
 
 import 'dart:ui' as ui;
@@ -30,7 +31,7 @@ void main() {
 }
 
 // =============================================================================
-// Domain Models & Synthetic State
+// Domain Models & State
 // =============================================================================
 
 enum PaymentStatus {
@@ -128,9 +129,7 @@ class PaymentTransactionItem {
   final double amountEgp;
   final PaymentStatus status;
   final String paymentMethodLabel;
-  final String providerReference;
   final String statusExplanation;
-  final bool isSynthetic;
 
   const PaymentTransactionItem({
     required this.id,
@@ -142,17 +141,17 @@ class PaymentTransactionItem {
     required this.amountEgp,
     required this.status,
     required this.paymentMethodLabel,
-    required this.providerReference,
     required this.statusExplanation,
-    this.isSynthetic = true,
   });
+
+  String get humanBookingNumber => bookingReference.replaceFirst('BK-', '');
 }
 
 enum PaymentHistoryFilter {
   all,
   paid,
   pending,
-  other,
+  refunded,
 }
 
 extension PaymentHistoryFilterMetadata on PaymentHistoryFilter {
@@ -164,8 +163,8 @@ extension PaymentHistoryFilterMetadata on PaymentHistoryFilter {
         return 'مكتمل';
       case PaymentHistoryFilter.pending:
         return 'قيد المعالجة';
-      case PaymentHistoryFilter.other:
-        return 'المطابقة والمسترد';
+      case PaymentHistoryFilter.refunded:
+        return 'مسترد';
     }
   }
 }
@@ -214,13 +213,14 @@ class CustomerPaymentHistoryState {
       case PaymentHistoryFilter.paid:
         return transactions.where((t) => t.status == PaymentStatus.paid).toList();
       case PaymentHistoryFilter.pending:
-        return transactions.where((t) => t.status == PaymentStatus.pending).toList();
-      case PaymentHistoryFilter.other:
         return transactions
             .where((t) =>
-                t.status == PaymentStatus.reconciling ||
-                t.status == PaymentStatus.refunded ||
-                t.status == PaymentStatus.failed)
+                t.status == PaymentStatus.pending ||
+                t.status == PaymentStatus.reconciling)
+            .toList();
+      case PaymentHistoryFilter.refunded:
+        return transactions
+            .where((t) => t.status == PaymentStatus.refunded)
             .toList();
     }
   }
@@ -235,7 +235,84 @@ class CustomerPaymentHistoryState {
 }
 
 // =============================================================================
-// Synthetic Fixtures (MR-13 Compliant First-Night Deposit)
+// Financial Precision & Amount Text Helpers
+// =============================================================================
+
+/// Formats amount with thousands separator while strictly preserving decimal
+/// precision without relying on double.toInt() truncation.
+String formatEgpAmount(double amount) {
+  final isWhole = (amount % 1) == 0;
+  final parts = amount.toStringAsFixed(isWhole ? 0 : 2).split('.');
+  final regex = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+  final formattedWhole = parts[0].replaceAllMapped(regex, (m) => '${m[1]},');
+  if (parts.length > 1) {
+    return '$formattedWhole.${parts[1]}';
+  }
+  return formattedWhole;
+}
+
+/// Renders financial amounts with currency symbol «ج.م» strictly on the
+/// physical LEFT of the number, using LTR directionality.
+class KonfrmAmountText extends StatelessWidget {
+  final double amount;
+  final double fontSize;
+  final double currencyFontSize;
+  final FontWeight fontWeight;
+  final Color color;
+  final Key? currencyKey;
+  final Key? digitsKey;
+
+  const KonfrmAmountText({
+    super.key,
+    required this.amount,
+    this.fontSize = 18,
+    this.currencyFontSize = 12,
+    this.fontWeight = FontWeight.w800,
+    this.color = const Color(0xFF000000), // Pure Black #000000
+    this.currencyKey,
+    this.digitsKey,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final formatted = formatEgpAmount(amount);
+    return Directionality(
+      textDirection: ui.TextDirection.ltr,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Text(
+            'ج.م',
+            key: currencyKey,
+            style: TextStyle(
+              fontFamily: KonfrmTypography.fontFamily,
+              fontSize: currencyFontSize,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            formatted,
+            key: digitsKey,
+            style: TextStyle(
+              fontFamily: KonfrmTypography.fontFamily,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              color: color,
+              letterSpacing: -0.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// Production-Fidelity Fixtures
 // =============================================================================
 
 final List<PaymentTransactionItem> kSyntheticPaymentTransactions = [
@@ -243,66 +320,61 @@ final List<PaymentTransactionItem> kSyntheticPaymentTransactions = [
     id: 'TXN-2026-881249',
     bookingReference: 'BK-183223',
     propertyTitle: 'فيلا لؤلؤة البحر — مراسي',
-    typeLabel: 'عربون الليلة الأولى (MR-13)',
+    typeLabel: 'عربون الليلة الأولى',
     dateFormatted: '14 أكتوبر 2026 • 03:45 م',
     monthGroup: 'أكتوبر 2026',
     amountEgp: 1450.0,
     status: PaymentStatus.paid,
-    paymentMethodLabel: 'بطاقة ائتمانية •••• 4242',
-    providerReference: 'PAYMOB-EGY-TEST-90112',
+    paymentMethodLabel: 'بطاقة ائتمانية',
     statusExplanation: 'تم تحصيل عربون الليلة الأولى بنجاح عقب موافقة المالك.',
   ),
   const PaymentTransactionItem(
     id: 'TXN-2026-881104',
     bookingReference: 'BK-908747',
     propertyTitle: 'شقة شاطئية أنيقة — مارينا 5',
-    typeLabel: 'عربون الليلة الأولى (MR-13)',
+    typeLabel: 'عربون الليلة الأولى',
     dateFormatted: '12 أكتوبر 2026 • 11:15 ص',
     monthGroup: 'أكتوبر 2026',
     amountEgp: 850.0,
     status: PaymentStatus.reconciling,
-    paymentMethodLabel: 'بطاقة ائتمانية •••• 1088',
-    providerReference: 'PAYMOB-EGY-TEST-88741',
+    paymentMethodLabel: 'بطاقة ائتمانية',
     statusExplanation: 'قيد المطابقة مع مزود الدفع — جاري التحقق من التأكيد النهائي للعملية دون افتراض النجاح أو الفشل.',
   ),
   const PaymentTransactionItem(
     id: 'TXN-2026-879412',
     bookingReference: 'BK-774102',
     propertyTitle: 'بنتهاوس فاخر مع مسبح خاص — الجونة',
-    typeLabel: 'عربون الليلة الأولى (MR-13)',
+    typeLabel: 'عربون الليلة الأولى',
     dateFormatted: '08 أكتوبر 2026 • 07:20 م',
     monthGroup: 'أكتوبر 2026',
     amountEgp: 2200.0,
     status: PaymentStatus.pending,
-    paymentMethodLabel: 'محفظة إلكترونية (تجريبية)',
-    providerReference: 'WALLET-TEST-77192',
+    paymentMethodLabel: 'محفظة إلكترونية',
     statusExplanation: 'الطلب قيد المعالجة لدى مزود الدفع، بانتظار استجابة الشبكة.',
   ),
   const PaymentTransactionItem(
     id: 'TXN-2026-764019',
     bookingReference: 'BK-651900',
     propertyTitle: 'شاليه عائلي حديقة خاصة — الساحل الشمالي',
-    typeLabel: 'عربون الليلة الأولى (MR-13)',
+    typeLabel: 'عربون الليلة الأولى',
     dateFormatted: '22 سبتمبر 2026 • 01:10 م',
     monthGroup: 'سبتمبر 2026',
     amountEgp: 1100.0,
     status: PaymentStatus.paid,
-    paymentMethodLabel: 'بطاقة ميزة •••• 9920',
-    providerReference: 'MEEZA-EGY-TEST-44102',
+    paymentMethodLabel: 'بطاقة ميزة',
     statusExplanation: 'تم استلام عربون الحجز وتأكيد موافقة المالك.',
   ),
   const PaymentTransactionItem(
     id: 'TXN-2026-749821',
     bookingReference: 'BK-510344',
     propertyTitle: 'استوديو هادئ بإطلالة بحرية — رأس الحكمة',
-    typeLabel: 'عربون مسترد (إلغاء معتمد)',
+    typeLabel: 'عربون مسترد',
     dateFormatted: '15 سبتمبر 2026 • 09:30 ص',
     monthGroup: 'سبتمبر 2026',
     amountEgp: 750.0,
     status: PaymentStatus.refunded,
-    paymentMethodLabel: 'بطاقة ائتمانية •••• 4242',
-    providerReference: 'REFUND-TEST-12004',
-    statusExplanation: 'معاينة تجريبية: تمت إعادة مبلغ العربون إلى البطاقة الأصلية وفق سياسة الإلغاء المعتمدة.',
+    paymentMethodLabel: 'بطاقة ائتمانية',
+    statusExplanation: 'تمت إعادة مبلغ العربون إلى البطاقة الأصلية وفق سياسة الإلغاء المعتمدة.',
   ),
 ];
 
@@ -326,23 +398,23 @@ extension Screen20ScenarioMetadata on Screen20Scenario {
   String get title {
     switch (this) {
       case Screen20Scenario.normalTransactionsTop:
-        return '01 Normal Transactions (Top Fold + Disclaimer)';
+        return '01 Payment History (Top Fold)';
       case Screen20Scenario.normalTransactionsScrolled:
-        return '02 Normal Transactions (Scrolled Fold)';
+        return '02 Payment History (Scrolled Fold)';
       case Screen20Scenario.transactionDetailSheet:
-        return '03 Transaction Detail & Receipt Preview Sheet';
+        return '03 Transaction Detail Sheet';
       case Screen20Scenario.emptyState:
-        return '04 Honest Empty State (No Transactions)';
+        return '04 Empty State (No Transactions)';
       case Screen20Scenario.reconciliationUnknownState:
-        return '05 Reconciliation / Pending State (No False Success)';
+        return '05 Reconciliation & Processing State';
       case Screen20Scenario.networkErrorRetryState:
-        return '06 Network Error & Recovery Retry State';
+        return '06 Network Error & Retry State';
       case Screen20Scenario.unauthenticatedGuestState:
-        return '07 Unauthenticated Guest State (Private Data Shield)';
+        return '07 Unauthenticated Guest State';
       case Screen20Scenario.accessibility200Top:
-        return '08 Accessibility 200% Font Scale (Top Fold Reflow)';
+        return '08 Accessibility 200% Font Scale (Top Fold)';
       case Screen20Scenario.accessibility200Scrolled:
-        return '09 Accessibility 200% Font Scale (Scrolled Reflow)';
+        return '09 Accessibility 200% Font Scale (Scrolled)';
     }
   }
 
@@ -359,9 +431,9 @@ extension Screen20ScenarioMetadata on Screen20Scenario {
   double get scrollOffset {
     switch (this) {
       case Screen20Scenario.normalTransactionsScrolled:
-        return 540.0;
+        return 340.0;
       case Screen20Scenario.accessibility200Scrolled:
-        return 880.0;
+        return 600.0;
       default:
         return 0.0;
     }
@@ -417,7 +489,6 @@ class CustomerPaymentHistoryController extends ChangeNotifier {
     );
     notifyListeners();
 
-    // Instant local resolve for deterministic test/preview
     _state = _state.copyWith(
       isLoading: false,
       hasNetworkError: false,
@@ -654,7 +725,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                   ],
                 ),
 
-                // Contained Transaction Detail / Receipt Preview Bottom Sheet
+                // Contained Transaction Detail Sheet
                 if (_controller.state.selectedTransactionForSheet != null)
                   _buildTransactionDetailSheetOverlay(
                     _controller.state.selectedTransactionForSheet!,
@@ -703,7 +774,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                 key: const Key('payment_history_back_button'),
                 borderRadius: BorderRadius.circular(24),
                 onTap: () {
-                  _controller.showNotice('الرجوع إلى صفحة الحساب الشخصي (Screen 17)');
+                  _controller.showNotice('الرجوع إلى صفحة الحساب الشخصي');
                 },
                 child: Container(
                   width: 44,
@@ -810,7 +881,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
       return _buildEmptyStateView();
     }
 
-    // 4. Normal / Populated Transactions View
+    // 4. Normal / Populated Transactions View (Clean Production Fidelity)
     return SingleChildScrollView(
       controller: _scrollController,
       physics: const BouncingScrollPhysics(),
@@ -818,14 +889,6 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Mandatory First-Fold Synthetic Disclaimer Banner
-          _buildFirstFoldDisclaimerBanner(),
-          const SizedBox(height: 16),
-
-          // Summary Stats & Model Boundaries Card
-          _buildSummaryStatsCard(),
-          const SizedBox(height: 16),
-
           // Special Reconciliation Alert (If applicable scenario)
           if (_scenario == Screen20Scenario.reconciliationUnknownState) ...[
             _buildReconciliationAlertCard(),
@@ -838,186 +901,9 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
 
           // Chronological Grouped Transactions
           ..._buildGroupedTransactionSections(),
-          const SizedBox(height: 24),
-
-          // Legal & Model Footnote Card
-          _buildFinancialPolicyFootnoteCard(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
         ],
       ),
-    );
-  }
-
-  // ===========================================================================
-  // Mandatory First-Fold Synthetic Disclaimer Banner
-  // ===========================================================================
-
-  Widget _buildFirstFoldDisclaimerBanner() {
-    return Container(
-      key: const Key('first_fold_synthetic_disclaimer'),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFBEB), // Amber 50
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFFDE68A), width: 1.0), // Amber 200
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(
-            Icons.info_outline_rounded,
-            size: 20,
-            color: Color(0xFFD97706), // Amber 600
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'بيانات تجريبية — ليست معاملات حقيقية',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF92400E), // Amber 800
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'جميع العمليات والمبالغ المعروضة في هذه الشاشة هي بيانات محاكاة مخصصة لاختبار الواجهة، ولا تمثل مدفوعات نقدية فعلية أو تسويات بنكية منتهية.',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFFB45309).withAlpha(230), // Amber 700
-                    height: 1.45,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // Summary Stats & Boundary Card
-  // ===========================================================================
-
-  Widget _buildSummaryStatsCard() {
-    final transactions = _controller.state.transactions;
-    final paidCount = transactions.where((t) => t.status == PaymentStatus.paid).length;
-    final totalCount = transactions.length;
-
-    return Container(
-      key: const Key('payment_summary_card'),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.receipt_long_outlined,
-                  size: 18,
-                  color: Color(0xFF000000), // Pure Black #000000
-                ),
-              ),
-              const SizedBox(width: 10),
-              const Expanded(
-                child: Text(
-                  'ملخص العمليات المسجلة',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF000000), // Pure Black #000000
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  '$totalCount عمليات',
-                  style: const TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF000000), // Pure Black #000000
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          const Divider(height: 1, color: Color(0xFFF3F4F6)),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 16,
-            runSpacing: 8,
-            children: [
-              _buildStatPill('المكتملة بنجاح', '$paidCount', const Color(0xFF059669)),
-              _buildStatPill('نوع الدفع المعتمد', 'عربون الليلة الأولى (MR-13)', const Color(0xFF000000)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'ملاحظة: هذا السجل هو مرجع رقمي للحجوزات ولا يمثل محفظة نقدية أو رصيداً قابلاً للشحن أو السحب.',
-            style: TextStyle(
-              fontFamily: KonfrmTypography.fontFamily,
-              fontSize: 11,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF6B7280),
-              height: 1.4,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatPill(String title, String value, Color valueColor) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontFamily: KonfrmTypography.fontFamily,
-            fontSize: 11,
-            color: Color(0xFF6B7280),
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: TextStyle(
-            fontFamily: KonfrmTypography.fontFamily,
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: valueColor,
-          ),
-        ),
-      ],
     );
   }
 
@@ -1058,7 +944,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                 ),
                 const SizedBox(height: 4),
                 const Text(
-                  'العملية رقم TXN-2026-881104 قيد التدقيق لدى مزود الدفع. لم يتم تأكيد السداد أو الفشل بعد؛ ونلتزم بعدم اختلاق نجاح مالي حتى يرد التأكيد البنكي الرسمي.',
+                  'العملية رقم TXN-2026-881104 قيد التدقيق لدى مزود الدفع. سيتم تحديث حالة العملية فور استلام التأكيد البنكي الرسمي.',
                   style: TextStyle(
                     fontFamily: KonfrmTypography.fontFamily,
                     fontSize: 12,
@@ -1209,10 +1095,11 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
 
   Widget _buildTransactionRowCard(PaymentTransactionItem item) {
     final status = item.status;
+    final humanBookingNumber = item.humanBookingNumber;
 
     return Semantics(
       button: true,
-      label: 'تفاصيل العملية: ${item.propertyTitle}، بمبلغ ${item.amountEgp.toStringAsFixed(0)} ج.م، الحالة: ${status.labelArabic}',
+      label: 'تفاصيل العملية: ${item.propertyTitle}، بمبلغ ${formatEgpAmount(item.amountEgp)} ج.م، الحالة: ${status.labelArabic}',
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -1313,7 +1200,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'حجز #${item.bookingReference}',
+                            'رقم الحجز $humanBookingNumber',
                             style: const TextStyle(
                               fontFamily: KonfrmTypography.fontFamily,
                               fontSize: 12,
@@ -1335,36 +1222,13 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                     ),
                     const SizedBox(width: 8),
 
-                    // Amount formatted in Egyptian Pounds with strict LTR isolation
-                    Directionality(
-                      textDirection: ui.TextDirection.ltr,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            item.amountEgp.toStringAsFixed(0),
-                            style: const TextStyle(
-                              fontFamily: KonfrmTypography.fontFamily,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF000000), // Pure Black #000000
-                              letterSpacing: -0.3,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          const Text(
-                            'ج.م',
-                            style: TextStyle(
-                              fontFamily: KonfrmTypography.fontFamily,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF000000), // Pure Black #000000
-                            ),
-                          ),
-                        ],
-                      ),
+                    // Amount formatted with «ج.م» physically on LEFT
+                    KonfrmAmountText(
+                      amount: item.amountEgp,
+                      fontSize: 18,
+                      currencyFontSize: 12,
+                      currencyKey: Key('amount_currency_${item.id}'),
+                      digitsKey: Key('amount_digits_${item.id}'),
                     ),
                   ],
                 ),
@@ -1372,59 +1236,6 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // Legal & Financial Policy Footnote
-  // ===========================================================================
-
-  Widget _buildFinancialPolicyFootnoteCard() {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF3F4F6),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: const [
-              Icon(
-                Icons.shield_outlined,
-                size: 16,
-                color: Color(0xFF000000), // Pure Black #000000
-              ),
-              SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  'سياسات الدفع والشفافية المالية',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF000000), // Pure Black #000000
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            '• يُسدد عربون الليلة الأولى حصرياً عقب موافقة المالك الرسمية على طلب الحجز (MR-13).\n'
-            '• سياسات سداد المتبقي (MR-15) وقواعد الاسترداد العامة قيد التدقيق التشغيلي ولم تُفعل بعد.\n'
-            '• هذا السجل محمي ومقتصر على العمليات المصرح بها لهذا الحساب فقط.',
-            style: TextStyle(
-              fontFamily: KonfrmTypography.fontFamily,
-              fontSize: 11,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF4B5563),
-              height: 1.5,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -1486,7 +1297,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
               child: ElevatedButton(
                 key: const Key('empty_state_explore_cta'),
                 onPressed: () {
-                  _controller.showNotice('الرجوع إلى تبويب استكشف الإقامات (Screen 03/04)');
+                  _controller.showNotice('الرجوع إلى استكشف الإقامات');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF000000), // Pure Black #000000
@@ -1652,7 +1463,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
               child: ElevatedButton(
                 key: const Key('guest_login_cta'),
                 onPressed: () {
-                  _controller.showNotice('فتح تدفق تسجيل الدخول (Auth V2 Origin: PAYMENT_HISTORY)');
+                  _controller.showNotice('فتح تسجيل الدخول');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF000000), // Pure Black #000000
@@ -1679,11 +1490,12 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
   }
 
   // ===========================================================================
-  // Contained Transaction Detail / Receipt Preview Sheet Overlay (Scenario 03)
+  // Contained Transaction Detail Sheet Overlay (Scenario 03)
   // ===========================================================================
 
   Widget _buildTransactionDetailSheetOverlay(PaymentTransactionItem item) {
     final status = item.status;
+    final humanBookingNumber = item.humanBookingNumber;
 
     return Stack(
       children: [
@@ -1736,7 +1548,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                       children: [
                         const Expanded(
                           child: Text(
-                            'تفاصيل العملية (معاينة تجريبية)',
+                            'تفاصيل العملية',
                             style: TextStyle(
                               fontFamily: KonfrmTypography.fontFamily,
                               fontSize: 17,
@@ -1753,26 +1565,6 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                           },
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Disclaimer notice inside sheet
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFFBEB),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFFFDE68A)),
-                      ),
-                      child: const Text(
-                        'إيصال تجريبي — لا يُعد مستنداً بنكياً رسمياً أو إشعار خصم ضريبي ملزم.',
-                        style: TextStyle(
-                          fontFamily: KonfrmTypography.fontFamily,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF92400E),
-                        ),
-                      ),
                     ),
                     const SizedBox(height: 16),
 
@@ -1795,34 +1587,12 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Directionality(
-                            textDirection: ui.TextDirection.ltr,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                Text(
-                                  item.amountEgp.toStringAsFixed(0),
-                                  style: const TextStyle(
-                                    fontFamily: KonfrmTypography.fontFamily,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w800,
-                                    color: Color(0xFF000000), // Pure Black #000000
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                const Text(
-                                  'ج.م',
-                                  style: TextStyle(
-                                    fontFamily: KonfrmTypography.fontFamily,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF000000),
-                                  ),
-                                ),
-                              ],
-                            ),
+                          KonfrmAmountText(
+                            amount: item.amountEgp,
+                            fontSize: 28,
+                            currencyFontSize: 16,
+                            currencyKey: const Key('sheet_amount_currency'),
+                            digitsKey: const Key('sheet_amount_digits'),
                           ),
                           const SizedBox(height: 8),
                           Container(
@@ -1856,12 +1626,11 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
 
                     // Key-Value Grid
                     _buildDetailItemRow('رقم المعاملة', item.id),
-                    _buildDetailItemRow('رقم الحجز', '#${item.bookingReference}'),
+                    _buildDetailItemRow('رقم الحجز', humanBookingNumber),
                     _buildDetailItemRow('العقار', item.propertyTitle),
                     _buildDetailItemRow('نوع السداد', item.typeLabel),
                     _buildDetailItemRow('تاريخ المعاملة', item.dateFormatted),
                     _buildDetailItemRow('وسيلة الدفع', item.paymentMethodLabel),
-                    _buildDetailItemRow('المرجع الفني', item.providerReference),
                     const SizedBox(height: 8),
 
                     // Explanation note
@@ -1882,8 +1651,9 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                         Expanded(
                           child: OutlinedButton(
                             key: const Key('copy_transaction_ref_button'),
-                            onPressed: () {
-                              _controller.showNotice('تم نسخ مرجع العملية: ${item.id}');
+                            onPressed: () async {
+                              await Clipboard.setData(ClipboardData(text: item.id));
+                              _controller.showNotice('تم نسخ رقم المعاملة');
                             },
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF000000),
@@ -2058,7 +1828,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'محدد سيناريوهات الاختبار (Screen 20)',
+                    'محدد سيناريوهات المعاينة (Screen 20)',
                     style: TextStyle(
                       fontFamily: KonfrmTypography.fontFamily,
                       fontSize: 14,

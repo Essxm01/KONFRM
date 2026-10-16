@@ -2,7 +2,7 @@
 
 TASK_ID: CUSTOMER_SCREEN20_FOUNDER_PRODUCTION_FIDELITY_REFINEMENT
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN20_PRODUCTION_FIDELITY_REFINEMENT_DELIVERED__AWAITING_FOUNDER_VISUAL_APPROVAL
+STATUS: SCREEN20_FACTUAL_MICROFIX_DELIVERED__AWAITING_FOUNDER_VISUAL_APPROVAL
 BRANCH: evidence/customer-screen20-design-review
 BASELINE_COMMIT: 04c250b6521a272ca3e3694913ca71dd35186bd1
 GOVERNING_ISSUES:
@@ -25,11 +25,13 @@ SCOPE: Deliver production-fidelity native Flutter UI/UX refinement for Customer 
   6. Removal of financial policy footnote card without decorative footer replacement.
   7. Human-friendly booking numbers: `رقم الحجز 183223`.
   8. Detail sheet: title «تفاصيل العملية», amount highlight, key-value rows without technical provider test references or fake card numbers.
-  9. Real platform clipboard integration: «نسخ المرجع» copies transaction ID to system clipboard with transient toast feedback.
-  10. Filter bar predicates aligned with labels: «الكل», «مكتمل», «قيد المعالجة» (pending + reconciling), «مسترد» (refunded only).
-  11. Canonical NESTED_CUSTOMER navigation: physical right-pointing arrow (`Icons.arrow_forward_ios`), centered header «سجل المدفوعات», no bottom nav bar per DESIGN_SYSTEM/COMPONENTS/navigation.md §3.3.
-  12. Cairo Arabic RTL typography, exact pure black #000000 (Issue #175: zero charcoal/navy #111827 / #1F2937 / #0F172A).
-  13. 9 decision-grade scenarios captured on genuine Samsung Galaxy A56 5G (SM_A566B, Android 16 API 36) and published with Base64 companions in review-evidence/customer-screen20/v1-production-fidelity-refinement/.
+  9. Real platform clipboard integration: «نسخ رقم الحجز» copies booking reference number to system clipboard with transient toast feedback.
+  10. Neutral amount label «المبلغ» across all transaction statuses.
+  11. Filter bar predicates aligned with labels: «الكل», «مكتمل», «قيد المعالجة» (pending + reconciling), «مسترد» (refunded only).
+  12. Removal of redundant blue reconciliation banner; uncertainty communicated honestly via card badges.
+  13. Canonical NESTED_CUSTOMER navigation: physical right-pointing arrow (`Icons.arrow_forward_ios`), centered header «سجل المدفوعات», no bottom nav bar per DESIGN_SYSTEM/COMPONENTS/navigation.md §3.3.
+  14. Cairo Arabic RTL typography, exact pure black #000000 (Issue #175: zero charcoal/navy #111827 / #1F2937 / #0F172A).
+  15. Changed scenarios 03 and 05 captured on genuine Samsung Galaxy A56 5G (SM_A566B, Android 16 API 36) and published with Base64 companions in review-evidence/customer-screen20/v1-production-fidelity-factual-microfix/.
 
 ## Boundaries & Invariants
 - Screen 17 V4 visual baseline is FROZEN AS-IS at d1a8ab97442e35aa83a2866b476a0143be929528.
@@ -37,7 +39,7 @@ SCOPE: Deliver production-fidelity native Flutter UI/UX refinement for Customer 
 - Screen 19 V1 visual baseline is FROZEN AS-IS at c2145f9a6bdff092d42c20d083fd559f35fdc631.
 - Zero changes to production code (customer_app/lib/ untouched, backend untouched, database untouched).
 - All non-visual technical issues (real payment gateways, live receipts, PDF downloads, bank webhooks) deferred as PRELIVE gates.
-- All historical evidence preserved untouched per Issue #155 (Screens 12–19 and review-evidence/customer-screen20/v1/).
+- All historical evidence preserved untouched per Issue #155 (Screens 12–19, review-evidence/customer-screen20/v1/, and v1-production-fidelity-refinement/).
 - Physical device serial redacted in all logs and markdown ([REDACTED_A56_ID]).
 
 ## Verification & Quality Gates
@@ -47,16 +49,18 @@ SCOPE: Deliver production-fidelity native Flutter UI/UX refinement for Customer 
 - [x] Absolute purge of development/prototype copy (`بيانات تجريبية`, `معاينة`, `MR-13`, `MR-15`, `BK-`).
 - [x] First-fold banner, summary card, and financial policy footnote removed.
 - [x] Human-friendly booking numbers (`رقم الحجز 183223`).
-- [x] Detail sheet with title «تفاصيل العملية», amount highlight, and key-value rows without technical provider leakage.
-- [x] Real platform clipboard integration tested with `Clipboard.setData`.
+- [x] Detail sheet with title «تفاصيل العملية», amount highlight, and key-value rows without technical provider leakage or unapproved payment method rows.
+- [x] Neutral amount label «المبلغ» in detail sheet across all payment statuses.
+- [x] Real platform clipboard integration tested with «نسخ رقم الحجز» copying booking number (`183223`).
+- [x] Redundant blue reconciliation alert banner removed; uncertainty communicated honestly via card badges.
 - [x] Filter predicates strictly match domain semantics («مسترد» excludes failed).
 - [x] Pure black #000000 compliance (zero forbidden charcoal/navy hex values).
-- [x] Source-linked tests created and 100% PASS (22/22 PASS in test/screen20_source_linked_tests.dart).
+- [x] Source-linked tests created and 100% PASS (23/23 PASS in test/screen20_source_linked_tests.dart).
 - [x] Static analysis passes with 0 issues (flutter analyze tool/screen20_preview_runner.dart test/screen20_source_linked_tests.dart).
-- [x] Genuine physical Samsung Galaxy A56 5G captures and Base64 companions generated in review-evidence/customer-screen20/v1-production-fidelity-refinement/.
-- [x] Evidence manifest, README, and REPORT documented in review-evidence/customer-screen20/v1-production-fidelity-refinement/.
-- [x] Design skills activation, Design Court review, and store compliance receipt documented in review-evidence/customer-screen20/v1-production-fidelity-refinement/DESIGN_SKILL_COURT_STORE_RECEIPT.md.
-- [x] Review source mirrors copied to review-evidence/customer-screen20/v1-production-fidelity-refinement/review-source/.
+- [x] Genuine physical Samsung Galaxy A56 5G captures and Base64 companions generated in review-evidence/customer-screen20/v1-production-fidelity-factual-microfix/.
+- [x] Evidence manifest, README, and REPORT documented in review-evidence/customer-screen20/v1-production-fidelity-factual-microfix/.
+- [x] Design skills activation, Design Court review, and store compliance receipt documented in review-evidence/customer-screen20/v1-production-fidelity-factual-microfix/DESIGN_SKILL_COURT_STORE_RECEIPT.md.
+- [x] Review source mirrors copied to review-evidence/customer-screen20/v1-production-fidelity-factual-microfix/review-source/.
 
 ---
 

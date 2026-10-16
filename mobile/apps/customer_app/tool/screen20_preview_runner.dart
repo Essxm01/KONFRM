@@ -338,7 +338,7 @@ final List<PaymentTransactionItem> kSyntheticPaymentTransactions = [
     amountEgp: 850.0,
     status: PaymentStatus.reconciling,
     paymentMethodLabel: 'بطاقة ائتمانية',
-    statusExplanation: 'قيد المطابقة مع مزود الدفع — جاري التحقق من التأكيد النهائي للعملية دون افتراض النجاح أو الفشل.',
+    statusExplanation: 'لم تتأكد حالة هذه العملية بعد — جاري التحقق مع مزود الدفع دون افتراض النجاح أو الفشل.',
   ),
   const PaymentTransactionItem(
     id: 'TXN-2026-879412',
@@ -374,7 +374,7 @@ final List<PaymentTransactionItem> kSyntheticPaymentTransactions = [
     amountEgp: 750.0,
     status: PaymentStatus.refunded,
     paymentMethodLabel: 'بطاقة ائتمانية',
-    statusExplanation: 'تمت إعادة مبلغ العربون إلى البطاقة الأصلية وفق سياسة الإلغاء المعتمدة.',
+    statusExplanation: 'تم استرداد مبلغ العربون بنجاح.',
   ),
 ];
 
@@ -889,12 +889,6 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Special Reconciliation Alert (If applicable scenario)
-          if (_scenario == Screen20Scenario.reconciliationUnknownState) ...[
-            _buildReconciliationAlertCard(),
-            const SizedBox(height: 16),
-          ],
-
           // Filter Segment Bar
           _buildFilterSegmentBar(),
           const SizedBox(height: 16),
@@ -902,60 +896,6 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
           // Chronological Grouped Transactions
           ..._buildGroupedTransactionSections(),
           const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // Reconciliation Alert (Scenario 05)
-  // ===========================================================================
-
-  Widget _buildReconciliationAlertCard() {
-    return Container(
-      key: const Key('reconciliation_alert_banner'),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEFF6FF), // Blue 50
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFBFDBFE), width: 1.0), // Blue 200
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(
-            Icons.sync_rounded,
-            size: 20,
-            color: Color(0xFF2563EB), // Blue 600
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'عملية قيد المطابقة مع مزود الدفع',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1E40AF), // Blue 800
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'العملية رقم TXN-2026-881104 قيد التدقيق لدى مزود الدفع. سيتم تحديث حالة العملية فور استلام التأكيد البنكي الرسمي.',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF1D4ED8),
-                    height: 1.45,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -1579,7 +1519,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                       child: Column(
                         children: [
                           const Text(
-                            'المبلغ المسدد',
+                            'المبلغ',
                             style: TextStyle(
                               fontFamily: KonfrmTypography.fontFamily,
                               fontSize: 12,
@@ -1625,12 +1565,10 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                     const SizedBox(height: 16),
 
                     // Key-Value Grid
-                    _buildDetailItemRow('رقم المعاملة', item.id),
                     _buildDetailItemRow('رقم الحجز', humanBookingNumber),
                     _buildDetailItemRow('العقار', item.propertyTitle),
                     _buildDetailItemRow('نوع السداد', item.typeLabel),
                     _buildDetailItemRow('تاريخ المعاملة', item.dateFormatted),
-                    _buildDetailItemRow('وسيلة الدفع', item.paymentMethodLabel),
                     const SizedBox(height: 8),
 
                     // Explanation note
@@ -1650,10 +1588,10 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            key: const Key('copy_transaction_ref_button'),
+                            key: const Key('copy_booking_ref_button'),
                             onPressed: () async {
-                              await Clipboard.setData(ClipboardData(text: item.id));
-                              _controller.showNotice('تم نسخ رقم المعاملة');
+                              await Clipboard.setData(ClipboardData(text: humanBookingNumber));
+                              _controller.showNotice('تم نسخ رقم الحجز');
                             },
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF000000),
@@ -1664,7 +1602,7 @@ class Screen20PreviewViewState extends State<Screen20PreviewView> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                             child: const Text(
-                              'نسخ المرجع',
+                              'نسخ رقم الحجز',
                               style: TextStyle(
                                 fontFamily: KonfrmTypography.fontFamily,
                                 fontWeight: FontWeight.w700,

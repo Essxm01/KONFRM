@@ -189,7 +189,7 @@ void main() {
   });
 
   group('Screen 20 — Real Platform Clipboard Integration', () {
-    testWidgets('Tapping «نسخ المرجع» writes transaction ID to system clipboard', (tester) async {
+    testWidgets('Tapping «نسخ رقم الحجز» writes booking reference to system clipboard', (tester) async {
       tester.view.physicalSize = const Size(1080, 2340);
       tester.view.devicePixelRatio = 3.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -219,12 +219,12 @@ void main() {
       expect(find.byKey(const Key('transaction_detail_sheet')), findsOneWidget);
 
       // Tap copy button
-      await tester.tap(find.byKey(const Key('copy_transaction_ref_button')));
+      await tester.tap(find.byKey(const Key('copy_booking_ref_button')));
       await tester.pumpAndSettle();
 
-      // Verify real clipboard was populated
-      expect(clipboardText, 'TXN-2026-881249');
-      expect(find.text('تم نسخ رقم المعاملة'), findsOneWidget);
+      // Verify real clipboard was populated with booking number
+      expect(clipboardText, '183223');
+      expect(find.text('تم نسخ رقم الحجز'), findsOneWidget);
     });
   });
 
@@ -379,13 +379,65 @@ void main() {
       expect(find.byKey(const Key('transaction_detail_sheet')), findsOneWidget);
       expect(find.text('تفاصيل العملية'), findsOneWidget);
       expect(find.text('183223'), findsOneWidget);
-      expect(find.text('TXN-2026-881249'), findsOneWidget);
+      // Factual Microfix: internal transaction ID and payment method omitted from detail sheet
+      expect(find.text('TXN-2026-881249'), findsNothing);
+      expect(find.text('وسيلة الدفع'), findsNothing);
+      // Factual Microfix: neutral 'المبلغ' instead of unconditional 'المبلغ المسدد'
+      expect(find.text('المبلغ'), findsOneWidget);
+      expect(find.text('المبلغ المسدد'), findsNothing);
 
       // Close sheet via top close button
       await tester.tap(find.byKey(const Key('close_detail_sheet_button')));
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('transaction_detail_sheet')), findsNothing);
+    });
+
+    testWidgets('Pending transaction detail sheet displays neutral «المبلغ» and copies booking number', (tester) async {
+      tester.view.physicalSize = const Size(1080, 2340);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      String? clipboardText;
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'Clipboard.setData') {
+            clipboardText = (methodCall.arguments as Map)['text'] as String?;
+            return null;
+          }
+          return null;
+        },
+      );
+
+      await tester.pumpWidget(const Screen20PreviewApp());
+      await tester.pumpAndSettle();
+
+      // Tap on pending transaction card (TXN-2026-879412, BK-774102)
+      await tester.ensureVisible(find.byKey(const Key('transaction_card_TXN-2026-879412')));
+      await tester.tap(find.byKey(const Key('transaction_card_TXN-2026-879412')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('transaction_detail_sheet')), findsOneWidget);
+      // Neutral label
+      expect(find.text('المبلغ'), findsOneWidget);
+      expect(find.text('المبلغ المسدد'), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('transaction_detail_sheet')),
+          matching: find.text('قيد المعالجة'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('774102'), findsOneWidget);
+      expect(find.text('TXN-2026-879412'), findsNothing);
+
+      // Copy booking number
+      await tester.tap(find.byKey(const Key('copy_booking_ref_button')));
+      await tester.pumpAndSettle();
+
+      expect(clipboardText, '774102');
+      expect(find.text('تم نسخ رقم الحجز'), findsOneWidget);
     });
 
     testWidgets('Empty state renders honest message and explore CTA', (tester) async {
@@ -405,7 +457,7 @@ void main() {
       expect(find.text('استكشف الإقامات'), findsOneWidget);
     });
 
-    testWidgets('Reconciliation state displays transparent provider verification banner', (tester) async {
+    testWidgets('Reconciliation state displays individual card status without redundant banner', (tester) async {
       tester.view.physicalSize = const Size(1080, 2340);
       tester.view.devicePixelRatio = 3.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -417,8 +469,11 @@ void main() {
       state.applyScenario(Screen20Scenario.reconciliationUnknownState);
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('reconciliation_alert_banner')), findsOneWidget);
-      expect(find.text('عملية قيد المطابقة مع مزود الدفع'), findsOneWidget);
+      // Factual Microfix: redundant reconciliation alert banner removed
+      expect(find.byKey(const Key('reconciliation_alert_banner')), findsNothing);
+      expect(find.text('عملية قيد المطابقة مع مزود الدفع'), findsNothing);
+      // Status communicated directly via card badge
+      expect(find.text('قيد المطابقة'), findsOneWidget);
     });
 
     testWidgets('Network error state displays recoverable error and retry button', (tester) async {

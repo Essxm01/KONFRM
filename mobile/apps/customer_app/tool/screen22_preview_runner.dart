@@ -7,24 +7,27 @@
 // Navigation Context: Nested Customer Destination (Canonical NESTED_CUSTOMER)
 // Bottom Navigation: HIDDEN (Per canonical DESIGN_SYSTEM/COMPONENTS/navigation.md §3.3)
 // Origin Screen: Screen 13 (Booking Details / Stay Hub)
-// Return Route: Returns to originating booking via RTL Back arrow [➔]
+// Return Route: Returns to originating booking via physical RIGHT-pointing Back arrow [➔]
 // Governing Issues:
-//   - Issue #191 (Screen 22 Booking Chat Founder Execution Contract)
+//   - Issue #191 (Screen 22 Booking Chat Founder Execution Contract & Review Correction)
+//   - Issue #192 (Complete 22-Screen Design Audit & Universal Back-Arrow Rule)
 //   - Issue #190 (Deferred Chat Realtime, WebSockets, Push, ACL & Prelive Gate)
 //   - Issue #185 (Screen 21 Approval & Freeze Baseline)
 //   - Issue #183 (Mandatory Design Skills Activation, Design Court & Platform Gate)
 //   - Issue #175 (Mandatory Pure-Black #000000 Rule & Repository-Wide Audit)
-//   - Issue #174 (Notifications Navigation Routing Proposal vs Architecture)
-//   - Issue #173 (Financial Model Meaning & Booking Lifecycle Boundaries)
-//   - Issue #172 (Identity, Avatar, QR & Connected Profiles Boundaries)
-//   - Issue #171 (Deferred Technical/QA Backlog for Screen 17 - Prelive Gate)
 //   - Issue #166 (Founder Design-First Priorities - Native UI/UX & Cairo RTL)
 //   - Issue #155 (Historical Evidence Directory Immutability & Preservation)
 //   - Issue #145 (Physical Device Serial Redaction Protocol)
 //
-// Scope: Production-Fidelity UI/UX Design V1 for Booking-Scoped Chat with Cairo
-//        Arabic RTL, Authorized Participant Bubbles, Truthful Delivery Status,
-//        Keyboard-Safe Composer, and Genuine 200% Accessibility Scaling.
+// Scope: Founder Layout Correction V1:
+//   1. Physical RIGHT Back button with arrowhead visibly pointing RIGHT [➔].
+//   2. Calm single-line header with title «محادثة الحجز», collapsible disclosure chevron,
+//      and far-LEFT tappable booking reference link «رقم الحجز 183223» to Screen 13.
+//   3. Role Grammar: Customer WHITE bubble physically LEFT with avatar on LEFT;
+//      Owner PURE BLACK #000000 bubble physically RIGHT with avatar on RIGHT.
+//   4. Purged header clutter: no permanent subtitle, villa/date strip, or scope notice.
+//   5. Truthful content: short Arabic rental coordination fixtures, no fake check-in/parking.
+//   6. Restrained neutral offline/error states: zero amber banners, no false auto-send promises.
 // =============================================================================
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -49,7 +52,7 @@ enum ChatParticipantRole {
 /// Zero fake delivery claims: read receipts, double blue ticks, and typing status
 /// are strictly prohibited per Issue #191 and deferred to PRELIVE Issue #190.
 enum MessageDeliveryStatus {
-  sending,        // Local optimistic draft in transit (clock icon)
+  sending,        // Local optimistic draft in transit (spinner)
   sent,           // Server acknowledged receipt (single check mark)
   unknownTimeout, // Network timeout / uncertain delivery state
   failed,         // Network failure with retry affordance
@@ -93,83 +96,78 @@ class ChatMessage {
 // =============================================================================
 
 enum Screen22Scenario {
-  authorizedThreadTop,       // 01 Normal authorized thread (Top fold)
-  threadScrolledLong,        // 02 Scrolled conversation with long multiline RTL text
-  composerDraftActive,       // 03 Customer typing a draft message into composer
-  messageSendingPending,     // 04 Sent message in optimistic pending state
-  submissionTimeoutUncertain,// 05 Submission timeout / uncertain state recovery
-  messageDeliveryFailed,     // 06 Confirmed delivery failure with retry
-  offlineState,              // 07 Device offline banner with draft capability
-  unauthorizedGuestBarrier,  // 08 Unauthenticated guest access barrier
-  unavailableThread,         // 09 Ineligible booking / no active thread
-  accessibility200Thread,    // 10 200% font scale reflow (Conversation bubbles)
-  accessibility200Composer,  // 11 200% font scale reflow (Composer & inputs)
+  authorizedThreadTop,       // 01 Authorized Thread (Top Fold, collapsed booking details)
+  bookingDisclosureExpanded, // 02 Booking Details Disclosure Expanded
+  threadScrolledLong,        // 03 Scrolled Long Conversation
+  composerDraftActive,       // 04 Composer Active Draft with Send CTA
+  messageSendingPending,     // 05 Message Pending Send (Local Optimistic)
+  submissionTimeoutUncertain,// 06 Submission Timeout / Uncertain State (Neutral Notice)
+  messageDeliveryFailed,     // 07 Confirmed Delivery Failure with Safe Retry
+  offlineState,              // 08 Device Offline Neutral Status (No Amber Banner)
+  unauthorizedGuestBarrier,  // 09 Unauthenticated Guest Access Barrier
+  unavailableThread,         // 10 Unavailable / Ineligible Chat Thread
+  accessibility200Thread,    // 11 200% Font Scale Reflow (Conversation Bubbles)
+  accessibility200Composer,  // 12 200% Font Scale Reflow (Composer & Multiline Headroom)
 }
 
 extension Screen22ScenarioMetadata on Screen22Scenario {
   String get title {
     switch (this) {
       case Screen22Scenario.authorizedThreadTop:
-        return '01 Authorized Thread (Top Fold)';
+        return '01 Authorized Thread (Top Fold - Collapsed)';
+      case Screen22Scenario.bookingDisclosureExpanded:
+        return '02 Booking Details Disclosure Expanded';
       case Screen22Scenario.threadScrolledLong:
-        return '02 Scrolled Long Conversation';
+        return '03 Scrolled Long Conversation';
       case Screen22Scenario.composerDraftActive:
-        return '03 Composer Active Draft with Send CTA';
+        return '04 Composer Active Draft with Send CTA';
       case Screen22Scenario.messageSendingPending:
-        return '04 Message Pending Send (Local Optimistic)';
+        return '05 Message Pending Send (Local Optimistic)';
       case Screen22Scenario.submissionTimeoutUncertain:
-        return '05 Submission Timeout / Uncertain State';
+        return '06 Submission Timeout / Uncertain State';
       case Screen22Scenario.messageDeliveryFailed:
-        return '06 Message Delivery Failure with Safe Retry';
+        return '07 Message Delivery Failure with Safe Retry';
       case Screen22Scenario.offlineState:
-        return '07 Offline Banner with Preserved Draft';
+        return '08 Offline Neutral Status (Draft Preserved)';
       case Screen22Scenario.unauthorizedGuestBarrier:
-        return '08 Unauthenticated Guest Barrier';
+        return '09 Unauthenticated Guest Barrier';
       case Screen22Scenario.unavailableThread:
-        return '09 Unavailable / Ineligible Chat Thread';
+        return '10 Unavailable / Ineligible Chat Thread';
       case Screen22Scenario.accessibility200Thread:
-        return '10 Accessibility 200% (Conversation)';
+        return '11 Accessibility 200% (Conversation)';
       case Screen22Scenario.accessibility200Composer:
-        return '11 Accessibility 200% (Composer Reflow)';
+        return '12 Accessibility 200% (Composer Reflow)';
     }
   }
 }
 
 // =============================================================================
-// Sourced Conversation Fixtures
+// Sourced Conversation Fixtures (Natural, Short Rental Coordination)
 // =============================================================================
 
-/// Base pre-seeded conversation between verified Customer and Owner.
-/// Grounded strictly in confirmed booking context (#183223).
+/// Base conversation grounded in approved booking facts (#183223).
+/// Zero unverified operational claims: no arrival guarantees, key handover rules,
+/// or parking capacity counts.
 final List<ChatMessage> kBaseConversationMessages = [
   const ChatMessage(
     id: 'msg_01',
-    senderRole: ChatParticipantRole.customer,
-    contentArabic: 'مرحباً، أود التأكد من إمكانية التنسيق بخصوص موعد الوصول للفيلا.',
+    senderRole: ChatParticipantRole.owner,
+    contentArabic: 'مرحباً بك، يسعدنا استقبالك في الفيلا. هل لديك أي استفسار بخصوص تفاصيل الوصول؟',
     timestampArabic: '10:14 ص',
     status: MessageDeliveryStatus.sent,
   ),
   const ChatMessage(
     id: 'msg_02',
-    senderRole: ChatParticipantRole.owner,
-    contentArabic:
-        'أهلاً بك! تم تأكيد حجزك وسنكون بانتظارك في الموعد المحدد. سأقوم بتزويدك بإرشادات بوابة الدخول قبل موعد الوصول بوقت كافٍ.',
+    senderRole: ChatParticipantRole.customer,
+    contentArabic: 'أهلاً بك، أردت فقط الاستفسار عن أقرب مسار وصول عند البوابة الرئيسية.',
     timestampArabic: '10:18 ص',
     status: MessageDeliveryStatus.sent,
   ),
   const ChatMessage(
     id: 'msg_03',
-    senderRole: ChatParticipantRole.customer,
-    contentArabic: 'شكراً جزيلاً. هل توجد مواقف سيارات مخصصة داخل الفيلا مباشرة؟',
-    timestampArabic: '10:22 ص',
-    status: MessageDeliveryStatus.sent,
-  ),
-  const ChatMessage(
-    id: 'msg_04',
     senderRole: ChatParticipantRole.owner,
-    contentArabic:
-        'نعم، تتوفر مساحة خاصة تتسع لسيارتين داخل محيط الفيلا بالإضافة إلى مواقف إضافية مظللة بجوار المدخل.',
-    timestampArabic: '10:25 ص',
+    contentArabic: 'المسار مباشر وسهل، وجميع اللوحات الإرشادية واضحة بمجرد الدخول من البوابة.',
+    timestampArabic: '10:22 ص',
     status: MessageDeliveryStatus.sent,
   ),
 ];
@@ -184,8 +182,8 @@ class CustomerBookingChatController extends ChangeNotifier {
   // Booking Context Fixtures (Sanitized numeric digits only, no raw BK- prefix)
   final String bookingNumber = '183223';
   final String propertyTitle = 'فيلا لؤلؤة البحر — مراسي';
-  final String bookingDates = '14 يوليو – 18 يوليو';
-  final String ownerDisplayName = 'المالك'; // Neutral label per Issue #191
+  final String bookingDates = '14 – 18 يوليو 2026 (4 ليالٍ)';
+  final String ownerDisplayName = 'المالك';
 
   // Dynamic State
   List<ChatMessage> _messages = List.from(kBaseConversationMessages);
@@ -195,6 +193,8 @@ class CustomerBookingChatController extends ChangeNotifier {
   bool _isOffline = false;
   bool _isTimeoutUncertain = false;
   bool _isDeliveryFailed = false;
+  bool _isBookingDetailsExpanded = false;
+  String _lastNavigationIntent = '';
 
   // Getters
   Screen22Scenario get scenario => _scenario;
@@ -205,6 +205,23 @@ class CustomerBookingChatController extends ChangeNotifier {
   bool get isOffline => _isOffline;
   bool get isTimeoutUncertain => _isTimeoutUncertain;
   bool get isDeliveryFailed => _isDeliveryFailed;
+  bool get isBookingDetailsExpanded => _isBookingDetailsExpanded;
+  String get lastNavigationIntent => _lastNavigationIntent;
+
+  void toggleBookingDetails() {
+    _isBookingDetailsExpanded = !_isBookingDetailsExpanded;
+    notifyListeners();
+  }
+
+  void setBookingDetailsExpanded(bool expanded) {
+    _isBookingDetailsExpanded = expanded;
+    notifyListeners();
+  }
+
+  void recordNavigationIntent(String destination) {
+    _lastNavigationIntent = destination;
+    notifyListeners();
+  }
 
   void setScenario(Screen22Scenario newScenario) {
     _scenario = newScenario;
@@ -213,9 +230,15 @@ class CustomerBookingChatController extends ChangeNotifier {
     _isOffline = false;
     _isTimeoutUncertain = false;
     _isDeliveryFailed = false;
+    _isBookingDetailsExpanded = (newScenario == Screen22Scenario.bookingDisclosureExpanded);
 
     switch (newScenario) {
       case Screen22Scenario.authorizedThreadTop:
+        _messages = List.from(kBaseConversationMessages);
+        _draftText = '';
+        break;
+
+      case Screen22Scenario.bookingDisclosureExpanded:
         _messages = List.from(kBaseConversationMessages);
         _draftText = '';
         break;
@@ -224,19 +247,17 @@ class CustomerBookingChatController extends ChangeNotifier {
         _messages = [
           ...kBaseConversationMessages,
           const ChatMessage(
-            id: 'msg_05',
+            id: 'msg_04',
             senderRole: ChatParticipantRole.customer,
-            contentArabic:
-                'ممتاز جداً. هل يلزم إرسال أرقام السيارات مسبقاً لإصدار تصاريح الدخول من إدارة المنتجع؟',
-            timestampArabic: '10:30 ص',
+            contentArabic: 'شكراً جزيلاً لتعاونك، سأوافيك بتوقيت وصولنا فور انطلاقنا.',
+            timestampArabic: '10:26 ص',
             status: MessageDeliveryStatus.sent,
           ),
           const ChatMessage(
-            id: 'msg_06',
+            id: 'msg_05',
             senderRole: ChatParticipantRole.owner,
-            contentArabic:
-                'يفضل تزويدي بها قبل موعد الوصول بيوم واحد وسأقوم بتسجيلها لدى أمن البوابة لتسهيل إجراءات الدخول السريع لك ولعائلتك.',
-            timestampArabic: '10:35 ص',
+            contentArabic: 'على الرحب والسعة دائماً، نتمنى لكم إقامة ممتعة ومريحة.',
+            timestampArabic: '10:30 ص',
             status: MessageDeliveryStatus.sent,
           ),
         ];
@@ -245,7 +266,7 @@ class CustomerBookingChatController extends ChangeNotifier {
 
       case Screen22Scenario.composerDraftActive:
         _messages = List.from(kBaseConversationMessages);
-        _draftText = 'سأقوم بإرسال بيانات المركبة غداً صباحاً فور تجهيزها، شكراً لك.';
+        _draftText = 'شكراً جزيلاً لتعاونك، سأوافيك بتوقيت وصولنا فور انطلاقنا.';
         break;
 
       case Screen22Scenario.messageSendingPending:
@@ -254,8 +275,8 @@ class CustomerBookingChatController extends ChangeNotifier {
           const ChatMessage(
             id: 'msg_pending_01',
             senderRole: ChatParticipantRole.customer,
-            contentArabic: 'سأقوم بإرسال بيانات المركبة غداً صباحاً فور تجهيزها.',
-            timestampArabic: '10:38 ص',
+            contentArabic: 'شكراً لك، سأؤكد لك وقت تحركنا بإذن الله.',
+            timestampArabic: '10:32 ص',
             status: MessageDeliveryStatus.sending,
           ),
         ];
@@ -268,12 +289,12 @@ class CustomerBookingChatController extends ChangeNotifier {
           const ChatMessage(
             id: 'msg_timeout_01',
             senderRole: ChatParticipantRole.customer,
-            contentArabic: 'أرجو تأكيد إمكانية تسجيل الوصول المبكر في تمام الساعة الواحدة ظهراً.',
-            timestampArabic: '10:40 ص',
+            contentArabic: 'أود التأكد من وجود مصعد كهربائي يعمل في مبنى الفيلا.',
+            timestampArabic: '10:34 ص',
             status: MessageDeliveryStatus.unknownTimeout,
           ),
         ];
-        _draftText = 'أرجو تأكيد إمكانية تسجيل الوصول المبكر في تمام الساعة الواحدة ظهراً.';
+        _draftText = 'أود التأكد من وجود مصعد كهربائي يعمل في مبنى الفيلا.';
         _isTimeoutUncertain = true;
         break;
 
@@ -283,18 +304,18 @@ class CustomerBookingChatController extends ChangeNotifier {
           const ChatMessage(
             id: 'msg_failed_01',
             senderRole: ChatParticipantRole.customer,
-            contentArabic: 'أرجو تأكيد موعد تسليم المفاتيح عند الوصول.',
-            timestampArabic: '10:42 ص',
+            contentArabic: 'هل تتوفر عربة نقل الأمتعة عند المدخل؟',
+            timestampArabic: '10:36 ص',
             status: MessageDeliveryStatus.failed,
           ),
         ];
-        _draftText = 'أرجو تأكيد موعد تسليم المفاتيح عند الوصول.';
+        _draftText = 'هل تتوفر عربة نقل الأمتعة عند المدخل؟';
         _isDeliveryFailed = true;
         break;
 
       case Screen22Scenario.offlineState:
         _messages = List.from(kBaseConversationMessages);
-        _draftText = 'رسالة مسودة أثناء انقطاع الاتصال...';
+        _draftText = 'مسودة رسالة أثناء انقطاع الاتصال...';
         _isOffline = true;
         break;
 
@@ -302,12 +323,14 @@ class CustomerBookingChatController extends ChangeNotifier {
         _messages = [];
         _draftText = '';
         _isGuest = true;
+        _isBookingDetailsExpanded = false;
         break;
 
       case Screen22Scenario.unavailableThread:
         _messages = [];
         _draftText = '';
         _isThreadAvailable = false;
+        _isBookingDetailsExpanded = false;
         break;
 
       case Screen22Scenario.accessibility200Thread:
@@ -317,7 +340,7 @@ class CustomerBookingChatController extends ChangeNotifier {
 
       case Screen22Scenario.accessibility200Composer:
         _messages = List.from(kBaseConversationMessages);
-        _draftText = 'أود الاستفسار عن إمكانية الوصول المبكر وتنسيق استلام المفاتيح.';
+        _draftText = 'أود الاستفسار عن تفاصيل إضافية بخصوص إمكانية التنسيق المسبق قبل موعد الحضور.';
         break;
     }
 
@@ -348,16 +371,16 @@ class CustomerBookingChatController extends ChangeNotifier {
   }
 
   /// Safe recovery from timeout/uncertain state returning user to draft review.
-  void reviewDraftAfterUncertain() {
+  void restoreDraftFromUncertain() {
     _isTimeoutUncertain = false;
     notifyListeners();
   }
 
   /// Safe retry for a failed message without creating duplicates.
-  void retryFailedMessage(String messageId) {
+  void retryFailedMessage() {
     _isDeliveryFailed = false;
     _messages = _messages.map((m) {
-      if (m.id == messageId) {
+      if (m.id == 'msg_failed_01') {
         return m.copyWith(status: MessageDeliveryStatus.sending);
       }
       return m;
@@ -392,7 +415,7 @@ class _Screen22PreviewAppState extends State<Screen22PreviewApp> {
       title: 'Customer Screen 22 — محادثة الحجز',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFFF9FAFB), // Pristine light canvas
+        scaffoldBackgroundColor: const Color(0xFFF9FAFB),
         fontFamily: KonfrmTypography.fontFamily,
         colorScheme: const ColorScheme.light(
           primary: Color(0xFF000000), // Pure Black #000000
@@ -459,27 +482,30 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
       controller.setScenario(Screen22Scenario.authorizedThreadTop);
       return true;
     } else if (key == LogicalKeyboardKey.digit2) {
-      controller.setScenario(Screen22Scenario.threadScrolledLong);
+      controller.setScenario(Screen22Scenario.bookingDisclosureExpanded);
       return true;
     } else if (key == LogicalKeyboardKey.digit3) {
-      controller.setScenario(Screen22Scenario.composerDraftActive);
+      controller.setScenario(Screen22Scenario.threadScrolledLong);
       return true;
     } else if (key == LogicalKeyboardKey.digit4) {
-      controller.setScenario(Screen22Scenario.messageSendingPending);
+      controller.setScenario(Screen22Scenario.composerDraftActive);
       return true;
     } else if (key == LogicalKeyboardKey.digit5) {
-      controller.setScenario(Screen22Scenario.submissionTimeoutUncertain);
+      controller.setScenario(Screen22Scenario.messageSendingPending);
       return true;
     } else if (key == LogicalKeyboardKey.digit6) {
-      controller.setScenario(Screen22Scenario.messageDeliveryFailed);
+      controller.setScenario(Screen22Scenario.submissionTimeoutUncertain);
       return true;
     } else if (key == LogicalKeyboardKey.digit7) {
-      controller.setScenario(Screen22Scenario.offlineState);
+      controller.setScenario(Screen22Scenario.messageDeliveryFailed);
       return true;
     } else if (key == LogicalKeyboardKey.digit8) {
-      controller.setScenario(Screen22Scenario.unauthorizedGuestBarrier);
+      controller.setScenario(Screen22Scenario.offlineState);
       return true;
     } else if (key == LogicalKeyboardKey.digit9) {
+      controller.setScenario(Screen22Scenario.unauthorizedGuestBarrier);
+      return true;
+    } else if (key == LogicalKeyboardKey.digit0) {
       controller.setScenario(Screen22Scenario.unavailableThread);
       return true;
     } else if (key == LogicalKeyboardKey.keyA) {
@@ -552,17 +578,16 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
           children: [
             Column(
               children: [
-                // Offline Warning Strip (When offline scenario is active)
-                if (controller.isOffline) _buildOfflineBanner(),
-
-                // Sticky Booking Context Strip (Discreet source-backed metadata)
-                if (!controller.isGuest && controller.isThreadAvailable)
-                  _buildBookingContextStrip(),
+                // Expandable Booking Details Panel (Starts Collapsed)
+                _buildExpandableBookingPanel(),
 
                 // Primary Message Stream or Barrier State
                 Expanded(
                   child: _buildChatBody(),
                 ),
+
+                // Neutral Offline Status Indicator (Directly above composer)
+                if (controller.isOffline) _buildOfflineIndicator(),
 
                 // Bottom Message Composer (Only visible if thread is accessible)
                 if (!controller.isGuest && controller.isThreadAvailable)
@@ -579,7 +604,7 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
   }
 
   // ===========================================================================
-  // Canonical NESTED_CUSTOMER App Bar
+  // Canonical Minimal Calm App Bar
   // ===========================================================================
 
   PreferredSizeWidget _buildCanonicalAppBar() {
@@ -598,15 +623,18 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
-            // Physical Right Back Arrow (Canonical RTL Navigation to Screen 13)
+            // 1. Physical RIGHT Back Arrow: Arrowhead visibly points RIGHT [➔]
             InkWell(
               key: const Key('screen22_back_button'),
-              onTap: () {},
+              onTap: () {
+                controller.recordNavigationIntent('SCREEN_13_BOOKING_DETAILS');
+              },
               borderRadius: BorderRadius.circular(20),
               child: const Padding(
                 padding: EdgeInsets.all(8),
                 child: Icon(
-                  Icons.arrow_forward_rounded, // Right-pointing arrow in RTL
+                  Icons.arrow_forward_rounded,
+                  textDirection: TextDirection.ltr, // Prevents RTL mirroring; points RIGHT [➔]
                   color: Color(0xFF000000), // Pure Black #000000
                   size: 22,
                 ),
@@ -614,66 +642,73 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
             ),
             const SizedBox(width: 8),
 
-            // Header Titles: Screen Identity & Participant Info
-            Expanded(
-              child: GestureDetector(
-                onDoubleTap: () {
-                  setState(() {
-                    _showDevTools = !_showDevTools;
-                  });
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'محادثة الحجز',
-                      key: Key('screen22_app_bar_title'),
-                      style: TextStyle(
-                        fontFamily: KonfrmTypography.fontFamily,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF000000), // Pure Black #000000
-                        height: 1.25,
-                      ),
-                    ),
-                    const SizedBox(height: 1),
-                    Text(
-                      '${controller.ownerDisplayName} • ${controller.propertyTitle}',
-                      key: const Key('screen22_app_bar_subtitle'),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontFamily: KonfrmTypography.fontFamily,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF6B7280),
-                      ),
-                    ),
-                  ],
+            // 2. Title «محادثة الحجز» + Disclosure Chevron
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'محادثة الحجز',
+                  key: Key('screen22_app_bar_title'),
+                  style: TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF000000), // Pure Black #000000
+                    height: 1.25,
+                  ),
                 ),
-              ),
+                if (!controller.isGuest && controller.isThreadAvailable) ...[
+                  const SizedBox(width: 4),
+                  InkWell(
+                    key: const Key('screen22_booking_disclosure_button'),
+                    onTap: () {
+                      controller.toggleBookingDetails();
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        controller.isBookingDetailsExpanded
+                            ? Icons.keyboard_arrow_down_rounded
+                            : Icons.chevron_left_rounded, // Left chevron indicates expandable in RTL
+                        textDirection: TextDirection.ltr,
+                        color: const Color(0xFF4B5563),
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
 
-            // Informational Booking Reference Pill
-            Container(
-              key: const Key('screen22_booking_reference_pill'),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F6),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
-              ),
-              child: Text(
-                '#${controller.bookingNumber}',
-                style: const TextStyle(
-                  fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF000000),
+            const Spacer(),
+
+            // 3. Physical FAR LEFT: Clickable Booking Number Link to Screen 13
+            if (!controller.isGuest && controller.isThreadAvailable)
+              Semantics(
+                label: 'رقم الحجز ${controller.bookingNumber}',
+                button: true,
+                child: InkWell(
+                  key: const Key('screen22_booking_reference_link'),
+                  onTap: () {
+                    controller.recordNavigationIntent('SCREEN_13_BOOKING_DETAILS');
+                  },
+                  borderRadius: BorderRadius.circular(6),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    child: Text(
+                      'رقم الحجز ${controller.bookingNumber}',
+                      style: const TextStyle(
+                        fontFamily: KonfrmTypography.fontFamily,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF4B5563),
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -681,31 +716,72 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
   }
 
   // ===========================================================================
-  // Booking Context Banner & Offline Warnings
+  // Expandable Booking Details Panel (Clean, Source-Backed, Collapsed by Default)
   // ===========================================================================
 
-  Widget _buildOfflineBanner() {
+  Widget _buildExpandableBookingPanel() {
+    if (!controller.isBookingDetailsExpanded ||
+        controller.isGuest ||
+        !controller.isThreadAvailable) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
-      key: const Key('screen22_offline_banner'),
+      key: const Key('screen22_booking_expanded_panel'),
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: const BoxDecoration(
-        color: Color(0xFFFEF3C7), // Soft Amber Warning
-        border: Border(bottom: BorderSide(color: Color(0xFFFCD34D), width: 1)),
+        color: Color(0xFFF9FAFB),
+        border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1)),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.wifi_off_rounded, size: 16, color: Color(0xFF92400E)),
-          SizedBox(width: 8),
+          const Icon(
+            Icons.apartment_rounded,
+            size: 20,
+            color: Color(0xFF000000),
+          ),
+          const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              'أنت في وضع عدم الاتصال — يمكنك كتابة مسودة رسالتك وسيتم إرسالها فور استعادة الاتصال.',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  controller.propertyTitle,
+                  style: const TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF000000),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  controller.bookingDates,
+                  style: const TextStyle(
+                    fontFamily: KonfrmTypography.fontFamily,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF6B7280),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE5E7EB),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: const Text(
+              'مؤكد',
               style: TextStyle(
                 fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF92400E),
-                height: 1.35,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF111827),
               ),
             ),
           ),
@@ -714,51 +790,31 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
     );
   }
 
-  Widget _buildBookingContextStrip() {
+  // ===========================================================================
+  // Neutral Offline Status Indicator
+  // ===========================================================================
+
+  Widget _buildOfflineIndicator() {
     return Container(
-      key: const Key('booking_context_strip'),
+      key: const Key('screen22_offline_indicator'),
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Color(0xFFF3F4F6), width: 1)),
+        color: Color(0xFFF3F4F6),
+        border: Border(top: BorderSide(color: Color(0xFFE5E7EB), width: 1)),
       ),
-      child: Row(
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.apartment_rounded,
-            size: 16,
-            color: Color(0xFF000000),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              '${controller.propertyTitle} (${controller.bookingDates})',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF374151),
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFB),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
-            ),
-            child: const Text(
-              'محادثة مرتبطة بالحجز',
-              style: TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF6B7280),
-              ),
+          Icon(Icons.wifi_off_rounded, size: 14, color: Color(0xFF6B7280)),
+          SizedBox(width: 6),
+          Text(
+            'لا يوجد اتصال بالإنترنت — وضع تحرير المسودة نشط',
+            style: TextStyle(
+              fontFamily: KonfrmTypography.fontFamily,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF4B5563),
             ),
           ),
         ],
@@ -784,29 +840,7 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
       controller: _scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       children: [
-        // Security / Scope Notice
-        Center(
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
-            ),
-            child: const Text(
-              'هذه المحادثة مخصصة لترتيبات هذا الحجز بينك وبين المالك فقط',
-              style: TextStyle(
-                fontFamily: KonfrmTypography.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF6B7280),
-              ),
-            ),
-          ),
-        ),
-
-        // Date Separator
+        // Date Separator (Clean & minimal)
         Center(
           child: Container(
             margin: const EdgeInsets.only(bottom: 16),
@@ -848,110 +882,192 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
   }
 
   // ===========================================================================
-  // Message Bubble Component
+  // Message Bubble Component (Founder Role Grammar)
   // ===========================================================================
 
   Widget _buildMessageBubble(ChatMessage message) {
     final isCustomer = message.senderRole == ChatParticipantRole.customer;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment:
-            isCustomer ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-        children: [
-          // Owner Identity Header (Only for incoming messages)
-          if (!isCustomer) ...[
-            Padding(
-              padding: const EdgeInsets.only(right: 4, bottom: 4),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 18,
-                    height: 18,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF000000),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.person_rounded,
-                        color: Colors.white,
-                        size: 11,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    controller.ownerDisplayName,
-                    style: const TextStyle(
-                      fontFamily: KonfrmTypography.fontFamily,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF374151),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+    if (isCustomer) {
+      // Customer: WHITE Bubble on Physical LEFT with Customer Avatar on Physical LEFT
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Directionality(
+          textDirection: TextDirection.ltr, // LTR row places children from physical LEFT to RIGHT
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start, // Anchored to physical LEFT
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // Customer Avatar on physical LEFT
+              _buildCustomerAvatar(message.id),
+              const SizedBox(width: 8),
 
-          // Bubble Container
-          Container(
-            key: Key('message_bubble_${message.id}'),
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.78,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: isCustomer ? const Color(0xFF000000) : Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(14),
-                topRight: const Radius.circular(14),
-                bottomLeft: Radius.circular(isCustomer ? 4 : 14),
-                bottomRight: Radius.circular(isCustomer ? 14 : 4),
-              ),
-              border: isCustomer
-                  ? null
-                  : Border.all(color: const Color(0xFFE5E7EB), width: 1),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  message.contentArabic,
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: isCustomer ? Colors.white : const Color(0xFF000000),
-                    height: 1.45,
+              // Customer White Speech Bubble
+              Directionality(
+                textDirection: TextDirection.rtl, // Content inside bubble is Arabic RTL
+                child: Container(
+                  key: Key('message_bubble_${message.id}'),
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.72,
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white, // Customer is WHITE
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(14),
+                      topRight: Radius.circular(14),
+                      bottomRight: Radius.circular(14),
+                      bottomLeft: Radius.circular(4),
+                    ),
+                    border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        message.contentArabic,
+                        style: const TextStyle(
+                          fontFamily: KonfrmTypography.fontFamily,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF111827), // Readable Dark Gray/Black
+                          height: 1.45,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            message.timestampArabic,
+                            style: const TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF9CA3AF),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          _buildDeliveryStatusIcon(message.status),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      message.timestampArabic,
-                      style: TextStyle(
-                        fontFamily: KonfrmTypography.fontFamily,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w400,
-                        color: isCustomer ? Colors.white70 : const Color(0xFF9CA3AF),
-                      ),
-                    ),
-                    if (isCustomer) ...[
-                      const SizedBox(width: 6),
-                      _buildDeliveryStatusIcon(message.status),
-                    ],
-                  ],
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
+      );
+    } else {
+      // Owner: PURE BLACK #000000 Bubble on Physical RIGHT with Owner Avatar on Physical RIGHT
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Directionality(
+          textDirection: TextDirection.ltr, // LTR row places children from physical LEFT to RIGHT
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end, // Anchored to physical RIGHT
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // Owner Black Speech Bubble
+              Directionality(
+                textDirection: TextDirection.rtl, // Content inside bubble is Arabic RTL
+                child: Container(
+                  key: Key('message_bubble_${message.id}'),
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.72,
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF000000), // Owner is PURE BLACK #000000
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(14),
+                      topRight: Radius.circular(14),
+                      bottomLeft: Radius.circular(14),
+                      bottomRight: Radius.circular(4),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        message.contentArabic,
+                        style: const TextStyle(
+                          fontFamily: KonfrmTypography.fontFamily,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white, // White text on black
+                          height: 1.45,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        message.timestampArabic,
+                        style: const TextStyle(
+                          fontFamily: KonfrmTypography.fontFamily,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+
+              // Owner Avatar on physical RIGHT
+              _buildOwnerAvatar(message.id),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _buildCustomerAvatar(String messageId) {
+    return Container(
+      key: Key('customer_avatar_$messageId'),
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3F4F6),
+        shape: BoxShape.circle,
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+      ),
+      child: const Center(
+        child: Text(
+          'أ', // Grounded Customer initial (Ahmed)
+          style: TextStyle(
+            fontFamily: KonfrmTypography.fontFamily,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF4B5563),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOwnerAvatar(String messageId) {
+    return Container(
+      key: Key('owner_avatar_$messageId'),
+      width: 30,
+      height: 30,
+      decoration: const BoxDecoration(
+        color: Color(0xFF111827),
+        shape: BoxShape.circle,
+      ),
+      child: const Center(
+        child: Text(
+          'م', // Grounded Owner initial (Host / المالك)
+          style: TextStyle(
+            fontFamily: KonfrmTypography.fontFamily,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
@@ -964,26 +1080,26 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
           height: 11,
           child: CircularProgressIndicator(
             strokeWidth: 1.5,
-            color: Colors.white70,
+            color: Color(0xFF9CA3AF),
           ),
         );
       case MessageDeliveryStatus.sent:
         return const Icon(
-          Icons.check_rounded, // Single discreet checkmark (truthful acknowledgement)
+          Icons.check_rounded, // Single discreet checkmark (truthful server acknowledgement)
           size: 13,
-          color: Colors.white70,
+          color: Color(0xFF6B7280),
         );
       case MessageDeliveryStatus.unknownTimeout:
         return const Icon(
           Icons.schedule_rounded,
           size: 13,
-          color: Color(0xFFFCD34D),
+          color: Color(0xFFD97706),
         );
       case MessageDeliveryStatus.failed:
         return const Icon(
           Icons.error_outline_rounded,
           size: 13,
-          color: Color(0xFFEF4444),
+          color: Color(0xFFDC2626),
         );
     }
   }
@@ -994,66 +1110,64 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
 
   Widget _buildTimeoutUncertainRecoveryCard() {
     return Container(
-      key: const Key('chat_timeout_uncertain_notice'),
+      key: const Key('screen22_timeout_uncertain_notice'),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F4F6),
+        color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFD1D5DB), width: 1),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(Icons.info_outline_rounded, size: 16, color: Color(0xFF374151)),
+              Icon(Icons.schedule_rounded, size: 16, color: Color(0xFF4B5563)),
               SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  'تعذر تأكيد تسليم الرسالة حالياً',
+                  'تعذر تأكيد تسليم الرسالة من الخادم',
                   style: TextStyle(
                     fontFamily: KonfrmTypography.fontFamily,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF000000), // Pure Black #000000
+                    color: Color(0xFF111827),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           const Text(
-            'تم الإبقاء على مسودة رسالتك لتجنب فقدانها. يرجى مراجعة حالة الاتصال قبل إعادة المحاولة لمنع تكرار الرسائل.',
+            'تم حفظ المسودة في هذا الجهاز لتجنب إرسال رسائل مكررة.',
             style: TextStyle(
               fontFamily: KonfrmTypography.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF4B5563),
+              color: Color(0xFF6B7280),
               height: 1.4,
             ),
           ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              key: const Key('review_chat_draft_button'),
-              onPressed: () {
-                controller.reviewDraftAfterUncertain();
-              },
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Color(0xFF000000), width: 1.5),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6), // Governed 6px radius
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 10),
+          const SizedBox(height: 8),
+          InkWell(
+            key: const Key('screen22_review_draft_button'),
+            onTap: () {
+              controller.restoreDraftFromUncertain();
+            },
+            borderRadius: BorderRadius.circular(6),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF000000), // Pure Black #000000
+                borderRadius: BorderRadius.circular(6),
               ),
               child: const Text(
                 'مراجعة المسودة',
                 style: TextStyle(
                   fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF000000),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -1065,67 +1179,47 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
 
   Widget _buildDeliveryFailedRecoveryCard() {
     return Container(
-      key: const Key('chat_delivery_failed_notice'),
+      key: const Key('screen22_delivery_failed_notice'),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFFFEF2F2),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: const Color(0xFFFECACA), width: 1),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          const Row(
-            children: [
-              Icon(Icons.error_outline_rounded, size: 16, color: Color(0xFFDC2626)),
-              SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  'فشل تسليم الرسالة',
-                  style: TextStyle(
-                    fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFFDC2626),
-                  ),
-                ),
+          const Icon(Icons.error_outline_rounded, size: 16, color: Color(0xFFDC2626)),
+          const SizedBox(width: 8),
+          const Expanded(
+            child: Text(
+              'تعذر إرسال الرسالة — تحقق من الاتصال',
+              style: TextStyle(
+                fontFamily: KonfrmTypography.fontFamily,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF991B1B),
               ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            'تعذر إرسال الرسالة نظراً لضعف الاتصال. يمكنك إعادة الإرسال بأمان دون تكرار.',
-            style: TextStyle(
-              fontFamily: KonfrmTypography.fontFamily,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF991B1B),
-              height: 1.4,
             ),
           ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              key: const Key('retry_failed_message_button'),
-              onPressed: () {
-                controller.retryFailedMessage('msg_failed_01');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF000000), // Pure Black #000000
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 10),
+          InkWell(
+            key: const Key('screen22_retry_send_button'),
+            onTap: () {
+              controller.retryFailedMessage();
+            },
+            borderRadius: BorderRadius.circular(6),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: const Color(0xFFDC2626),
+                borderRadius: BorderRadius.circular(6),
               ),
               child: const Text(
-                'إعادة إرسال الرسالة',
+                'إعادة المحاولة',
                 style: TextStyle(
                   fontFamily: KonfrmTypography.fontFamily,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -1195,7 +1289,9 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
                 width: double.infinity,
                 child: ElevatedButton(
                   key: const Key('chat_guest_login_button'),
-                  onPressed: () {},
+                  onPressed: () {
+                    controller.recordNavigationIntent('AUTH_PHONE_ENTRY');
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF000000),
                     foregroundColor: Colors.white,
@@ -1278,7 +1374,9 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
                 width: double.infinity,
                 child: OutlinedButton(
                   key: const Key('return_to_booking_button'),
-                  onPressed: () {},
+                  onPressed: () {
+                    controller.recordNavigationIntent('SCREEN_12_MY_BOOKINGS');
+                  },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFF000000), width: 1.5),
                     shape: RoundedRectangleBorder(
@@ -1310,7 +1408,6 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
 
   Widget _buildMessageComposer() {
     final hasDraft = controller.draftText.trim().isNotEmpty;
-
     final isA11y = controller.scenario == Screen22Scenario.accessibility200Thread ||
         controller.scenario == Screen22Scenario.accessibility200Composer;
 
@@ -1412,7 +1509,7 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
           color: Colors.black54,
           alignment: Alignment.bottomCenter,
           child: GestureDetector(
-            onTap: () {}, // Prevent backdrop tap from dismissing sheet
+            onTap: () {},
             child: Container(
               constraints: const BoxConstraints(maxHeight: 520),
               decoration: const BoxDecoration(

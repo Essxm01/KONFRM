@@ -2,7 +2,7 @@
 
 TASK_ID: KONFRM_FOUNDER_SCREEN22_AND_CUSTOMER_01_22_GLOBAL_DESIGN_PLAN_MODE
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER__PLAN_AND_DESIGN_CORRECTION
-STATUS: DELIVERED__WORKSTREAM_A_PUSHED__WORKSTREAM_B_AUDIT_PUBLISHED__AWAITING_FOUNDER_REVIEW
+STATUS: DELIVERED__WORKSTREAM_A_PUSHED__WORKSTREAM_B_V2_CORRECTIONS_DELIVERED__AWAITING_FOUNDER_REVIEW
 BRANCH_WORKSTREAM_A: evidence/customer-screen22-design-review (SHA: 09aa2146bef4a07e42ca04828b0c16bf4dc805ae)
 BRANCH_WORKSTREAM_B: evidence/customer-cross-screen-fidelity-audit (Base: d04f8e5e657502b58886a9b9d0dd934d1a97f20a)
 GOVERNING_ISSUES:
@@ -32,12 +32,21 @@ GOVERNING_ISSUES:
 - **Automated Verification:** 18/18 tests PASS (100%), 0 static analysis lints.
 - **Physical Hardware Evidence:** 12 full-fidelity captures + Base64 companions on Samsung Galaxy A56 5G in `review-evidence/customer-screen22/v1-founder-layout-truth-correction/`.
 
-### Workstream B: 22-Screen Global Customer Application Audit & Standards
+### Workstream B: 22-Screen Global Customer Application Audit, Native Flutter Corrections & Hardware Evidence
 - **Branch:** `evidence/customer-cross-screen-fidelity-audit`.
-- **Authoritative 22-Screen Audit Matrix (`CUSTOMER_DESIGN_AUDIT_MATRIX.md`):** Complete evaluation of Screens 01–22, deep focus on 03–19, verified remote branch/SHAs, physical A56 captures, defect triage (2 P0, 11 P1, 3 P2, 6 NO_CHANGE).
-- **Global Physical RTL Back-Arrow Law (`GLOBAL_PHYSICAL_RTL_BACK_ARROW_LAW.md`):** Comprehensive geometric specification, root-cause analysis of Flutter's auto-mirroring flaw, canonical `KonfrmPhysicalBackArrow` widget, and application rules.
-- **Unified Arabic Content & Layout Compression Guide (`UNIFIED_ARABIC_CONTENT_AND_COMPRESSION_GUIDE.md`):** Anti-clutter single-line header standard, approved vocabulary vs banned claims, deposit terminology unification («عربون الليلة الأولى»), permanent ban on amber/red panic strips, pure black `#000000` color tokens.
-- **Design Court Receipt (`DESIGN_SKILL_COURT_STORE_RECEIPT.md`):** Skills activation evidence (`konfrm-design`, `konfrm-product`, `konfrm-flutter`, `konfrm-quality`), formal panel rulings, and Play Store / Apple HIG receipts.
+- **Implemented Native Flutter Corrections across 3 Batches:**
+  - **Batch A (Screens 01–11):** `batch_a_corrected_runner.dart` & `batch_a_corrected_tests.dart` (6/6 tests PASS, 0 lints). Enforced physical right Back arrow `[➔]`, resolved 200% scaling reflow on Screen 04 and Screen 05 via dynamic `Wrap`, harmonized Screen 07 deposit phrasing to «عربون الليلة الأولى».
+  - **Batch B (Screens 12–16):** `batch_b_corrected_runner.dart` & `batch_b_corrected_tests.dart` (5/5 tests PASS, 0 lints). Enforced physical right Back arrow `[➔]`, decluttered Screen 13 header and sanitized ID to «رقم الحجز 310482», strictly unified Screen 14 deposit wording to «عربون الليلة الأولى» with pure black CTA, polished Screen 16 monochrome notifications.
+  - **Batch C (Screens 17–21):** `batch_c_corrected_runner.dart` & `batch_c_corrected_tests.dart` (3/3 tests PASS, 0 lints). Enforced physical right Back arrow `[➔]`, purged visible test strings (`(بيانات تجريبية)`) completely from Screen 19, ensured 48dp minimum touch targets on Screen 18.
+- **Hardware Evidence:** 18 high-resolution PNG captures + 18 `.b64.txt` companion files captured on connected physical Samsung Galaxy A56 5G (`SM-A566B`, Android 16 API 36, Serial `[REDACTED_A56_ID]`) located in `review-evidence/customer-cross-screen-fidelity/v2-implemented-design-fixes/screenshots/`.
+- **Authoritative Evidence Documentation:**
+  - `README.md`: Executive summary, architecture principles, and hardware capture index.
+  - `FINDINGS_LEDGER.md`: Comprehensive breakdown of 10 defect findings and exact technical resolutions.
+  - `CUSTOMER_DESIGN_AUDIT_MATRIX.md`: Complete 22-screen evaluation and post-remediation status.
+  - `DESIGN_SKILL_COURT_STORE_RECEIPT.md`: Formal Design Court docket and store compliance receipt.
+- **Standards & Law Documents:**
+  - `GLOBAL_PHYSICAL_RTL_BACK_ARROW_LAW.md`: Flutter auto-mirroring flaw RCA and canonical `KonfrmPhysicalBackArrow` pattern.
+  - `UNIFIED_ARABIC_CONTENT_AND_COMPRESSION_GUIDE.md`: Single-line quiet headers, deposit truth, and pure black `#000000` rule.
 
 ## Boundaries & Invariants
 - Production code (`mobile/apps/customer_app/lib/`, backend, and database) remains 100% untouched.

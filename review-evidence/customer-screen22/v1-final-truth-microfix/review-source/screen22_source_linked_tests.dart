@@ -111,8 +111,10 @@ void main() {
 
       controller.setScenario(Screen22Scenario.submissionTimeoutUncertain);
       expect(controller.isTimeoutUncertain, isTrue);
+      expect(controller.hasUnresolvedUncertainMessage, isTrue);
       controller.restoreDraftFromUncertain();
-      expect(controller.isTimeoutUncertain, isFalse);
+      expect(controller.isReviewingUncertainDraft, isTrue);
+      expect(controller.hasUnresolvedUncertainMessage, isTrue);
 
       controller.setScenario(Screen22Scenario.messageDeliveryFailed);
       expect(controller.isDeliveryFailed, isTrue);
@@ -389,7 +391,7 @@ void main() {
       expect(find.textContaining('سيتم إرسالها فور استعادة الاتصال'), findsNothing);
     });
 
-    testWidgets('Submission timeout uncertain notice provides single review draft button', (tester) async {
+    testWidgets('Submission timeout uncertain notice provides single review draft button and locks duplicate send', (tester) async {
       final controller = CustomerBookingChatController();
       controller.setScenario(Screen22Scenario.submissionTimeoutUncertain);
 
@@ -409,8 +411,8 @@ void main() {
       expect(find.byKey(const Key('screen22_review_draft_button')), findsOneWidget);
 
       // Verify send button is disabled during timeout uncertainty
-      final sendMaterial = tester.widget<Material>(find.byKey(const Key('chat_send_material')));
-      expect(sendMaterial.color, const Color(0xFFE5E7EB));
+      final sendMaterialBefore = tester.widget<Material>(find.byKey(const Key('chat_send_material')));
+      expect(sendMaterialBefore.color, const Color(0xFFE5E7EB));
 
       // Attempting to tap send does not dispatch a new message
       final countBefore = controller.messages.length;
@@ -418,10 +420,46 @@ void main() {
       await tester.pump();
       expect(controller.messages.length, countBefore);
 
+      // Tap "Review Draft" button
       await tester.tap(find.byKey(const Key('screen22_review_draft_button')));
       await tester.pump();
 
-      expect(controller.isTimeoutUncertain, isFalse);
+      // State transitions to review mode, BUT uncertainty is NOT cleared and Send remains strictly LOCKED
+      expect(controller.isReviewingUncertainDraft, isTrue);
+      expect(controller.hasUnresolvedUncertainMessage, isTrue);
+      expect(controller.isTimeoutUncertain, isTrue);
+
+      // Notice updates to truthful frozen-send copy
+      expect(find.text('المسودة معروضة للمراجعة (الإرسال مجمّد)'), findsOneWidget);
+      expect(find.textContaining('تم تجميد زر الإرسال لتجنب تكرار الرسالة'), findsOneWidget);
+      expect(find.text('المسودة قيد المراجعة'), findsOneWidget);
+
+      // Verify Send button is STILL disabled (neutral gray #E5E7EB) after tapping review draft
+      final sendMaterialAfter = tester.widget<Material>(find.byKey(const Key('chat_send_material')));
+      expect(sendMaterialAfter.color, const Color(0xFFE5E7EB));
+
+      // Attempting to send while reviewing uncertain draft does NOT dispatch a new message
+      await tester.tap(find.byKey(const Key('chat_send_button')));
+      await tester.pump();
+      expect(controller.messages.length, countBefore);
+      controller.sendMessage();
+      expect(controller.messages.length, countBefore);
+
+      // Repeat interactions: tapping review button again remains safe and keeps send locked
+      await tester.tap(find.byKey(const Key('screen22_review_draft_button')));
+      await tester.pump();
+      expect(controller.isReviewingUncertainDraft, isTrue);
+      expect(controller.hasUnresolvedUncertainMessage, isTrue);
+      final sendMaterialRepeat = tester.widget<Material>(find.byKey(const Key('chat_send_material')));
+      expect(sendMaterialRepeat.color, const Color(0xFFE5E7EB));
+
+      // Editing draft text also keeps send button locked
+      controller.setDraftText('تعديل تجريبي على المسودة للتأكد من استمرار تجميد الإرسال');
+      await tester.pump();
+      final sendMaterialEdited = tester.widget<Material>(find.byKey(const Key('chat_send_material')));
+      expect(sendMaterialEdited.color, const Color(0xFFE5E7EB));
+      controller.sendMessage();
+      expect(controller.messages.length, countBefore);
     });
 
     testWidgets('Offline state disables send button and blocks message dispatch', (tester) async {

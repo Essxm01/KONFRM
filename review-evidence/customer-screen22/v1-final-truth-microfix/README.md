@@ -22,7 +22,7 @@ flutter run -d [REDACTED_A56_ID] -t tool/screen22_preview_runner.dart
 - **3:** Scrolled Long Conversation (Neutral Host Seed)
 - **4:** Composer Active Draft with Send CTA
 - **5:** Message Pending Send (Local Optimistic)
-- **6:** Submission Timeout / Uncertain State (Send Disabled, Factual Draft Copy)
+- **6:** Submission Timeout / Uncertain State (Send Disabled, Safe Review Mode Locked Against Duplicate Send)
 - **7:** Confirmed Delivery Failure with Compact Neutral Retry
 - **8:** Device Offline Neutral Status (Send Disabled, Draft Preserved)
 - **9:** Unauthenticated Guest Access Barrier

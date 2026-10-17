@@ -192,6 +192,8 @@ class CustomerBookingChatController extends ChangeNotifier {
   bool _isThreadAvailable = true;
   bool _isOffline = false;
   bool _isTimeoutUncertain = false;
+  bool _isReviewingUncertainDraft = false;
+  bool _hasUnresolvedUncertainMessage = false;
   bool _isDeliveryFailed = false;
   bool _isBookingDetailsExpanded = false;
   String _lastNavigationIntent = '';
@@ -204,6 +206,8 @@ class CustomerBookingChatController extends ChangeNotifier {
   bool get isThreadAvailable => _isThreadAvailable;
   bool get isOffline => _isOffline;
   bool get isTimeoutUncertain => _isTimeoutUncertain;
+  bool get isReviewingUncertainDraft => _isReviewingUncertainDraft;
+  bool get hasUnresolvedUncertainMessage => _hasUnresolvedUncertainMessage;
   bool get isDeliveryFailed => _isDeliveryFailed;
   bool get isBookingDetailsExpanded => _isBookingDetailsExpanded;
   String get lastNavigationIntent => _lastNavigationIntent;
@@ -229,6 +233,8 @@ class CustomerBookingChatController extends ChangeNotifier {
     _isThreadAvailable = true;
     _isOffline = false;
     _isTimeoutUncertain = false;
+    _isReviewingUncertainDraft = false;
+    _hasUnresolvedUncertainMessage = false;
     _isDeliveryFailed = false;
     _isBookingDetailsExpanded = (newScenario == Screen22Scenario.bookingDisclosureExpanded);
 
@@ -296,6 +302,8 @@ class CustomerBookingChatController extends ChangeNotifier {
         ];
         _draftText = 'أود التأكد من وجود مصعد كهربائي يعمل في مبنى الفيلا.';
         _isTimeoutUncertain = true;
+        _isReviewingUncertainDraft = false;
+        _hasUnresolvedUncertainMessage = true;
         break;
 
       case Screen22Scenario.messageDeliveryFailed:
@@ -355,7 +363,14 @@ class CustomerBookingChatController extends ChangeNotifier {
   /// Sends a local message without creating phantom server delivery claims.
   void sendMessage() {
     final trimmed = _draftText.trim();
-    if (trimmed.isEmpty || _isGuest || !_isThreadAvailable || _isTimeoutUncertain || _isOffline) return;
+    if (trimmed.isEmpty ||
+        _isGuest ||
+        !_isThreadAvailable ||
+        _isTimeoutUncertain ||
+        _hasUnresolvedUncertainMessage ||
+        _isOffline) {
+      return;
+    }
 
     final newMessage = ChatMessage(
       id: 'msg_local_${DateTime.now().millisecondsSinceEpoch}',
@@ -370,9 +385,11 @@ class CustomerBookingChatController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Safe recovery from timeout/uncertain state returning user to draft review.
+  /// Safe transition from timeout/uncertain state to draft review mode.
+  /// Locks duplicate submission: does NOT clear delivery uncertainty or re-enable Send
+  /// until authoritative server reconciliation (PRELIVE #190).
   void restoreDraftFromUncertain() {
-    _isTimeoutUncertain = false;
+    _isReviewingUncertainDraft = true;
     notifyListeners();
   }
 
@@ -1109,6 +1126,8 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
   // ===========================================================================
 
   Widget _buildTimeoutUncertainRecoveryCard() {
+    final isReviewing = controller.isReviewingUncertainDraft;
+
     return Container(
       key: const Key('screen22_timeout_uncertain_notice'),
       padding: const EdgeInsets.all(12),
@@ -1120,14 +1139,16 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.schedule_rounded, size: 16, color: Color(0xFF4B5563)),
-              SizedBox(width: 6),
+              const Icon(Icons.schedule_rounded, size: 16, color: Color(0xFF4B5563)),
+              const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  'تعذر تأكيد تسليم الرسالة من الخادم',
-                  style: TextStyle(
+                  isReviewing
+                      ? 'المسودة معروضة للمراجعة (الإرسال مجمّد)'
+                      : 'تعذر تأكيد تسليم الرسالة من الخادم',
+                  style: const TextStyle(
                     fontFamily: KonfrmTypography.fontFamily,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -1138,9 +1159,11 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
             ],
           ),
           const SizedBox(height: 4),
-          const Text(
-            'نص رسالتك ما زال هنا للمراجعة.',
-            style: TextStyle(
+          Text(
+            isReviewing
+                ? 'تم تجميد زر الإرسال لتجنب تكرار الرسالة حتى يتم التحقق من وصول الرسالة السابقة.'
+                : 'نص رسالتك ما زال هنا للمراجعة.',
+            style: const TextStyle(
               fontFamily: KonfrmTypography.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w500,
@@ -1158,12 +1181,12 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFF000000), // Pure Black #000000
+                color: isReviewing ? const Color(0xFF4B5563) : const Color(0xFF000000), // Pure Black #000000 or calm neutral
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const Text(
-                'مراجعة المسودة',
-                style: TextStyle(
+              child: Text(
+                isReviewing ? 'المسودة قيد المراجعة' : 'مراجعة المسودة',
+                style: const TextStyle(
                   fontFamily: KonfrmTypography.fontFamily,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -1408,7 +1431,10 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
 
   Widget _buildMessageComposer() {
     final hasDraft = controller.draftText.trim().isNotEmpty;
-    final canSend = hasDraft && !controller.isTimeoutUncertain && !controller.isOffline;
+    final canSend = hasDraft &&
+        !controller.isTimeoutUncertain &&
+        !controller.hasUnresolvedUncertainMessage &&
+        !controller.isOffline;
     final isA11y = controller.scenario == Screen22Scenario.accessibility200Thread ||
         controller.scenario == Screen22Scenario.accessibility200Composer;
 

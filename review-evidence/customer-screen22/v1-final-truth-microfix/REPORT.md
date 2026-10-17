@@ -24,19 +24,24 @@
 
 In [Issue #191 Comment 6231888641](https://github.com/Essxm01/KONFRM/issues/191#issuecomment-6231888641), the independent Bridge review confirmed that the visual layout of Customer Screen 22 (**Booking-Scoped Chat / «محادثة الحجز»**) achieved complete alignment with KONFRM design canon, including the physical RTL Back arrow pointing right `[➔]`, the quiet single-line header with collapsible booking metadata, and pure black `#000000` host contrast.
 
-The Bridge mandated **four targeted truth microfixes** (2 P0 + 2 P1) without altering the approved visual hierarchy:
+The Bridge mandated **targeted truth microfixes** without altering the approved visual hierarchy:
 
 1. **[P0] Send button disabled in UNKNOWN & OFFLINE states:**  
-   The Send action button is now strictly disabled (colored neutral gray `#E5E7EB`, `onTap: null`, and direct message dispatch logic blocked) when in `submissionTimeoutUncertain` or `offlineState`. This prevents accidental duplicate dispatches or confusing interaction during uncertain connectivity.
+   The Send action button is strictly disabled (colored neutral gray `#E5E7EB`, `onTap: null`, and direct message dispatch logic blocked) when in `submissionTimeoutUncertain` or `offlineState`. This prevents accidental duplicate dispatches during uncertain connectivity.
 
-2. **[P0] Factual copy for uncertain draft retention:**  
-   The timeout notice copy has been updated to truthfully state: `نص رسالتك ما زال هنا للمراجعة.`, accurately indicating that the in-memory client draft is preserved on-screen for user review rather than making speculative claims about server status.
+2. **[P0] Safe Uncertain Draft Review Transition (Duplicate-Dispatch Prevention):**  
+   Per Bridge review [Comment 6232548264](https://github.com/Essxm01/KONFRM/issues/191#issuecomment-6232548264), tapping «مراجعة المسودة» (`restoreDraftFromUncertain()`) must NOT silently clear delivery uncertainty or re-enable the Send button. The controller now preserves `hasUnresolvedUncertainMessage = true` and `isTimeoutUncertain = true`. Tapping «مراجعة المسودة» transitions the recovery notice to a truthful freeze explanation:
+   «المسودة معروضة للمراجعة (الإرسال مجمّد) — تم تجميد زر الإرسال لتجنب تكرار الرسالة حتى يتم التحقق من وصول الرسالة السابقة.»
+   The Send button remains strictly disabled (`canSend == false`, gray `#E5E7EB`, `onTap: null`). Editing the draft or tapping review repeatedly also keeps Send locked. Real idempotency remains deferred to PRELIVE Gate #190 without fake server simulation.
 
-3. **[P1] Compact neutral failure UI:**  
-   The delivery failure notification has been redesigned into a discreet, low-density neutral container (`#F9FAFB` background, subtle warning icon, pure black `#000000` retry button), eliminating alarming visual density while preserving unambiguous manual recovery.
+3. **[P0] Factual copy for uncertain draft retention:**  
+   The initial timeout notice copy truthfully states: `نص رسالتك ما زال هنا للمراجعة.`, accurately indicating that the in-memory client draft is preserved on-screen for user review rather than making speculative claims about server status.
 
-4. **[P1] Neutral seeded host response:**  
-   The seeded Owner reply fixture has been updated from specific arrival route claims to a factual, neutral hospitality confirmation: `أهلاً بك، تم استلام استفسارك وسنوافيك بالتفاصيل المناسبة للتنسيق.`
+4. **[P1] Compact neutral failure UI:**  
+   The delivery failure notification is rendered in a discreet, low-density neutral container (`#F9FAFB` background, subtle warning icon, pure black `#000000` retry button), eliminating alarming visual density while preserving unambiguous manual recovery.
+
+5. **[P1] Neutral seeded host response:**  
+   The seeded Owner reply fixture uses factual, neutral hospitality confirmation: `أهلاً بك، تم استلام استفسارك وسنوافيك بالتفاصيل المناسبة للتنسيق.`
 
 ---
 

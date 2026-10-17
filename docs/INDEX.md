@@ -2,6 +2,11 @@
 
 Read selectively. Before implementing any approved task, the mandatory core sequence is `../AGENTS.md` → this index → `CURRENT_STATE.md` → `../tasks/CURRENT_TASK.md` → `codex/KONFRM_MASTER_RULES.md` → active task contract; then load only the documents below that match the task per [CONTEXT_ROUTER.md](./CONTEXT_ROUTER.md).
 
+## Emergency cross-account / cross-conversation recovery
+
+**Single first link:** [../KONFRM_BRIDGE_LIVE_HANDOFF.md](../KONFRM_BRIDGE_LIVE_HANDOFF.md). This account-neutral, dated live snapshot explains the precise current task/PRs, Founder working contract, phone-screenshot handoff, current design decisions and deferred backlog. Its GitHub branch status is explicit. It supplements rather than replaces product/architecture/business/design authority. Re-check actual main/PR/issue state immediately upon resuming a new ChatGPT account; saved model memory and connected tools do not automatically transfer.
+
+
 | Document | Read when | Usually skip when |
 | --- | --- | --- |
 | [PROJECT.md](./PROJECT.md) | Product scope, roles, terminology, or functional boundaries matter | The task is a contained implementation detail already understood |

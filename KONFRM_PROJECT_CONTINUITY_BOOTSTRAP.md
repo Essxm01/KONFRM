@@ -6,6 +6,19 @@
 
 ---
 
+## 0. LIVE ACCOUNT-NEUTRAL HANDOFF (2026-10-13)
+
+**Read the live handoff before trusting any dated status section of this Bootstrap:**
+
+- [KONFRM_BRIDGE_LIVE_HANDOFF.md](KONFRM_BRIDGE_LIVE_HANDOFF.md) — account-neutral status, exact PR/Issue pointers, latest Founder UI decisions, prompt-writing contract, deferred obligations, and single ready-to-copy fresh-account recovery message.
+- Updated handoff is currently on documentation branch `docs/cross-account-recovery-20261013`, not automatically on main. If browsing main before its explicit merge approval, open: https://github.com/Essxm01/KONFRM/blob/docs/cross-account-recovery-20261013/KONFRM_BRIDGE_LIVE_HANDOFF.md
+- **Never** promote the handoff's 2026-10-13 PR status or dates to a timeless fact; always check GitHub latest refs.
+- A new account must reconnect any account-specific plugin(s); GitHub docs cannot transfer old ChatGPT memory, secret credentials, original conversations, or local Antigravity tunnel connectivity.
+- Older Bridge 11→12 handoff branch is a historical snapshot and is superseded for live status by this account-neutral handoff. Keep canonical business/data/design rules in their own authorities.
+
+---
+
+
 # 1. First Rule
 
 Do not trust model memory, an old conversation summary, a stale local workspace, or an unverified branch as the current project state.

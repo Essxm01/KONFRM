@@ -1,39 +1,51 @@
-# Active Task — CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_V1
+# Active Task — KONFRM_FOUNDER_SCREEN22_AND_CUSTOMER_01_22_GLOBAL_DESIGN_PLAN_MODE
 
-TASK_ID: CUSTOMER_SCREEN21_HELP_SUPPORT_NATIVE_FLUTTER_V1
-TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER
-STATUS: SCREEN21_V1_CORRECTION_DELIVERED__AWAITING_BRIDGE_AND_FOUNDER_REVIEW
-BRANCH: evidence/customer-screen21-design-review
-BASELINE_COMMIT: bf1aeeb0ef2c8c8e6e6418ca036050d22e4dd6c3
+TASK_ID: KONFRM_FOUNDER_SCREEN22_AND_CUSTOMER_01_22_GLOBAL_DESIGN_PLAN_MODE
+TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER__PLAN_AND_DESIGN_CORRECTION
+STATUS: DELIVERED__WORKSTREAM_A_PUSHED__WORKSTREAM_B_AUDIT_PUBLISHED__AWAITING_FOUNDER_REVIEW
+BRANCH_WORKSTREAM_A: evidence/customer-screen22-design-review (SHA: 09aa2146bef4a07e42ca04828b0c16bf4dc805ae)
+BRANCH_WORKSTREAM_B: evidence/customer-cross-screen-fidelity-audit (Base: d04f8e5e657502b58886a9b9d0dd934d1a97f20a)
 GOVERNING_ISSUES:
-  - Issue #185: Customer Screen 21 Help & Support («المساعدة والدعم») — Founder-Authorized Isolated Flutter Design & Bridge Review
-  - Issue #186: [DEFERRED / CUSTOMER SCREEN21 PRELIVE] Verified support channels, case API, auth, privacy, SLA and accessibility
+  - Issue #192: Complete 22-Screen Design Audit, Back-Arrow Law & Cross-Screen Content Alignment
+  - Issue #191: Customer Screen 22 Booking Chat Founder Layout Correction & Review Docket
+  - Issue #190: [DEFERRED / SCREEN 22 PRELIVE] Realtime WebSockets, Push, Presence, ACL & Storage Gate
+  - Issue #187: Cross-Screen UX Gaps & Missing Journeys
+  - Issue #185: Customer Screen 21 Approval & Freeze Baseline (d04f8e5e657502b58886a9b9d0dd934d1a97f20a)
+  - Issue #184: Customer Screen 20 Unified PDF Receipt Architecture & Deposit Truth
   - Issue #183: Mandatory Design Skills Activation, Design Court Review & Store Platform Gate
+  - Issue #182: Cross-Screen Content & Defect Issues
   - Issue #175: Mandatory Pure-Black `#000000` Rule & Repository-Wide Audit
-  - Issue #174: Notifications Navigation Routing Proposal vs Architecture
-  - Issue #173: Financial Model Meaning & Booking Lifecycle Boundaries
-  - Issue #172: Identity, Avatar, QR & Connected Profiles Boundaries
-  - Issue #171: Deferred Screen 17 Technical/QA Backlog (Prelive Gate)
   - Issue #166: Founder Design-First Priorities (Native UI/UX & Cairo RTL)
   - Issue #155: Historical Evidence Directory Immutability & Preservation
-  - Issue #145: Device Serial Number Redaction Protocol
-SCOPE: Bounded Founder-Truth & Accessibility Correction for Customer Screen 21:
-  1. FAQ Truth (MR-15 & Context §24.3): Purged unconfirmed cancellation claims; replaced with confirmed booking truth explaining pending status meaning («ماذا تعني حالة الطلب «قيد الانتظار»؟») per MR-12/MR-13.
-  2. 200% Accessibility & Topic Selector: Replaced rigid DropdownButton with content-responsive InkWell selector (minHeight: 48, multiline wrapping) opening a scroll-controlled bottom sheet modal; wrapped form header in Expanded. Zero text clipping at 200% font scale.
-  3. Zero Development Copy: Purged all developer testing/benchmark strings from customer UI; replaced with realistic customer inquiry copy.
-  4. Corrected Uncertain Submission UX: Eliminated dual-button collision; single «مراجعة الاستفسار» draft review action returning safely to idle state without duplicate case risk.
-  5. Additive Evidence Package: Published 12 fresh decision-grade captures on Samsung Galaxy A56 5G (Android 16 API 36, [REDACTED_A56_ID]) to review-evidence/customer-screen21/v1-founder-truth-a11y-correction/.
-VERIFICATION: 25/25 automated unit/widget tests PASS (100%), 0 static analyzer issues, Samsung Galaxy A56 physical QA PASS.
+  - Issue #145: Device Serial Number Redaction Protocol ([REDACTED_A56_ID])
+
+## Scope & Completed Deliverables
+
+### Workstream A: Customer Screen 22 Founder Layout & Truth Correction
+- **Branch:** `evidence/customer-screen22-design-review` (Committed & Pushed at `09aa2146bef4a07e42ca04828b0c16bf4dc805ae`).
+- **Physical Back Arrow:** Wrapped in `TextDirection.ltr` forcing arrowhead to visibly point **RIGHT `[➔]`** towards the screen edge in Arabic RTL.
+- **Calm Single-Line Header:** Purged subtitle, continuous booking banner, and redundant scope security container. Header contains physical Back button `[➔]`, title «محادثة الحجز» (bold Cairo `#000000`), collapsible chevron, and direct link «رقم الحجز 183223» to Screen 13.
+- **Collapsible Disclosure:** Starts collapsed; smoothly reveals property, stay dates, and confirmed badge without crowding messages.
+- **Role Grammar:** Customer bubble physically on the **LEFT** (white, 1px border `#E5E7EB`, avatar on left); Owner bubble physically on the **RIGHT** (pure black `#000000`, white Cairo text, avatar on right).
+- **Truthful Fixtures:** Natural rental coordination questions regarding the main gate route; zero unapproved check-in, parking, or arrival claims.
+- **Restrained Neutral Offline & Timeout States:** Purged amber warning banner; neutral status bar with draft preservation; timeout notice with single «مراجعة المسودة» button suppressing duplicate sends.
+- **Automated Verification:** 18/18 tests PASS (100%), 0 static analysis lints.
+- **Physical Hardware Evidence:** 12 full-fidelity captures + Base64 companions on Samsung Galaxy A56 5G in `review-evidence/customer-screen22/v1-founder-layout-truth-correction/`.
+
+### Workstream B: 22-Screen Global Customer Application Audit & Standards
+- **Branch:** `evidence/customer-cross-screen-fidelity-audit`.
+- **Authoritative 22-Screen Audit Matrix (`CUSTOMER_DESIGN_AUDIT_MATRIX.md`):** Complete evaluation of Screens 01–22, deep focus on 03–19, verified remote branch/SHAs, physical A56 captures, defect triage (2 P0, 11 P1, 3 P2, 6 NO_CHANGE).
+- **Global Physical RTL Back-Arrow Law (`GLOBAL_PHYSICAL_RTL_BACK_ARROW_LAW.md`):** Comprehensive geometric specification, root-cause analysis of Flutter's auto-mirroring flaw, canonical `KonfrmPhysicalBackArrow` widget, and application rules.
+- **Unified Arabic Content & Layout Compression Guide (`UNIFIED_ARABIC_CONTENT_AND_COMPRESSION_GUIDE.md`):** Anti-clutter single-line header standard, approved vocabulary vs banned claims, deposit terminology unification («عربون الليلة الأولى»), permanent ban on amber/red panic strips, pure black `#000000` color tokens.
+- **Design Court Receipt (`DESIGN_SKILL_COURT_STORE_RECEIPT.md`):** Skills activation evidence (`konfrm-design`, `konfrm-product`, `konfrm-flutter`, `konfrm-quality`), formal panel rulings, and Play Store / Apple HIG receipts.
 
 ## Boundaries & Invariants
-- Screen 17 V4 visual baseline is FROZEN AS-IS at d1a8ab97442e35aa83a2866b476a0143be929528.
-- Screen 18 V1 visual baseline is FROZEN AS-IS at 70278470f9d4158196423a82567c4cd23e8a3114.
-- Screen 19 V1 visual baseline is FROZEN AS-IS at c2145f9a6bdff092d42c20d083fd559f35fdc631.
-- Screen 20 V1 visual baseline is FROZEN AS-IS at bf1aeeb0ef2c8c8e6e6418ca036050d22e4dd6c3.
-- Zero changes to production code (customer_app/lib/ untouched, backend untouched, database untouched).
-- All support channels, case submission APIs, live email/WhatsApp endpoints, and SLA guarantees deferred to PRELIVE Issue #186.
-- All historical evidence preserved untouched per Issue #155 (Screens 12–20).
-- Physical device serial redacted in all logs and markdown ([REDACTED_A56_ID]).
+- Production code (`mobile/apps/customer_app/lib/`, backend, and database) remains 100% untouched.
+- Screen 20 visual baseline is FROZEN at `bf1aeeb0ef2c8c8e6e6418ca036050d22e4dd6c3`.
+- Screen 21 visual baseline is FROZEN at `d04f8e5e657502b58886a9b9d0dd934d1a97f20a`.
+- All historical evidence preserved untouched per Issue #155 (Screens 05–21, Screen 22 v1).
+- Customer Screen 23 (Dispute / Evidence) remains strictly unstarted pending formal Founder approval.
+- Physical device serial redacted in all logs and markdown as `[REDACTED_A56_ID]`.
 
 ---
 

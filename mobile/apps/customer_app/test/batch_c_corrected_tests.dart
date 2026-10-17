@@ -45,6 +45,11 @@ void main() {
       expect(iconWidget.color, const Color(0xFF000000));
 
       expect(find.byKey(const Key('screen18_save_button')), findsOneWidget);
+
+      // Verify email is unverified without green tick or (مؤكد)
+      expect(find.text('البريد الإلكتروني (مؤكد)'), findsNothing);
+      expect(find.text('البريد الإلكتروني'), findsOneWidget);
+      expect(find.text('رقم الهاتف المحمول (مؤكد)'), findsOneWidget);
     });
 
     testWidgets('Screen 19 has physical right back button pointing right [➔] and purged test copy', (tester) async {
@@ -78,6 +83,30 @@ void main() {
       // Verify purged development copy
       expect(find.textContaining('بيانات تجريبية'), findsNothing);
       expect(find.textContaining('تجريبي'), findsNothing);
+
+      // Verify interactive toggle row state change
+      final toggleFinder = find.byKey(const Key('toggle_booking_updates'));
+      expect(toggleFinder, findsOneWidget);
+      final switchFinder = find.descendant(of: toggleFinder, matching: find.byType(Switch));
+      expect(switchFinder, findsOneWidget);
+      Switch switchWidget = tester.widget<Switch>(switchFinder);
+      expect(switchWidget.value, isTrue);
+
+      await tester.tap(switchFinder);
+      await tester.pumpAndSettle();
+      switchWidget = tester.widget<Switch>(switchFinder);
+      expect(switchWidget.value, isFalse);
+
+      // Verify logout button shows confirmation dialog
+      final logoutBtnFinder = find.byKey(const Key('screen19_logout_button'));
+      expect(logoutBtnFinder, findsOneWidget);
+      await tester.tap(logoutBtnFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.text('هل أنت متأكد من رغبتك في تسجيل الخروج من حسابك؟'), findsOneWidget);
+      await tester.tap(find.text('إلغاء'));
+      await tester.pumpAndSettle();
+      expect(find.text('هل أنت متأكد من رغبتك في تسجيل الخروج من حسابك؟'), findsNothing);
     });
 
     testWidgets('Batch C screens render without overflow under 200% accessibility scaling', (tester) async {

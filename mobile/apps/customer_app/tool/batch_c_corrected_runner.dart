@@ -394,9 +394,9 @@ class CorrectedScreen18View extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              // Email field (Verified)
+              // Email field (Unverified)
               const Text(
-                'البريد الإلكتروني (مؤكد)',
+                'البريد الإلكتروني',
                 style: TextStyle(
                   fontFamily: KonfrmTypography.fontFamily,
                   fontSize: 13,
@@ -412,21 +412,17 @@ class CorrectedScreen18View extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: const Color(0xFFE5E7EB)),
                 ),
-                child: Row(
-                  children: const [
-                    Expanded(
-                      child: Text(
-                        'ahmed@example.com',
-                        style: TextStyle(
-                          fontFamily: KonfrmTypography.fontFamily,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF4B5563),
-                        ),
-                      ),
+                child: const Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'ahmed@example.com',
+                    style: TextStyle(
+                      fontFamily: KonfrmTypography.fontFamily,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF4B5563),
                     ),
-                    Icon(Icons.check_circle_rounded, size: 18, color: Color(0xFF10B981)),
-                  ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -509,20 +505,20 @@ class CorrectedScreen19View extends StatelessWidget {
               // Notification preferences
               _buildSectionCard(
                 title: 'تفضيلات الإشعارات',
-                children: [
-                  _buildToggleRow('تحديثات الحجوزات', true),
-                  const Divider(height: 16, color: Color(0xFFF3F4F6)),
-                  _buildToggleRow('رسائل المضيفين', true),
-                  const Divider(height: 16, color: Color(0xFFF3F4F6)),
-                  _buildToggleRow('العروض والتنبيهات', false),
+                children: const [
+                  InteractiveToggleRow(label: 'تحديثات الحجوزات', initialValue: true, key: Key('toggle_booking_updates')),
+                  Divider(height: 16, color: Color(0xFFF3F4F6)),
+                  InteractiveToggleRow(label: 'رسائل المضيفين', initialValue: true, key: Key('toggle_host_messages')),
+                  Divider(height: 16, color: Color(0xFFF3F4F6)),
+                  InteractiveToggleRow(label: 'العروض والتنبيهات', initialValue: false, key: Key('toggle_offers')),
                 ],
               ),
               const SizedBox(height: 16),
               // Security preferences
               _buildSectionCard(
                 title: 'الأمان والدخول',
-                children: [
-                  _buildToggleRow('الدخول بالبصمة / التعرف على الوجه', true),
+                children: const [
+                  InteractiveToggleRow(label: 'الدخول بالبصمة / التعرف على الوجه', initialValue: true, key: Key('toggle_biometric')),
                 ],
               ),
               const SizedBox(height: 16),
@@ -548,7 +544,53 @@ class CorrectedScreen19View extends StatelessWidget {
               const SizedBox(height: 24),
               // Logout Action
               OutlinedButton(
-                onPressed: () {},
+                key: const Key('screen19_logout_button'),
+                onPressed: () {
+                  showDialog<void>(
+                    context: context,
+                    builder: (dialogCtx) => AlertDialog(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      title: const Text(
+                        'تسجيل الخروج',
+                        style: TextStyle(
+                          fontFamily: KonfrmTypography.fontFamily,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      content: const Text(
+                        'هل أنت متأكد من رغبتك في تسجيل الخروج من حسابك؟',
+                        style: TextStyle(
+                          fontFamily: KonfrmTypography.fontFamily,
+                          fontSize: 13,
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(dialogCtx).pop(),
+                          child: const Text(
+                            'إلغاء',
+                            style: TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              color: Color(0xFF6B7280),
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(dialogCtx).pop(),
+                          child: const Text(
+                            'تأكيد الخروج',
+                            style: TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              color: Color(0xFFEF4444),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 48),
                   side: const BorderSide(color: Color(0xFFEF4444)),
@@ -599,30 +641,6 @@ class CorrectedScreen19View extends StatelessWidget {
     );
   }
 
-  Widget _buildToggleRow(String label, bool initialValue) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontFamily: KonfrmTypography.fontFamily,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF374151),
-            ),
-          ),
-        ),
-        Switch(
-          value: initialValue,
-          onChanged: (_) {},
-          activeThumbColor: const Color(0xFF000000), // Pure Black #000000
-        ),
-      ],
-    );
-  }
-
   Widget _buildInfoRow(String label, String value) {
     return SizedBox(
       width: double.infinity,
@@ -652,6 +670,63 @@ class CorrectedScreen19View extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// =============================================================================
+// Interactive Toggle Row Widget
+// =============================================================================
+
+class InteractiveToggleRow extends StatefulWidget {
+  final String label;
+  final bool initialValue;
+
+  const InteractiveToggleRow({
+    super.key,
+    required this.label,
+    required this.initialValue,
+  });
+
+  @override
+  State<InteractiveToggleRow> createState() => _InteractiveToggleRowState();
+}
+
+class _InteractiveToggleRowState extends State<InteractiveToggleRow> {
+  late bool _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.initialValue;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Text(
+            widget.label,
+            style: const TextStyle(
+              fontFamily: KonfrmTypography.fontFamily,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF374151),
+            ),
+          ),
+        ),
+        Switch(
+          value: _value,
+          onChanged: (newValue) {
+            setState(() {
+              _value = newValue;
+            });
+          },
+          activeThumbColor: const Color(0xFF000000), // Pure Black #000000
+        ),
+      ],
     );
   }
 }

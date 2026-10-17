@@ -112,6 +112,8 @@ void main() {
       // Banned unapproved policy assertions must be absent
       expect(find.textContaining('غير قابل للاسترداد'), findsNothing);
       expect(find.textContaining('عند الوصول'), findsNothing);
+      expect(find.textContaining('يُسدد بعد مراجعة'), findsNothing);
+      expect(find.text('لا يُدفع العربون قبل موافقة المالك.'), findsOneWidget);
     });
 
     testWidgets('Screen 10 has physical right back button pointing right [➔]', (tester) async {

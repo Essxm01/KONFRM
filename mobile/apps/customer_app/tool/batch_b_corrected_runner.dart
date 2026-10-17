@@ -348,7 +348,7 @@ class CorrectedScreen13View extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'طلبك وصل إلى المالك وهو قيد المراجعة حالياً.\nلا يوجد أي مبلغ مطلوب دفعه الآن، وسيتم تحديث حالة الطلب فور اتخاذ المالك القرار.',
+                      'طلبك قيد المراجعة حالياً من المالك، ولا يلزم أي دفع في هذه المرحلة.',
                       style: TextStyle(
                         fontFamily: KonfrmTypography.fontFamily,
                         fontSize: 12,
@@ -420,10 +420,6 @@ class CorrectedScreen13View extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildResponsiveRow('تواريخ الإقامة', '14 – 18 يوليو 2026 (4 ليالٍ)'),
-                    const Divider(height: 20, color: Color(0xFFF3F4F6)),
-                    _buildResponsiveRow('تسجيل الوصول', 'يبدأ 03:00 م'),
-                    const Divider(height: 20, color: Color(0xFFF3F4F6)),
-                    _buildResponsiveRow('تسجيل المغادرة', 'حتى 11:00 ص'),
                   ],
                 ),
               ),
@@ -720,16 +716,17 @@ class CorrectedScreen14View extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
+                        color: const Color(0xFFF9FAFB),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFF000000), width: 1.5),
+                        border: Border.all(color: const Color(0xFFE5E7EB)),
                       ),
                       child: Row(
                         children: const [
-                          Icon(Icons.credit_card_rounded, size: 22, color: Color(0xFF000000)),
+                          Icon(Icons.payment_rounded, size: 22, color: Color(0xFF374151)),
                           SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              'البطاقة البنكية (Visa / Mastercard / Meeza)',
+                              'سداد آمن عبر بوابة الدفع الإلكتروني',
                               style: TextStyle(
                                 fontFamily: KonfrmTypography.fontFamily,
                                 fontSize: 13,
@@ -738,7 +735,6 @@ class CorrectedScreen14View extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Icon(Icons.check_circle_rounded, size: 20, color: Color(0xFF000000)),
                         ],
                       ),
                     ),
@@ -871,7 +867,7 @@ class CorrectedScreen16View extends StatelessWidget {
               const SizedBox(height: 12),
               _buildNotificationItem(
                 title: 'رسالة جديدة من المضيف',
-                body: 'أرسل أحمد رسالة جديدة بخصوص ترتيبات الوصول واستلام المفاتيح.',
+                body: 'أرسل أحمد رسالة جديدة بخصوص تفاصيل وتنسيق الحجز.',
                 timestamp: 'أمس',
                 icon: Icons.chat_bubble_outline_rounded,
                 isUnread: false,

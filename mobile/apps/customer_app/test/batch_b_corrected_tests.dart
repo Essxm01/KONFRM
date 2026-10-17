@@ -48,6 +48,11 @@ void main() {
       // Verify sanitized booking ID (no BK-)
       expect(find.text('رقم الحجز 310482'), findsOneWidget);
       expect(find.textContaining('BK-'), findsNothing);
+
+      // Verify absence of unapproved check-in / check-out hours
+      expect(find.textContaining('03:00'), findsNothing);
+      expect(find.textContaining('11:00'), findsNothing);
+      expect(find.text('طلبك قيد المراجعة حالياً من المالك، ولا يلزم أي دفع في هذه المرحلة.'), findsOneWidget);
     });
 
     testWidgets('Screen 14 has physical right back button pointing right [➔]', (tester) async {
@@ -81,6 +86,12 @@ void main() {
       // Verify sanitized booking ID (no BK-)
       expect(find.text('رقم الحجز 829104'), findsOneWidget);
       expect(find.textContaining('BK-'), findsNothing);
+
+      // Verify neutral electronic payment line without brand claims
+      expect(find.text('سداد آمن عبر بوابة الدفع الإلكتروني'), findsOneWidget);
+      expect(find.textContaining('Visa'), findsNothing);
+      expect(find.textContaining('Mastercard'), findsNothing);
+      expect(find.textContaining('Meeza'), findsNothing);
     });
 
     testWidgets('Screen 14 deposit breakdown uses canonical «عربون الليلة الأولى» without unapproved claims', (tester) async {
@@ -132,6 +143,10 @@ void main() {
       final iconWidget = tester.widget<Icon>(iconFinder);
       expect(iconWidget.icon, Icons.arrow_forward_rounded);
       expect(iconWidget.color, const Color(0xFF000000));
+
+      // Verify notification copy without key handover claim
+      expect(find.text('أرسل أحمد رسالة جديدة بخصوص تفاصيل وتنسيق الحجز.'), findsOneWidget);
+      expect(find.textContaining('استلام المفاتيح'), findsNothing);
     });
 
     testWidgets('Batch B screens render without overflow under 200% accessibility scaling', (tester) async {

@@ -294,7 +294,7 @@ class CorrectedScreen04View extends StatelessWidget {
                   'تخصيص البحث والفلاتر',
                   style: TextStyle(
                     fontFamily: KonfrmTypography.fontFamily,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF000000),
                   ),
@@ -873,42 +873,28 @@ class CorrectedScreen07View extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: const Color(0xFFE5E7EB)),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Wrap(
-                            alignment: WrapAlignment.spaceBetween,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            spacing: 8,
-                            runSpacing: 4,
-                            children: const [
-                              Text(
-                                'عربون الليلة الأولى',
-                                style: TextStyle(
-                                  fontFamily: KonfrmTypography.fontFamily,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF000000),
-                                ),
-                              ),
-                              Text(
-                                '4,500 ج.م',
-                                style: TextStyle(
-                                  fontFamily: KonfrmTypography.fontFamily,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF000000),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'يُسدد بعد مراجعة وموافقة المالك على الطلب لتأكيد الحجز.',
+                      child: Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: const [
+                          Text(
+                            'عربون الليلة الأولى',
                             style: TextStyle(
                               fontFamily: KonfrmTypography.fontFamily,
-                              fontSize: 11,
-                              color: Color(0xFF6B7280),
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF000000),
+                            ),
+                          ),
+                          Text(
+                            '4,500 ج.م',
+                            style: TextStyle(
+                              fontFamily: KonfrmTypography.fontFamily,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF000000),
                             ),
                           ),
                         ],
@@ -920,7 +906,7 @@ class CorrectedScreen07View extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              // Truthful notice without cash-on-arrival claim
+              // Single clear notice banner
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -933,7 +919,7 @@ class CorrectedScreen07View extends StatelessWidget {
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'لا يتم الدفع الآن. يتم سداد العربون فقط بعد موافقة المالك.',
+                        'لا يُدفع العربون قبل موافقة المالك.',
                         style: TextStyle(
                           fontFamily: KonfrmTypography.fontFamily,
                           fontSize: 11,

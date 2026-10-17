@@ -2,12 +2,12 @@
 
 TASK_ID: KONFRM_FOUNDER_SCREEN22_AND_CUSTOMER_01_22_GLOBAL_DESIGN_PLAN_MODE
 TASK_CLASS: CUSTOMER_EXPERIENCE_FLUTTER__PLAN_AND_DESIGN_CORRECTION
-STATUS: DELIVERED__WORKSTREAM_A_PUSHED__WORKSTREAM_B_V2_CORRECTIONS_DELIVERED__AWAITING_FOUNDER_REVIEW
-BRANCH_WORKSTREAM_A: evidence/customer-screen22-design-review (SHA: 09aa2146bef4a07e42ca04828b0c16bf4dc805ae)
-BRANCH_WORKSTREAM_B: evidence/customer-cross-screen-fidelity-audit (Base: d04f8e5e657502b58886a9b9d0dd934d1a97f20a)
+STATUS: DELIVERED__WORKSTREAM_B_SAFETY_COMPLETED__WORKSTREAM_A_V3_RECONCILED__AWAITING_FOUNDER_REVIEW
+BRANCH_WORKSTREAM_B_CHAT: evidence/customer-screen22-design-review (SHA: 5db33beb768b0212a9fe44ff894ed931dfb006e3)
+BRANCH_WORKSTREAM_A_AUDIT: evidence/customer-cross-screen-fidelity-audit (Base: d04f8e5e657502b58886a9b9d0dd934d1a97f20a)
 GOVERNING_ISSUES:
-  - Issue #192: Complete 22-Screen Design Audit, Back-Arrow Law & Cross-Screen Content Alignment
-  - Issue #191: Customer Screen 22 Booking Chat Founder Layout Correction & Review Docket
+  - Issue #192: Complete 22-Screen Design Audit, Back-Arrow Law & Cross-Screen Content Alignment (Bridge Review Response)
+  - Issue #191: Customer Screen 22 Booking Chat Unknown Delivery Safety Hardening (Delivered at 5db33beb768b0212a9fe44ff894ed931dfb006e3)
   - Issue #190: [DEFERRED / SCREEN 22 PRELIVE] Realtime WebSockets, Push, Presence, ACL & Storage Gate
   - Issue #187: Cross-Screen UX Gaps & Missing Journeys
   - Issue #185: Customer Screen 21 Approval & Freeze Baseline (d04f8e5e657502b58886a9b9d0dd934d1a97f20a)
@@ -21,32 +21,38 @@ GOVERNING_ISSUES:
 
 ## Scope & Completed Deliverables
 
-### Workstream A: Customer Screen 22 Founder Layout & Truth Correction
-- **Branch:** `evidence/customer-screen22-design-review` (Committed & Pushed at `09aa2146bef4a07e42ca04828b0c16bf4dc805ae`).
-- **Physical Back Arrow:** Wrapped in `TextDirection.ltr` forcing arrowhead to visibly point **RIGHT `[➔]`** towards the screen edge in Arabic RTL.
-- **Calm Single-Line Header:** Purged subtitle, continuous booking banner, and redundant scope security container. Header contains physical Back button `[➔]`, title «محادثة الحجز» (bold Cairo `#000000`), collapsible chevron, and direct link «رقم الحجز 183223» to Screen 13.
-- **Collapsible Disclosure:** Starts collapsed; smoothly reveals property, stay dates, and confirmed badge without crowding messages.
-- **Role Grammar:** Customer bubble physically on the **LEFT** (white, 1px border `#E5E7EB`, avatar on left); Owner bubble physically on the **RIGHT** (pure black `#000000`, white Cairo text, avatar on right).
-- **Truthful Fixtures:** Natural rental coordination questions regarding the main gate route; zero unapproved check-in, parking, or arrival claims.
-- **Restrained Neutral Offline & Timeout States:** Purged amber warning banner; neutral status bar with draft preservation; timeout notice with single «مراجعة المسودة» button suppressing duplicate sends.
-- **Automated Verification:** 18/18 tests PASS (100%), 0 static analysis lints.
-- **Physical Hardware Evidence:** 12 full-fidelity captures + Base64 companions on Samsung Galaxy A56 5G in `review-evidence/customer-screen22/v1-founder-layout-truth-correction/`.
+### Workstream B (Issue #191): Customer Screen 22 Delivery Safety Hardening
+- **Branch:** `evidence/customer-screen22-design-review` (Committed & Pushed at `5db33beb768b0212a9fe44ff894ed931dfb006e3`; reported to [Issue #191 Comment 6241715243](https://github.com/Essxm01/KONFRM/issues/191#issuecomment-6241715243)).
+- **Delivery Safety Hardening:**
+  - Hardened `restoreDraftFromUncertain()`: entering draft review maintains `isTimeoutUncertain = true` and `hasUnresolvedUncertainMessage = true`.
+  - In `sendMessage()` and `_buildMessageComposer()`, `canSend` remains strictly `false` (Send button disabled `#E5E7EB`, `onTap: null`) until authoritative server reconciliation.
+  - Truthful recovery card: «المسودة معروضة للمراجعة (الإرسال مجمّد) — تم تجميد زر الإرسال لتجنب تكرار الرسالة حتى يتم التحقق من وصول الرسالة السابقة.» with button «المسودة قيد المراجعة».
+- **Automated Verification:** 19/19 tests PASS (100%), 0 analyzer issues.
+- **Visual Composition:** Single-line header, physical right Back arrow `[➔]`, black Owner bubble on physical right, white Customer bubble on physical left.
 
-### Workstream B: 22-Screen Global Customer Application Audit, Native Flutter Corrections & Hardware Evidence
+### Workstream A (Issue #192): 22-Screen Reconciled Audit, V3 Source-Truth Fixes & A56 Hardware Evidence
 - **Branch:** `evidence/customer-cross-screen-fidelity-audit`.
-- **Implemented Native Flutter Corrections across 3 Batches:**
-  - **Batch A (Screens 01–11):** `batch_a_corrected_runner.dart` & `batch_a_corrected_tests.dart` (6/6 tests PASS, 0 lints). Enforced physical right Back arrow `[➔]`, resolved 200% scaling reflow on Screen 04 and Screen 05 via dynamic `Wrap`, harmonized Screen 07 deposit phrasing to «عربون الليلة الأولى».
-  - **Batch B (Screens 12–16):** `batch_b_corrected_runner.dart` & `batch_b_corrected_tests.dart` (5/5 tests PASS, 0 lints). Enforced physical right Back arrow `[➔]`, decluttered Screen 13 header and sanitized ID to «رقم الحجز 310482», strictly unified Screen 14 deposit wording to «عربون الليلة الأولى» with pure black CTA, polished Screen 16 monochrome notifications.
-  - **Batch C (Screens 17–21):** `batch_c_corrected_runner.dart` & `batch_c_corrected_tests.dart` (3/3 tests PASS, 0 lints). Enforced physical right Back arrow `[➔]`, purged visible test strings (`(بيانات تجريبية)`) completely from Screen 19, ensured 48dp minimum touch targets on Screen 18.
-- **Hardware Evidence:** 18 high-resolution PNG captures + 18 `.b64.txt` companion files captured on connected physical Samsung Galaxy A56 5G (`SM-A566B`, Android 16 API 36, Serial `[REDACTED_A56_ID]`) located in `review-evidence/customer-cross-screen-fidelity/v2-implemented-design-fixes/screenshots/`.
+- **Reconciled Accounting (9 Remediated vs 12 Claimed):**
+  - **9 Remediated Candidate Screens:** Screens 04, 05, 07, 10, 13, 14, 16, 18, 19 across Batches A, B, C.
+  - **3 Historical Screens Pending Dedicated Isolated Runners:** Screens 06, 08, 09 (baseline citations, commit SHAs, and screenshot references documented in audit matrix).
+  - **10 Verified Baseline Screens (`VERIFIED_NO_CHANGE`):** Screens 01, 02, 03, 11, 12, 15, 17, 20, 21, 22.
+- **V3 Source-Truth Fixes Implemented in Runners:**
+  - **Screen 04:** Reduced title font size to 16 to eliminate 3-line wrap at 200% scaling.
+  - **Screen 07:** Purged redundant subtext under deposit line item; single clear notice banner `لا يُدفع العربون قبل موافقة المالك.`.
+  - **Screen 13:** Removed unapproved check-in (3pm) / check-out (11am) hours (stay dates only); compressed status card to single sentence.
+  - **Screen 14:** Replaced branded card network `(Visa / Mastercard / Meeza)` with neutral electronic gateway line `سداد آمن عبر بوابة الدفع الإلكتروني`.
+  - **Screen 16:** Removed key handover `استلام المفاتيح` from notification copy.
+  - **Screen 18:** Removed fake verified green tick and `(مؤكد)` from email field.
+  - **Screen 19:** Replaced inert switches with stateful `InteractiveToggleRow` widgets; interactive logout confirmation modal.
+- **Hardware Evidence:** 18 fresh high-resolution PNG captures + 18 `.b64.txt` companion hashes captured on connected physical Samsung Galaxy A56 5G (`SM-A566B`, Android 16 API 36, Serial `[REDACTED_A56_ID]`) located in `review-evidence/customer-cross-screen-fidelity/v3-founder-truth-fidelity-fix/screenshots/`.
 - **Authoritative Evidence Documentation:**
-  - `README.md`: Executive summary, architecture principles, and hardware capture index.
-  - `FINDINGS_LEDGER.md`: Comprehensive breakdown of 10 defect findings and exact technical resolutions.
-  - `CUSTOMER_DESIGN_AUDIT_MATRIX.md`: Complete 22-screen evaluation and post-remediation status.
-  - `DESIGN_SKILL_COURT_STORE_RECEIPT.md`: Formal Design Court docket and store compliance receipt.
-- **Standards & Law Documents:**
-  - `GLOBAL_PHYSICAL_RTL_BACK_ARROW_LAW.md`: Flutter auto-mirroring flaw RCA and canonical `KonfrmPhysicalBackArrow` pattern.
-  - `UNIFIED_ARABIC_CONTENT_AND_COMPRESSION_GUIDE.md`: Single-line quiet headers, deposit truth, and pure black `#000000` rule.
+  - `CUSTOMER_DESIGN_AUDIT_MATRIX.md`: Reconciled 22-screen matrix distinguishing 9 remediated, 3 historical pending, and 10 baseline screens.
+  - `BEFORE_AFTER_CONTACT_SHEET.md`: Visual contact sheet mapping baseline BEFORE evidence against fresh A56 AFTER captures at 100% and 200%.
+  - `FINDINGS_LEDGER.md`: Technical breakdown of defect findings, root causes, and resolutions.
+  - `GLOBAL_PHYSICAL_RTL_BACK_ARROW_LAW.md`: Spatial RTL principles and canonical `KonfrmPhysicalBackArrow`.
+  - `UNIFIED_ARABIC_CONTENT_AND_COMPRESSION_GUIDE.md`: Content truth, deposit semantics, and typography rules.
+  - `README.md`: Executive summary and verification receipts.
+- **Automated Verification:** 14/14 tests PASS across Batches A, B, C; 0 analyzer lints.
 
 ## Boundaries & Invariants
 - Production code (`mobile/apps/customer_app/lib/`, backend, and database) remains 100% untouched.

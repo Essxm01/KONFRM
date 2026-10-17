@@ -108,6 +108,10 @@ class KonfrmPhysicalBackArrow extends StatelessWidget {
 | **Nested Customer Screens** | Screens 04, 05, 06, 07, 08, 09, 10, 13, 14, 16, 18, 19, 20, 21, 22 | **MANDATORY** | Placed on physical **RIGHT**, pointing **RIGHT `[➔]`**. |
 | **Terminal Hubs** | Screen 11 (Success Hub) | Primary CTA | Primary bottom CTA (e.g. «الانتقال إلى حجوزاتي») returns to navigation root. |
 
+> [!NOTE]
+> **Scope of the Law:**
+> This law strictly governs the **navigation Back button orientation and placement**. It does NOT dictate a universal single-line header compression across unrelated screen archetypes. Header layouts must naturally serve each screen's specific content model (e.g. search input on Screen 04, hero media overlay on Screen 06, multi-step progress indicators on Screens 08–10, and card breakdowns on Screens 07 & 14).
+
 ---
 
 ## 5. Migration Strategy for Screens 03–19

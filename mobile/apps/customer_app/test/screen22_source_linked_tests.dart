@@ -52,7 +52,8 @@ void main() {
 
       final msg3 = kBaseConversationMessages[2];
       expect(msg3.senderRole, equals(ChatParticipantRole.owner));
-      expect(msg3.contentArabic, contains('المسار مباشر وسهل'));
+      expect(msg3.contentArabic, contains('تم استلام استفسارك'));
+      expect(msg3.contentArabic, isNot(contains('المسار مباشر وسهل')));
       expect(msg3.contentArabic, isNot(contains('تتسع لسيارتين')));
       expect(msg3.status, equals(MessageDeliveryStatus.sent));
     });
@@ -404,12 +405,49 @@ void main() {
 
       expect(find.byKey(const Key('screen22_timeout_uncertain_notice')), findsOneWidget);
       expect(find.text('تعذر تأكيد تسليم الرسالة من الخادم'), findsOneWidget);
+      expect(find.text('نص رسالتك ما زال هنا للمراجعة.'), findsOneWidget);
       expect(find.byKey(const Key('screen22_review_draft_button')), findsOneWidget);
+
+      // Verify send button is disabled during timeout uncertainty
+      final sendMaterial = tester.widget<Material>(find.byKey(const Key('chat_send_material')));
+      expect(sendMaterial.color, const Color(0xFFE5E7EB));
+
+      // Attempting to tap send does not dispatch a new message
+      final countBefore = controller.messages.length;
+      await tester.tap(find.byKey(const Key('chat_send_button')));
+      await tester.pump();
+      expect(controller.messages.length, countBefore);
 
       await tester.tap(find.byKey(const Key('screen22_review_draft_button')));
       await tester.pump();
 
       expect(controller.isTimeoutUncertain, isFalse);
+    });
+
+    testWidgets('Offline state disables send button and blocks message dispatch', (tester) async {
+      final controller = CustomerBookingChatController();
+      controller.setScenario(Screen22Scenario.offlineState);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Screen22PreviewView(controller: controller),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(controller.isOffline, isTrue);
+
+      // Verify send button is disabled in offline state
+      final sendMaterial = tester.widget<Material>(find.byKey(const Key('chat_send_material')));
+      expect(sendMaterial.color, const Color(0xFFE5E7EB));
+
+      // Attempting to send while offline does not append a message
+      final countBefore = controller.messages.length;
+      controller.sendMessage();
+      expect(controller.messages.length, countBefore);
     });
 
     testWidgets('Delivery failed notice provides retry button without fake duplicate-safe claims', (tester) async {
@@ -427,7 +465,7 @@ void main() {
       await tester.pump();
 
       expect(find.byKey(const Key('screen22_delivery_failed_notice')), findsOneWidget);
-      expect(find.text('تعذر إرسال الرسالة — تحقق من الاتصال'), findsOneWidget);
+      expect(find.text('تعذر إرسال الرسالة'), findsOneWidget);
       expect(find.textContaining('بأمان دون تكرار'), findsNothing);
       expect(find.byKey(const Key('screen22_retry_send_button')), findsOneWidget);
 

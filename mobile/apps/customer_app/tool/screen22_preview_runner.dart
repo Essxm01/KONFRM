@@ -166,7 +166,7 @@ final List<ChatMessage> kBaseConversationMessages = [
   const ChatMessage(
     id: 'msg_03',
     senderRole: ChatParticipantRole.owner,
-    contentArabic: 'المسار مباشر وسهل، وجميع اللوحات الإرشادية واضحة بمجرد الدخول من البوابة.',
+    contentArabic: 'أهلاً بك، تم استلام استفسارك وسنوافيك بالتفاصيل المناسبة للتنسيق.',
     timestampArabic: '10:22 ص',
     status: MessageDeliveryStatus.sent,
   ),
@@ -355,7 +355,7 @@ class CustomerBookingChatController extends ChangeNotifier {
   /// Sends a local message without creating phantom server delivery claims.
   void sendMessage() {
     final trimmed = _draftText.trim();
-    if (trimmed.isEmpty || _isGuest || !_isThreadAvailable) return;
+    if (trimmed.isEmpty || _isGuest || !_isThreadAvailable || _isTimeoutUncertain || _isOffline) return;
 
     final newMessage = ChatMessage(
       id: 'msg_local_${DateTime.now().millisecondsSinceEpoch}',
@@ -1139,7 +1139,7 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
           ),
           const SizedBox(height: 4),
           const Text(
-            'تم حفظ المسودة في هذا الجهاز لتجنب إرسال رسائل مكررة.',
+            'نص رسالتك ما زال هنا للمراجعة.',
             style: TextStyle(
               fontFamily: KonfrmTypography.fontFamily,
               fontSize: 11,
@@ -1180,11 +1180,11 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
   Widget _buildDeliveryFailedRecoveryCard() {
     return Container(
       key: const Key('screen22_delivery_failed_notice'),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFFEF2F2),
+        color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFFECACA), width: 1),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
       ),
       child: Row(
         children: [
@@ -1192,12 +1192,12 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
           const SizedBox(width: 8),
           const Expanded(
             child: Text(
-              'تعذر إرسال الرسالة — تحقق من الاتصال',
+              'تعذر إرسال الرسالة',
               style: TextStyle(
                 fontFamily: KonfrmTypography.fontFamily,
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF991B1B),
+                color: Color(0xFF374151),
               ),
             ),
           ),
@@ -1210,7 +1210,7 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: const Color(0xFFDC2626),
+                color: const Color(0xFF000000), // Pure Black #000000
                 borderRadius: BorderRadius.circular(6),
               ),
               child: const Text(
@@ -1408,6 +1408,7 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
 
   Widget _buildMessageComposer() {
     final hasDraft = controller.draftText.trim().isNotEmpty;
+    final canSend = hasDraft && !controller.isTimeoutUncertain && !controller.isOffline;
     final isA11y = controller.scenario == Screen22Scenario.accessibility200Thread ||
         controller.scenario == Screen22Scenario.accessibility200Composer;
 
@@ -1468,11 +1469,12 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
               width: 48,
               height: 48,
               child: Material(
-                color: hasDraft ? const Color(0xFF000000) : const Color(0xFFE5E7EB),
+                key: const Key('chat_send_material'),
+                color: canSend ? const Color(0xFF000000) : const Color(0xFFE5E7EB),
                 shape: const CircleBorder(),
                 child: InkWell(
                   key: const Key('chat_send_button'),
-                  onTap: hasDraft ? () => controller.sendMessage() : null,
+                  onTap: canSend ? () => controller.sendMessage() : null,
                   customBorder: const CircleBorder(),
                   child: Center(
                     child: Transform.rotate(
@@ -1480,7 +1482,7 @@ class _Screen22PreviewViewState extends State<Screen22PreviewView> {
                       child: Icon(
                         Icons.send_rounded,
                         size: 20,
-                        color: hasDraft ? Colors.white : const Color(0xFF9CA3AF),
+                        color: canSend ? Colors.white : const Color(0xFF9CA3AF),
                       ),
                     ),
                   ),

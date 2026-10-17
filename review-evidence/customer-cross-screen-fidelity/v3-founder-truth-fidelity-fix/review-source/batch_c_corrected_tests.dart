@@ -109,6 +109,59 @@ void main() {
       expect(find.text('هل أنت متأكد من رغبتك في تسجيل الخروج من حسابك؟'), findsNothing);
     });
 
+    testWidgets('Screen 19 preserves full fidelity account security, planned sheets, and account deletion', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1080, 2340));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: CorrectedScreen19View(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Account & Security section presence
+      expect(find.text('الأمان وطرق الدخول'), findsOneWidget);
+      expect(find.text('رقم الهاتف الأساسي'), findsOneWidget);
+      expect(find.text('البريد الإلكتروني الأساسي'), findsOneWidget);
+      expect(find.text('إضافة رقم هاتف بديل'), findsOneWidget);
+      expect(find.text('ربط حساب Apple'), findsOneWidget);
+      expect(find.text('ربط حساب Google'), findsOneWidget);
+
+      // Tap planned action -> opens planned sheet
+      final appleFinder = find.byKey(const Key('row_link_apple'));
+      expect(appleFinder, findsOneWidget);
+      await tester.tap(appleFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('planned_sheet_dismiss')), findsOneWidget);
+      expect(find.textContaining('قيد الإعداد ضمن خطة ترقية الأمان'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('planned_sheet_dismiss')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('planned_sheet_dismiss')), findsNothing);
+
+      // Scroll down to Account Deletion
+      final deleteRowFinder = find.byKey(const Key('screen19_delete_account_button'));
+      await tester.scrollUntilVisible(deleteRowFinder, 200);
+      await tester.pumpAndSettle();
+      expect(deleteRowFinder, findsOneWidget);
+
+      // Tap Account Deletion -> opens Account Deletion Sheet (Issue #189)
+      await tester.tap(deleteRowFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('account_deletion_sheet_dismiss')), findsOneWidget);
+      expect(find.textContaining('إجراءات تصدير البيانات أو حذف الحساب غير متاحة حالياً'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('account_deletion_sheet_dismiss')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('account_deletion_sheet_dismiss')), findsNothing);
+    });
+
     testWidgets('Batch C screens render without overflow under 200% accessibility scaling', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1080, 2340));
       addTearDown(() => tester.binding.setSurfaceSize(null));

@@ -18,13 +18,13 @@ In strict response to the independent Bridge review on GitHub Issue #192, this V
    - **Reconciled Truth:** Preview runners `batch_a_corrected_runner.dart`, `batch_b_corrected_runner.dart`, and `batch_c_corrected_runner.dart` implement exactly **9 candidate screens** (Screens 04, 05, 07, 10, 13, 14, 16, 18, 19).
    - Screens 06, 08, and 09 are classified as `HISTORICAL_PENDING_ISOLATED_RUNNER` with their baseline branch commits and screenshots cited in `CUSTOMER_DESIGN_AUDIT_MATRIX.md`.
 2. **Purge of Unapproved Inventions & Business Fictions:**
-   - **Screen 13:** Removed unapproved check-in (3:00 PM) / check-out (11:00 AM) hours (stay dates only); compressed status card description to single sentence.
+   - **Screen 13:** Removed unapproved check-in (3:00 PM) / check-out (11:00 AM) hours (stay dates only); compressed status card description to single sentence. Explicitly scoped as a pending-booking preview refinement (RTL arrow + copy truth) that preserves the complete 15-state architecture from `customer-screen13/v2/`.
    - **Screen 14:** Replaced pre-checked branded payment method `(Visa / Mastercard / Meeza)` with neutral electronic gateway line `سداد آمن عبر بوابة الدفع الإلكتروني`.
    - **Screen 16:** Removed `استلام المفاتيح` (key handover) from notification copy.
    - **Screen 18:** Removed fake verified green tick and `(مؤكد)` from email field (`ahmed@example.com` unverified; phone remains verified).
-   - **Screen 19:** Replaced inert switches with stateful `InteractiveToggleRow` widgets that toggle smoothly on tap; made logout button show interactive confirmation dialog.
+   - **Screen 19:** Restored complete historical information architecture from `c2145f9a6bdff092d42c20d083fd559f35fdc631`: Account & Security (verified phone, unverified email, 4 planned action sheets), Notifications (`InteractiveToggleRow`s with pure-black switches), App Preferences (Arabic, EGP, theme, reduce motion), Privacy & Account Actions (terms, privacy, Account Deletion Bottom Sheet under Issue #189, Sign Out confirmation dialog).
    - **Screen 07:** Simplified deposit line item to pure canonical `عربون الليلة الأولى` (4,500 ج.م) without repetitive prose; single authoritative notice banner `لا يُدفع العربون قبل موافقة المالك.`.
-   - **Screen 04:** Reduced header title font size from 18 to 16 to prevent 3-line wrap under 200% font scale.
+   - **Screen 04:** Replaced overlong title with concise Arabic title `«تصفية البحث»`, eliminating 3-line wrap and achieving a clean 2-line layout at 200% font scale next to `[➔]` and «إعادة ضبط».
 3. **Status Accuracy for Screen 22:**
    - Screen 22 is designated as `PROPOSED_AWAITING_APPROVAL` at SHA `5db33beb768b0212a9fe44ff894ed931dfb006e3` (addressing Issue #191 unknown delivery safety), not as a frozen screen.
 
@@ -34,7 +34,7 @@ In strict response to the independent Bridge review on GitHub Issue #192, this V
 
 ### A. Core Reconciliation Documents:
 - `CUSTOMER_DESIGN_AUDIT_MATRIX.md`: Complete 22-screen audit matrix reconciling the 9 remediated candidate screens, 3 historical pending screens, and 10 verified baseline screens.
-- `BEFORE_AFTER_CONTACT_SHEET.md`: Detailed visual contact sheet mapping baseline BEFORE evidence against fresh A56 AFTER captures at 100% and 200%.
+- `BEFORE_AFTER_CONTACT_SHEET.md`: Detailed visual contact sheet mapping baseline BEFORE evidence against fresh A56 AFTER captures at 100% and 200%, with embedded markdown images.
 - `FINDINGS_LEDGER.md`: Complete technical breakdown of defect root causes, code fixes, and test assertions.
 - `GLOBAL_PHYSICAL_RTL_BACK_ARROW_LAW.md`: Comprehensive explanation of the physical RTL Back arrow invariant and Flutter auto-mirroring defect.
 - `UNIFIED_ARABIC_CONTENT_AND_COMPRESSION_GUIDE.md`: Content truth, deposit semantics («عربون الليلة الأولى»), and typography standards.
@@ -43,11 +43,11 @@ In strict response to the independent Bridge review on GitHub Issue #192, this V
 ### B. Runners & Test Suites (`review-source/`):
 - `batch_a_corrected_runner.dart` & `batch_a_corrected_tests.dart` (Screens 04, 05, 07, 10 — 6/6 PASS)
 - `batch_b_corrected_runner.dart` & `batch_b_corrected_tests.dart` (Screens 13, 14, 16 — 5/5 PASS)
-- `batch_c_corrected_runner.dart` & `batch_c_corrected_tests.dart` (Screens 18, 19 — 3/3 PASS)
-- **Automated Verification:** 14/14 tests pass across all 3 suites; `flutter analyze` reports 0 issues.
+- `batch_c_corrected_runner.dart` & `batch_c_corrected_tests.dart` (Screens 18, 19 — 4/4 PASS)
+- **Automated Verification:** 15/15 tests pass across all 3 suites; `flutter analyze` reports 0 issues.
 
 ### C. Physical A56 Hardware Evidence (`screenshots/`):
-All 18 screenshots captured on Samsung Galaxy A56 5G hardware at 1080×2340 resolution, accompanied by `.b64.txt` companion hashes:
+All 21 screenshots captured on Samsung Galaxy A56 5G hardware at 1080×2340 resolution, accompanied by `.b64.txt` companion hashes:
 - `01_screen04_corrected_normal.png` & `02_screen04_corrected_a11y_200.png`
 - `03_screen05_corrected_normal.png` & `04_screen05_corrected_a11y_200.png`
 - `05_screen07_corrected_normal.png` & `06_screen07_corrected_a11y_200.png`
@@ -57,6 +57,9 @@ All 18 screenshots captured on Samsung Galaxy A56 5G hardware at 1080×2340 reso
 - `13_screen16_corrected_normal.png` & `14_screen16_corrected_a11y_200.png`
 - `15_screen18_corrected_normal.png` & `16_screen18_corrected_a11y_200.png`
 - `17_screen19_corrected_normal.png` & `18_screen19_corrected_a11y_200.png`
+- `19_screen19_corrected_scrolled.png` (Scrolled bottom reachability)
+- `20_screen19_corrected_deletion_sheet.png` (Account Deletion Bottom Sheet under Issue #189)
+- `21_screen19_corrected_logout_modal.png` (Sign Out Confirmation Modal)
 
 ---
 

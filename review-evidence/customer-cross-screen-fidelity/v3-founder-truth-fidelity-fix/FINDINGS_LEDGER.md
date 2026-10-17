@@ -16,17 +16,17 @@ Across the 22 screens of the canonical Customer application (`KONFRM_EXECUTION_T
   - Screen 22: Proposed awaiting Founder approval at `5db33beb768b0212a9fe44ff894ed931dfb006e3` (uncertain draft delivery safety hardened).
 - **9 Candidate Screens Remediated across Batches A, B, and C:**
   - **Batch A (Screens 04, 05, 07, 10):**
-    - Screen 04: Physical Right Back Arrow `[➔]`; title font size reduced to 16 to prevent 3-line wrap under 200% font scale.
+    - Screen 04: Physical Right Back Arrow `[➔]`; concise Arabic title «تصفية البحث» eliminating 3-line wrap and achieving a clean 2-line layout under 200% font scale next to `[➔]` and «إعادة ضبط».
     - Screen 05: Physical Right Back Arrow `[➔]`; responsive filter wrapping.
     - Screen 07: Physical Right Back Arrow `[➔]`; neutral deposit line item `عربون الليلة الأولى` (4,500 ج.م) without speculative prose; single clear notice banner `لا يُدفع العربون قبل موافقة المالك.`.
     - Screen 10: Physical Right Back Arrow `[➔]`; full-width accessible profile setup inputs.
   - **Batch B (Screens 13, 14, 16):**
-    - Screen 13: Physical Right Back Arrow `[➔]`; purged unapproved check-in (3pm) / check-out (11am) hours (stay dates only); compressed status card to single sentence.
+    - Screen 13: Physical Right Back Arrow `[➔]`; purged unapproved check-in (3pm) / check-out (11am) hours (stay dates only); compressed status card to single sentence; pending-booking preview refinement.
     - Screen 14: Physical Right Back Arrow `[➔]`; replaced branded card networks `(Visa / Mastercard / Meeza)` with neutral electronic gateway line `سداد آمن عبر بوابة الدفع الإلكتروني`.
     - Screen 16: Physical Right Back Arrow `[➔]`; removed unapproved `استلام المفاتيح` (key handover) from notification body.
   - **Batch C (Screens 18, 19):**
     - Screen 18: Physical Right Back Arrow `[➔]`; unverified email field cleanly presented as `البريد الإلكتروني` with fake green check and `(مؤكد)` removed.
-    - Screen 19: Physical Right Back Arrow `[➔]`; purged visible test copy `بيانات تجريبية`; stateful interactive toggle switches via `InteractiveToggleRow`; interactive logout confirmation modal.
+    - Screen 19: Physical Right Back Arrow `[➔]`; full-fidelity information architecture restored (Account & Security, Notifications, Preferences, Privacy & Account Deletion under Issue #189, Sign Out confirmation modal); zero development copy; interactive toggles.
 - **3 Historical Screens Pending Dedicated Isolated Runners:**
   - **Screen 06 (Property Details):** Sliver-scroll hero image overlay architecture. Historical baseline at `origin/feat/customer-screen06-property-details-v3` (`7107fcf`).
   - **Screen 08 (Phone Auth Entry) & Screen 09 (OTP Verification):** Auth step sequence requiring dedicated phone and pin input controllers. Baselines at `origin/evidence/customer-screen08-design-review` (`213a2e3`) and `origin/evidence/customer-screen09-design-review` (`e158924`).
@@ -64,10 +64,10 @@ Across the 22 screens of the canonical Customer application (`KONFRM_EXECUTION_T
 - **Defect ID:** `DEFECT-A11Y-S04-02`
 - **Severity:** P1 (Accessibility Typography Wrapping)
 - **Affected Screen:** Screen 04 (Search & Refine)
-- **Root Cause:** App bar title `تخصيص البحث والفلاتر` used font size 18 with an adjacent `إعادة ضبط` text button. Under `TextScaler.linear(2.0)`, the title text wrapped to 3 lines, causing visual congestion in the app bar.
-- **Enacted Resolution:** Reduced title font size to 16 with bold weight (`FontWeight.bold`). The title now wraps cleanly into 2 lines at 200% scaling, preserving generous padding and zero overflow.
-- **Automated Verification:** Verified in `batch_a_corrected_tests.dart` under 200% text scale.
-- **Physical A56 Evidence:** `02_screen04_corrected_a11y_200.png`.
+- **Root Cause:** App bar title `تخصيص البحث والفلاتر` was overly verbose and, under `TextScaler.linear(2.0)`, wrapped into 3 lines adjacent to the `إعادة ضبط` reset action, creating app bar congestion.
+- **Enacted Resolution:** Replaced with concise canonical Arabic title `تصفية البحث` (font size 16, bold). The title now wraps cleanly into exactly 2 lines under 200% scaling next to `[➔]` and `إعادة ضبط`, preserving generous touch targets, natural scaling, and zero RenderFlex overflow.
+- **Automated Verification:** Verified in `batch_a_corrected_tests.dart` (asserting `find.text('تصفية البحث')` under 200% text scale without overflow).
+- **Physical A56 Evidence:** `01_screen04_corrected_normal.png` and `02_screen04_corrected_a11y_200.png`.
 
 ---
 
@@ -131,13 +131,23 @@ Across the 22 screens of the canonical Customer application (`KONFRM_EXECUTION_T
 
 ---
 
-### Finding 08: Screen 19 Inert Switch Toggles & Empty Logout Callback
-- **Defect ID:** `DEFECT-INTERACTION-S19-01`
-- **Severity:** P1 (Interactive Quality & Usability)
+### Finding 08: Screen 19 Full-Fidelity Restoration & Interactive Interaction Hardening
+- **Defect ID:** `DEFECT-FIDELITY-S19-01`
+- **Severity:** P0 (Information Architecture & Interactive Quality)
 - **Affected Screen:** Screen 19 (Settings)
-- **Root Cause:** Settings switches were inert (`onChanged: (_) {}`) and did not toggle state when tapped on hardware. The logout button had an empty callback `onPressed: () {}`.
+- **Root Cause:** Early V3 submission replaced historical Screen 19 with a simplified settings demo, omitting complete Account & Security sections, planned action rows, and the Issue #189 account deletion flow. In addition, historical switches were inert and the logout button had an empty callback.
 - **Enacted Resolution:**
-  1. Implemented stateful `InteractiveToggleRow` widget managing its own local boolean state and responding smoothly to user taps.
-  2. Added interactive confirmation dialog for logout (`AlertDialog` asking `هل أنت متأكد من رغبتك في تسجيل الخروج من حسابك؟` with cancel and confirm actions).
-- **Automated Verification:** Tested in `batch_c_corrected_tests.dart` asserting switch state toggles and dialog appears/dismisses.
-- **Physical A56 Evidence:** `17_screen19_corrected_normal.png` and `18_screen19_corrected_a11y_200.png`.
+  1. Restored complete historical information architecture from `c2145f9a6bdff092d42c20d083fd559f35fdc631`:
+     - **Account & Security:** Primary phone (+201012345678, verified), primary email (unverified), 4 planned action rows (alternate phone/email, Apple ID, Google ID linking with modal info sheets).
+     - **Notifications:** Push, Email, SMS toggles utilizing stateful `InteractiveToggleRow` widgets with pure-black `#000000` switches.
+     - **App Preferences:** Arabic default, EGP currency, Light theme, Reduce Motion toggle.
+     - **Privacy & Account Actions:** Terms of Service, Privacy Policy, Account Deletion Bottom Sheet (retaining open PRELIVE obligations under Issue #189), and Sign Out confirmation modal.
+  2. Implemented interactive confirmation dialog for logout (`AlertDialog` asking `هل أنت متأكد من رغبتك في تسجيل الخروج من حسابك؟` with cancel and confirm actions).
+  3. Purged all development strings (`بيانات تجريبية`) from production view.
+- **Automated Verification:** Tested in `batch_c_corrected_tests.dart` (4/4 PASS), verifying full IA sections, toggle states, planned sheet opening/closing, and account deletion sheet trigger/dismiss.
+- **Physical A56 Evidence (5 Fresh Captures):**
+  - `17_screen19_corrected_normal.png` (Top Normal 100%)
+  - `18_screen19_corrected_a11y_200.png` (Top Accessibility 200%)
+  - `19_screen19_corrected_scrolled.png` (Scrolled Bottom reachability)
+  - `20_screen19_corrected_deletion_sheet.png` (Account Deletion Bottom Sheet under Issue #189)
+  - `21_screen19_corrected_logout_modal.png` (Sign Out Confirmation Modal)

@@ -291,7 +291,7 @@ class CorrectedScreen04View extends StatelessWidget {
               const SizedBox(width: 8),
               const Expanded(
                 child: Text(
-                  'تخصيص البحث والفلاتر',
+                  'تصفية البحث',
                   style: TextStyle(
                     fontFamily: KonfrmTypography.fontFamily,
                     fontSize: 16,

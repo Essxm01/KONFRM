@@ -33,6 +33,9 @@ void main() {
       final iconWidget = tester.widget<Icon>(iconFinder);
       expect(iconWidget.icon, Icons.arrow_forward_rounded);
       expect(iconWidget.color, const Color(0xFF000000));
+
+      // Concise title to prevent 3-line wrap under 200% accessibility scale
+      expect(find.text('تصفية البحث'), findsOneWidget);
     });
 
     testWidgets('Screen 05 has physical right back button pointing right [➔]', (tester) async {
